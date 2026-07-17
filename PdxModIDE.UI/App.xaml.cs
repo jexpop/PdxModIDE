@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Windows;
 using MessageBox = System.Windows.MessageBox;
+using PdxModIDE.Core.Games;
+using PdxModIDE.Core.Games.CK3;
 using PdxModIDE.Project;
 
 namespace PdxModIDE.UI
@@ -11,6 +13,8 @@ namespace PdxModIDE.UI
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            GameRegistry.Register(new CK3GamePlugin());
 
             Directory.CreateDirectory("data");
             Directory.CreateDirectory("logs");
