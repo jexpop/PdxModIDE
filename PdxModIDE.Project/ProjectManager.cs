@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using PdxModIDE.Core;
+using PdxModIDE.Core.Games;
 using PdxModIDE.Domain;
+using PdxModIDE.Domain.Interfaces;
 using DataProfile = PdxModIDE.Data.Profile;
 using DataModuleConfig = PdxModIDE.Data.ModuleConfig;
 using DataFileConfig = PdxModIDE.Data.FileConfig;
@@ -52,6 +55,68 @@ namespace PdxModIDE.Project
             SyncDomainProfiles();
         }
 
+        public string? DetectGame(string gameRoot)
+        {
+            if (string.IsNullOrEmpty(gameRoot) || !Directory.Exists(gameRoot))
+                return null;
+
+            var plugin = GameRegistry.DetectGame(gameRoot);
+            return plugin?.GameKey;
+        }
+
+        public string? DetectGameWithFallback(string gameRoot)
+        {
+            var detected = DetectGame(gameRoot);
+            if (detected != null)
+                return detected;
+
+            // Show dialog for user to select game
+            return ShowGameSelectionDialog();
+        }
+
+        private static string? ShowGameSelectionDialog()
+        {
+            var plugins = GameRegistry.AllPlugins.Values.OrderBy(p => p.DisplayName).ToList();
+            if (!plugins.Any())
+                return null;
+
+            var form = new Form
+            {
+                Text = "Seleccionar juego base",
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                StartPosition = FormStartPosition.CenterScreen,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                Width = 400,
+                Height = 300
+            };
+
+            var listBox = new ListBox
+            {
+                Dock = DockStyle.Fill,
+                DisplayMember = "DisplayName"
+            };
+            listBox.Items.AddRange(plugins.Cast<object>().ToArray());
+
+            var panel = new Panel { Dock = DockStyle.Bottom, Height = 50 };
+            var btnOk = new Button { Text = "Aceptar", DialogResult = DialogResult.OK, Dock = DockStyle.Right, Width = 80 };
+            var btnCancel = new Button { Text = "Cancelar", DialogResult = DialogResult.Cancel, Dock = DockStyle.Right, Width = 80 };
+            panel.Controls.Add(btnOk);
+            panel.Controls.Add(btnCancel);
+            form.AcceptButton = btnOk;
+            form.CancelButton = btnCancel;
+
+            form.Controls.Add(listBox);
+            form.Controls.Add(panel);
+
+            if (form.ShowDialog() == DialogResult.OK && listBox.SelectedItem is IGamePlugin selected)
+            {
+                return selected.GameKey;
+            }
+
+            return null;
+        }
+
         public void SaveAll()
         {
             DataLoader.SaveProfiles(_dataProfiles);
@@ -98,6 +163,19 @@ namespace PdxModIDE.Project
             _domainProfiles.Add(domainProfile);
             DataLoader.SaveProfiles(_dataProfiles);
             return domainProfile;
+        }
+
+        public Domain.Profile CreateProfileWithGameDetection(string name, string gameRoot)
+        {
+            string game = "CK3";
+            if (!string.IsNullOrEmpty(gameRoot))
+            {
+                var detected = DetectGameWithFallback(gameRoot);
+                if (detected != null)
+                    game = detected;
+            }
+
+            return CreateProfile(name, game);
         }
 
         public bool UpdateProfile(Domain.Profile profile)
@@ -253,12 +331,16 @@ namespace PdxModIDE.Project
 
         public string? ReadEndDate(string gameRoot)
         {
-            return DefinesProcessor.ReadEndDate(gameRoot);
+            if (CurrentDataProfile == null)
+                return null;
+            return DefinesProcessor.ReadEndDate(gameRoot, CurrentDataProfile.Game);
         }
 
         public string? ReadModEndDate(string modRoot)
         {
-            return DefinesProcessor.ReadModEndDate(modRoot);
+            if (CurrentDataProfile == null)
+                return null;
+            return DefinesProcessor.ReadModEndDate(modRoot, CurrentDataProfile.Game);
         }
 
         public bool WriteEndDate(string newDate)
@@ -270,7 +352,8 @@ namespace PdxModIDE.Project
                 CurrentDataProfile.GameRoot,
                 CurrentDataProfile.ModRoot,
                 CurrentDataProfile.BackupRoot,
-                newDate
+                newDate,
+                CurrentDataProfile.Game
             );
         }
 

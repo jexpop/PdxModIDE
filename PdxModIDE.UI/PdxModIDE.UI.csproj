@@ -7,6 +7,10 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <DebugType>none</DebugType>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,16 +23,28 @@
   </ItemGroup>
 
   <Target Name="CopyDataToOutput" AfterTargets="AfterBuild;AfterPublish">
-    <Copy SourceFiles="..\..\publish\data\profiles.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\..\publish\data\settings.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\..\publish\data\modules.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\..\publish\data\files.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\..\publish\data\log_filters.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\..\publish\data\profiles.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
-    <Copy SourceFiles="..\..\publish\data\settings.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
-    <Copy SourceFiles="..\..\publish\data\modules.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
-    <Copy SourceFiles="..\..\publish\data\files.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
-    <Copy SourceFiles="..\..\publish\data\log_filters.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
+    <Copy SourceFiles="..\..\publish\data\profiles.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" Condition="Exists('..\..\publish\data\profiles.json')" />
+    <Copy SourceFiles="..\..\publish\data\settings.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" Condition="Exists('..\..\publish\data\settings.json')" />
+    <Copy SourceFiles="..\..\publish\data\modules.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" Condition="Exists('..\..\publish\data\modules.json')" />
+    <Copy SourceFiles="..\..\publish\data\files.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" Condition="Exists('..\..\publish\data\files.json')" />
+    <Copy SourceFiles="..\..\publish\data\log_filters.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" Condition="Exists('..\..\publish\data\log_filters.json')" />
+    <Copy SourceFiles="..\..\publish\data\profiles.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != '' And Exists('..\..\publish\data\profiles.json')" />
+    <Copy SourceFiles="..\..\publish\data\settings.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != '' And Exists('..\..\publish\data\settings.json')" />
+    <Copy SourceFiles="..\..\publish\data\modules.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != '' And Exists('..\..\publish\data\modules.json')" />
+    <Copy SourceFiles="..\..\publish\data\files.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != '' And Exists('..\..\publish\data\files.json')" />
+    <Copy SourceFiles="..\..\publish\data\log_filters.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != '' And Exists('..\..\publish\data\log_filters.json')" />
+  </Target>
+
+  <Target Name="CleanSingleFilePublish" AfterTargets="AfterPublish" Condition="$(PublishSingleFile)">
+    <Message Text="CleanSingleFilePublish: $(PublishDir) PublishSingleFile=$(PublishSingleFile)" Importance="high" />
+    <ItemGroup>
+      <_RemoveDlls Include="$(PublishDir)\*.dll" />
+      <_RemoveDeps Include="$(PublishDir)\*.deps.json" />
+    </ItemGroup>
+    <Message Text="DLLs to remove: @(_RemoveDlls)" Importance="high" />
+    <Delete Files="@(_RemoveDlls)" />
+    <Delete Files="@(_RemoveDeps)" />
+    <RemoveDir Directories="$(PublishDir)\runtimes" ContinueOnError="true" />
   </Target>
 
   <ItemGroup>

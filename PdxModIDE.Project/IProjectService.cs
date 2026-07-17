@@ -14,11 +14,15 @@ namespace PdxModIDE.Project
         Domain.Profile? CurrentProfile { get; }
         bool SelectProfile(string name);
         Domain.Profile CreateProfile(string name, string game = "CK3");
+        Domain.Profile CreateProfileWithGameDetection(string name, string gameRoot);
         bool UpdateProfile(Domain.Profile profile);
         bool DeleteProfile(string name);
         bool RenameProfile(string oldName, string newName);
 
         EditingSession? CurrentSession { get; }
+
+        string? DetectGame(string gameRoot);
+        string? DetectGameWithFallback(string gameRoot);
 
         IReadOnlyDictionary<string, IReadOnlyDictionary<string, Domain.Module>> GetAllModules();
         IReadOnlyDictionary<string, Domain.Module> GetGameModulesAsDomain(string gameKey);

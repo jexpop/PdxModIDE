@@ -2,15 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using PdxModIDE.Core.Games;
+using PdxModIDE.Domain.Interfaces;
 using PdxModIDE.IO;
 
 namespace PdxModIDE.Core
 {
     public static class DefinesProcessor
     {
-        public static string? ReadEndDate(string gameRoot)
+        private static IGamePlugin? GetPlugin(string gameKey)
         {
-            string definesPath = Path.Combine(gameRoot, "common", "defines", "00_defines.txt");
+            return GameRegistry.GetPlugin(gameKey);
+        }
+
+        public static string? ReadEndDate(string gameRoot, string gameKey)
+        {
+            var plugin = GetPlugin(gameKey);
+            if (plugin == null)
+                return null;
+
+            string definesPath = plugin.GetDefinesPath(gameRoot);
 
             if (!FileOperations.FileExists(definesPath))
                 return null;
@@ -19,9 +30,9 @@ namespace PdxModIDE.Core
 
             foreach (var line in lines)
             {
-                if (line.Contains("END_DATE"))
+                if (line.Contains(plugin.EndDateKey))
                 {
-                    var match = Regex.Match(line, @"""([^""]+)""");
+                    var match = plugin.DefinesDateRegex.Match(line);
                     if (match.Success)
                         return match.Groups[1].Value;
                 }
@@ -30,9 +41,13 @@ namespace PdxModIDE.Core
             return null;
         }
 
-        public static string? ReadModEndDate(string modRoot)
+        public static string? ReadModEndDate(string modRoot, string gameKey)
         {
-            string definesPath = Path.Combine(modRoot, "common", "defines", "00_defines.txt");
+            var plugin = GetPlugin(gameKey);
+            if (plugin == null)
+                return null;
+
+            string definesPath = plugin.GetModDefinesPath(modRoot);
 
             if (!FileOperations.FileExists(definesPath))
                 return null;
@@ -41,9 +56,9 @@ namespace PdxModIDE.Core
 
             foreach (var line in lines)
             {
-                if (line.Contains("END_DATE"))
+                if (line.Contains(plugin.EndDateKey))
                 {
-                    var match = Regex.Match(line, @"""([^""]+)""");
+                    var match = plugin.DefinesDateRegex.Match(line);
                     if (match.Success)
                         return match.Groups[1].Value;
                 }
@@ -52,11 +67,15 @@ namespace PdxModIDE.Core
             return null;
         }
 
-        public static bool WriteEndDate(string gameRoot, string modRoot, string backupRoot, string newDate)
+        public static bool WriteEndDate(string gameRoot, string modRoot, string backupRoot, string newDate, string gameKey)
         {
-            string src = Path.Combine(gameRoot, "common", "defines", "00_defines.txt");
-            string dstMod = Path.Combine(modRoot, "common", "defines", "00_defines.txt");
-            string dstBackup = Path.Combine(backupRoot, "common", "defines", "00_defines.txt");
+            var plugin = GetPlugin(gameKey);
+            if (plugin == null)
+                return false;
+
+            string src = plugin.GetDefinesPath(gameRoot);
+            string dstMod = plugin.GetModDefinesPath(modRoot);
+            string dstBackup = plugin.GetBackupDefinesPath(backupRoot);
 
             if (!FileOperations.FileExists(src))
                 return false;
@@ -72,9 +91,9 @@ namespace PdxModIDE.Core
 
             foreach (var line in lines)
             {
-                if (line.Contains("END_DATE"))
+                if (line.Contains(plugin.EndDateKey))
                 {
-                    newLines.Add($"\tEND_DATE = \"{newDate}\"");
+                    newLines.Add(string.Format(plugin.DefinesOutputFormat, newDate));
                     replaced = true;
                 }
                 else
@@ -85,7 +104,7 @@ namespace PdxModIDE.Core
 
             if (!replaced)
             {
-                newLines.Add($"\tEND_DATE = \"{newDate}\"");
+                newLines.Add(string.Format(plugin.DefinesOutputFormat, newDate));
             }
 
             File.WriteAllLines(dstMod, newLines, System.Text.Encoding.UTF8);

@@ -41,5 +41,24 @@ namespace PdxModIDE.Core.Games.CK3
             "sea_zones", "lakes", "river_provinces",
             "impassable_mountains", "impassable_seas"
         };
+
+        public string GetDefinesPath(string gameRoot)
+            => System.IO.Path.Combine(gameRoot, DefinesRelativePath);
+
+        public string GetModDefinesPath(string modRoot)
+            => System.IO.Path.Combine(modRoot, DefinesRelativePath);
+
+        public string GetBackupDefinesPath(string backupRoot)
+            => System.IO.Path.Combine(backupRoot, DefinesRelativePath);
+
+        public bool IsDateProcessableExtension(string extension)
+        {
+            foreach (var ext in DateProcessExtensions)
+            {
+                if (string.Equals(ext, extension, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
+        }
     }
 }

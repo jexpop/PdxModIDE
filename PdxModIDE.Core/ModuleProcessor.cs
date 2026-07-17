@@ -6,8 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using PdxModIDE.Core.Games;
 using PdxModIDE.Data;
 using PdxModIDE.Domain;
+using PdxModIDE.Domain.Interfaces;
 using PdxModIDE.IO;
 using SystemFile = System.IO.File;
 
@@ -47,10 +49,19 @@ namespace PdxModIDE.Core
             }
         }
 
+        private static IGamePlugin? GetPlugin(string gameKey)
+        {
+            return GameRegistry.GetPlugin(gameKey);
+        }
+
         public void ProcessModule(string gameKey, string moduleName, string gameRoot, string modRoot, string backupRoot, int offset, string profileName)
         {
             var modules = LoadModules();
             if (!modules.ContainsKey(gameKey) || !modules[gameKey].ContainsKey(moduleName))
+                return;
+
+            var plugin = GetPlugin(gameKey);
+            if (plugin == null)
                 return;
 
             var config = modules[gameKey][moduleName];
@@ -94,10 +105,10 @@ namespace PdxModIDE.Core
                     FileOperations.EnsureDirectory(Path.GetDirectoryName(fullBackup)!);
                     FileOperations.CopyFilePreserveTimestamps(file, fullBackup);
 
-                    if (ext == ".txt" || ext == ".yml")
+                    if (plugin.IsDateProcessableExtension(ext))
                     {
                         string original = FileOperations.ReadTextFile(file);
-                        string processed = ApplyOffset(file, offset);
+                        string processed = ApplyOffset(original, offset, plugin);
 
                         if (processed != original)
                         {
@@ -120,21 +131,23 @@ namespace PdxModIDE.Core
             }
         }
 
-        public string ApplyOffset(string text, int offset)
+        public string ApplyOffset(string text, int offset, IGamePlugin plugin)
         {
-            string pattern = @"\b(\d{3,4})\.(\d{1,2})\.(\d{1,2})\b";
-
-            return Regex.Replace(text, pattern, match =>
+            return plugin.DateRegex.Replace(text, match =>
             {
                 int year = int.Parse(match.Groups[1].Value) + offset;
                 return $"{year}.{match.Groups[2].Value}.{match.Groups[3].Value}";
             });
         }
 
-        public string ApplyOffsetToFile(string path, int offset)
+        public string ApplyOffsetToFile(string path, int offset, string gameKey)
         {
+            var plugin = GetPlugin(gameKey);
+            if (plugin == null)
+                return FileOperations.ReadTextFile(path);
+
             string text = FileOperations.ReadTextFile(path);
-            return ApplyOffset(text, offset);
+            return ApplyOffset(text, offset, plugin);
         }
 
         public async Task ProcessModulesAsync(string gameKey, IEnumerable<string> moduleNames, string gameRoot, string modRoot, string backupRoot, int offset, string profileName)

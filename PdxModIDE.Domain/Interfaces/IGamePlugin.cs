@@ -32,5 +32,13 @@ namespace PdxModIDE.Domain.Interfaces
         Regex TitleHistoryDateRegex { get; }
 
         string[] TerrainTypeKeys { get; }
+
+        // Helper methods for game-specific paths
+        string GetDefinesPath(string gameRoot);
+        string GetModDefinesPath(string modRoot);
+        string GetBackupDefinesPath(string backupRoot);
+
+        // Helper for date processing
+        bool IsDateProcessableExtension(string extension);
     }
 }

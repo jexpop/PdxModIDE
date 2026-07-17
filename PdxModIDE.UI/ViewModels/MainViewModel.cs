@@ -144,7 +144,32 @@ namespace PdxModIDE.UI.ViewModels
             var dialog = new InputDialog("Nuevo Perfil", "Nombre del perfil:", "Nuevo Perfil");
             if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.ResponseText))
             {
-                AddProfile(dialog.ResponseText);
+                BrowseAndCreateProfile(dialog.ResponseText);
+            }
+        }
+
+        private void BrowseAndCreateProfile(string profileName)
+        {
+            using var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            dialog.Description = "Seleccionar carpeta raíz del juego base (CK3, EU4, HOI4, etc.)";
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string gameRoot = dialog.SelectedPath;
+                var profile = _projectService.CreateProfileWithGameDetection(profileName, gameRoot);
+                Profiles.Add(profile);
+                CurrentProfile = profile;
+
+                // Set the GameRoot to the selected path
+                CurrentProfile.GameRoot = gameRoot;
+                _projectService.UpdateProfile(CurrentProfile);
+            }
+            else
+            {
+                // User cancelled folder selection, create with default CK3
+                var profile = _projectService.CreateProfile(profileName);
+                Profiles.Add(profile);
+                CurrentProfile = profile;
             }
         }
 
