@@ -36,7 +36,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
+<StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
                 <Button Content="Zoom +" Width="70" Height="26" Click="ZoomIn_Click"/>
                 <Button Content="Zoom -" Width="70" Height="26" Margin="5,0,0,0" Click="ZoomOut_Click"/>
                 <Button Content="Ajustar" Width="70" Height="26" Margin="5,0,0,0" Click="FitToWindow_Click"/>
@@ -44,6 +44,8 @@
                 <TextBox x:Name="YearBox" Width="60" Height="26" VerticalContentAlignment="Center" Text="1200" TextChanged="YearBox_TextChanged"/>
                 <CheckBox x:Name="HolderModeCheck" Content="Titular" VerticalAlignment="Center"
                           Margin="10,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged"/>
+                <CheckBox x:Name="CountyModeCheck" Content="Condados" VerticalAlignment="Center"
+                          Margin="10,0,0,0" Checked="CountyModeChanged" Unchecked="CountyModeChanged"/>
                 <Label x:Name="StatusLabel" Content="Listo" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray"/>
             </StackPanel>
 

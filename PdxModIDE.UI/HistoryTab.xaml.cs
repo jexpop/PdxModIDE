@@ -342,7 +342,28 @@ namespace PdxModIDE.UI
                 return;
 
             if (HolderModeCheck.IsChecked == true)
+            {
+                CountyModeCheck.IsChecked = false; // Mutually exclusive
                 ApplyHolderMode();
+            }
+            else
+            {
+                _renderer.SetHolderMode(false, null, null);
+                _cachedWidth = -1;
+                QueueRender();
+            }
+        }
+
+        private void CountyModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (!_mapLoaded || _renderer == null || _mapLoader == null)
+                return;
+
+            if (CountyModeCheck.IsChecked == true)
+            {
+                HolderModeCheck.IsChecked = false; // Mutually exclusive
+                ApplyCountyMode();
+            }
             else
             {
                 _renderer.SetHolderMode(false, null, null);
@@ -353,8 +374,12 @@ namespace PdxModIDE.UI
 
         private void YearBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if (_mapLoaded && HolderModeCheck.IsChecked == true && _renderer != null)
+            if (!_mapLoaded || _renderer == null) return;
+
+            if (HolderModeCheck.IsChecked == true)
                 ApplyHolderMode();
+            else if (CountyModeCheck.IsChecked == true)
+                ApplyCountyMode();
         }
 
         private void ApplyHolderMode()
@@ -364,6 +389,16 @@ namespace PdxModIDE.UI
             var palette = MapLoader.BuildHolderPalette(indexToHolder);
             _renderer!.SetHolderMode(true, holderLut, palette);
             StatusLabel.Content = $"Modo Titular — año {year} — {indexToHolder.Count} titulares";
+            _cachedWidth = -1;
+            QueueRender();
+        }
+
+        private void ApplyCountyMode()
+        {
+            var countyLut = _mapLoader!.BuildCountyLut(out var indexToCounty);
+            var palette = MapLoader.BuildCountyPalette(indexToCounty);
+            _renderer!.SetHolderMode(true, countyLut, palette);
+            StatusLabel.Content = $"Modo Condados — {indexToCounty.Count} condados";
             _cachedWidth = -1;
             QueueRender();
         }

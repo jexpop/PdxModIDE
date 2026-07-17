@@ -419,12 +419,64 @@ namespace PdxModIDE.MapEngine
                 if (!holderToIndex.TryGetValue(holder, out var hIdx))
                 {
                     hIdx = nextIndex++;
-                    if (hIdx > 255) hIdx = 255;
+                    if (hIdx > 255) hIdx = (hIdx - 1) % 255 + 1; // wrap around 1-255
                     holderToIndex[holder] = hIdx;
                     indexToHolder[hIdx] = holder;
                 }
 
                 lut[idx] = (byte)hIdx;
+            }
+
+            return lut;
+        }
+
+        public byte[] BuildCountyLut(out Dictionary<int, string> indexToCounty)
+        {
+            // Overload without year/history - county boundaries don't change by year
+            return BuildCountyLut(0, null, out indexToCounty);
+        }
+
+        public byte[] BuildCountyLut(int year, TitleHistoryLoader history, out Dictionary<int, string> indexToCounty)
+        {
+            indexToCounty = new Dictionary<int, string>();
+            var countyToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            int nextIndex = 1;
+            var lut = new byte[16_777_216];
+
+            foreach (var info in ProvincesByColor.Values)
+            {
+                int idx = info.ColorPacked;
+                int pid = info.Id;
+
+                if (pid <= 0)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                string? county = null;
+
+                if (ProvinceToBarony.TryGetValue(pid, out var barony) &&
+                    BaronyToCounty.TryGetValue(barony, out county))
+                {
+                    // county found, use it directly
+                }
+
+                if (county == null)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+if (!countyToIndex.TryGetValue(county, out var cIdx))
+                {
+                    cIdx = nextIndex++;
+                    if (cIdx > 255) cIdx = (cIdx - 1) % 255 + 1; // wrap around 1-255
+                    countyToIndex[county] = cIdx;
+                    indexToCounty[cIdx] = county;
+                }
+
+                lut[idx] = (byte)cIdx;
             }
 
             return lut;
@@ -471,6 +523,11 @@ namespace PdxModIDE.MapEngine
 
             Marshal.Copy(pixels, 0, bmp.GetPixels(), pixels.Length);
             return SKImage.FromBitmap(bmp);
+        }
+
+        public static SKImage BuildCountyPalette(Dictionary<int, string> indexToCounty)
+        {
+            return BuildHolderPalette(indexToCounty);
         }
 
         private static (float h, float s, float l) HueSatLum(int index)
