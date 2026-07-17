@@ -1,0 +1,64 @@
+<UserControl x:Class="PdxModIDE.UI.HistoryTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="1000">
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Margin="5" VerticalAlignment="Top">
+            <GroupBox Header="Provincia" Margin="0,0,0,5">
+                <StackPanel>
+                    <Label Content="ID: -" x:Name="LabelId"/>
+                    <Label Content="Nombre: -" x:Name="LabelName"/>
+                    <Label Content="Color: -" x:Name="LabelColor"/>
+                    <Label Content="Tipo: -" x:Name="LabelType"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Título" Margin="0,0,0,5">
+                <StackPanel>
+                    <Label Content="Baronía: -" x:Name="LabelBarony"/>
+                    <Label Content="Condado: -" x:Name="LabelCounty"/>
+                    <Label Content="Holder: -" x:Name="LabelHolder"/>
+                    <Label Content="Liege: -" x:Name="LabelLiege"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
+        <Grid Grid.Column="1" Margin="5,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
+                <Button Content="Zoom +" Width="70" Height="26" Click="ZoomIn_Click"/>
+                <Button Content="Zoom -" Width="70" Height="26" Margin="5,0,0,0" Click="ZoomOut_Click"/>
+                <Button Content="Ajustar" Width="70" Height="26" Margin="5,0,0,0" Click="FitToWindow_Click"/>
+                <Label Content="Año:" VerticalAlignment="Center" Margin="10,0,3,0"/>
+                <TextBox x:Name="YearBox" Width="60" Height="26" VerticalContentAlignment="Center" Text="1200" TextChanged="YearBox_TextChanged"/>
+                <CheckBox x:Name="HolderModeCheck" Content="Titular" VerticalAlignment="Center"
+                          Margin="10,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged"/>
+                <Label x:Name="StatusLabel" Content="Listo" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray"/>
+            </StackPanel>
+
+            <Image x:Name="MapImage" Grid.Row="1"
+                   MouseDown="MapImage_MouseDown"
+                   MouseMove="MapImage_MouseMove"
+                   MouseUp="MapImage_MouseUp"
+                   MouseRightButtonUp="MapImage_MouseUp"
+                   MouseLeave="MapImage_MouseLeave"
+                   MouseWheel="MapImage_MouseWheel"
+                   ContextMenu="{x:Null}"
+                   Stretch="Uniform"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   RenderOptions.BitmapScalingMode="Fant"/>
+        </Grid>
+    </Grid>
+</UserControl>

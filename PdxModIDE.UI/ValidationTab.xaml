@@ -1,0 +1,116 @@
+<UserControl x:Class="PdxModIDE.UI.ValidationTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="1000">
+    <Grid Margin="5">
+        <TabControl>
+            <TabItem Header="Módulos">
+                <Grid>
+                    <TabControl>
+                        <TabItem Header="Por módulo">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel Margin="5">
+                                    <TextBlock Text="Módulo a validar:" FontWeight="SemiBold"/>
+                                    <ComboBox x:Name="ComboModules" Margin="0,2,0,10"/>
+                                    <TextBlock Text="Comparación:" FontWeight="SemiBold"/>
+                                    <ComboBox x:Name="ComboCompare" Margin="0,2,0,10">
+                                        <ComboBoxItem Content="Juego ↔ Mod" IsSelected="True"/>
+                                        <ComboBoxItem Content="Mod ↔ Backup"/>
+                                        <ComboBoxItem Content="Juego ↔ Backup"/>
+                                    </ComboBox>
+                                    <Button x:Name="BtnCompareModule" Content="Comparar ficheros" Width="150" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                                    <TreeView x:Name="TreeModSingle" MinHeight="200" MaxHeight="400">
+                                        <TreeView.Resources>
+                                            <HierarchicalDataTemplate DataType="{x:Type TreeViewItem}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding}" Margin="0,0,5,0"/>
+                                                </StackPanel>
+                                            </HierarchicalDataTemplate>
+                                        </TreeView.Resources>
+                                    </TreeView>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Todos los módulos">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="Validación total de módulos" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <Button Grid.Row="1" x:Name="BtnValidateAllModules" Content="Validar todos los módulos" Width="200" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                                <ListView Grid.Row="2" x:Name="ListViewModFull" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,5"
+                                          MouseDoubleClick="ListViewModFull_MouseDoubleClick">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Módulo" Width="200" DisplayMemberBinding="{Binding ModuleName}"/>
+                                            <GridViewColumn Header="MOD ↔ Backup" Width="300" DisplayMemberBinding="{Binding ModVsBackup}"/>
+                                            <GridViewColumn Header="Juego ↔ Backup" Width="300" DisplayMemberBinding="{Binding GameVsBackup}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <Button Grid.Row="3" x:Name="BtnModuleDetails" Content="Ver detalles del módulo seleccionado" Width="280" HorizontalAlignment="Left"/>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Archivos">
+                <Grid>
+                    <TabControl>
+                        <TabItem Header="Por archivo">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel Margin="5">
+                                    <TextBlock Text="Archivo a validar:" FontWeight="SemiBold"/>
+                                    <ComboBox x:Name="ComboFiles" Margin="0,2,0,10"/>
+                                    <WrapPanel Margin="0,0,0,10">
+                                        <Button x:Name="BtnAddFile" Content="Añadir archivo…" Width="120" Margin="0,0,5,0"/>
+                                        <Button x:Name="BtnActivateFile" Content="Activar archivo" Width="120" Margin="0,0,5,0"/>
+                                        <Button x:Name="BtnDeactivateFile" Content="Desactivar archivo" Width="120" Margin="0,0,5,0"/>
+                                        <Button x:Name="BtnPathException" Content="Excepción de ruta…" Width="140"/>
+                                    </WrapPanel>
+                                    <WrapPanel Margin="0,0,0,10">
+                                        <TextBlock Text="Validar contra:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <RadioButton x:Name="RadioGameMode" Content="Juego" GroupName="ValidateMode" IsChecked="True" Margin="0,0,10,0"/>
+                                        <RadioButton x:Name="RadioModMode" Content="Mod" GroupName="ValidateMode"/>
+                                    </WrapPanel>
+                                    <Button x:Name="BtnValidateFile" Content="Validar archivo" Width="150" HorizontalAlignment="Left" Margin="0,0,0,5"/>
+                                    <TextBlock x:Name="LabelResult" Foreground="Gray" Margin="0,0,0,5"/>
+                                    <Button x:Name="BtnViewDiff" Content="Ver diff" Width="100" HorizontalAlignment="Left"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Todos los archivos">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="Validación total de archivos" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <Button Grid.Row="1" x:Name="BtnValidateAllFiles" Content="Validar todos los archivos" Width="200" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                                <ListView Grid.Row="2" x:Name="ListViewFileFull" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,5"
+                                          MouseDoubleClick="ListViewFileFull_MouseDoubleClick">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Archivo" Width="260" DisplayMemberBinding="{Binding FileKey}"/>
+                                            <GridViewColumn Header="MOD ↔ Backup" Width="200" DisplayMemberBinding="{Binding ModVsBackup}"/>
+                                            <GridViewColumn Header="Juego ↔ Backup" Width="200" DisplayMemberBinding="{Binding GameVsBackup}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <Button Grid.Row="3" x:Name="BtnFileDiff" Content="Ver diff del archivo seleccionado" Width="250" HorizontalAlignment="Left"/>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,20 @@
+<UserControl x:Class="PdxModIDE.UI.SettingsTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="1000">
+    <StackPanel Margin="20">
+        <TextBlock Text="Personalización de la interfaz" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
+        <TextBlock Text="Tema visual:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+        <RadioButton x:Name="RadioLight" Content="Claro" GroupName="Theme" Margin="0,0,0,3" Checked="ThemeChanged"/>
+        <RadioButton x:Name="RadioDark" Content="Oscuro" GroupName="Theme" Margin="0,0,0,3" Checked="ThemeChanged"/>
+        <RadioButton x:Name="RadioCk3" Content="CK3 (colores del juego)" GroupName="Theme" Margin="0,0,0,3" Checked="ThemeChanged"/>
+        <RadioButton x:Name="RadioSepia" Content="Sepia (lectura prolongada)" GroupName="Theme" Margin="0,0,0,3" Checked="ThemeChanged"/>
+        <RadioButton x:Name="RadioContrast" Content="Alto contraste" GroupName="Theme" Margin="0,0,0,3" Checked="ThemeChanged"/>
+        <RadioButton x:Name="RadioVscodeDark" Content="VS Code (oscuro)" GroupName="Theme" Margin="0,0,0,3" Checked="ThemeChanged"/>
+        <RadioButton x:Name="RadioVscodeLight" Content="VS Code (claro)" GroupName="Theme" Margin="0,0,0,10" Checked="ThemeChanged"/>
+        <Button x:Name="BtnApply" Content="Aplicar tema" Width="120" HorizontalAlignment="Left" Margin="0,5,0,0"/>
+    </StackPanel>
+</UserControl>

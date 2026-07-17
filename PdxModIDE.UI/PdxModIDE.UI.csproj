@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" Version="3.116.1" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="3.116.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Themes\**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <Target Name="CopyDataToOutput" AfterTargets="AfterBuild;AfterPublish">
+    <Copy SourceFiles="..\..\publish\data\profiles.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\..\publish\data\settings.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\..\publish\data\modules.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\..\publish\data\files.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\..\publish\data\log_filters.json" DestinationFolder="$(TargetDir)\data" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\..\publish\data\profiles.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
+    <Copy SourceFiles="..\..\publish\data\settings.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
+    <Copy SourceFiles="..\..\publish\data\modules.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
+    <Copy SourceFiles="..\..\publish\data\files.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
+    <Copy SourceFiles="..\..\publish\data\log_filters.json" DestinationFolder="$(PublishDir)\data" SkipUnchangedFiles="true" Condition="'$(PublishDir)' != ''" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PdxModIDE.Core\PdxModIDE.Core.csproj" />
+    <ProjectReference Include="..\PdxModIDE.Project\PdxModIDE.Project.csproj" />
+    <ProjectReference Include="..\PdxModIDE.Data\PdxModIDE.Data.csproj" />
+    <ProjectReference Include="..\PdxModIDE.Validation\PdxModIDE.Validation.csproj" />
+    <ProjectReference Include="..\PdxModIDE.Rendering\PdxModIDE.Rendering.csproj" />
+  </ItemGroup>
+
+</Project>

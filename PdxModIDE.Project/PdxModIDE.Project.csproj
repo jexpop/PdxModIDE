@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PdxModIDE.Domain\PdxModIDE.Domain.csproj" />
+    <ProjectReference Include="..\PdxModIDE.IO\PdxModIDE.IO.csproj" />
+    <ProjectReference Include="..\PdxModIDE.Core\PdxModIDE.Core.csproj" />
+    <ProjectReference Include="..\PdxModIDE.Data\PdxModIDE.Data.csproj" />
+    <ProjectReference Include="..\PdxModIDE.Validation\PdxModIDE.Validation.csproj" />
+  </ItemGroup>
+
+</Project>

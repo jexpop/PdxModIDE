@@ -1,0 +1,94 @@
+<Window x:Class="PdxModIDE.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PdxModIDE.UI"
+        mc:Ignorable="d"
+        Title="PdxModIDE" Height="800" Width="1200"
+        WindowState="Maximized">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/LightTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TabItem">
+                <Setter Property="Background" Value="{DynamicResource TabHeaderBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TabHeaderForeground}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource TabSelectedBackground}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource WindowForeground}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TabControl">
+                <Setter Property="Background" Value="{DynamicResource TabSelectedBackground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}"/>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="8,4"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource ButtonHoverBackground}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="Background" Value="{DynamicResource TextBoxBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextBoxForeground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}"/>
+            </Style>
+            <Style TargetType="ListView">
+                <Setter Property="Background" Value="{DynamicResource ListViewBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ListViewForeground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}"/>
+            </Style>
+            <Style TargetType="TreeView">
+                <Setter Property="Background" Value="{DynamicResource TreeViewBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TreeViewForeground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}"/>
+            </Style>
+            <Style TargetType="RichTextBox">
+                <Setter Property="Background" Value="{DynamicResource RichTextBoxBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource RichTextBoxForeground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}"/>
+            </Style>
+            <Style TargetType="GroupBox">
+                <Setter Property="BorderBrush" Value="{DynamicResource GroupBoxBorder}"/>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Background="{DynamicResource WindowBackground}">
+        <TabControl Margin="10" Background="{DynamicResource TabSelectedBackground}">
+            <TabItem Header="Perfil">
+                <local:ProfileTab/>
+            </TabItem>
+            <TabItem Header="Historia (Base)">
+                <local:HistoryTab Mode="base"/>
+            </TabItem>
+            <TabItem Header="Historia (Mod)">
+                <local:HistoryTab Mode="mod"/>
+            </TabItem>
+            <TabItem Header="Fechas">
+                <local:DatesTab/>
+            </TabItem>
+            <TabItem Header="Módulos">
+                <local:ModulesTab/>
+            </TabItem>
+            <TabItem Header="Validación">
+                <local:ValidationTab x:Name="ValidationTabControl"/>
+            </TabItem>
+            <TabItem Header="Logs">
+                <local:LogsTab/>
+            </TabItem>
+            <TabItem Header="Opciones">
+                <local:SettingsTab/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

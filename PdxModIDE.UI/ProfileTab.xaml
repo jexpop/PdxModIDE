@@ -1,0 +1,76 @@
+<UserControl x:Class="PdxModIDE.UI.ProfileTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="1000">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Text="Seleccionar perfil:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <ComboBox ItemsSource="{Binding Profiles}" 
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding CurrentProfile, Mode=TwoWay}"
+                      Margin="0,0,0,10"/>
+
+            <GroupBox Header="Rutas" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Raíz del juego:" Margin="0,5,0,0"/>
+                    <DockPanel Margin="0,2,0,5">
+                        <Button Content="Seleccionar" Width="80" 
+                                Command="{Binding BrowseGameRootCommand}"
+                                DockPanel.Dock="Right" Margin="5,0,0,0"/>
+                        <TextBox Text="{Binding CurrentProfile.GameRoot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </DockPanel>
+
+                    <TextBlock Text="Raíz del mod:" Margin="0,5,0,0"/>
+                    <DockPanel Margin="0,2,0,5">
+                        <Button Content="Seleccionar" Width="80" 
+                                Command="{Binding BrowseModRootCommand}"
+                                DockPanel.Dock="Right" Margin="5,0,0,0"/>
+                        <TextBox Text="{Binding CurrentProfile.ModRoot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </DockPanel>
+
+                    <TextBlock Text="Carpeta de backups:" Margin="0,5,0,0"/>
+                    <DockPanel Margin="0,2,0,5">
+                        <Button Content="Seleccionar" Width="80" 
+                                Command="{Binding BrowseBackupRootCommand}"
+                                DockPanel.Dock="Right" Margin="5,0,0,0"/>
+                        <TextBox Text="{Binding CurrentProfile.BackupRoot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </DockPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Button Content="Guardar perfil" Width="120" Margin="0,0,10,0" 
+                        Command="{Binding SaveProfileCommand}"/>
+                <Button Content="Crear perfil nuevo" Width="120" Margin="0,0,10,0"
+                        Command="{Binding CreateProfileCommand}"/>
+                <Button Content="Renombrar perfil" Width="120" Margin="0,0,10,0"
+                        Command="{Binding RenameProfileCommand}"/>
+                <Button Content="Eliminar perfil" Width="120"
+                        Command="{Binding DeleteProfileCommand}"/>
+            </StackPanel>
+
+            <GroupBox Header="Módulos activados por defecto:" Margin="0,0,0,10">
+                <ScrollViewer x:Name="ModulesScroll" MaxHeight="300" VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Modules}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Vertical"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="{Binding Name}" 
+                                          IsChecked="{Binding IsActive, Mode=TwoWay}"
+                                          Margin="4,3"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
