@@ -42,10 +42,16 @@
                 <Button Content="Ajustar" Width="70" Height="26" Margin="5,0,0,0" Click="FitToWindow_Click"/>
                 <Label Content="Año:" VerticalAlignment="Center" Margin="10,0,3,0"/>
                 <TextBox x:Name="YearBox" Width="60" Height="26" VerticalContentAlignment="Center" Text="1200" TextChanged="YearBox_TextChanged"/>
-                <CheckBox x:Name="HolderModeCheck" Content="Titular" VerticalAlignment="Center"
-                          Margin="10,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged"/>
-                <CheckBox x:Name="CountyModeCheck" Content="Condados" VerticalAlignment="Center"
-                          Margin="10,0,0,0" Checked="CountyModeChanged" Unchecked="CountyModeChanged"/>
+                <CheckBox x:Name="HolderModeCheck" Content="Tit." VerticalAlignment="Center"
+                          Margin="10,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged" ToolTip="Titular (personaje)"/>
+                <CheckBox x:Name="CountyModeCheck" Content="Cond." VerticalAlignment="Center"
+                          Margin="5,0,0,0" Checked="CountyModeChanged" Unchecked="CountyModeChanged" ToolTip="Condados (c_xxx)"/>
+                <CheckBox x:Name="DuchyModeCheck" Content="Duc." VerticalAlignment="Center"
+                          Margin="5,0,0,0" Checked="DuchyModeChanged" Unchecked="DuchyModeChanged" ToolTip="Ducados (d_xxx)"/>
+                <CheckBox x:Name="KingdomModeCheck" Content="Rey." VerticalAlignment="Center"
+                          Margin="5,0,0,0" Checked="KingdomModeChanged" Unchecked="KingdomModeChanged" ToolTip="Reinos (k_xxx)"/>
+                <CheckBox x:Name="EmpireModeCheck" Content="Imp." VerticalAlignment="Center"
+                          Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="Imperios (e_xxx)"/>
                 <Label x:Name="StatusLabel" Content="Listo" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray"/>
             </StackPanel>
 

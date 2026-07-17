@@ -3,7 +3,7 @@
 **IDE para gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**  
 Aplicación WPF (.NET 8) que automatiza el copiado de archivos del juego al mod, aplica offset de fechas y valida diferencias.
 
-**Versión actual:** 1.0.0
+**Versión actual:** 1.1.1
 
 ---
 
@@ -82,6 +82,7 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 - **Motor de mapas**: Carga `definition.csv` (ID, RGB, nombre), `default.map` (sea/lakes/rivers/impassable), `landed_titles` (baronías → condados), `provinces.png` (lookup RGB → province ID). Cache LUT binario (16M entries) con hash MD5 de archivos fuente.
 - **Visualización de titulares**: `BuildHolderLut(year, TitleHistoryLoader)` → palette 256 colores para renderizado de mapa político histórico.
 - **Modo Condados (pestaña Historia)**: Checkbox "Condados" colorea mapa por límites de condado (`c_xxx`) vía `BuildCountyLut()` (provincia → baronía → condado), con ciclo de colores para >255 condados.
+- **Modos Ducados / Reinos / Imperios**: Checkboxes "Duc.", "Rey.", "Imp." colorean por límites de ducado (`d_xxx`), reino (`k_xxx`), imperio (`e_xxx`) usando jerarquía completa `landed_titles` (baronía → condado → ducado → reino → imperio). Mutua exclusión entre los 5 modos.
 - **Temas intercambiables**: 6 temas (Light, Dark, CK3, Sepia, Contrast, VSCode Dark/Light); persistencia en `Settings.json`.
 - **Pestañas UI**: Perfil, Módulos, Archivos, Fechas, Historial, Validación, Logs, Configuración.
 

@@ -34,6 +34,9 @@ namespace PdxModIDE.MapEngine
         public HashSet<int> ImpassableSeas { get; } = new();
         public Dictionary<int, string> ProvinceToBarony { get; } = new();
         public Dictionary<string, string> BaronyToCounty { get; } = new();
+        public Dictionary<string, string> CountyToDuchy { get; } = new();
+        public Dictionary<string, string> DuchyToKingdom { get; } = new();
+        public Dictionary<string, string> KingdomToEmpire { get; } = new();
         public Dictionary<int, int> ProvinceIdToPacked { get; } = new();
         public byte[]? Lut { get; private set; }
         public int[]? ProvinceIdMap { get; private set; }
@@ -198,6 +201,22 @@ namespace PdxModIDE.MapEngine
                             if (county != null)
                                 BaronyToCounty[currentTitle] = county;
                         }
+                    }
+
+                    // Build hierarchy mappings from stack
+                    if (currentTitle != null)
+                    {
+                        var county = stack.LastOrDefault(t => t.StartsWith("c_"));
+                        var duchy = stack.LastOrDefault(t => t.StartsWith("d_"));
+                        var kingdom = stack.LastOrDefault(t => t.StartsWith("k_"));
+                        var empire = stack.LastOrDefault(t => t.StartsWith("e_"));
+
+                        if (county != null && duchy != null)
+                            CountyToDuchy[county] = duchy;
+                        if (duchy != null && kingdom != null)
+                            DuchyToKingdom[duchy] = kingdom;
+                        if (kingdom != null && empire != null)
+                            KingdomToEmpire[kingdom] = empire;
                     }
 
                     if (line == "}")
@@ -482,6 +501,147 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
             return lut;
         }
 
+        public byte[] BuildDuchyLut(out Dictionary<int, string> indexToDuchy)
+        {
+            indexToDuchy = new Dictionary<int, string>();
+            var duchyToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            int nextIndex = 1;
+            var lut = new byte[16_777_216];
+
+            foreach (var info in ProvincesByColor.Values)
+            {
+                int idx = info.ColorPacked;
+                int pid = info.Id;
+
+                if (pid <= 0)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                string? duchy = null;
+
+                if (ProvinceToBarony.TryGetValue(pid, out var barony) &&
+                    BaronyToCounty.TryGetValue(barony, out var county) &&
+                    CountyToDuchy.TryGetValue(county, out duchy))
+                {
+                }
+
+                if (duchy == null)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                if (!duchyToIndex.TryGetValue(duchy, out var dIdx))
+                {
+                    dIdx = nextIndex++;
+                    if (dIdx > 255) dIdx = (dIdx - 1) % 255 + 1;
+                    duchyToIndex[duchy] = dIdx;
+                    indexToDuchy[dIdx] = duchy;
+                }
+
+                lut[idx] = (byte)dIdx;
+            }
+
+            return lut;
+        }
+
+        public byte[] BuildKingdomLut(out Dictionary<int, string> indexToKingdom)
+        {
+            indexToKingdom = new Dictionary<int, string>();
+            var kingdomToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            int nextIndex = 1;
+            var lut = new byte[16_777_216];
+
+            foreach (var info in ProvincesByColor.Values)
+            {
+                int idx = info.ColorPacked;
+                int pid = info.Id;
+
+                if (pid <= 0)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                string? kingdom = null;
+
+                if (ProvinceToBarony.TryGetValue(pid, out var barony) &&
+                    BaronyToCounty.TryGetValue(barony, out var county) &&
+                    CountyToDuchy.TryGetValue(county, out var duchy) &&
+                    DuchyToKingdom.TryGetValue(duchy, out kingdom))
+                {
+                }
+
+                if (kingdom == null)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                if (!kingdomToIndex.TryGetValue(kingdom, out var kIdx))
+                {
+                    kIdx = nextIndex++;
+                    if (kIdx > 255) kIdx = (kIdx - 1) % 255 + 1;
+                    kingdomToIndex[kingdom] = kIdx;
+                    indexToKingdom[kIdx] = kingdom;
+                }
+
+                lut[idx] = (byte)kIdx;
+            }
+
+            return lut;
+        }
+
+        public byte[] BuildEmpireLut(out Dictionary<int, string> indexToEmpire)
+        {
+            indexToEmpire = new Dictionary<int, string>();
+            var empireToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            int nextIndex = 1;
+            var lut = new byte[16_777_216];
+
+            foreach (var info in ProvincesByColor.Values)
+            {
+                int idx = info.ColorPacked;
+                int pid = info.Id;
+
+                if (pid <= 0)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                string? empire = null;
+
+                if (ProvinceToBarony.TryGetValue(pid, out var barony) &&
+                    BaronyToCounty.TryGetValue(barony, out var county) &&
+                    CountyToDuchy.TryGetValue(county, out var duchy) &&
+                    DuchyToKingdom.TryGetValue(duchy, out var kingdom) &&
+                    KingdomToEmpire.TryGetValue(kingdom, out empire))
+                {
+                }
+
+                if (empire == null)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                if (!empireToIndex.TryGetValue(empire, out var eIdx))
+                {
+                    eIdx = nextIndex++;
+                    if (eIdx > 255) eIdx = (eIdx - 1) % 255 + 1;
+                    empireToIndex[empire] = eIdx;
+                    indexToEmpire[eIdx] = empire;
+                }
+
+                lut[idx] = (byte)eIdx;
+            }
+
+            return lut;
+        }
+
         private static string? GetHolderAtYear(TitleHistory history, int year)
         {
             string? last = null;
@@ -528,6 +688,21 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
         public static SKImage BuildCountyPalette(Dictionary<int, string> indexToCounty)
         {
             return BuildHolderPalette(indexToCounty);
+        }
+
+        public static SKImage BuildDuchyPalette(Dictionary<int, string> indexToDuchy)
+        {
+            return BuildHolderPalette(indexToDuchy);
+        }
+
+        public static SKImage BuildKingdomPalette(Dictionary<int, string> indexToKingdom)
+        {
+            return BuildHolderPalette(indexToKingdom);
+        }
+
+        public static SKImage BuildEmpirePalette(Dictionary<int, string> indexToEmpire)
+        {
+            return BuildHolderPalette(indexToEmpire);
         }
 
         private static (float h, float s, float l) HueSatLum(int index)

@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.1.0 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.1.1 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -189,7 +189,7 @@ interface IGamePlugin {
 |------|---------|--------|
 | `LoadDefinition` | `definition.csv` | `ProvincesById`, `ProvincesByColor`, `ProvinceToBarony` |
 | `LoadDefaultMap` | `default.map` | `Sea`, `Lakes`, `Rivers`, `Impassable`, `ImpassableSeas` (HashSet<int>) |
-| `LoadLandedTitles` | `common/landed_titles/*.txt` | `ProvinceToBarony`, `BaronyToCounty` |
+| `LoadLandedTitles` | `common/landed_titles/*.txt` | `ProvinceToBarony`, `BaronyToCounty`, `CountyToDuchy`, `DuchyToKingdom`, `KingdomToEmpire` |
 | `MarkTerrainTypes` | — | `ProvinceInfo.Type` ∈ {sea, lake, river, impassable, land, unknown} |
 | `BuildOrLoadLut` | — | `Lut[16_777_216] byte` (cache MD5 definition.csv + default.map) |
 | `BuildPixelData` | `provinces.png/bmp` | `ProvinceIdMap[int[]]` (w*h), `MapWidth`, `MapHeight` |
@@ -199,6 +199,8 @@ interface IGamePlugin {
 **TitleHistoryLoader**: Parsea `history/titles/*.txt` → `TitleHistory { Holders: SortedList<int, string> }` (año → holder). Usado por `MapLoader.BuildHolderLut(year, history, out indexToHolder)`.
 
 **Modo Condados**: `BuildCountyLut(out indexToCounty)` (sin parámetro año, los límites no cambian) mapea provincia → baronía (`ProvinceToBarony`) → condado (`BaronyToCounty`). Genera LUT 16M entradas coloreando por condado; índices >255 hacen wrap-around (módulo 255) para evitar colisión de color.
+
+**Modos Ducados/Reinos/Imperios**: Nuevos métodos `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` usan la jerarquía completa `CountyToDuchy` → `DuchyToKingdom` → `KingdomToEmpire` para colorear por cada nivel. En pestaña Historia: checkboxes mutuamente excluyentes (Tit./Cond./Duc./Rey./Imp.) con tooltips.
 
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
@@ -265,10 +267,14 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 - `FilesTab`: Lista archivos, checkbox, mapTo editable.
 - `DatesTab`: Leer end_date game/mod, escribir nuevo end_date.
 - `ValidationTab`: Validar todo / módulo individual / archivo individual; grid resultados + diff viewer.
-- `HistoryTab`: Mapa interactivo (SkiaSharp). Modos:
-  - **Titular**: Colorea por holder (personaje) en año `YearBox` → `BuildHolderLut(year, TitleHistoryLoader)`.
-  - **Condados**: Colorea por límites de condado (`c_xxx`) → `BuildCountyLut()`. Checkboxes mutuamente excluyentes. Click provincia → panel info (ID, nombre, baronía, condado, holder/liege en año).
-- `LogsTab`: Filtros log (no implementado完全).
+- `HistoryTab`: Mapa interactivo (SkiaSharp). 5 modos mutuamente excluyentes (checkboxes con tooltips):
+  - **Titular** (Tit.): Colorea por holder (personaje) en año `YearBox` → `BuildHolderLut(year, TitleHistoryLoader)`.
+  - **Condados** (Cond.): Colorea por límites de condado (`c_xxx`) → `BuildCountyLut()`.
+  - **Ducados** (Duc.): Colorea por límites de ducado (`d_xxx`) → `BuildDuchyLut()`.
+  - **Reinos** (Rey.): Colorea por límites de reino (`k_xxx`) → `BuildKingdomLut()`.
+  - **Imperios** (Imp.): Colorea por límites de imperio (`e_xxx`) → `BuildEmpireLut()`.
+  Click provincia → panel info muestra Baronía, Condado, Ducado, Reino, Imperio, Holder, Liege según modo.
+- `LogsTab`: Filtros log (no implementado completamente).
 - `SettingsTab`: Tema, paths defaults.
 
 **Temas**: `ResourceDictionary` swap en `MainWindow.ApplyTheme(theme)`. Archivos en `Themes/*.xaml`.
@@ -425,4 +431,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-07-17 | Proyecto: PdxModIDE | Versión: 1.0.0 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*
+*Generado: 2026-07-18 | Proyecto: PdxModIDE | Versión: 1.1.1 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*

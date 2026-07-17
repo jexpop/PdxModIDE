@@ -343,7 +343,10 @@ namespace PdxModIDE.UI
 
             if (HolderModeCheck.IsChecked == true)
             {
-                CountyModeCheck.IsChecked = false; // Mutually exclusive
+                CountyModeCheck.IsChecked = false;
+                DuchyModeCheck.IsChecked = false;
+                KingdomModeCheck.IsChecked = false;
+                EmpireModeCheck.IsChecked = false;
                 ApplyHolderMode();
             }
             else
@@ -361,8 +364,74 @@ namespace PdxModIDE.UI
 
             if (CountyModeCheck.IsChecked == true)
             {
-                HolderModeCheck.IsChecked = false; // Mutually exclusive
+                HolderModeCheck.IsChecked = false;
+                DuchyModeCheck.IsChecked = false;
+                KingdomModeCheck.IsChecked = false;
+                EmpireModeCheck.IsChecked = false;
                 ApplyCountyMode();
+            }
+            else
+            {
+                _renderer.SetHolderMode(false, null, null);
+                _cachedWidth = -1;
+                QueueRender();
+            }
+        }
+
+        private void DuchyModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (!_mapLoaded || _renderer == null || _mapLoader == null)
+                return;
+
+            if (DuchyModeCheck.IsChecked == true)
+            {
+                HolderModeCheck.IsChecked = false;
+                CountyModeCheck.IsChecked = false;
+                KingdomModeCheck.IsChecked = false;
+                EmpireModeCheck.IsChecked = false;
+                ApplyDuchyMode();
+            }
+            else
+            {
+                _renderer.SetHolderMode(false, null, null);
+                _cachedWidth = -1;
+                QueueRender();
+            }
+        }
+
+        private void KingdomModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (!_mapLoaded || _renderer == null || _mapLoader == null)
+                return;
+
+            if (KingdomModeCheck.IsChecked == true)
+            {
+                HolderModeCheck.IsChecked = false;
+                CountyModeCheck.IsChecked = false;
+                DuchyModeCheck.IsChecked = false;
+                EmpireModeCheck.IsChecked = false;
+                ApplyKingdomMode();
+            }
+            else
+            {
+                _renderer.SetHolderMode(false, null, null);
+                _cachedWidth = -1;
+                QueueRender();
+            }
+        }
+
+        private void EmpireModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (!_mapLoaded || _renderer == null || _mapLoader == null)
+                return;
+
+            if (EmpireModeCheck.IsChecked == true)
+            {
+                HolderModeCheck.IsChecked = false;
+                CountyModeCheck.IsChecked = false;
+                DuchyModeCheck.IsChecked = false;
+                KingdomModeCheck.IsChecked = false;
+                ApplyEmpireMode();
             }
             else
             {
@@ -380,6 +449,12 @@ namespace PdxModIDE.UI
                 ApplyHolderMode();
             else if (CountyModeCheck.IsChecked == true)
                 ApplyCountyMode();
+            else if (DuchyModeCheck.IsChecked == true)
+                ApplyDuchyMode();
+            else if (KingdomModeCheck.IsChecked == true)
+                ApplyKingdomMode();
+            else if (EmpireModeCheck.IsChecked == true)
+                ApplyEmpireMode();
         }
 
         private void ApplyHolderMode()
@@ -399,6 +474,36 @@ namespace PdxModIDE.UI
             var palette = MapLoader.BuildCountyPalette(indexToCounty);
             _renderer!.SetHolderMode(true, countyLut, palette);
             StatusLabel.Content = $"Modo Condados — {indexToCounty.Count} condados";
+            _cachedWidth = -1;
+            QueueRender();
+        }
+
+        private void ApplyDuchyMode()
+        {
+            var duchyLut = _mapLoader!.BuildDuchyLut(out var indexToDuchy);
+            var palette = MapLoader.BuildDuchyPalette(indexToDuchy);
+            _renderer!.SetHolderMode(true, duchyLut, palette);
+            StatusLabel.Content = $"Modo Ducados — {indexToDuchy.Count} ducados";
+            _cachedWidth = -1;
+            QueueRender();
+        }
+
+        private void ApplyKingdomMode()
+        {
+            var kingdomLut = _mapLoader!.BuildKingdomLut(out var indexToKingdom);
+            var palette = MapLoader.BuildKingdomPalette(indexToKingdom);
+            _renderer!.SetHolderMode(true, kingdomLut, palette);
+            StatusLabel.Content = $"Modo Reinos — {indexToKingdom.Count} reinos";
+            _cachedWidth = -1;
+            QueueRender();
+        }
+
+        private void ApplyEmpireMode()
+        {
+            var empireLut = _mapLoader!.BuildEmpireLut(out var indexToEmpire);
+            var palette = MapLoader.BuildEmpirePalette(indexToEmpire);
+            _renderer!.SetHolderMode(true, empireLut, palette);
+            StatusLabel.Content = $"Modo Imperios — {indexToEmpire.Count} imperios";
             _cachedWidth = -1;
             QueueRender();
         }
