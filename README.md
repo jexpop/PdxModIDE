@@ -81,6 +81,7 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 - **Validación de módulos/archivos**: Tres modos comparación (Juego vs Mod, Mod vs Backup, Juego vs Backup); diff línea a línea; resumen estadístico.
 - **Motor de mapas**: Carga `definition.csv` (ID, RGB, nombre), `default.map` (sea/lakes/rivers/impassable), `landed_titles` (baronías → condados), `provinces.png` (lookup RGB → province ID). Cache LUT binario (16M entries) con hash MD5 de archivos fuente.
 - **Visualización de titulares**: `BuildHolderLut(year, TitleHistoryLoader)` → palette 256 colores para renderizado de mapa político histórico.
+- **Modo Condados (pestaña Historia)**: Checkbox "Condados" colorea mapa por límites de condado (`c_xxx`) vía `BuildCountyLut()` (provincia → baronía → condado), con ciclo de colores para >255 condados.
 - **Temas intercambiables**: 6 temas (Light, Dark, CK3, Sepia, Contrast, VSCode Dark/Light); persistencia en `Settings.json`.
 - **Pestañas UI**: Perfil, Módulos, Archivos, Fechas, Historial, Validación, Logs, Configuración.
 

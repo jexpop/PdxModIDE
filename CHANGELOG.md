@@ -20,12 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - LUT cache (16M entradas) persistido en `%LocalAppData%/PdxModIDE/lut_cache` con hash MD5 de fuentes.
   - `TitleHistoryLoader`: parsea `history/titles/*.txt` → `TitleHistory { Holders: SortedList<int, string> }`.
   - `BuildHolderLut`: genera LUT de titulares por año para renderizado.
+  - **Modo Condados**: `BuildCountyLut` colorea mapa por límites de condado (`c_xxx`) desde `landed_titles`.
 - **Renderizado de mapa**: `MapRenderer` (SkiaSharp) con viewport, zoom/pan, color picker, tooltips provincia/titular.
 - **Validación de módulos**: `ModuleValidator` compara recursivamente game/mod/backup; diff línea a línea; resumen por estado (Igual/Modificado/Añadido/Eliminado).
 - **Persistencia JSON**: `DataLoader` genérico para profiles, modules, files, settings, logfilters en `data/*.json`.
 - **UI WPF (MVVM ligero)**:
   - `MainWindow` + `MainViewModel`: tabs Perfil, Módulos, Archivos, Fechas, Validación, Historial, Logs, Ajustes.
-  - Temas dinámicos: Light, Dark, CK3, Sepia, Contrast, VSCode Dark/Light (ResourceDictionary swap).
+  - Temas dinámicos: Light, Dark, CK3, Sepia, Contraste, VSCode Dark/Light (ResourceDictionary swap).
   - Gestión de perfiles (CRUD, renombrar, detección juego), selección módulos/archivos con checkboxes.
   - Procesado asíncrono con progreso, validación paralela, diff viewer en tabs.
 - **Manejo de errores global**: `App.OnStartup` registra `UnhandledException` + `DispatcherUnhandledException` → `logs/crash.log` + MessageBox.
@@ -46,6 +47,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - No se almacenan secrets; paths de juego/mod/backup configurados por usuario en perfil.
+
+---
+
+## [1.1.0] - 2026-07-18
+
+### Added
+- **Modo Condados en pestaña Historia**: Nuevo checkbox "Condados" junto a "Titular" que colorea el mapa por límites de condado (`c_xxx`) en lugar de por holder (personaje). Usa `MapLoader.BuildCountyLut()` → mapea provincia → baronía → condado.
+- **Ciclo de colores para >255 items**: En `BuildHolderLut` y `BuildCountyLut`, los índices >255 ahora hacen wrap-around (módulo 255) en lugar de clavarse en 255, evitando que cientos de condados/holders compartan el mismo color verde.
+- **Mutua exclusión**: Checkboxes "Titular" y "Condados" se desmarcan mutuamente.
+
+### Fixed
+- **Condados verdes**: Al haber >255 condados en CK3, todos a partir del 256 usaban índice 255 (mismo color). Ahora ciclan 1-255.
+- **Holders verdes**: Mismo fix aplicado a `BuildHolderLut` para >255 holders únicos.
 
 ---
 

@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.0.0 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.1.0 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -198,6 +198,8 @@ interface IGamePlugin {
 
 **TitleHistoryLoader**: Parsea `history/titles/*.txt` → `TitleHistory { Holders: SortedList<int, string> }` (año → holder). Usado por `MapLoader.BuildHolderLut(year, history, out indexToHolder)`.
 
+**Modo Condados**: `BuildCountyLut(out indexToCounty)` (sin parámetro año, los límites no cambian) mapea provincia → baronía (`ProvinceToBarony`) → condado (`BaronyToCounty`). Genera LUT 16M entradas coloreando por condado; índices >255 hacen wrap-around (módulo 255) para evitar colisión de color.
+
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
 **Diff recursivo tres vías**: Mod vs Backup, Game vs Backup, Game vs Mod.
@@ -263,7 +265,9 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 - `FilesTab`: Lista archivos, checkbox, mapTo editable.
 - `DatesTab`: Leer end_date game/mod, escribir nuevo end_date.
 - `ValidationTab`: Validar todo / módulo individual / archivo individual; grid resultados + diff viewer.
-- `HistoryTab`: Logs procesado (lectura `logs/{profile}/{module}.log`).
+- `HistoryTab`: Mapa interactivo (SkiaSharp). Modos:
+  - **Titular**: Colorea por holder (personaje) en año `YearBox` → `BuildHolderLut(year, TitleHistoryLoader)`.
+  - **Condados**: Colorea por límites de condado (`c_xxx`) → `BuildCountyLut()`. Checkboxes mutuamente excluyentes. Click provincia → panel info (ID, nombre, baronía, condado, holder/liege en año).
 - `LogsTab`: Filtros log (no implementado完全).
 - `SettingsTab`: Tema, paths defaults.
 
@@ -298,6 +302,7 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 | **Regex fechas por juego** | Flexibilidad (CK3/EU4 formatos distintos) | Regex simple; no parsea contexto (ej. `start_date` vs `end_date`) |
 | **Backup automático** | Seguridad ante errores offset | Duplica espacio; no limpieza automática |
 | **LUT 16M bytes cacheado** | Render instantáneo mapa; evita rebuild | 16 MB RAM + disco; invalidación solo por hash archivos fuente |
+| **Ciclo de colores >255 items** | `BuildHolderLut`/`BuildCountyLut` usan `(idx-1)%255+1` para wrap-around | Antes: índice clavado en 255 → cientos de condados/holders verdes |
 | **Parallel.ForEach síncrono en ProcessModule** | Aprovecha multi-core I/O | Bloquea thread pool; `ProcessModulesAsync` hace `await Task.CompletedTask` tras `Parallel.ForEach` |
 | **ViewModels manuales** | Control total, sin Magic | Boilerplate `OnPropertyChanged`; fácil introducir bugs binding |
 
