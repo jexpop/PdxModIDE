@@ -143,9 +143,7 @@ namespace PdxModIDE.UI
                         QueueRender();
                     }
                 }), System.Windows.Threading.DispatcherPriority.Render);
-                StatusLabel.Content = Mode == "mod"
-                    ? $"Vista: Mod | {loader.ProvincesById.Count} prov, {count} títulos"
-                    : $"Vista: Juego Base | {loader.ProvincesById.Count} prov, {count} títulos";
+                StatusLabel.Content = $"{loader.ProvincesById.Count} prov, {count} títulos";
             }
             catch (Exception ex)
             {
