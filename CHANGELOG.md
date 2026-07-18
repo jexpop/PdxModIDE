@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.4] - 2026-07-18
+
+### Added
+- **Fecha Mod calculada en pestaña Mapa**: Nueva etiqueta `OffsetLabel` junto al año (antes de los checks de titular/condado/etc.) que muestra la fecha resultante en el mod (`año + YearOffset` del perfil activo), mostrando ambos valores (año base y fecha mod) al mismo tiempo. Solo informativa, no editable; se actualiza al cargar la pestaña, al cambiar de perfil, al modificar el offset y al cambiar el año.
+
+---
+
+## [1.1.3] - 2026-07-18
+
+### Changed
+- **Unificación de pestañas Mapa**: Las dos pestañas "Historia (Base)" y "Historia (Mod)" se han fusionado en una única pestaña llamada "Mapa" (`local:HistoryTab` sin `Mode` fijo en `MainWindow.xaml`).
+
+---
+
+## [1.1.2] - 2026-07-18
+
+### Changed
+- **Texto informativo pestaña Historia**: Eliminado el prefijo "Vista: Mod/Juego Base" del texto mostrado tras cargar el mapa; ahora solo se muestra el recuento de provincias y títulos (`X prov, Y títulos`).
+
+---
+
+## [1.1.1] - 2026-07-18
+
+### Added
+- **Modos Ducados / Reinos / Imperios** en pestaña Historia: Checkboxes "Duc.", "Rey.", "Imp." para colorear mapa por límites de ducado (`d_xxx`), reino (`k_xxx`) e imperio (`e_xxx`).
+- **Jerarquía completa de títulos**: `MapLoader.LoadLandedTitles()` ahora construye `CountyToDuchy`, `DuchyToKingdom`, `KingdomToEmpire` desde la pila de títulos anidados.
+- **Nuevos LUTs**: `BuildDuchyLut()`, `BuildKingdomLut()`, `BuildEmpireLut()` con paletas y wrap-around de colores.
+- **Mutua exclusión extendida**: Los 5 modos (Titular, Condados, Ducados, Reinos, Imperios) se desmarcan entre sí.
+- **Labels compactos**: Checkboxes usan abreviaturas (Tit., Cond., Duc., Rey., Imp.) con tooltips para ahorrar espacio en la barra.
+
+### Changed
+- **Etiquetas en panel info**: Panel "Título" ahora muestra Baronía, Condado, Ducado, Reino, Imperio, Holder, Liege según modo activo.
+
+---
+
+## [1.1.0] - 2026-07-18
+
+### Added
+- **Modo Condados en pestaña Historia**: Nuevo checkbox "Condados" junto a "Titular" que colorea el mapa por límites de condado (`c_xxx`) en lugar de por holder (personaje). Usa `MapLoader.BuildCountyLut()` → mapea provincia → baronía → condado.
+- **Ciclo de colores para >255 items**: En `BuildHolderLut` y `BuildCountyLut`, los índices >255 ahora hacen wrap-around (módulo 255) en lugar de clavarse en 255, evitando que cientos de condados/holders compartan el mismo color verde.
+- **Mutua exclusión**: Checkboxes "Titular" y "Condados" se desmarcan mutuamente.
+
+### Fixed
+- **Condados verdes**: Al haber >255 condados en CK3, todos a partir del 256 usaban índice 255 (mismo color). Ahora ciclan 1-255.
+- **Holders verdes**: Mismo fix aplicado a `BuildHolderLut` para >255 holders únicos.
+
+---
+
 ## [1.0.0] - 2026-07-17
 
 ### Added
@@ -47,47 +95,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - No se almacenan secrets; paths de juego/mod/backup configurados por usuario en perfil.
-
----
-
-## [1.1.3] - 2026-07-18
-
-### Changed
-- **Unificación de pestañas Mapa**: Las dos pestañas "Historia (Base)" y "Historia (Mod)" se han fusionado en una única pestaña llamada "Mapa" (`local:HistoryTab` sin `Mode` fijo en `MainWindow.xaml`).
-
----
-
-## [1.1.2] - 2026-07-18
-
-### Changed
-- **Texto informativo pestaña Historia**: Eliminado el prefijo "Vista: Mod/Juego Base" del texto mostrado tras cargar el mapa; ahora solo se muestra el recuento de provincias y títulos (`X prov, Y títulos`).
-
----
-
-## [1.1.0] - 2026-07-18
-
-### Added
-- **Modo Condados en pestaña Historia**: Nuevo checkbox "Condados" junto a "Titular" que colorea el mapa por límites de condado (`c_xxx`) en lugar de por holder (personaje). Usa `MapLoader.BuildCountyLut()` → mapea provincia → baronía → condado.
-- **Ciclo de colores para >255 items**: En `BuildHolderLut` y `BuildCountyLut`, los índices >255 ahora hacen wrap-around (módulo 255) en lugar de clavarse en 255, evitando que cientos de condados/holders compartan el mismo color verde.
-- **Mutua exclusión**: Checkboxes "Titular" y "Condados" se desmarcan mutuamente.
-
-### Fixed
-- **Condados verdes**: Al haber >255 condados en CK3, todos a partir del 256 usaban índice 255 (mismo color). Ahora ciclan 1-255.
-- **Holders verdes**: Mismo fix aplicado a `BuildHolderLut` para >255 holders únicos.
-
----
-
-## [1.1.1] - 2026-07-18
-
-### Added
-- **Modos Ducados / Reinos / Imperios** en pestaña Historia: Checkboxes "Duc.", "Rey.", "Imp." para colorear mapa por límites de ducado (`d_xxx`), reino (`k_xxx`) e imperio (`e_xxx`).
-- **Jerarquía completa de títulos**: `MapLoader.LoadLandedTitles()` ahora construye `CountyToDuchy`, `DuchyToKingdom`, `KingdomToEmpire` desde la pila de títulos anidados.
-- **Nuevos LUTs**: `BuildDuchyLut()`, `BuildKingdomLut()`, `BuildEmpireLut()` con paletas y wrap-around de colores.
-- **Mutua exclusión extendida**: Los 5 modos (Titular, Condados, Ducados, Reinos, Imperios) se desmarcan entre sí.
-- **Labels compactos**: Checkboxes usan abreviaturas (Tit., Cond., Duc., Rey., Imp.) con tooltips para ahorrar espacio en la barra.
-
-### Changed
-- **Etiquetas en panel info**: Panel "Título" ahora muestra Baronía, Condado, Ducado, Reino, Imperio, Holder, Liege según modo activo.
 
 ---
 

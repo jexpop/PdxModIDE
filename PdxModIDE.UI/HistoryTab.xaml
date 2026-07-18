@@ -42,6 +42,7 @@
                 <Button Content="Ajustar" Width="70" Height="26" Margin="5,0,0,0" Click="FitToWindow_Click"/>
                 <Label Content="Año:" VerticalAlignment="Center" Margin="10,0,3,0"/>
                 <TextBox x:Name="YearBox" Width="60" Height="26" VerticalContentAlignment="Center" Text="1200" TextChanged="YearBox_TextChanged"/>
+                <Label x:Name="OffsetLabel" Content="Fecha Mod: -" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray" ToolTip="Fecha resultante en el mod (año + offset del perfil)"/>
                 <CheckBox x:Name="HolderModeCheck" Content="Tit." VerticalAlignment="Center"
                           Margin="10,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged" ToolTip="Titular (personaje)"/>
                 <CheckBox x:Name="CountyModeCheck" Content="Cond." VerticalAlignment="Center"

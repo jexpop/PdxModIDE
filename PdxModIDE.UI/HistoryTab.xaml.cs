@@ -46,6 +46,7 @@ namespace PdxModIDE.UI
             if (ViewModel != null)
                 ViewModel.PropertyChanged += OnViewModelPropertyChanged;
             IsVisibleChanged += OnIsVisibleChanged;
+            UpdateOffsetLabel();
         }
 
         private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -64,6 +65,23 @@ namespace PdxModIDE.UI
         {
             if (e.PropertyName == nameof(MainViewModel.CurrentProfile))
                 _mapLoaded = false;
+            if (e.PropertyName == nameof(MainViewModel.CurrentProfile) || e.PropertyName == nameof(MainViewModel.YearOffset))
+                UpdateOffsetLabel();
+        }
+
+        private void UpdateOffsetLabel()
+        {
+            if (OffsetLabel == null) return;
+            var profile = ViewModel?.CurrentProfile;
+            if (profile == null)
+            {
+                OffsetLabel.Content = "Fecha Mod: -";
+                return;
+            }
+            if (int.TryParse(YearBox.Text, out int year))
+                OffsetLabel.Content = $"Fecha Mod: {year + profile.YearOffset}";
+            else
+                OffsetLabel.Content = "Fecha Mod: -";
         }
 
         private void TryAutoLoad()
@@ -441,6 +459,7 @@ namespace PdxModIDE.UI
 
         private void YearBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
+            UpdateOffsetLabel();
             if (!_mapLoaded || _renderer == null) return;
 
             if (HolderModeCheck.IsChecked == true)
