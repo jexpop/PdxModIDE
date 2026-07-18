@@ -148,7 +148,7 @@ namespace PdxModIDE.UI
                 if (!string.IsNullOrEmpty(modRoot) && Directory.Exists(modRoot))
                 {
                     _titleHistoryMod = new TitleHistoryLoader();
-                    modCount = _titleHistoryMod.LoadAll(modRoot);
+                    modCount = _titleHistoryMod.LoadAll(modRoot, overwriteDuplicates: true);
                 }
                 else
                 {
@@ -172,6 +172,8 @@ namespace PdxModIDE.UI
                     if (_mapLoaded && _renderer != null)
                     {
                         ResetView();
+                        if (HasActiveSource())
+                            ReapplyActiveMode();
                         QueueRender();
                     }
                 }), System.Windows.Threading.DispatcherPriority.Render);

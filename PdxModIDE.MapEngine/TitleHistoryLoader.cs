@@ -20,7 +20,7 @@ namespace PdxModIDE.MapEngine
 
         public Dictionary<string, TitleHistory> AllTitles { get; } = new();
 
-        public int LoadAll(string gameRoot)
+        public int LoadAll(string gameRoot, bool overwriteDuplicates = false)
         {
             AllTitles.Clear();
 
@@ -33,7 +33,7 @@ namespace PdxModIDE.MapEngine
                 var fileData = ParseTitleHistoryFile(fname);
                 foreach (var kvp in fileData)
                 {
-                    if (!AllTitles.ContainsKey(kvp.Key))
+                    if (overwriteDuplicates || !AllTitles.ContainsKey(kvp.Key))
                         AllTitles[kvp.Key] = kvp.Value;
                 }
             }
