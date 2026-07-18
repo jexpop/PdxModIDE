@@ -47,16 +47,18 @@
                           Margin="10,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="Mostrar datos del juego base"/>
                 <CheckBox x:Name="ModSourceCheck" Content="Mod" VerticalAlignment="Center"
                           Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="Mostrar datos del mod (aplicando offset)"/>
-                <CheckBox x:Name="HolderModeCheck" Content="Tit." VerticalAlignment="Center"
-                          Margin="10,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged" ToolTip="Titular (personaje)"/>
-                <CheckBox x:Name="CountyModeCheck" Content="Cond." VerticalAlignment="Center"
-                          Margin="5,0,0,0" Checked="CountyModeChanged" Unchecked="CountyModeChanged" ToolTip="Condados (c_xxx)"/>
-                <CheckBox x:Name="DuchyModeCheck" Content="Duc." VerticalAlignment="Center"
-                          Margin="5,0,0,0" Checked="DuchyModeChanged" Unchecked="DuchyModeChanged" ToolTip="Ducados (d_xxx)"/>
-                <CheckBox x:Name="KingdomModeCheck" Content="Rey." VerticalAlignment="Center"
-                          Margin="5,0,0,0" Checked="KingdomModeChanged" Unchecked="KingdomModeChanged" ToolTip="Reinos (k_xxx)"/>
-                <CheckBox x:Name="EmpireModeCheck" Content="Imp." VerticalAlignment="Center"
-                          Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="Imperios (e_xxx)"/>
+                <StackPanel x:Name="TitleModePanel" Orientation="Horizontal" Visibility="Collapsed">
+                    <CheckBox x:Name="HolderModeCheck" Content="Titular" VerticalAlignment="Center"
+                              Margin="10,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged" ToolTip="Titular (personaje)"/>
+                    <CheckBox x:Name="CountyModeCheck" Content="Condado" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="CountyModeChanged" Unchecked="CountyModeChanged" ToolTip="Condados (c_xxx)"/>
+                    <CheckBox x:Name="DuchyModeCheck" Content="Ducado" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="DuchyModeChanged" Unchecked="DuchyModeChanged" ToolTip="Ducados (d_xxx)"/>
+                    <CheckBox x:Name="KingdomModeCheck" Content="Reino" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="KingdomModeChanged" Unchecked="KingdomModeChanged" ToolTip="Reinos (k_xxx)"/>
+                    <CheckBox x:Name="EmpireModeCheck" Content="Imperio" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="Imperios (e_xxx)"/>
+                </StackPanel>
                 <Label x:Name="StatusLabel" Content="Listo" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray"/>
             </StackPanel>
 

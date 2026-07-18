@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.10] - 2026-07-18
+
+### Changed
+- **Nombres completos en checkboxes de modo de título**: Los modos "Tit.", "Cond.", "Duc.", "Rey.", "Imp." ahora se muestran como "Titular", "Condado", "Ducado", "Reino", "Imperio" respectivamente.
+- **Visibilidad condicional de modos de título**: Los checkboxes de modo (Titular/Condado/Ducado/Reino/Imperio) solo se muestran cuando al menos uno de los checks "Base" o "Mod" está activo. Si se desactivan ambos, los modos de título se ocultan.
+- **Selección por defecto**: Al activar "Base" o "Mod" sin ningún modo de título activo, se selecciona automáticamente "Titular".
+
+### Fixed
+- **Siempre un modo activo**: Ahora no se puede desmarcar el último modo de título mientras "Base" o "Mod" esté activo. Si el usuario intenta desmarcarlo, se re-marca "Titular" automáticamente.
+
+---
+
 ## [1.1.9] - 2026-07-18
 
 ### Fixed

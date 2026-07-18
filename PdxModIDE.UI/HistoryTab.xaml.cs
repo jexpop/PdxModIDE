@@ -36,6 +36,7 @@ namespace PdxModIDE.UI
             InitializeComponent();
             Loaded += OnLoaded;
             MapImage.SizeChanged += OnMapSizeChanged;
+            TitleModePanel.Visibility = Visibility.Collapsed;
         }
 
         public string Mode { get; set; } = "base";
@@ -368,8 +369,39 @@ namespace PdxModIDE.UI
         private bool HasActiveSource() =>
             BaseSourceCheck?.IsChecked == true || ModSourceCheck?.IsChecked == true;
 
+        private void UpdateTitleModeVisibility()
+        {
+            bool visible = HasActiveSource();
+            TitleModePanel.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void EnsureAtLeastOneMode()
+        {
+            if (!HasActiveSource()) return;
+            if (HolderModeCheck.IsChecked == true ||
+                CountyModeCheck.IsChecked == true ||
+                DuchyModeCheck.IsChecked == true ||
+                KingdomModeCheck.IsChecked == true ||
+                EmpireModeCheck.IsChecked == true)
+                return;
+
+            HolderModeCheck.IsChecked = true;
+        }
+
         private void SourceModeChanged(object sender, RoutedEventArgs e)
         {
+            UpdateTitleModeVisibility();
+
+            if (HasActiveSource())
+            {
+                if (HolderModeCheck.IsChecked != true &&
+                    CountyModeCheck.IsChecked != true &&
+                    DuchyModeCheck.IsChecked != true &&
+                    KingdomModeCheck.IsChecked != true &&
+                    EmpireModeCheck.IsChecked != true)
+                    HolderModeCheck.IsChecked = true;
+            }
+
             if (!_mapLoaded || _renderer == null) return;
             ReapplyActiveMode();
         }
@@ -404,6 +436,7 @@ namespace PdxModIDE.UI
             }
             else
             {
+                EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
                 _cachedWidth = -1;
                 QueueRender();
@@ -425,6 +458,7 @@ namespace PdxModIDE.UI
             }
             else
             {
+                EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
                 _cachedWidth = -1;
                 QueueRender();
@@ -446,6 +480,7 @@ namespace PdxModIDE.UI
             }
             else
             {
+                EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
                 _cachedWidth = -1;
                 QueueRender();
@@ -467,6 +502,7 @@ namespace PdxModIDE.UI
             }
             else
             {
+                EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
                 _cachedWidth = -1;
                 QueueRender();
@@ -488,6 +524,7 @@ namespace PdxModIDE.UI
             }
             else
             {
+                EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
                 _cachedWidth = -1;
                 QueueRender();
