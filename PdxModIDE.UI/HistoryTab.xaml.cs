@@ -15,7 +15,8 @@ namespace PdxModIDE.UI
     public partial class HistoryTab : System.Windows.Controls.UserControl
     {
         private MapLoader? _mapLoader;
-        private TitleHistoryLoader? _titleHistory;
+        private TitleHistoryLoader? _titleHistoryBase;
+        private TitleHistoryLoader? _titleHistoryMod;
         private MapRenderer? _renderer;
         private WriteableBitmap? _writeableBmp;
         private bool _isDragging;
@@ -98,7 +99,7 @@ namespace PdxModIDE.UI
                 StatusLabel.Content = "Configura un perfil con GameRoot válido";
                 return;
             }
-            DoLoad(profile.GameRoot, Mode == "mod" ? profile.ModRoot : profile.GameRoot);
+            DoLoad(profile.GameRoot, profile.ModRoot);
         }
 
         private string? FindFileBase(string relativePath)
@@ -119,11 +120,11 @@ namespace PdxModIDE.UI
             return File.Exists(gamePath) ? gamePath : null;
         }
 
-        private void DoLoad(string gameRoot, string historyRoot)
+        private void DoLoad(string gameRoot, string modRoot)
         {
             try
             {
-                string? provincesPng = Mode == "mod" ? FindFileMod("map_data/provinces.png") : FindFileBase("map_data/provinces.png");
+                string? provincesPng = FindFileBase("map_data/provinces.png");
                 if (provincesPng == null)
                 {
                     StatusLabel.Content = "No se encontró provinces.png";
@@ -139,8 +140,20 @@ namespace PdxModIDE.UI
                 var loader = new MapLoader(gameRoot);
                 loader.LoadAll();
 
-                _titleHistory = new TitleHistoryLoader();
-                int count = _titleHistory.LoadAll(historyRoot);
+                _titleHistoryBase = new TitleHistoryLoader();
+                int baseCount = _titleHistoryBase.LoadAll(gameRoot);
+
+                int modCount = 0;
+                if (!string.IsNullOrEmpty(modRoot) && Directory.Exists(modRoot))
+                {
+                    _titleHistoryMod = new TitleHistoryLoader();
+                    modCount = _titleHistoryMod.LoadAll(modRoot);
+                }
+                else
+                {
+                    _titleHistoryMod = null;
+                }
+
                 _mapLoader = loader;
 
                 var renderer = new MapRenderer();
@@ -161,7 +174,7 @@ namespace PdxModIDE.UI
                         QueueRender();
                     }
                 }), System.Windows.Threading.DispatcherPriority.Render);
-                StatusLabel.Content = $"{loader.ProvincesById.Count} prov, {count} títulos";
+                StatusLabel.Content = $"{loader.ProvincesById.Count} prov, {baseCount} títulos base, {modCount} títulos mod";
             }
             catch (Exception ex)
             {
@@ -352,17 +365,33 @@ namespace PdxModIDE.UI
             e.Handled = true;
         }
 
+        private bool HasActiveSource() =>
+            BaseSourceCheck?.IsChecked == true || ModSourceCheck?.IsChecked == true;
+
         private void SourceModeChanged(object sender, RoutedEventArgs e)
         {
-            // TODO (paso 6): al activar/desactivar Base/Mod se recalculará qué datos
-            // (juego base y/u offset del mod) se usan para colorear el mapa.
             if (!_mapLoaded || _renderer == null) return;
-            QueueRender();
+            ReapplyActiveMode();
+        }
+
+        private void ReapplyActiveMode()
+        {
+            if (HolderModeCheck?.IsChecked == true) ApplyHolderMode();
+            else if (CountyModeCheck?.IsChecked == true) ApplyCountyMode();
+            else if (DuchyModeCheck?.IsChecked == true) ApplyDuchyMode();
+            else if (KingdomModeCheck?.IsChecked == true) ApplyKingdomMode();
+            else if (EmpireModeCheck?.IsChecked == true) ApplyEmpireMode();
+            else
+            {
+                _renderer!.SetHolderMode(false, null, null);
+                _cachedWidth = -1;
+                QueueRender();
+            }
         }
 
         private void HolderModeChanged(object sender, RoutedEventArgs e)
         {
-            if (!_mapLoaded || _renderer == null || _mapLoader == null || _titleHistory == null)
+            if (!_mapLoaded || _renderer == null || _mapLoader == null)
                 return;
 
             if (HolderModeCheck.IsChecked == true)
@@ -485,16 +514,46 @@ namespace PdxModIDE.UI
         private void ApplyHolderMode()
         {
             if (!int.TryParse(YearBox.Text, out int year)) return;
-            var holderLut = _mapLoader!.BuildHolderLut(year, _titleHistory!, out var indexToHolder);
+
+            if (!HasActiveSource())
+            {
+                _renderer!.SetHolderMode(false, null, null);
+                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de titulares";
+                _cachedWidth = -1;
+                QueueRender();
+                return;
+            }
+
+            bool useBase = BaseSourceCheck?.IsChecked == true;
+            bool useMod = ModSourceCheck?.IsChecked == true;
+            int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
+
+            int? baseYear = useBase ? year : (int?)null;
+            int? modYear = useMod ? year + offset : (int?)null;
+
+            var holderLut = _mapLoader!.BuildCombinedHolderLut(
+                baseYear, useBase ? _titleHistoryBase : null,
+                modYear, useMod ? _titleHistoryMod : null,
+                out var indexToHolder);
             var palette = MapLoader.BuildHolderPalette(indexToHolder);
             _renderer!.SetHolderMode(true, holderLut, palette);
-            StatusLabel.Content = $"Modo Titular — año {year} — {indexToHolder.Count} titulares";
+
+            string fuente = useBase && useMod ? "Mod+Base" : useMod ? "Mod" : "Base";
+            StatusLabel.Content = $"Modo Titular [{fuente}] — año {year} — {indexToHolder.Count} titulares";
             _cachedWidth = -1;
             QueueRender();
         }
 
         private void ApplyCountyMode()
         {
+            if (!HasActiveSource())
+            {
+                _renderer!.SetHolderMode(false, null, null);
+                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de condados";
+                _cachedWidth = -1;
+                QueueRender();
+                return;
+            }
             var countyLut = _mapLoader!.BuildCountyLut(out var indexToCounty);
             var palette = MapLoader.BuildCountyPalette(indexToCounty);
             _renderer!.SetHolderMode(true, countyLut, palette);
@@ -505,6 +564,14 @@ namespace PdxModIDE.UI
 
         private void ApplyDuchyMode()
         {
+            if (!HasActiveSource())
+            {
+                _renderer!.SetHolderMode(false, null, null);
+                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de ducados";
+                _cachedWidth = -1;
+                QueueRender();
+                return;
+            }
             var duchyLut = _mapLoader!.BuildDuchyLut(out var indexToDuchy);
             var palette = MapLoader.BuildDuchyPalette(indexToDuchy);
             _renderer!.SetHolderMode(true, duchyLut, palette);
@@ -515,6 +582,14 @@ namespace PdxModIDE.UI
 
         private void ApplyKingdomMode()
         {
+            if (!HasActiveSource())
+            {
+                _renderer!.SetHolderMode(false, null, null);
+                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de reinos";
+                _cachedWidth = -1;
+                QueueRender();
+                return;
+            }
             var kingdomLut = _mapLoader!.BuildKingdomLut(out var indexToKingdom);
             var palette = MapLoader.BuildKingdomPalette(indexToKingdom);
             _renderer!.SetHolderMode(true, kingdomLut, palette);
@@ -525,6 +600,14 @@ namespace PdxModIDE.UI
 
         private void ApplyEmpireMode()
         {
+            if (!HasActiveSource())
+            {
+                _renderer!.SetHolderMode(false, null, null);
+                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de imperios";
+                _cachedWidth = -1;
+                QueueRender();
+                return;
+            }
             var empireLut = _mapLoader!.BuildEmpireLut(out var indexToEmpire);
             var palette = MapLoader.BuildEmpirePalette(indexToEmpire);
             _renderer!.SetHolderMode(true, empireLut, palette);
@@ -555,18 +638,35 @@ namespace PdxModIDE.UI
                     county = _mapLoader.GetCountyFromBarony(barony) ?? "-";
                 LabelCounty.Content = $"Condado: {county}";
 
-                if (_titleHistory != null && county != "-" && _titleHistory.AllTitles.TryGetValue(county, out var history))
+                if (county != "-" && int.TryParse(YearBox.Text, out int year))
                 {
-                    if (int.TryParse(YearBox.Text, out int year))
+                    bool useBase = BaseSourceCheck?.IsChecked == true;
+                    bool useMod = ModSourceCheck?.IsChecked == true;
+                    int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
+
+                    string? holder = null, liege = null, fuente = null;
+
+                    if (useMod && _titleHistoryMod != null && _titleHistoryMod.AllTitles.TryGetValue(county, out var modHist))
                     {
-                        LabelHolder.Content = $"Holder en {year}: {TitleHistoryLoader.GetHolderAtYear(history, year) ?? "(sin datos)"}";
-                        LabelLiege.Content = $"Liege en {year}: {TitleHistoryLoader.GetLiegeAtYear(history, year) ?? "(sin datos)"}";
+                        holder = TitleHistoryLoader.GetHolderAtYear(modHist, year + offset);
+                        liege = TitleHistoryLoader.GetLiegeAtYear(modHist, year + offset);
+                        if (holder != null) fuente = "Mod";
                     }
-                    else
+                    if (holder == null && useBase && _titleHistoryBase != null && _titleHistoryBase.AllTitles.TryGetValue(county, out var baseHist))
                     {
-                        LabelHolder.Content = "Holder: (año inválido)";
-                        LabelLiege.Content = "Liege: (año inválido)";
+                        holder = TitleHistoryLoader.GetHolderAtYear(baseHist, year);
+                        liege = TitleHistoryLoader.GetLiegeAtYear(baseHist, year);
+                        if (holder != null) fuente = "Base";
                     }
+
+                    string sufijo = fuente != null ? $" [{fuente}]" : "";
+                    LabelHolder.Content = $"Holder en {year}{sufijo}: {holder ?? "(sin datos)"}";
+                    LabelLiege.Content = $"Liege en {year}{sufijo}: {liege ?? "(sin datos)"}";
+                }
+                else if (county != "-")
+                {
+                    LabelHolder.Content = "Holder: (año inválido)";
+                    LabelLiege.Content = "Liege: (año inválido)";
                 }
                 else
                 {

@@ -173,10 +173,11 @@ namespace PdxModIDE.MapEngine
             var titleRegex = new Regex(@"^\s*([becdk]_[A-Za-z0-9_]+)\s*=\s*\{");
             var provinceRegex = new Regex(@"province\s*=\s*(\d+)");
 
-            foreach (var file in Directory.EnumerateFiles(baseDir, "*.txt"))
+            foreach (var file in Directory.EnumerateFiles(baseDir, "*.txt", SearchOption.AllDirectories))
             {
                 var stack = new List<string>();
                 string? currentTitle = null;
+                int nonTitleDepth = 0;
 
                 foreach (var rawLine in File.ReadAllLines(file))
                 {
@@ -219,10 +220,30 @@ namespace PdxModIDE.MapEngine
                             KingdomToEmpire[kingdom] = empire;
                     }
 
-                    if (line == "}")
+                    int opens = line.Count(c => c == '{');
+                    int closes = line.Count(c => c == '}');
+
+                    nonTitleDepth += opens;
+
+                    if (closes > 0)
                     {
-                        if (stack.Count > 0) stack.RemoveAt(stack.Count - 1);
-                        currentTitle = stack.Count > 0 ? stack[^1] : null;
+                        if (nonTitleDepth >= closes)
+                        {
+                            nonTitleDepth -= closes;
+                        }
+                        else
+                        {
+                            int titleCloses = closes - nonTitleDepth;
+                            nonTitleDepth = 0;
+                            for (int i = 0; i < titleCloses; i++)
+                            {
+                                if (stack.Count > 0)
+                                {
+                                    stack.RemoveAt(stack.Count - 1);
+                                    currentTitle = stack.Count > 0 ? stack[^1] : null;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -427,6 +448,66 @@ namespace PdxModIDE.MapEngine
                     history.AllTitles.TryGetValue(county, out var titleHist))
                 {
                     holder = GetHolderAtYear(titleHist, year);
+                }
+
+                if (holder == null)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                if (!holderToIndex.TryGetValue(holder, out var hIdx))
+                {
+                    hIdx = nextIndex++;
+                    if (hIdx > 255) hIdx = (hIdx - 1) % 255 + 1; // wrap around 1-255
+                    holderToIndex[holder] = hIdx;
+                    indexToHolder[hIdx] = holder;
+                }
+
+                lut[idx] = (byte)hIdx;
+            }
+
+            return lut;
+        }
+
+        public byte[] BuildCombinedHolderLut(
+            int? baseYear, TitleHistoryLoader? baseHistory,
+            int? modYear, TitleHistoryLoader? modHistory,
+            out Dictionary<int, string> indexToHolder)
+        {
+            indexToHolder = new Dictionary<int, string>();
+            var holderToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            int nextIndex = 1;
+            var lut = new byte[16_777_216];
+
+            foreach (var info in ProvincesByColor.Values)
+            {
+                int idx = info.ColorPacked;
+                int pid = info.Id;
+
+                if (pid <= 0)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                string? holder = null;
+
+                if (ProvinceToBarony.TryGetValue(pid, out var barony) &&
+                    BaronyToCounty.TryGetValue(barony, out var county))
+                {
+                    // Prioridad: Mod primero (con offset ya aplicado en modYear); si no hay datos, Base.
+                    if (modYear.HasValue && modHistory != null &&
+                        modHistory.AllTitles.TryGetValue(county, out var modHist))
+                    {
+                        holder = TitleHistoryLoader.GetHolderAtYear(modHist, modYear.Value);
+                    }
+
+                    if (holder == null && baseYear.HasValue && baseHistory != null &&
+                        baseHistory.AllTitles.TryGetValue(county, out var baseHist))
+                    {
+                        holder = TitleHistoryLoader.GetHolderAtYear(baseHist, baseYear.Value);
+                    }
                 }
 
                 if (holder == null)

@@ -28,7 +28,7 @@ namespace PdxModIDE.MapEngine
             if (!Directory.Exists(folder))
                 return 0;
 
-            foreach (string fname in Directory.EnumerateFiles(folder, "*.txt"))
+            foreach (string fname in Directory.EnumerateFiles(folder, "*.txt", SearchOption.AllDirectories))
             {
                 var fileData = ParseTitleHistoryFile(fname);
                 foreach (var kvp in fileData)
@@ -57,52 +57,60 @@ namespace PdxModIDE.MapEngine
             foreach (string raw in File.ReadAllLines(path))
             {
                 string line = raw.Trim();
+                if (line.Length == 0)
+                    continue;
+
+                // Quitar comentarios en línea para evitar falsos positivos en holder=/liege=
+                int hashIdx = line.IndexOf('#');
+                if (hashIdx >= 0)
+                {
+                    line = line.Substring(0, hashIdx).TrimEnd();
+                    if (line.Length == 0)
+                        continue;
+                }
 
                 var m = TitleRe.Match(line);
                 if (m.Success)
                 {
                     currentTitle = m.Groups[1].Value;
-                    data[currentTitle] = new TitleHistory();
+                    if (!data.ContainsKey(currentTitle))
+                        data[currentTitle] = new TitleHistory();
                     stack = 1;
                     currentYear = null;
-                    continue;
-                }
-
-                if (line.Contains("{"))
-                    stack += line.Count(c => c == '{');
-                if (line.Contains("}"))
-                {
-                    stack -= line.Count(c => c == '}');
-                    if (stack <= 0)
-                    {
-                        currentTitle = null;
-                        currentYear = null;
-                    }
                     continue;
                 }
 
                 if (currentTitle == null)
                     continue;
 
+                // Extraer fecha y datos de holder/liege ANTES de contabilizar llaves,
+                // porque bloques de fecha "todo en una línea" (muy habituales en baronías
+                // y condados) contienen tanto '{' como '}' en la misma línea.
                 var dm = DateRe.Match(line);
                 if (dm.Success)
-                {
                     currentYear = int.Parse(dm.Groups[1].Value);
-                    continue;
+
+                if (currentYear.HasValue)
+                {
+                    var hm = HolderRe.Match(line);
+                    if (hm.Success)
+                        data[currentTitle].Holders.Add((currentYear.Value, hm.Groups[1].Value));
+
+                    var lm = LiegeRe.Match(line);
+                    if (lm.Success)
+                        data[currentTitle].Lieges.Add((currentYear.Value, lm.Groups[1].Value));
                 }
 
-                var hm = HolderRe.Match(line);
-                if (hm.Success && currentYear.HasValue)
+                int opens = line.Count(c => c == '{');
+                int closes = line.Count(c => c == '}');
+                if (opens != closes)
                 {
-                    data[currentTitle].Holders.Add((currentYear.Value, hm.Groups[1].Value));
-                    continue;
-                }
-
-                var lm = LiegeRe.Match(line);
-                if (lm.Success && currentYear.HasValue)
-                {
-                    data[currentTitle].Lieges.Add((currentYear.Value, lm.Groups[1].Value));
-                    continue;
+                    stack += opens - closes;
+                    if (stack <= 0)
+                    {
+                        currentTitle = null;
+                        currentYear = null;
+                    }
                 }
             }
 

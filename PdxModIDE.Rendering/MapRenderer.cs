@@ -55,7 +55,15 @@ half4 main(float2 coord) {
     half4 color;
     if (mode > 0.5) {
         float holderIdx = float(holderLut.eval(float2(lutX + 0.5, lutY + 0.5)).r) * 255.0;
-        color = palette.eval(float2(holderIdx + 0.5, 0.5));
+        if (holderIdx < 0.5) {
+            // Sin datos de titular/mod/base: tierra gris, mar azul (igual criterio que el mapa por defecto)
+            if (lutVal < 0.5) color = half4(120.0 / 255.0, 120.0 / 255.0, 120.0 / 255.0, 1);
+            else if (lutVal < 3.5) color = half4(80.0 / 255.0, 120.0 / 255.0, 255.0 / 255.0, 1);
+            else if (lutVal < 4.5) color = half4(90.0 / 255.0, 90.0 / 255.0, 90.0 / 255.0, 1);
+            else color = half4(40.0 / 255.0, 40.0 / 255.0, 40.0 / 255.0, 1);
+        } else {
+            color = palette.eval(float2(holderIdx + 0.5, 0.5));
+        }
     } else {
         if (lutVal < 0.5) color = half4(235.0 / 255.0, 180.0 / 255.0, 60.0 / 255.0, 1);
         else if (lutVal < 1.5) color = half4(80.0 / 255.0, 120.0 / 255.0, 255.0 / 255.0, 1);

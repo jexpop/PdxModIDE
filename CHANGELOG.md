@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.9] - 2026-07-18
+
+### Fixed
+- **Parser de `common/landed_titles` perdía títulos con bloques intermedios no-título**: bloques como `cultural_names = { ... }`, `color = { ... }` o `definite_form = { ... }` dentro de un título hacían que su `}` solitario hiciera pop prematuro del título padre del stack. Esto impedía que las baronías siguientes se vincularan a su condado (`BaronyToCounty` quedaba vacío), por lo que `BuildCountyLut`/`BuildHolderLut` nunca encontraban el condado de esas provincias. Añadido contador `nonTitleDepth` que rastrea llaves de bloques no-título para ignorar sus cierres sin afectar al stack de títulos.
+
+---
+
+## [1.1.8] - 2026-07-18
+
+### Fixed
+- **Parser de `history/titles` ignoraba bloques de fecha "en una sola línea"**: formato muy habitual en baronías y bastantes condados de CK3, p.ej. `900.1.1={ holder=140000 liege=k_england }`. El contador de llaves cortaba el procesamiento de la línea (`continue`) en cuanto veía un `}`, sin comprobar si ese cierre correspondía al bloque de fecha (anidado) o al título completo, así que esas líneas nunca llegaban a leerse — afectaba igual a Base y a Mod. Reescrito el parser para calcular el balance neto de llaves de la línea y extraer siempre `holder=`/`liege=` antes de decidir si el título se cierra.
+- De paso, se ignoran ahora los comentarios en línea (`# ...`) para evitar falsos positivos al buscar `holder=`/`liege=`.
+
+---
+
+## [1.1.7] - 2026-07-18
+
+### Fixed
+- **Búsqueda recursiva en `history/titles` y `common/landed_titles`**: `TitleHistoryLoader.LoadAll` y `MapLoader.LoadLandedTitles` solo escaneaban el nivel superior de la carpeta. El motor de Paradox procesa recursivamente cualquier subcarpeta dentro de esas rutas (con cualquier nombre, no solo carpetas literales "mod"), así que un mod que organiza sus ficheros de historia/títulos en subcarpetas propias no se estaba leyendo. Ahora ambos usan `SearchOption.AllDirectories`, de forma genérica tanto para Base como para Mod.
+
+---
+
+## [1.1.6] - 2026-07-18
+
+### Added
+- **Lógica funcional de los checks "Base"/"Mod"**: Ahora determinan de dónde sale la información de titulares mostrada en el mapa (pestaña Mapa):
+  - **Solo Base**: usa `history/titles` del juego base, con el año tal cual está en el `TextBox` de fecha.
+  - **Solo Mod**: usa `history/titles` del mod, aplicando el offset del perfil (año + `YearOffset`) para que la fecha buscada coincida con las fechas ya desplazadas en los ficheros del mod.
+  - **Ambos activos**: prioridad al dato del Mod (con offset); si no hay holder para esa fecha en el mod, se usa el del juego base (sin offset).
+  - **Ninguno activo**: se muestra el mapa general de tierra/mar por defecto, igual que antes de esta función, independientemente de si Titular/Condado/Ducado/Reino/Imperio está marcado.
+  - Aplica también a los modos Condado/Ducado/Reino/Imperio (mismo gating; su información estructural no varía entre base y mod).
+- **Colores de "sin datos" en modo LUT**: cuando un modo de título está activo pero una provincia no tiene dato (titular/condado/etc.), ahora se pinta tierra en gris y mar en azul (antes todo salía en un gris plano uniforme, sin distinguir mar). Cambio en el shader de `MapRenderer`.
+- **`MapLoader.BuildCombinedHolderLut`**: nuevo método que combina el holder de Base y de Mod por provincia con la prioridad Mod > Base descrita arriba.
+- **Panel de información de provincia**: al hacer clic en una provincia, el "Holder"/"Liege" mostrados ahora respetan los checks Base/Mod activos (con offset para Mod) e indican entre corchetes de qué fuente proceden (`[Mod]` / `[Base]`).
+
+---
+
 ## [1.1.5] - 2026-07-18
 
 ### Added
