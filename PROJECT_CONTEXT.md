@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.1.2 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.1.3 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -200,7 +200,7 @@ interface IGamePlugin {
 
 **Modo Condados**: `BuildCountyLut(out indexToCounty)` (sin parámetro año, los límites no cambian) mapea provincia → baronía (`ProvinceToBarony`) → condado (`BaronyToCounty`). Genera LUT 16M entradas coloreando por condado; índices >255 hacen wrap-around (módulo 255) para evitar colisión de color.
 
-**Modos Ducados/Reinos/Imperios**: Nuevos métodos `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` usan la jerarquía completa `CountyToDuchy` → `DuchyToKingdom` → `KingdomToEmpire` para colorear por cada nivel. En pestaña Historia: checkboxes mutuamente excluyentes (Tit./Cond./Duc./Rey./Imp.) con tooltips.
+**Modos Ducados/Reinos/Imperios**: Nuevos métodos `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` usan la jerarquía completa `CountyToDuchy` → `DuchyToKingdom` → `KingdomToEmpire` para colorear por cada nivel. En pestaña Mapa: checkboxes mutuamente excluyentes (Tit./Cond./Duc./Rey./Imp.) con tooltips.
 
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
@@ -267,7 +267,7 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 - `FilesTab`: Lista archivos, checkbox, mapTo editable.
 - `DatesTab`: Leer end_date game/mod, escribir nuevo end_date.
 - `ValidationTab`: Validar todo / módulo individual / archivo individual; grid resultados + diff viewer.
-- `HistoryTab`: Mapa interactivo (SkiaSharp). 5 modos mutuamente excluyentes (checkboxes con tooltips):
+- `HistoryTab` (pestaña "Mapa", antes dos pestañas "Historia (Base)"/"Historia (Mod)" ahora unificadas): Mapa interactivo (SkiaSharp). 5 modos mutuamente excluyentes (checkboxes con tooltips):
   - **Titular** (Tit.): Colorea por holder (personaje) en año `YearBox` → `BuildHolderLut(year, TitleHistoryLoader)`.
   - **Condados** (Cond.): Colorea por límites de condado (`c_xxx`) → `BuildCountyLut()`.
   - **Ducados** (Duc.): Colorea por límites de ducado (`d_xxx`) → `BuildDuchyLut()`.
@@ -431,4 +431,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-07-18 | Proyecto: PdxModIDE | Versión: 1.1.2 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*
+*Generado: 2026-07-18 | Proyecto: PdxModIDE | Versión: 1.1.3 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*

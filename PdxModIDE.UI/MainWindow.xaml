@@ -68,11 +68,8 @@
             <TabItem Header="Perfil">
                 <local:ProfileTab/>
             </TabItem>
-            <TabItem Header="Historia (Base)">
-                <local:HistoryTab Mode="base"/>
-            </TabItem>
-            <TabItem Header="Historia (Mod)">
-                <local:HistoryTab Mode="mod"/>
+            <TabItem Header="Mapa">
+                <local:HistoryTab/>
             </TabItem>
             <TabItem Header="Fechas">
                 <local:DatesTab/>
