@@ -352,6 +352,14 @@ namespace PdxModIDE.UI
             e.Handled = true;
         }
 
+        private void SourceModeChanged(object sender, RoutedEventArgs e)
+        {
+            // TODO (paso 6): al activar/desactivar Base/Mod se recalculará qué datos
+            // (juego base y/u offset del mod) se usan para colorear el mapa.
+            if (!_mapLoaded || _renderer == null) return;
+            QueueRender();
+        }
+
         private void HolderModeChanged(object sender, RoutedEventArgs e)
         {
             if (!_mapLoaded || _renderer == null || _mapLoader == null || _titleHistory == null)

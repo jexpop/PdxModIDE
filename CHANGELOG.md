@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.5] - 2026-07-18
+
+### Added
+- **Checks "Base" y "Mod" en pestaña Mapa**: Nuevos checkboxes `BaseSourceCheck` y `ModSourceCheck`, no excluyentes entre sí, situados entre la fecha (con su "Fecha Mod" calculada) y los checks de Titular/Condado/Ducado/Reino/Imperio. Por ahora solo refrescan el mapa al cambiar (`SourceModeChanged`); la lógica de qué datos mostrar según Base/Mod se implementa en la versión 1.1.6.
+
+---
+
 ## [1.1.4] - 2026-07-18
 
 ### Added
