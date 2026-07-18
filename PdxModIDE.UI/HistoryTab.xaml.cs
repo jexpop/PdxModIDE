@@ -172,6 +172,7 @@ namespace PdxModIDE.UI
                     if (_mapLoaded && _renderer != null)
                     {
                         ResetView();
+                        ApplySourceStructure();
                         if (HasActiveSource())
                             ReapplyActiveMode();
                         QueueRender();
@@ -377,6 +378,21 @@ namespace PdxModIDE.UI
             TitleModePanel.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        private void ApplySourceStructure()
+        {
+            if (_mapLoader == null) return;
+            if (ModSourceCheck?.IsChecked == true)
+            {
+                var modRoot = ViewModel?.CurrentProfile?.ModRoot;
+                if (!string.IsNullOrEmpty(modRoot))
+                    _mapLoader.LoadModLandedTitles(modRoot);
+            }
+            else
+            {
+                _mapLoader.ResetToBase();
+            }
+        }
+
         private void EnsureAtLeastOneMode()
         {
             if (!HasActiveSource()) return;
@@ -393,6 +409,7 @@ namespace PdxModIDE.UI
         private void SourceModeChanged(object sender, RoutedEventArgs e)
         {
             UpdateTitleModeVisibility();
+            ApplySourceStructure();
 
             if (HasActiveSource())
             {

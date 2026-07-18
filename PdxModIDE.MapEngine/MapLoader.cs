@@ -37,6 +37,12 @@ namespace PdxModIDE.MapEngine
         public Dictionary<string, string> CountyToDuchy { get; } = new();
         public Dictionary<string, string> DuchyToKingdom { get; } = new();
         public Dictionary<string, string> KingdomToEmpire { get; } = new();
+
+        private Dictionary<int, string> _baseProvinceToBarony = new();
+        private Dictionary<string, string> _baseBaronyToCounty = new();
+        private Dictionary<string, string> _baseCountyToDuchy = new();
+        private Dictionary<string, string> _baseDuchyToKingdom = new();
+        private Dictionary<string, string> _baseKingdomToEmpire = new();
         public Dictionary<int, int> ProvinceIdToPacked { get; } = new();
         public byte[]? Lut { get; private set; }
         public int[]? ProvinceIdMap { get; private set; }
@@ -71,6 +77,7 @@ namespace PdxModIDE.MapEngine
             LoadDefinition();
             LoadDefaultMap();
             LoadLandedTitles();
+            SaveBaseSnapshot();
             MarkTerrainTypes();
             Lut = BuildOrLoadLut();
             BuildPixelData();
@@ -165,15 +172,51 @@ namespace PdxModIDE.MapEngine
             }
         }
 
+        private void SaveBaseSnapshot()
+        {
+            _baseProvinceToBarony = new Dictionary<int, string>(ProvinceToBarony);
+            _baseBaronyToCounty = new Dictionary<string, string>(BaronyToCounty);
+            _baseCountyToDuchy = new Dictionary<string, string>(CountyToDuchy);
+            _baseDuchyToKingdom = new Dictionary<string, string>(DuchyToKingdom);
+            _baseKingdomToEmpire = new Dictionary<string, string>(KingdomToEmpire);
+        }
+
+        public void LoadModLandedTitles(string modRoot)
+        {
+            string baseDir = Path.Combine(modRoot, "common", "landed_titles");
+            if (!Directory.Exists(baseDir)) return;
+            LoadLandedTitlesFrom(baseDir);
+        }
+
+        public void ResetToBase()
+        {
+            ProvinceToBarony.Clear();
+            BaronyToCounty.Clear();
+            CountyToDuchy.Clear();
+            DuchyToKingdom.Clear();
+            KingdomToEmpire.Clear();
+            foreach (var kvp in _baseProvinceToBarony) ProvinceToBarony[kvp.Key] = kvp.Value;
+            foreach (var kvp in _baseBaronyToCounty) BaronyToCounty[kvp.Key] = kvp.Value;
+            foreach (var kvp in _baseCountyToDuchy) CountyToDuchy[kvp.Key] = kvp.Value;
+            foreach (var kvp in _baseDuchyToKingdom) DuchyToKingdom[kvp.Key] = kvp.Value;
+            foreach (var kvp in _baseKingdomToEmpire) KingdomToEmpire[kvp.Key] = kvp.Value;
+        }
+
         private void LoadLandedTitles()
         {
             string baseDir = Path.Combine(_gameRoot, "common", "landed_titles");
-            if (!Directory.Exists(baseDir)) return;
+            if (Directory.Exists(baseDir))
+                LoadLandedTitlesFrom(baseDir);
+        }
+
+        private void LoadLandedTitlesFrom(string dir)
+        {
+            if (!Directory.Exists(dir)) return;
 
             var titleRegex = new Regex(@"^\s*([becdk]_[A-Za-z0-9_]+)\s*=\s*\{");
             var provinceRegex = new Regex(@"province\s*=\s*(\d+)");
 
-            foreach (var file in Directory.EnumerateFiles(baseDir, "*.txt", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(dir, "*.txt", SearchOption.AllDirectories))
             {
                 var stack = new List<string>();
                 string? currentTitle = null;

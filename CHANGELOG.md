@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Siempre un modo activo**: Ahora no se puede desmarcar el último modo de título mientras "Base" o "Mod" esté activo. Si el usuario intenta desmarcarlo, se re-marca "Titular" automáticamente.
 - **Modo no aplicado tras carga de mapa**: Si el usuario activaba "Base" o "Mod" antes de que el mapa terminara de cargarse (carga asíncrona), `SourceModeChanged` retornaba temprano por `_mapLoaded == false` y nunca se aplicaba el modo de título. Al finalizar `DoLoad` ahora se llama a `ReapplyActiveMode()` si hay una fuente activa.
 - **Datos del mod sobrescritos por copias base en mod**: Cuando el mod contenía copias de archivos base de `history/titles` más un archivo personalizado, `TitleHistoryLoader.LoadAll` ignoraba los títulos duplicados (`if (!AllTitles.ContainsKey)`) y el primero en orden alfabético ganaba — normalmente la copia base, no el dato personalizado. Añadido parámetro `overwriteDuplicates` para que el mod siempre tenga prioridad.
+- **Estructura de landed_titles no se actualizaba al cambiar fuente**: `MapLoader` solo cargaba la estructura de landed_titles del juego base. Al activar "Mod", la estructura de baronías/condados/ducados etc. del mod no se aplicaba. Añadido `SaveBaseSnapshot()`, `LoadModLandedTitles(modRoot)` y `ResetToBase()` para cambiar la estructura según la fuente activa (Base → base, Mod → mod, Ambos → mod).
 
 ---
 
