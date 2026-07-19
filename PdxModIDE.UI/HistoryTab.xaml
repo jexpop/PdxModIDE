@@ -11,7 +11,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Margin="5" VerticalAlignment="Top">
+        <StackPanel Grid.Column="0" Margin="5" VerticalAlignment="Top" x:Name="InfoPanel" Visibility="Collapsed">
             <GroupBox Header="{DynamicResource HistoryTab_Province}" Margin="0,0,0,5">
                 <StackPanel>
                     <Label Content="{DynamicResource HistoryTab_ID}" x:Name="LabelId"/>
@@ -20,7 +20,7 @@
                     <Label Content="{DynamicResource HistoryTab_Type}" x:Name="LabelType"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="{DynamicResource HistoryTab_Title}" Margin="0,0,0,5">
+            <GroupBox Header="{DynamicResource HistoryTab_Title}" Margin="0,0,0,5" x:Name="TitleGroup">
                 <StackPanel>
                     <Label Content="{DynamicResource HistoryTab_Barony}" x:Name="LabelBarony"/>
                     <Label Content="{DynamicResource HistoryTab_County}" x:Name="LabelCounty"/>

@@ -7,6 +7,19 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.3.0]
+
+### Added
+
+- **Panel de información contextual en pestaña Mapa**: el panel izquierdo de información de provincia/título ahora está oculto por defecto y solo se muestra al hacer clic en una provincia. El bloque "Título" (Barony, County, Holder, Liege) solo es visible cuando al menos uno de los checks "Base" o "Mod" está activo.
+
+### Changed
+
+- **Visibilidad dinámica del panel izquierdo**: se ha añadido `x:Name="InfoPanel"` al `StackPanel` del panel izquierdo en `HistoryTab.xaml`, con `Visibility="Collapsed"` inicial. Se muestra al hacer clic en provincia (`UpdateProvinceInfo`) y se oculta al hacer clic en zona sin provincia.
+- **Título condicional a Base/Mod**: el `GroupBox` de Título (`TitleGroup`) solo se muestra si `HasActiveSource()` devuelve true (Base o Mod marcado). Se actualiza tanto al hacer clic en provincia como al cambiar el estado de Base/Mod mientras el panel está visible.
+
+---
+
 ## [1.2.2]
 
 ### Added

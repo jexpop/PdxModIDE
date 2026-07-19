@@ -318,6 +318,7 @@ namespace PdxModIDE.UI
 
                 _renderer.HighlightProvinceId = -1;
                 _cachedHighlight = _renderer.HighlightProvinceId - 1;
+                InfoPanel.Visibility = Visibility.Collapsed;
                 QueueRender();
                 StatusLabel.Content = $"Coords: {x}, {y} - SIN PROVINCIA";
             }
@@ -409,6 +410,9 @@ namespace PdxModIDE.UI
         {
             UpdateTitleModeVisibility();
             ApplySourceStructure();
+
+            if (InfoPanel.Visibility == Visibility.Visible)
+                TitleGroup.Visibility = HasActiveSource() ? Visibility.Visible : Visibility.Collapsed;
 
             if (HasActiveSource())
             {
@@ -679,6 +683,9 @@ namespace PdxModIDE.UI
 
                 var province = _mapLoader.GetProvinceFromId(provinceId);
                 if (province == null) return;
+
+                InfoPanel.Visibility = Visibility.Visible;
+                TitleGroup.Visibility = HasActiveSource() ? Visibility.Visible : Visibility.Collapsed;
 
                 LabelId.Content = $"ID: {province.Id}";
                 LabelName.Content = $"Name: {province.Name}";

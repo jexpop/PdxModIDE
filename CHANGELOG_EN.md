@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0]
+
+### Added
+
+- **Contextual info panel in Map tab**: the left province/title info panel is now hidden by default and only shown when clicking on a province. The "Title" block (Barony, County, Holder, Liege) is only visible when at least one of the "Base" or "Mod" checkboxes is active.
+
+### Changed
+
+- **Dynamic left panel visibility**: added `x:Name="InfoPanel"` to the left panel `StackPanel` in `HistoryTab.xaml`, with initial `Visibility="Collapsed"`. It is shown on province click (`UpdateProvinceInfo`) and hidden when clicking empty space.
+- **Title conditional on Base/Mod**: the Title `GroupBox` (`TitleGroup`) is only shown if `HasActiveSource()` returns true (Base or Mod checked). It updates both on province click and when Base/Mod state changes while the panel is visible.
+
+---
+
 ## [1.2.2]
 
 ### Added
