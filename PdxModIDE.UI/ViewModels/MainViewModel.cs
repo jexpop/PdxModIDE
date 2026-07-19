@@ -17,6 +17,7 @@ namespace PdxModIDE.UI.ViewModels
         private readonly IProjectService _projectService;
         private Domain.Profile? _currentProfile;
         private string _theme = "light";
+        private string _language = "es";
 
         public IProjectService ProjectService => _projectService;
 
@@ -69,6 +70,12 @@ namespace PdxModIDE.UI.ViewModels
         {
             get => _theme;
             set => SetProperty(ref _theme, value);
+        }
+
+        public string Language
+        {
+            get => _language;
+            set => SetProperty(ref _language, value);
         }
 
         public int YearOffset
@@ -209,11 +216,13 @@ namespace PdxModIDE.UI.ViewModels
         public void LoadSettings()
         {
             Theme = _projectService.Theme;
+            Language = _projectService.Language;
         }
 
         public void SaveSettings()
         {
             _projectService.Theme = Theme;
+            _projectService.Language = Language;
             _projectService.SaveSettings();
         }
 

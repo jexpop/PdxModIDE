@@ -51,6 +51,7 @@ namespace PdxModIDE.Project
         bool WriteEndDate(string newDate);
 
         string Theme { get; set; }
+        string Language { get; set; }
         void SaveSettings();
     }
 }

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-07-19
+
+### Added
+
+- **Ventana de Ajustes Generales** (`GeneralSettingsWindow`): nueva ventana modal accesible mediante un icono de tuerca (⚙) en la esquina superior derecha de `MainWindow`, con la configuración de la aplicación que no depende de un perfil/mod concreto (Tema visual e Idioma).
+- **Infraestructura de internacionalización (i18n)**: nuevo mecanismo de idiomas basado en `ResourceDictionary` XAML, siguiendo el mismo patrón ya usado para los Temas (`Themes/*.xaml` → swap dinámico de diccionario con `DynamicResource`). Carpeta `PdxModIDE.UI/Languages/` con `es.xaml` (por defecto) y `en.xaml`.
+- **`Settings.Language`**: nuevo campo en `data/settings.json` (`"language"`, por defecto `"es"`), persistido igual que `Theme`. Propagado a través de `IProjectService.Language`, `ProjectManager.Language` y `MainViewModel.Language`.
+- **`MainWindow.ApplyLanguage(string)`**: nuevo método público que recarga el diccionario de idioma sin perder el tema activo (y viceversa), mediante `RefreshMergedDictionaries()`, que recombina ambos diccionarios (tema + idioma) en los recursos de `Application` y de la ventana.
+- Selector de idioma (Español/English) en `GeneralSettingsWindow`, con aplicación en caliente (sin reiniciar la aplicación).
+
+### Changed
+
+- **Pestaña "Opciones" eliminada del `TabControl`**: la configuración de Tema (antes en `SettingsTab`, dentro de las pestañas del proyecto) se ha trasladado a la nueva ventana modal `GeneralSettingsWindow`, ya que es configuración de aplicación, no de un mod/perfil concreto. `SettingsTab.xaml`/`.xaml.cs` eliminados.
+- `PdxModIDE.UI.csproj`: añadido `<Content Include="Languages\**">` (igual que `Themes\**`) para copiar los diccionarios de idioma al directorio de salida/publicación.
+
+### Notes
+
+- Fase 1 de i18n: por ahora solo se traducen los textos de `GeneralSettingsWindow` (prueba de concepto del mecanismo de cambio de idioma en caliente). El resto de la interfaz (Perfil, Mapa, Fechas, Módulos, Validación, Logs) permanece en español hardcoded; su traducción se abordará en una fase posterior, reutilizando el mismo mecanismo de `ResourceDictionary`.
+
+---
+
 ## [1.1.10] - 2026-07-18
 
 ### Changed
@@ -171,7 +192,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Settings persistentes por usuario** (theme, último perfil, paths recientes) → ya en `Settings.json` pero extender.
 - **Validación incremental**: watcher `FileSystemWatcher` en ModRoot para actualizar estado validación en tiempo real.
 - **Exportación de diff**: HTML/Markdown report de validación.
-- **Internacionalización (i18n)**: `Resources.resx` EN/ES para strings UI.
+- **Internacionalización (i18n) - traducción completa de la UI**: la infraestructura base (`ResourceDictionary` XAML EN/ES) ya existe desde 1.2.0, pero solo cubre `GeneralSettingsWindow`. Falta extraer y traducir los strings hardcoded en español del resto de tabs (`ProfileTab`, `HistoryTab`, `DatesTab`, `ModulesTab`, `ValidationTab`, `LogsTab`) y de `MainViewModel`.
 
 ---
 

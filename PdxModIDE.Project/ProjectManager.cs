@@ -40,6 +40,12 @@ namespace PdxModIDE.Project
             set => _dataSettings.Theme = value;
         }
 
+        public string Language
+        {
+            get => _dataSettings.Language;
+            set => _dataSettings.Language = value;
+        }
+
         public ProjectManager()
         {
             _moduleProcessor = new ModuleProcessor(new ModuleRepository());

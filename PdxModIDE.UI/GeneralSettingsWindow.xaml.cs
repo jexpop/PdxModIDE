@@ -1,18 +1,16 @@
 using System.Windows;
-using System.Windows.Controls;
 using PdxModIDE.UI.ViewModels;
 
 namespace PdxModIDE.UI
 {
-    public partial class SettingsTab : System.Windows.Controls.UserControl
+    public partial class GeneralSettingsWindow : Window
     {
         private MainViewModel? _viewModel;
 
-        public SettingsTab()
+        public GeneralSettingsWindow()
         {
             InitializeComponent();
             Loaded += OnLoaded;
-            BtnApply.Click += BtnApply_Click;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -30,11 +28,17 @@ namespace PdxModIDE.UI
                 case "vscode-light": RadioVscodeLight.IsChecked = true; break;
                 default: RadioLight.IsChecked = true; break;
             }
+
+            switch (_viewModel.Language)
+            {
+                case "en": RadioLangEn.IsChecked = true; break;
+                default: RadioLangEs.IsChecked = true; break;
+            }
         }
 
-        private void ThemeChanged(object sender, RoutedEventArgs e)
+        private void LanguageChanged(object sender, RoutedEventArgs e)
         {
-            // Preview only - apply on button click
+            // Preview only - se aplica al pulsar "Aplicar", igual que el tema.
         }
 
         private string GetSelectedTheme()
@@ -48,19 +52,38 @@ namespace PdxModIDE.UI
             return "light";
         }
 
+        private string GetSelectedLanguage()
+        {
+            if (RadioLangEn.IsChecked == true) return "en";
+            return "es";
+        }
+
         private void BtnApply_Click(object sender, RoutedEventArgs e)
         {
             if (_viewModel == null) return;
 
             var theme = GetSelectedTheme();
+            var language = GetSelectedLanguage();
+
             _viewModel.Theme = theme;
+            _viewModel.Language = language;
             _viewModel.SaveSettings();
 
-            if (Window.GetWindow(this) is MainWindow mainWindow)
+            if (Owner is MainWindow mainWindow)
+            {
                 mainWindow.ApplyTheme(theme);
+                mainWindow.ApplyLanguage(language);
+            }
 
-            System.Windows.MessageBox.Show("Tema aplicado", "OK",
+            System.Windows.MessageBox.Show(
+                (string)System.Windows.Application.Current.Resources["Settings_AppliedMessage"],
+                (string)System.Windows.Application.Current.Resources["Settings_AppliedTitle"],
                 MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }

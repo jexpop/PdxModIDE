@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.1.10 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.2.0 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -279,6 +279,27 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 
 **Temas**: `ResourceDictionary` swap en `MainWindow.ApplyTheme(theme)`. Archivos en `Themes/*.xaml`.
 
+### 5.9 `GeneralSettingsWindow` + Internacionalización (`PdxModIDE.UI`)
+
+**Ajustes de aplicación** (no ligados a un perfil/mod): ventana modal (`Window`, no `UserControl`) abierta desde un icono de tuerca (⚙) en la esquina superior derecha de `MainWindow` (`BtnGeneralSettings_Click`). Contiene:
+
+- **Tema visual**: mismos 7 temas que antes vivían en la desaparecida pestaña "Opciones" (`SettingsTab`, eliminada en 1.2.0).
+- **Idioma**: nuevo selector Español/English.
+
+**Mecanismo i18n**: `ResourceDictionary` XAML, mismo patrón que Temas. Carpeta `PdxModIDE.UI/Languages/` (`es.xaml`, `en.xaml`) con claves `system:String` (ej. `Settings_Title`, `Settings_ThemeSection`). Consumido en XAML vía `{DynamicResource Clave}` para permitir cambio en caliente sin reiniciar.
+
+```
+MainWindow.ApplyTheme(theme)      → actualiza _currentThemePath
+MainWindow.ApplyLanguage(language) → actualiza _currentLanguagePath
+    └─ RefreshMergedDictionaries()  → recombina AMBOS diccionarios (tema + idioma)
+                                       en Application.Resources y Window.Resources,
+                                       para que cambiar uno no elimine el otro.
+```
+
+**Persistencia**: `Settings.Language` (`data/settings.json`, campo `"language"`, default `"es"`) — mismo flujo que `Theme`: `IProjectService.Language` → `ProjectManager.Language` → `MainViewModel.Language` → `MainViewModel.SaveSettings()`.
+
+**Alcance actual (fase 1)**: solo los textos de `GeneralSettingsWindow` están traducidos (prueba de concepto del mecanismo). El resto de la UI (Perfil, Mapa, Fechas, Módulos, Validación, Logs) sigue con strings hardcoded en español — pendiente de traducir en una fase posterior reutilizando este mismo mecanismo (ver sección 8, TODOs).
+
 ---
 
 ## 6. Convenciones y Estilo
@@ -331,7 +352,7 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
   - `ModuleValidator.CompareFileContents` (igual, distinto, solo en A, solo en B).
 - [ ] **Virtualización listas módulos/archivos** (`VirtualizingStackPanel` + `ItemsControl` → `ListView` con `VirtualizingPanel.IsVirtualizing=True`).
 - [ ] **LUT cache incremental**: invalidar solo provincias modificadas (diff `definition.csv`).
-- [ ] **Internacionalización**: `Resources.resx` EN/ES; `MainViewModel` strings hardcoded en español.
+- [ ] **Internacionalización (en curso desde 1.2.0)**: mecanismo base (`ResourceDictionary` XAML EN/ES, ver sección 5.9) implementado y funcionando solo en `GeneralSettingsWindow`. Falta extraer y traducir los strings hardcoded en español del resto de tabs (`ProfileTab`, `HistoryTab`, `DatesTab`, `ModulesTab`, `ValidationTab`, `LogsTab`) y de `MainViewModel`.
 
 ### 🟢 Mejora
 - [ ] **Plugins EU4/Imperator/HOI4/Vic3**: nuevos `IGamePlugin` con regex y paths específicos.
@@ -431,4 +452,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-07-18 | Proyecto: PdxModIDE | Versión: 1.1.10 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*
+*Generado: 2026-07-19 | Proyecto: PdxModIDE | Versión: 1.2.0 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*

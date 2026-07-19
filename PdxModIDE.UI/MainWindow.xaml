@@ -11,6 +11,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/LightTheme.xaml"/>
+                <ResourceDictionary Source="Languages/es.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="TabItem">
                 <Setter Property="Background" Value="{DynamicResource TabHeaderBackground}"/>
@@ -64,7 +65,21 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid Background="{DynamicResource WindowBackground}">
-        <TabControl Margin="10" Background="{DynamicResource TabSelectedBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Button x:Name="BtnGeneralSettings" Grid.Row="0"
+                Content="&#9881;"
+                FontSize="16"
+                Width="34" Height="34"
+                Margin="10,10,10,0"
+                HorizontalAlignment="Right"
+                ToolTip="Ajustes generales"
+                Click="BtnGeneralSettings_Click"/>
+
+        <TabControl Grid.Row="1" Margin="10" Background="{DynamicResource TabSelectedBackground}">
             <TabItem Header="Perfil">
                 <local:ProfileTab/>
             </TabItem>
@@ -82,9 +97,6 @@
             </TabItem>
             <TabItem Header="Logs">
                 <local:LogsTab/>
-            </TabItem>
-            <TabItem Header="Opciones">
-                <local:SettingsTab/>
             </TabItem>
         </TabControl>
     </Grid>

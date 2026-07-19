@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Content Include="Themes\**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Languages\**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <Target Name="CopyDataToOutput" AfterTargets="AfterBuild;AfterPublish">

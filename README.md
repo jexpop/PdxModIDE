@@ -3,7 +3,7 @@
 **IDE para gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**  
 Aplicación WPF (.NET 8) que automatiza el copiado de archivos del juego al mod, aplica offset de fechas y valida diferencias.
 
-**Versión actual:** 1.1.10
+**Versión actual:** 1.2.0
 
 ---
 
@@ -26,7 +26,8 @@ Aplicación WPF (.NET 8) que automatiza el copiado de archivos del juego al mod,
 PdxModIDE/
 ├── data/                    # JSON persistentes (perfiles, módulos, archivos, settings, logfilters)
 ├── logs/                    # Logs de procesamiento por perfil + crash.log
-├── Themes/                  # ResourceDictionaries XAML (Light, Dark, CK3, Sepia, Contrast, VSCode)
+├── Themes/                  # ResourceDictionaries XAML de tema (Light, Dark, CK3, Sepia, Contrast, VSCode) — en PdxModIDE.UI/
+├── Languages/                # ResourceDictionaries XAML de idioma (es, en) — en PdxModIDE.UI/
 ├── PdxModIDE.sln
 ├── PdxModIDE.Core/          # Lógica de procesamiento, plugins de juego, DefinesProcessor
 ├── PdxModIDE.Domain/        # Entidades puras (Module, GameFile, Profile, EditingSession)
@@ -83,8 +84,10 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 - **Visualización de titulares**: `BuildHolderLut(year, TitleHistoryLoader)` → palette 256 colores para renderizado de mapa político histórico.
 - **Modo Condados (pestaña Mapa)**: Checkbox "Condados" colorea mapa por límites de condado (`c_xxx`) vía `BuildCountyLut()` (provincia → baronía → condado), con ciclo de colores para >255 condados.
 - **Modos Ducados / Reinos / Imperios**: Checkboxes "Duc.", "Rey.", "Imp." colorean por límites de ducado (`d_xxx`), reino (`k_xxx`), imperio (`e_xxx`) usando jerarquía completa `landed_titles` (baronía → condado → ducado → reino → imperio). Mutua exclusión entre los 5 modos.
+- **Ajustes Generales de la aplicación**: ventana modal accesible mediante icono de tuerca (⚙), con configuración que no depende de un mod/perfil concreto (Tema visual e Idioma). Sustituye a la antigua pestaña "Opciones".
 - **Temas intercambiables**: 6 temas (Light, Dark, CK3, Sepia, Contrast, VSCode Dark/Light); persistencia en `Settings.json`.
-- **Pestañas UI**: Perfil, Mapa, Módulos, Archivos, Fechas, Validación, Logs, Configuración.
+- **Idioma (i18n, en desarrollo)**: selector Español/English en Ajustes Generales, con cambio en caliente vía `ResourceDictionary` XAML (`Languages/es.xaml`, `Languages/en.xaml`). Por ahora solo traduce la propia ventana de Ajustes; el resto de la interfaz se traducirá progresivamente.
+- **Pestañas UI**: Perfil, Mapa, Fechas, Módulos, Validación, Logs.
 
 ---
 
@@ -185,7 +188,8 @@ El ejecutable resultante incluye runtime .NET 8 (~70 MB).
 | Archivo | Propósito |
 |---------|-----------|
 | `PdxModIDE.UI/App.xaml.cs` | Bootstrap: registra plugins, logging global, crea carpetas `data/`, `logs/` |
-| `PdxModIDE.UI/MainWindow.xaml.cs` | Ventana principal, VM binding, tema, selección perfil inicial |
+| `PdxModIDE.UI/MainWindow.xaml.cs` | Ventana principal, VM binding, tema, idioma, selección perfil inicial |
+| `PdxModIDE.UI/GeneralSettingsWindow.xaml.cs` | Ventana modal de Ajustes Generales (Tema + Idioma), abierta desde icono ⚙ |
 | `PdxModIDE.Project/ProjectManager.cs` | Orquestador central: perfiles, sesión, procesamiento, validación, persistencia |
 | `PdxModIDE.Core/ModuleProcessor.cs` | Lógica copia + offset fechas + logging por módulo (paralelo) |
 | `PdxModIDE.Core/DefinesProcessor.cs` | Lectura/escritura `end_date` en `defines.txt` (game + mod) con backup |

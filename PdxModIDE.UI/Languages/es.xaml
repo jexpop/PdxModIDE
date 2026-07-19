@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        Diccionario de idioma: Español (es)
+        Fase 1: Solo se usa en GeneralSettingsWindow como prueba de concepto
+        del mecanismo de cambio de idioma en caliente (DynamicResource).
+        El resto de la interfaz se traducirá en fases posteriores.
+    -->
+
+    <system:String x:Key="Settings_Title">Ajustes generales</system:String>
+    <system:String x:Key="Settings_Subtitle">Estos ajustes afectan a toda la aplicación, no a un mod en concreto.</system:String>
+    <system:String x:Key="Settings_ThemeSection">Tema visual</system:String>
+    <system:String x:Key="Settings_LanguageSection">Idioma</system:String>
+    <system:String x:Key="Settings_Theme_Light">Claro</system:String>
+    <system:String x:Key="Settings_Theme_Dark">Oscuro</system:String>
+    <system:String x:Key="Settings_Theme_CK3">CK3 (colores del juego)</system:String>
+    <system:String x:Key="Settings_Theme_Sepia">Sepia (lectura prolongada)</system:String>
+    <system:String x:Key="Settings_Theme_Contrast">Alto contraste</system:String>
+    <system:String x:Key="Settings_Theme_VSCodeDark">VS Code (oscuro)</system:String>
+    <system:String x:Key="Settings_Theme_VSCodeLight">VS Code (claro)</system:String>
+    <system:String x:Key="Settings_Language_Spanish">Español</system:String>
+    <system:String x:Key="Settings_Language_English">English</system:String>
+    <system:String x:Key="Settings_ApplyButton">Aplicar</system:String>
+    <system:String x:Key="Settings_CloseButton">Cerrar</system:String>
+    <system:String x:Key="Settings_AppliedMessage">Ajustes aplicados correctamente.</system:String>
+    <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
+
+</ResourceDictionary>
