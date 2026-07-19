@@ -74,7 +74,8 @@
                 Content="&#9881;"
                 FontSize="16"
                 Width="34" Height="34"
-                Margin="10,10,10,0"
+                Padding="0"
+                Margin="10,10,20,0"
                 HorizontalAlignment="Right"
                 ToolTip="{DynamicResource MainWindow_Tooltip_GeneralSettings}"
                 Click="BtnGeneralSettings_Click"/>
