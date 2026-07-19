@@ -1,0 +1,12 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        Diccionari d'idioma específic de CK3: Català (ca)
+        Textos propis del joc CK3 (mòduls, UI específica, etc.).
+        Els textos generals de l'aplicació són a ca.xaml.
+        Per afegir un nou joc, crear {GameKey}.ca.xaml.
+    -->
+
+</ResourceDictionary>

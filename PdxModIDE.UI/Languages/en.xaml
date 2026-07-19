@@ -21,6 +21,7 @@
     <system:String x:Key="Settings_Theme_VSCodeDark">VS Code (dark)</system:String>
     <system:String x:Key="Settings_Theme_VSCodeLight">VS Code (light)</system:String>
     <system:String x:Key="Settings_Language_Spanish">Español</system:String>
+    <system:String x:Key="Settings_Language_Catalan">Català</system:String>
     <system:String x:Key="Settings_Language_English">English</system:String>
     <system:String x:Key="Settings_ApplyButton">Apply</system:String>
     <system:String x:Key="Settings_CloseButton">Close</system:String>

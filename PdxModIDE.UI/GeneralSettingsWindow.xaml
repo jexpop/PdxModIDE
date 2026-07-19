@@ -35,6 +35,10 @@
                          Content="{DynamicResource Settings_Language_Spanish}"
                          Foreground="{DynamicResource WindowForeground}"
                          Checked="LanguageChanged"/>
+            <RadioButton x:Name="RadioLangCa" GroupName="Language" Margin="0,0,0,3"
+                         Content="{DynamicResource Settings_Language_Catalan}"
+                         Foreground="{DynamicResource WindowForeground}"
+                         Checked="LanguageChanged"/>
             <RadioButton x:Name="RadioLangEn" GroupName="Language" Margin="0,0,0,3"
                          Content="{DynamicResource Settings_Language_English}"
                          Foreground="{DynamicResource WindowForeground}"

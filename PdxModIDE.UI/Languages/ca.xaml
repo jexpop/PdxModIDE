@@ -1,0 +1,211 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        Diccionari d'idioma: Català (ca) — Textos GENERALS de l'aplicació.
+        Els textos específics de cada joc (CK3, EU4, etc.) van en fitxers
+        separats: {GameKey}.ca.xaml (ex. CK3.ca.xaml).
+    -->
+
+    <!-- GeneralSettingsWindow -->
+    <system:String x:Key="Settings_Title">Configuració general</system:String>
+    <system:String x:Key="Settings_Subtitle">Aquests ajustos afecten tota l'aplicació, no un mod en concret.</system:String>
+    <system:String x:Key="Settings_ThemeSection">Tema visual</system:String>
+    <system:String x:Key="Settings_LanguageSection">Idioma</system:String>
+    <system:String x:Key="Settings_Theme_Light">Clar</system:String>
+    <system:String x:Key="Settings_Theme_Dark">Fosc</system:String>
+    <system:String x:Key="Settings_Theme_CK3">CK3 (colors del joc)</system:String>
+    <system:String x:Key="Settings_Theme_Sepia">Sepia (lectura prolongada)</system:String>
+    <system:String x:Key="Settings_Theme_Contrast">Alt contrast</system:String>
+    <system:String x:Key="Settings_Theme_VSCodeDark">VS Code (fosc)</system:String>
+    <system:String x:Key="Settings_Theme_VSCodeLight">VS Code (clar)</system:String>
+    <system:String x:Key="Settings_Language_Spanish">Español</system:String>
+    <system:String x:Key="Settings_Language_Catalan">Català</system:String>
+    <system:String x:Key="Settings_Language_English">English</system:String>
+    <system:String x:Key="Settings_ApplyButton">Aplicar</system:String>
+    <system:String x:Key="Settings_CloseButton">Tancar</system:String>
+    <system:String x:Key="Settings_AppliedMessage">Ajustos aplicats correctament.</system:String>
+    <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
+
+    <!-- MainWindow -->
+    <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
+    <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
+    <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
+    <system:String x:Key="MainWindow_Tab_Dates">Dates</system:String>
+    <system:String x:Key="MainWindow_Tab_Modules">Mòduls</system:String>
+    <system:String x:Key="MainWindow_Tab_Validation">Validació</system:String>
+    <system:String x:Key="MainWindow_Tab_Logs">Logs</system:String>
+
+    <!-- ProfileTab -->
+    <system:String x:Key="ProfileTab_SelectProfile">Seleccionar perfil:</system:String>
+    <system:String x:Key="ProfileTab_Routes">Rutes</system:String>
+    <system:String x:Key="ProfileTab_GameRoot">Arrel del joc:</system:String>
+    <system:String x:Key="ProfileTab_ModRoot">Arrel del mod:</system:String>
+    <system:String x:Key="ProfileTab_BackupRoot">Carpeta de còpies de seguretat:</system:String>
+    <system:String x:Key="ProfileTab_Browse">Seleccionar</system:String>
+    <system:String x:Key="ProfileTab_SaveProfile">Guardar perfil</system:String>
+    <system:String x:Key="ProfileTab_NewProfile">Crear perfil nou</system:String>
+    <system:String x:Key="ProfileTab_RenameProfile">Renombrar perfil</system:String>
+    <system:String x:Key="ProfileTab_DeleteProfile">Eliminar perfil</system:String>
+    <system:String x:Key="ProfileTab_DefaultModules">Mòduls activats per defecte:</system:String>
+
+    <!-- ModulesTab -->
+    <system:String x:Key="ModulesTab_CurrentGame">Joc del perfil actual:</system:String>
+    <system:String x:Key="ModulesTab_EditModule">Editar mòdul</system:String>
+    <system:String x:Key="ModulesTab_ModuleName">Nom del mòdul:</system:String>
+    <system:String x:Key="ModulesTab_RelativePath">Ruta relativa:</system:String>
+    <system:String x:Key="ModulesTab_IgnoredExt">Extensions ignorades (coma):</system:String>
+    <system:String x:Key="ModulesTab_AddModule">Afegir mòdul</system:String>
+    <system:String x:Key="ModulesTab_SaveChanges">Guardar canvis</system:String>
+    <system:String x:Key="ModulesTab_DeleteModule">Eliminar mòdul</system:String>
+
+    <!-- DatesTab -->
+    <system:String x:Key="DatesTab_YearOffset">Offset d'any</system:String>
+    <system:String x:Key="DatesTab_EndDate">END_DATE</system:String>
+    <system:String x:Key="DatesTab_EndDateLabel">Data final del joc (END_DATE):</system:String>
+    <system:String x:Key="DatesTab_SaveEndDate">Guardar END_DATE al mod</system:String>
+    <system:String x:Key="DatesTab_ModulesToProcess">Mòduls a processar</system:String>
+    <system:String x:Key="DatesTab_Process">Processar</system:String>
+    <system:String x:Key="DatesTab_SourceMod">Origen: (mod)</system:String>
+    <system:String x:Key="DatesTab_SourceGame">Origen: (joc)</system:String>
+    <system:String x:Key="DatesTab_SourceNotFound">Origen: (no trobat)</system:String>
+
+    <!-- HistoryTab -->
+    <system:String x:Key="HistoryTab_Province">Província</system:String>
+    <system:String x:Key="HistoryTab_ID">ID: -</system:String>
+    <system:String x:Key="HistoryTab_Name">Nom: -</system:String>
+    <system:String x:Key="HistoryTab_Color">Color: -</system:String>
+    <system:String x:Key="HistoryTab_Type">Tipus: -</system:String>
+    <system:String x:Key="HistoryTab_Title">Títol</system:String>
+    <system:String x:Key="HistoryTab_Barony">Baronia: -</system:String>
+    <system:String x:Key="HistoryTab_County">Comtat: -</system:String>
+    <system:String x:Key="HistoryTab_Holder">Holder: -</system:String>
+    <system:String x:Key="HistoryTab_Liege">Liege: -</system:String>
+    <system:String x:Key="HistoryTab_ZoomIn">Zoom +</system:String>
+    <system:String x:Key="HistoryTab_ZoomOut">Zoom -</system:String>
+    <system:String x:Key="HistoryTab_Fit">Ajustar</system:String>
+    <system:String x:Key="HistoryTab_Year">Any:</system:String>
+    <system:String x:Key="HistoryTab_OffsetMod">Data Mod: -</system:String>
+    <system:String x:Key="HistoryTab_OffsetModTooltip">Data resultant al mod (any + offset del perfil)</system:String>
+    <system:String x:Key="HistoryTab_Base">Base</system:String>
+    <system:String x:Key="HistoryTab_BaseTooltip">Mostrar dades del joc base</system:String>
+    <system:String x:Key="HistoryTab_Mod">Mod</system:String>
+    <system:String x:Key="HistoryTab_ModTooltip">Mostrar dades del mod (aplicant offset)</system:String>
+    <system:String x:Key="HistoryTab_HolderMode">Titular</system:String>
+    <system:String x:Key="HistoryTab_HolderModeTooltip">Titular (personatge)</system:String>
+    <system:String x:Key="HistoryTab_CountyMode">Comtat</system:String>
+    <system:String x:Key="HistoryTab_CountyModeTooltip">Comtats (c_xxx)</system:String>
+    <system:String x:Key="HistoryTab_DuchyMode">Ducat</system:String>
+    <system:String x:Key="HistoryTab_DuchyModeTooltip">Ducats (d_xxx)</system:String>
+    <system:String x:Key="HistoryTab_KingdomMode">Regne</system:String>
+    <system:String x:Key="HistoryTab_KingdomModeTooltip">Regnes (k_xxx)</system:String>
+    <system:String x:Key="HistoryTab_EmpireMode">Imperi</system:String>
+    <system:String x:Key="HistoryTab_EmpireModeTooltip">Imperis (e_xxx)</system:String>
+    <system:String x:Key="HistoryTab_Ready">A punt</system:String>
+    <system:String x:Key="HistoryTab_NoProfile">Sense perfil seleccionat</system:String>
+    <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil amb GameRoot vàlid</system:String>
+    <system:String x:Key="HistoryTab_NoProvincesPng">No s'ha trobat provinces.png</system:String>
+    <system:String x:Key="HistoryTab_RenderError">Error en carregar el renderitzador</system:String>
+    <system:String x:Key="HistoryTab_NoHolderData">Activa "Base" i/o "Mod" per veure dades de titulars</system:String>
+    <system:String x:Key="HistoryTab_NoCountyData">Activa "Base" i/o "Mod" per veure dades de comtats</system:String>
+    <system:String x:Key="HistoryTab_NoDuchyData">Activa "Base" i/o "Mod" per veure dades de ducats</system:String>
+    <system:String x:Key="HistoryTab_NoKingdomData">Activa "Base" i/o "Mod" per veure dades de regnes</system:String>
+    <system:String x:Key="HistoryTab_NoEmpireData">Activa "Base" i/o "Mod" per veure dades d'imperis</system:String>
+
+    <!-- ValidationTab -->
+    <system:String x:Key="ValidationTab_Modules">Mòduls</system:String>
+    <system:String x:Key="ValidationTab_PerModule">Per mòdul</system:String>
+    <system:String x:Key="ValidationTab_ModuleToValidate">Mòdul a validar:</system:String>
+    <system:String x:Key="ValidationTab_Comparison">Comparació:</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsMod">Joc ↔ Mod</system:String>
+    <system:String x:Key="ValidationTab_Compare_ModVsBackup">Mod ↔ Còpia</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsBackup">Joc ↔ Còpia</system:String>
+    <system:String x:Key="ValidationTab_CompareFiles">Comparar fitxers</system:String>
+    <system:String x:Key="ValidationTab_AllModules">Tots els mòduls</system:String>
+    <system:String x:Key="ValidationTab_AllModulesDesc">Validació total de mòduls</system:String>
+    <system:String x:Key="ValidationTab_ValidateAllModules">Validar tots els mòduls</system:String>
+    <system:String x:Key="ValidationTab_ModuleCol">Mòdul</system:String>
+    <system:String x:Key="ValidationTab_ModVsBackupCol">Mod ↔ Còpia</system:String>
+    <system:String x:Key="ValidationTab_GameVsBackupCol">Joc ↔ Còpia</system:String>
+    <system:String x:Key="ValidationTab_ModuleDetails">Veure detalls del mòdul seleccionat</system:String>
+    <system:String x:Key="ValidationTab_Files">Fitxers</system:String>
+    <system:String x:Key="ValidationTab_PerFile">Per fitxer</system:String>
+    <system:String x:Key="ValidationTab_FileToValidate">Fitxer a validar:</system:String>
+    <system:String x:Key="ValidationTab_AddFile">Afegir fitxer…</system:String>
+    <system:String x:Key="ValidationTab_ActivateFile">Activar fitxer</system:String>
+    <system:String x:Key="ValidationTab_DeactivateFile">Desactivar fitxer</system:String>
+    <system:String x:Key="ValidationTab_PathException">Excepció de ruta…</system:String>
+    <system:String x:Key="ValidationTab_ValidateAgainst">Validar contra:</system:String>
+    <system:String x:Key="ValidationTab_ValidateGame">Joc</system:String>
+    <system:String x:Key="ValidationTab_ValidateMod">Mod</system:String>
+    <system:String x:Key="ValidationTab_ValidateFile">Validar fitxer</system:String>
+    <system:String x:Key="ValidationTab_ViewDiff">Veure diff</system:String>
+    <system:String x:Key="ValidationTab_AllFiles">Tots els fitxers</system:String>
+    <system:String x:Key="ValidationTab_AllFilesDesc">Validació total de fitxers</system:String>
+    <system:String x:Key="ValidationTab_ValidateAllFiles">Validar tots els fitxers</system:String>
+    <system:String x:Key="ValidationTab_FileCol">Fitxer</system:String>
+    <system:String x:Key="ValidationTab_FileDiff">Veure diff del fitxer seleccionat</system:String>
+    <system:String x:Key="ValidationTab_NoDifferences">Sense diferències</system:String>
+
+    <!-- LogsTab -->
+    <system:String x:Key="LogsTab_Viewer">Visor de logs</system:String>
+    <system:String x:Key="LogsTab_Reload">Recarregar</system:String>
+    <system:String x:Key="LogsTab_Filter">Filtrar:</system:String>
+    <system:String x:Key="LogsTab_Apply">Aplicar</system:String>
+    <system:String x:Key="LogsTab_FilterConfig">Configuració de filtres</system:String>
+    <system:String x:Key="LogsTab_FilterDesc">Línies a ometre a error.log</system:String>
+    <system:String x:Key="LogsTab_NewFilter">Nou filtre:</system:String>
+    <system:String x:Key="LogsTab_AddFilter">Afegir</system:String>
+    <system:String x:Key="LogsTab_DeleteFilter">Eliminar seleccionat</system:String>
+    <system:String x:Key="LogsTab_NoLog">No s'ha trobat error.log</system:String>
+
+    <!-- InputDialog -->
+    <system:String x:Key="InputDialog_Title">Entrada</system:String>
+    <system:String x:Key="InputDialog_Accept">Acceptar</system:String>
+    <system:String x:Key="InputDialog_Cancel">Cancel·lar</system:String>
+
+    <!-- DiffDialog -->
+    <system:String x:Key="DiffDialog_Title">Detalls — {0}</system:String>
+
+    <!-- DiffChoiceDialog -->
+    <system:String x:Key="DiffChoiceDialog_Title">Diff — {0}</system:String>
+    <system:String x:Key="DiffChoiceDialog_Prompt">Selecciona comparació:</system:String>
+    <system:String x:Key="DiffChoiceDialog_NoDiff">No hi ha diff disponible</system:String>
+
+    <!-- DiffViewDialog -->
+    <system:String x:Key="DiffViewDialog_Title">Diferències — {0}</system:String>
+
+    <!-- App.xaml.cs messages -->
+    <system:String x:Key="App_UnhandledError">Error inesperat: {0}\n\nDetalls guardats a logs/crash.log</system:String>
+    <system:String x:Key="App_UIError">Error a la interfície: {0}\n\nDetalls guardats a logs/crash.log</system:String>
+    <system:String x:Key="App_ErrorTitle">Error</system:String>
+
+    <!-- MainViewModel messages -->
+    <system:String x:Key="Msg_NewProfileTitle">Nou Perfil</system:String>
+    <system:String x:Key="Msg_NewProfilePrompt">Nom del perfil:</system:String>
+    <system:String x:Key="Msg_RenameProfileTitle">Renombrar Perfil</system:String>
+    <system:String x:Key="Msg_RenameProfilePrompt">Nou nom:</system:String>
+    <system:String x:Key="Msg_NameNotValid">El nom ja existeix o no és vàlid</system:String>
+    <system:String x:Key="Msg_ConfirmDelete">Eliminar el perfil '{0}'?</system:String>
+    <system:String x:Key="Msg_ConfirmTitle">Confirmar</system:String>
+    <system:String x:Key="Msg_ProcessComplete">Processament completat</system:String>
+    <system:String x:Key="Msg_ProcessOK">D'acord</system:String>
+    <system:String x:Key="Msg_SaveEndDateTitle">Guardar END_DATE</system:String>
+    <system:String x:Key="Msg_SaveEndDatePrompt">Nova data (format YYYY.M.D):</system:String>
+    <system:String x:Key="Msg_EndDateSaved">END_DATE guardat al mod</system:String>
+    <system:String x:Key="Msg_EndDateError">No s'ha pogut guardar END_DATE</system:String>
+    <system:String x:Key="Msg_EndDateOK">D'acord</system:String>
+    <system:String x:Key="Msg_InvalidDate">Data invàlida</system:String>
+    <system:String x:Key="Msg_BrowseGameRoot">Seleccionar carpeta arrel del joc</system:String>
+    <system:String x:Key="Msg_BrowseModRoot">Seleccionar carpeta arrel del mod</system:String>
+    <system:String x:Key="Msg_BrowseBackupRoot">Seleccionar carpeta de còpies de seguretat</system:String>
+    <system:String x:Key="Msg_BrowseFolder">Seleccionar carpeta</system:String>
+    <system:String x:Key="Msg_BrowseGameRootForProfile">Seleccionar carpeta arrel del joc base (CK3, EU4, HOI4, etc.)</system:String>
+    <system:String x:Key="Msg_NewModuleTitle">Nou Mòdul</system:String>
+    <system:String x:Key="Msg_NewModulePrompt">Nom del mòdul:</system:String>
+    <system:String x:Key="Msg_NewModulePathTitle">Ruta del Mòdul</system:String>
+    <system:String x:Key="Msg_NewModulePathPrompt">Ruta relativa:</system:String>
+    <system:String x:Key="Msg_DeleteModuleConfirm">Eliminar el mòdul '{0}'?</system:String>
+
+</ResourceDictionary>

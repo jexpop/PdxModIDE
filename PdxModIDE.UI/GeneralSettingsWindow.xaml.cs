@@ -31,6 +31,7 @@ namespace PdxModIDE.UI
 
             switch (_viewModel.Language)
             {
+                case "ca": RadioLangCa.IsChecked = true; break;
                 case "en": RadioLangEn.IsChecked = true; break;
                 default: RadioLangEs.IsChecked = true; break;
             }
@@ -54,6 +55,7 @@ namespace PdxModIDE.UI
 
         private string GetSelectedLanguage()
         {
+            if (RadioLangCa.IsChecked == true) return "ca";
             if (RadioLangEn.IsChecked == true) return "en";
             return "es";
         }

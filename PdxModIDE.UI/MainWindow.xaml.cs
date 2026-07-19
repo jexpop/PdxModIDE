@@ -71,6 +71,7 @@ namespace PdxModIDE.UI
 
             _currentLanguagePath = language switch
             {
+                "ca" => "Languages/ca.xaml",
                 "en" => "Languages/en.xaml",
                 "es" => "Languages/es.xaml",
                 _ => "Languages/en.xaml"

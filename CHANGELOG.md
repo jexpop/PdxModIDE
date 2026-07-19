@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.2.1] - 2026-07-19
+## [1.2.2] - 2026-07-19
 
 ### Added
+
+- **Nuevo idioma: Català (ca)**: se añade el Català como tercer idioma disponible. Nuevo archivo `Languages/ca.xaml` con traducción completa de toda la interfaz, `Languages/CK3.ca.xaml` como placeholder, selector radio en `GeneralSettingsWindow`, y soporte en `ApplyLanguage` / `GetSelectedLanguage`.
+- **Internacionalización completa de la UI (fase 2)**: ~140 nuevas claves i18n extraídas a `es.xaml` / `en.xaml` para todas las pestañas y cuadros de diálogo:
 
 - **Internacionalización completa de la UI (fase 2)**: ~140 nuevas claves i18n extraídas a `es.xaml` / `en.xaml` para todas las pestañas y cuadros de diálogo:
   - MainWindow (tooltips y headers de tabs)
