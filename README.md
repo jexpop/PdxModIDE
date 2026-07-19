@@ -1,204 +1,88 @@
 # PdxModIDE
 
-**IDE para gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**  
+---
+
+## English
+
+**Desktop IDE for managing and processing Paradox Interactive game mods (CK3, EU4, HOI4, etc.)**
+WPF application (.NET 8) that automates copying game files to the mod directory, applies year offsets, and validates differences.
+
+**Current version:** 1.2.2
+
+### Documentation
+
+- **[PROJECT_CONTEXT_EN.md](PROJECT_CONTEXT_EN.md)** — Full technical context: architecture, data model, key modules, conventions, technical debt, and quick references.
+- **[CHANGELOG_EN.md](CHANGELOG_EN.md)** — Version history and changes (Keep a Changelog format).
+
+### Setup & Build
+
+```bash
+# Build (Debug)
+dotnet build PdxModIDE.sln --configuration Debug
+
+# Build (Release)
+dotnet build PdxModIDE.sln --configuration Release
+
+# Run
+dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
+```
+
+**Requirements**: .NET 8 SDK, Windows 10/11, a Paradox game installed (CK3 by default).
+
+---
+
+## Español
+
+**IDE de escritorio para la gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**
 Aplicación WPF (.NET 8) que automatiza el copiado de archivos del juego al mod, aplica offset de fechas y valida diferencias.
 
 **Versión actual:** 1.2.2
 
----
+### Documentación
 
-## Documentación
+- **[PROJECT_CONTEXT_ES.md](PROJECT_CONTEXT_ES.md)** — Contexto técnico completo: arquitectura, modelo de datos, módulos clave, convenciones, deuda técnica y referencias rápidas.
+- **[CHANGELOG_ES.md](CHANGELOG_ES.md)** — Historial de versiones y cambios (formato Keep a Changelog).
 
-- **[PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)** — Contexto técnico completo: arquitectura, modelo de datos, módulos clave, convenciones, deuda técnica y referencias rápidas.
-- **[CHANGELOG.md](CHANGELOG.md)** — Historial de versiones y cambios (formato Keep a Changelog).
+### Configuración y Build
 
----
-
-## Configuración del Proyecto
-
-### Requisitos
-- **.NET 8 SDK** (o runtime para ejecutar)
-- **Windows 10/11** (WPF, Windows Forms para diálogos de selección de juego)
-- Juego Paradox instalado (CK3 por defecto; plugins para otros juegos)
-
-### Estructura de carpetas esperada
-```
-PdxModIDE/
-├── data/                    # JSON persistentes (perfiles, módulos, archivos, settings, logfilters)
-├── logs/                    # Logs de procesamiento por perfil + crash.log
-├── Themes/                  # ResourceDictionaries XAML de tema (Light, Dark, CK3, Sepia, Contrast, VSCode) — en PdxModIDE.UI/
-├── Languages/                # ResourceDictionaries XAML de idioma (es, en) — en PdxModIDE.UI/
-├── PdxModIDE.sln
-├── PdxModIDE.Core/          # Lógica de procesamiento, plugins de juego, DefinesProcessor
-├── PdxModIDE.Domain/        # Entidades puras (Module, GameFile, Profile, EditingSession)
-├── PdxModIDE.Data/          # Repositorios JSON + DataLoader (persistencia)
-├── PdxModIDE.IO/            # Utilidades de archivo (copy, read, timestamps)
-├── PdxModIDE.MapEngine/     # Carga mapas Paradox (definition.csv, provinces.png, landed_titles)
-├── PdxModIDE.Rendering/     # MapRenderer (SkiaSharp) - viewport, zoom, picker
-├── PdxModIDE.Project/       # ProjectManager (orquestador, validación, perfiles)
-├── PdxModIDE.UI/            # WPF MVVM (MainWindow, tabs, ViewModels, temas)
-└── PdxModIDE.Validation/    # ModuleValidator (diff archivos mod/juego/backup)
-```
-
-### Build
 ```bash
-# Debug
+# Compilar (Debug)
 dotnet build PdxModIDE.sln --configuration Debug
 
-# Release
+# Compilar (Release)
 dotnet build PdxModIDE.sln --configuration Release
 
-# Publicar single-file (Windows)
-dotnet publish PdxModIDE.UI/PdxModIDE.UI.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
-```
-
-### Ejecutar
-```bash
+# Ejecutar
 dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 ```
 
----
-
-## Stack Principal
-
-| Capa | Tecnología |
-|------|------------|
-| **UI** | WPF (.NET 8), MVVM ligero (code-behind + ViewModels), XAML |
-| **Core** | C# 12, `System.Threading.Tasks.Parallel`, `System.Text.Json` |
-| **Persistencia** | JSON en `data/` (sin BD externa) |
-| **Mapa/Render** | **SkiaSharp** (SKBitmap, SKCanvas, SKImage) |
-| **Plugins de juego** | Interfaces `IGamePlugin`, `IDateProcessor` (extensible) |
-| **DI** | Manual (instanciación directa en `ProjectManager`, `App.xaml.cs`) |
-| **Logging** | `File.AppendAllText` a `logs/` + `MessageBox` para errores UI |
+**Requisitos**: .NET 8 SDK, Windows 10/11, un juego Paradox instalado (CK3 por defecto).
 
 ---
 
-## Funcionalidades
+## Català
 
-- **Perfiles de mod**: Múltiples configuraciones (game root, mod root, backup root, year offset, módulos/archivos seleccionados).
-- **Detección automática de juego**: `GameRegistry.DetectGame(gameRoot)` lee `game.json`/`launcher-settings.json` y matchea con plugin registrado.
-- **Procesamiento de módulos**: Copia recursiva `game_root/path → mod_root/path`; aplica offset de años via regex (`yyyy.m.d` → `yyyy+offset.m.d`); backup automático en `backup_root/path`.
-- **Procesamiento paralelo**: `Parallel.ForEach` con grado de paralelismo = núcleos CPU.
-- **Validación de módulos/archivos**: Tres modos comparación (Juego vs Mod, Mod vs Backup, Juego vs Backup); diff línea a línea; resumen estadístico.
-- **Motor de mapas**: Carga `definition.csv` (ID, RGB, nombre), `default.map` (sea/lakes/rivers/impassable), `landed_titles` (baronías → condados), `provinces.png` (lookup RGB → province ID). Cache LUT binario (16M entries) con hash MD5 de archivos fuente.
-- **Visualización de titulares**: `BuildHolderLut(year, TitleHistoryLoader)` → palette 256 colores para renderizado de mapa político histórico.
-- **Modo Condados (pestaña Mapa)**: Checkbox "Condados" colorea mapa por límites de condado (`c_xxx`) vía `BuildCountyLut()` (provincia → baronía → condado), con ciclo de colores para >255 condados.
-- **Modos Ducados / Reinos / Imperios**: Checkboxes "Duc.", "Rey.", "Imp." colorean por límites de ducado (`d_xxx`), reino (`k_xxx`), imperio (`e_xxx`) usando jerarquía completa `landed_titles` (baronía → condado → ducado → reino → imperio). Mutua exclusión entre los 5 modos.
-- **Ajustes Generales de la aplicación**: ventana modal accesible mediante icono de tuerca (⚙), con configuración que no depende de un mod/perfil concreto (Tema visual e Idioma). Sustituye a la antigua pestaña "Opciones".
-- **Temas intercambiables**: 6 temas (Light, Dark, CK3, Sepia, Contrast, VSCode Dark/Light); persistencia en `Settings.json`.
-- **Idioma (i18n)**: selector Español/English en Ajustes Generales, con cambio en caliente vía `ResourceDictionary` XAML (`Languages/es.xaml`, `Languages/en.xaml`). Toda la interfaz traducida. Textos específicos de juego en ficheros separados (`{GameKey}.{lang}.xaml`).
-- **Pestañas UI**: Perfil, Mapa, Fechas, Módulos, Validación, Logs.
+**IDE d'escriptori per a la gestió i processament de mods de jocs Paradox Interactive (CK3, EU4, HOI4, etc.)**
+Aplicació WPF (.NET 8) que automatitza la còpia d'arxius del joc al mod, aplica offset d'anys i valida diferències.
 
----
+**Versió actual:** 1.2.2
 
-## Modelo de Datos (Domain)
+### Documentació
 
-```csharp
-// PdxModIDE.Domain.Models
-Module          { Name, Path, IgnoreExtensions[] }
-GameFile        { Name, Path, MapTo? }
-Profile         { Id, Name, Game, GameRoot, ModRoot, BackupRoot, YearOffset, ModuleIds[], FileIds[] }
-EditingSession  { CurrentProfile, ModulesByGame[game][name], FilesByGame[game][name], AllModulesByName, AllFilesByName }
-```
+- **[PROJECT_CONTEXT_CA.md](PROJECT_CONTEXT_CA.md)** — Context tècnic complet: arquitectura, model de dades, mòduls clau, convencions, deute tècnic i referències ràpides.
+- **[CHANGELOG_CA.md](CHANGELOG_CA.md)** — Historial de versions i canvis (format Keep a Changelog).
 
-**Persistencia (Data/*.json)** ↔ **Domain** via `ProjectManager.MapToDomain/MapToData`.
-
----
-
-## Arquitectura de Procesamiento (Módulos)
-
-```
-ProjectManager.ProcessModulesAsync(offset?)
-    └─ ModuleProcessor.ProcessModulesAsync(Parallel.ForEach)
-         └─ ModuleProcessor.ProcessModule(gameKey, moduleName, ...)
-              ├─ LoadModules() (cache + IModuleRepository.GetAllAsync)
-              ├─ GameRegistry.GetPlugin(gameKey) → IGamePlugin
-              ├─ FileOperations.CopyFilePreserveTimestamps / WriteAllText
-              ├─ IGamePlugin.DateRegex.Replace(text, match → year+offset)
-              └─ Log a logs/{profile}/{module}.log
-```
-
----
-
-## Plugins de Juego (Extensibles)
-
-```csharp
-// PdxModIDE.Core.Games.Interfaces
-IGamePlugin
-{
-    string GameKey { get; }           // "ck3", "eu4", ...
-    string DisplayName { get; }       // "Crusader Kings III"
-    bool CanHandleGame(string gameRoot);
-    Regex DateRegex { get; }          // e.g. (\d{1,4})\.(\d{1,2})\.(\d{1,2})
-    bool IsDateProcessableExtension(string ext); // .txt, .csv, etc.
-    string? GetDefinesPath(string gameRoot);
-    string? GetModDefinesPath(string modRoot);
-}
-```
-
-Registrados en `App.OnStartup`: `GameRegistry.Register(new CK3GamePlugin())`.
-
----
-
-## Estructura de Datos (Persistencia JSON)
-
-```
-data/
-├── profiles.json        # List<Profile> (DataProfile)
-├── modules.json         # Dict<gameKey, Dict<moduleName, ModuleConfig>>
-├── files.json           # Dict<gameKey, Dict<fileKey, FileConfig>>
-├── settings.json        # Settings { Theme }
-└── logfilters.json      # LogFilters { Levels, Keywords }
-```
-
-**ModuleConfig** `{ Path, IgnoreExt[] }`  
-**FileConfig** `{ Path, MapTo? }` (permite mapear `game/path.txt` → `mod/different_path.txt`)
-
----
-
-## Build & Release
+### Configuració i Build
 
 ```bash
-# Compilar todo
-dotnet build PdxModIDE.sln -c Release
+# Compilar (Debug)
+dotnet build PdxModIDE.sln --configuration Debug
 
-# Publicar standalone (single file, win-x64)
-dotnet publish PdxModIDE.UI -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o ./publish
+# Compilar (Release)
+dotnet build PdxModIDE.sln --configuration Release
+
+# Executar
+dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 ```
 
-El ejecutable resultante incluye runtime .NET 8 (~70 MB).
-
----
-
-## Extensibilidad: Añadir Nuevo Juego (ej. EU4)
-
-1. Crear `PdxModIDE.Core.Games.EU4.EU4GamePlugin : IGamePlugin`
-   - `GameKey = "eu4"`, `DisplayName = "Europa Universalis IV"`
-   - `DateRegex` para formato fechas EU4
-   - `CanHandleGame`: detectar `eu4.exe` o `game.json` con `game_id="eu4"`
-   - `GetDefinesPath`: `common/defines.lua` (formato Lua, requiere parser distinto)
-2. Registrar en `App.OnStartup`: `GameRegistry.Register(new EU4GamePlugin())`
-3. Añadir definiciones de módulos/archivos base en `data/modules.json` y `data/files.json` para `eu4`.
-4. (Opcional) Parser `DefinesProcessor` específico para Lua si difiere de CK3.
-
----
-
-## Referencias Rápidas Archivos Clave
-
-| Archivo | Propósito |
-|---------|-----------|
-| `PdxModIDE.UI/App.xaml.cs` | Bootstrap: registra plugins, logging global, crea carpetas `data/`, `logs/` |
-| `PdxModIDE.UI/MainWindow.xaml.cs` | Ventana principal, VM binding, tema, idioma, selección perfil inicial |
-| `PdxModIDE.UI/GeneralSettingsWindow.xaml.cs` | Ventana modal de Ajustes Generales (Tema + Idioma), abierta desde icono ⚙ |
-| `PdxModIDE.Project/ProjectManager.cs` | Orquestador central: perfiles, sesión, procesamiento, validación, persistencia |
-| `PdxModIDE.Core/ModuleProcessor.cs` | Lógica copia + offset fechas + logging por módulo (paralelo) |
-| `PdxModIDE.Core/DefinesProcessor.cs` | Lectura/escritura `end_date` en `defines.txt` (game + mod) con backup |
-| `PdxModIDE.Core/Games/GameRegistry.cs` | Registro/detección plugins `IGamePlugin` |
-| `PdxModIDE.Core/Games/CK3/CK3GamePlugin.cs` | Implementación CK3: regex fechas, extensiones procesables, paths defines |
-| `PdxModIDE.MapEngine/MapLoader.cs` | Carga definition.csv, default.map, landed_titles, provinces.png; LUT cache |
-| `PdxModIDE.MapEngine/TitleHistoryLoader.cs` | Parse `history/titles/*.txt` → `TitleHistory { Holders: SortedList<year, holder> }` |
-| `PdxModIDE.Rendering/MapRenderer.cs` | Viewport, zoom, pan, color picker, render holder LUT, tooltips |
-| `PdxModIDE.Data/DataLoader.cs` | Load/Save JSON genérico para profiles, modules, files, settings, logfilters |
-| `PdxModIDE.Validation/ModuleValidator.cs` | Diff recursivo directorios; comparación byte a byte + diff líneas |
-| `PdxModIDE.Domain/Models.cs` | Entidades puras (Module, GameFile, Profile, EditingSession) |
-| `PdxModIDE.UI/ViewModels/MainViewModel.cs` | Estado UI: perfiles, módulos/archivos seleccionados, comandos, tema, paths |
+**Requisits**: .NET 8 SDK, Windows 10/11, un joc Paradox instal·lat (CK3 per defecte).

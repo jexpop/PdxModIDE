@@ -1,19 +1,17 @@
 # Changelog - PdxModIDE
 
-All notable changes to this project will be documented in this file.
+Todos los cambios notables de este proyecto se documentarán en este archivo.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [1.2.2] - 2026-07-19
+## [1.2.2]
 
 ### Added
 
 - **Nuevo idioma: Català (ca)**: se añade el Català como tercer idioma disponible. Nuevo archivo `Languages/ca.xaml` con traducción completa de toda la interfaz, `Languages/CK3.ca.xaml` como placeholder, selector radio en `GeneralSettingsWindow`, y soporte en `ApplyLanguage` / `GetSelectedLanguage`.
-- **Internacionalización completa de la UI (fase 2)**: ~140 nuevas claves i18n extraídas a `es.xaml` / `en.xaml` para todas las pestañas y cuadros de diálogo:
-
 - **Internacionalización completa de la UI (fase 2)**: ~140 nuevas claves i18n extraídas a `es.xaml` / `en.xaml` para todas las pestañas y cuadros de diálogo:
   - MainWindow (tooltips y headers de tabs)
   - ProfileTab (rutas, botones CRUD, grupo módulos)
@@ -23,11 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ValidationTab (módulos, archivos, comparación, resultados)
   - LogsTab (visor, filtros, configuración)
   - InputDialog (botones Aceptar/Cancelar)
-- **Separación de textos generales vs específicos de juego**: los textos generales de la aplicación residen en `es.xaml` / `en.xaml`. Los textos específicos de cada juego van en `{GameKey}.{lang}.xaml` (ej. `CK3.es.xaml`, `CK3.en.xaml`), cargados dinámicamente según el perfil activo.
+- **Separación de textos generales vs específicos de juego**: los textos generales de la aplicación residen en `es.xaml` / `en.xaml` / `ca.xaml`. Los textos específicos de cada juego van en `{GameKey}.{lang}.xaml` (ej. `CK3.es.xaml`, `CK3.en.xaml`, `CK3.ca.xaml`), cargados dinámicamente según el perfil activo.
 - **`RefreshMergedDictionaries()` mejorado**: ahora carga tres diccionarios (tema + idioma general + idioma específico del juego) y se refresca al cambiar de perfil.
 - **`GetGameLanguagePath()`**: nuevo método que genera la ruta `Languages/{GameKey}.{language}.xaml` para el diccionario específico del juego activo.
 - **Método helper `Res(string key)`** en clases code-behind (MainViewModel, HistoryTab, ValidationTab, DatesTab, LogsTab, App) para resolver strings i18n desde C#.
-- **Archivos placeholder**: `Languages/CK3.es.xaml` y `Languages/CK3.en.xaml` para futuros textos específicos de CK3.
+- **Archivos placeholder**: `Languages/CK3.es.xaml`, `Languages/CK3.en.xaml` y `Languages/CK3.ca.xaml` para futuros textos específicos de CK3.
 
 ### Changed
 
@@ -48,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.2.0] - 2026-07-19
+## [1.2.0]
 
 ### Added
 
@@ -69,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.10] - 2026-07-18
+## [1.1.10]
 
 ### Changed
 - **Nombres completos en checkboxes de modo de título**: Los modos "Tit.", "Cond.", "Duc.", "Rey.", "Imp." ahora se muestran como "Titular", "Condado", "Ducado", "Reino", "Imperio" respectivamente.
@@ -84,14 +82,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.9] - 2026-07-18
+## [1.1.9]
 
 ### Fixed
 - **Parser de `common/landed_titles` perdía títulos con bloques intermedios no-título**: bloques como `cultural_names = { ... }`, `color = { ... }` o `definite_form = { ... }` dentro de un título hacían que su `}` solitario hiciera pop prematuro del título padre del stack. Esto impedía que las baronías siguientes se vincularan a su condado (`BaronyToCounty` quedaba vacío), por lo que `BuildCountyLut`/`BuildHolderLut` nunca encontraban el condado de esas provincias. Añadido contador `nonTitleDepth` que rastrea llaves de bloques no-título para ignorar sus cierres sin afectar al stack de títulos.
 
 ---
 
-## [1.1.8] - 2026-07-18
+## [1.1.8]
 
 ### Fixed
 - **Parser de `history/titles` ignoraba bloques de fecha "en una sola línea"**: formato muy habitual en baronías y bastantes condados de CK3, p.ej. `900.1.1={ holder=140000 liege=k_england }`. El contador de llaves cortaba el procesamiento de la línea (`continue`) en cuanto veía un `}`, sin comprobar si ese cierre correspondía al bloque de fecha (anidado) o al título completo, así que esas líneas nunca llegaban a leerse — afectaba igual a Base y a Mod. Reescrito el parser para calcular el balance neto de llaves de la línea y extraer siempre `holder=`/`liege=` antes de decidir si el título se cierra.
@@ -99,14 +97,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.7] - 2026-07-18
+## [1.1.7]
 
 ### Fixed
 - **Búsqueda recursiva en `history/titles` y `common/landed_titles`**: `TitleHistoryLoader.LoadAll` y `MapLoader.LoadLandedTitles` solo escaneaban el nivel superior de la carpeta. El motor de Paradox procesa recursivamente cualquier subcarpeta dentro de esas rutas (con cualquier nombre, no solo carpetas literales "mod"), así que un mod que organiza sus ficheros de historia/títulos en subcarpetas propias no se estaba leyendo. Ahora ambos usan `SearchOption.AllDirectories`, de forma genérica tanto para Base como para Mod.
 
 ---
 
-## [1.1.6] - 2026-07-18
+## [1.1.6]
 
 ### Added
 - **Lógica funcional de los checks "Base"/"Mod"**: Ahora determinan de dónde sale la información de titulares mostrada en el mapa (pestaña Mapa):
@@ -121,35 +119,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.5] - 2026-07-18
+## [1.1.5]
 
 ### Added
 - **Checks "Base" y "Mod" en pestaña Mapa**: Nuevos checkboxes `BaseSourceCheck` y `ModSourceCheck`, no excluyentes entre sí, situados entre la fecha (con su "Fecha Mod" calculada) y los checks de Titular/Condado/Ducado/Reino/Imperio. Por ahora solo refrescan el mapa al cambiar (`SourceModeChanged`); la lógica de qué datos mostrar según Base/Mod se implementa en la versión 1.1.6.
 
 ---
 
-## [1.1.4] - 2026-07-18
+## [1.1.4]
 
 ### Added
 - **Fecha Mod calculada en pestaña Mapa**: Nueva etiqueta `OffsetLabel` junto al año (antes de los checks de titular/condado/etc.) que muestra la fecha resultante en el mod (`año + YearOffset` del perfil activo), mostrando ambos valores (año base y fecha mod) al mismo tiempo. Solo informativa, no editable; se actualiza al cargar la pestaña, al cambiar de perfil, al modificar el offset y al cambiar el año.
 
 ---
 
-## [1.1.3] - 2026-07-18
+## [1.1.3]
 
 ### Changed
 - **Unificación de pestañas Mapa**: Las dos pestañas "Historia (Base)" y "Historia (Mod)" se han fusionado en una única pestaña llamada "Mapa" (`local:HistoryTab` sin `Mode` fijo en `MainWindow.xaml`).
 
 ---
 
-## [1.1.2] - 2026-07-18
+## [1.1.2]
 
 ### Changed
 - **Texto informativo pestaña Historia**: Eliminado el prefijo "Vista: Mod/Juego Base" del texto mostrado tras cargar el mapa; ahora solo se muestra el recuento de provincias y títulos (`X prov, Y títulos`).
 
 ---
 
-## [1.1.1] - 2026-07-18
+## [1.1.1]
 
 ### Added
 - **Modos Ducados / Reinos / Imperios** en pestaña Historia: Checkboxes "Duc.", "Rey.", "Imp." para colorear mapa por límites de ducado (`d_xxx`), reino (`k_xxx`) e imperio (`e_xxx`).
@@ -163,7 +161,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.0] - 2026-07-18
+## [1.1.0]
 
 ### Added
 - **Modo Condados en pestaña Historia**: Nuevo checkbox "Condados" junto a "Titular" que colorea el mapa por límites de condado (`c_xxx`) en lugar de por holder (personaje). Usa `MapLoader.BuildCountyLut()` → mapea provincia → baronía → condado.
@@ -176,7 +174,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0] - 2026-07-17
+## [1.0.0]
 
 ### Added
 - **Arquitectura modular multi-proyecto**: 9 proyectos .NET 8 (Core, Domain, Data, IO, MapEngine, Project, Rendering, UI, Validation).
@@ -239,7 +237,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Template for Future Entries
 
-## [X.Y.Z] - YYYY-MM-DD
+## [X.Y.Z]
 
 ### Added
 - Feature descriptions

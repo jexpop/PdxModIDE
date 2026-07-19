@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.2.2 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.2.2 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -35,7 +35,7 @@ PdxModIDE.sln
 ├── PdxModIDE.Rendering       # MapRenderer (SkiaSharp viewport, zoom, pan, tooltips)
 ├── PdxModIDE.Project         # IProjectService + ProjectManager (orquestador principal)
 ├── PdxModIDE.Validation      # ModuleValidator (diff recursivo, comparación byte/linea)
-└── PdxModIDE.UI              # WPF App, MainWindow, ViewModels, Tabs, Temas, Dialogs
+└── PdxModIDE.UI              # WPF App, MainWindow, ViewModels, Tabs, Temas, Idiomas, Dialogs
 ```
 
 ### 2.2 Dependencias entre Proyectos
@@ -105,7 +105,7 @@ MainViewModel.ProcessModulesCommand
 | `DataProfile` | `data/profiles.json` | Mapea 1:1 a `Domain.Profile` + serialización |
 | `ModuleConfig` | `data/modules.json` | `{ Path, IgnoreExt[] }` por `gameKey → moduleName` |
 | `FileConfig` | `data/files.json` | `{ Path, MapTo? }` por `gameKey → fileKey` |
-| `Settings` | `data/settings.json` | `{ Theme }` |
+| `Settings` | `data/settings.json` | `{ Theme, Language }` |
 | `LogFilters` | `data/logfilters.json` | Filtros de log por perfil (no usado activamente) |
 
 **Convención IDs**: `moduleName` = key en JSON = nombre carpeta relativa (ej. `common/landed_titles`). `fileKey` = nombre lógico (ej. `defines`).
@@ -117,7 +117,7 @@ data/
 ├── profiles.json       # List<DataProfile>
 ├── modules.json        # Dict<gameKey, Dict<moduleName, ModuleConfig>>
 ├── files.json          # Dict<gameKey, Dict<fileKey, FileConfig>>
-├── settings.json       # Settings { Theme }
+├── settings.json       # Settings { Theme, Language }
 └── logfilters.json     # LogFilters { ProfileFilters[] }
 ```
 
@@ -211,7 +211,7 @@ ValidateModuleSingle(moduleName, ComparisonType) → List<FileComparisonResult>
 ValidateAllAsync() → List<ModuleValidationResult> (paralelo)
 ```
 
-`FileComparisonResult`: `{ RelativePath, Status (Igual/Modificado/Añadido/Eliminado), DiffLines? }`.
+`FileComparisonResult`: `{ RelativePath, Status (Modified/Added/Deleted/SAME/CHANGED), DiffLines? }`.
 Diff línea a línea (simple, no LCS).
 
 **IgnoreExt**: Configurable por módulo (`ModuleConfig.IgnoreExt`).
@@ -259,6 +259,7 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 - `SelectedModules`, `SelectedFiles` (checkboxes)
 - `GameRoot`, `ModRoot`, `BackupRoot`, `YearOffset` (bindings two-way)
 - `Theme` (cambio dispara `ApplyTheme` en `MainWindow`)
+- `Language` (cambio dispara `ApplyLanguage` en `MainWindow`)
 - Comandos: `ProcessModulesCommand`, `ValidateAllCommand`, `SaveProfileCommand`, `DetectGameCommand`, `Browse*Command`.
 
 **Tabs** (UserControls en `UI/`):
@@ -275,7 +276,6 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
   - **Imperios** (Imp.): Colorea por límites de imperio (`e_xxx`) → `BuildEmpireLut()`.
   Click provincia → panel info muestra Baronía, Condado, Ducado, Reino, Imperio, Holder, Liege según modo.
 - `LogsTab`: Filtros log (no implementado completamente).
-- `SettingsTab`: Tema, paths defaults.
 
 **Temas**: `ResourceDictionary` swap en `MainWindow.ApplyTheme(theme)`. Archivos en `Themes/*.xaml`.
 
@@ -284,9 +284,9 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 **Ajustes de aplicación** (no ligados a un perfil/mod): ventana modal (`Window`, no `UserControl`) abierta desde un icono de tuerca (⚙) en la esquina superior derecha de `MainWindow` (`BtnGeneralSettings_Click`). Contiene:
 
 - **Tema visual**: mismos 7 temas que antes vivían en la desaparecida pestaña "Opciones" (`SettingsTab`, eliminada en 1.2.0).
-- **Idioma**: nuevo selector Español/English.
+- **Idioma**: selector Español / English / Català.
 
-**Mecanismo i18n**: `ResourceDictionary` XAML, mismo patrón que Temas. Carpeta `PdxModIDE.UI/Languages/` (`es.xaml`, `en.xaml`) con claves `system:String` (ej. `Settings_Title`, `Settings_ThemeSection`). Consumido en XAML vía `{DynamicResource Clave}` para permitir cambio en caliente sin reiniciar.
+**Mecanismo i18n**: `ResourceDictionary` XAML, mismo patrón que Temas. Carpeta `PdxModIDE.UI/Languages/` (`es.xaml`, `en.xaml`, `ca.xaml`) con claves `system:String` (ej. `Settings_Title`, `Settings_ThemeSection`). Consumido en XAML vía `{DynamicResource Clave}` para permitir cambio en caliente sin reiniciar.
 
 ```
 MainWindow.ApplyTheme(theme)      → actualiza _currentThemePath
@@ -298,9 +298,9 @@ MainWindow.ApplyLanguage(language) → actualiza _currentLanguagePath
 
 **Persistencia**: `Settings.Language` (`data/settings.json`, campo `"language"`, default `"en"`) — mismo flujo que `Theme`: `IProjectService.Language` → `ProjectManager.Language` → `MainViewModel.Language` → `MainViewModel.SaveSettings()`.
 
-**Fase 2 (completada en 1.2.1)**: Todos los textos de la interfaz han sido extraídos a los diccionarios de idioma (`es.xaml` / `en.xaml`) y todas las pestañas (Perfil, Mapa, Módulos, Fechas, Validación, Logs) y cuadros de diálogo utilizan `{DynamicResource ...}` en XAML o `Res("key")` en code-behind. El cambio de idioma afecta a toda la aplicación al instante.
+**Fase 2 (completada en 1.2.2)**: Todos los textos de la interfaz han sido extraídos a los diccionarios de idioma (`es.xaml` / `en.xaml` / `ca.xaml`) y todas las pestañas (Perfil, Mapa, Módulos, Fechas, Validación, Logs) y cuadros de diálogo utilizan `{DynamicResource ...}` en XAML o `Res("key")` en code-behind. El cambio de idioma afecta a toda la aplicación al instante.
 
-**Arquitectura de ficheros**: Los textos generales de la aplicación están en `es.xaml` / `en.xaml`. Los textos específicos de cada juego van en ficheros separados `{GameKey}.{lang}.xaml` (ej. `CK3.es.xaml`, `CK3.en.xaml`), cargados automáticamente según el perfil activo mediante `RefreshMergedDictionaries()`.
+**Arquitectura de ficheros**: Los textos generales de la aplicación están en `es.xaml` / `en.xaml` / `ca.xaml`. Los textos específicos de cada juego van en ficheros separados `{GameKey}.{lang}.xaml` (ej. `CK3.es.xaml`, `CK3.en.xaml`, `CK3.ca.xaml`), cargados automáticamente según el perfil activo mediante `RefreshMergedDictionaries()`.
 
 ---
 
@@ -354,7 +354,7 @@ MainWindow.ApplyLanguage(language) → actualiza _currentLanguagePath
   - `ModuleValidator.CompareFileContents` (igual, distinto, solo en A, solo en B).
 - [ ] **Virtualización listas módulos/archivos** (`VirtualizingStackPanel` + `ItemsControl` → `ListView` con `VirtualizingPanel.IsVirtualizing=True`).
 - [ ] **LUT cache incremental**: invalidar solo provincias modificadas (diff `definition.csv`).
-- [x] **Internacionalización completada (1.2.1)**: todos los strings de la UI extraídos a `es.xaml` / `en.xaml`. Las pestañas y diálogos usan `DynamicResource` o `Res()`. Pendiente traducción de textos específicos de juego a `{GameKey}.{lang}.xaml`.
+- [x] **Internacionalización completada (1.2.2)**: todos los strings de la UI extraídos a `es.xaml` / `en.xaml` / `ca.xaml`. Las pestañas y diálogos usan `DynamicResource` o `Res()`. Pendiente traducción de textos específicos de juego a `{GameKey}.{lang}.xaml`.
 
 ### 🟢 Mejora
 - [ ] **Plugins EU4/Imperator/HOI4/Vic3**: nuevos `IGamePlugin` con regex y paths específicos.
@@ -390,9 +390,6 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 
 # Limpiar todo
 dotnet clean PdxModIDE.sln
-
-# Ver árbol dependencias
-dotnet msbuild PdxModIDE.sln /t:GenerateRestoreGraphFile /pp:restore.graph
 ```
 
 **Estructura salida build**:
@@ -402,6 +399,7 @@ PdxModIDE.UI/bin/Debug/net8.0-windows/
 ├── data/                 # JSON configs (copiado si no existe)
 ├── logs/                 # Creado en runtime
 ├── Themes/               # ResourceDictionaries
+├── Languages/            # ResourceDictionaries de idioma
 └── *.dll (Core, Domain, Data, IO, MapEngine, Project, Rendering, Validation)
 ```
 
@@ -437,7 +435,7 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 | Archivo | Propósito |
 |---------|-----------|
 | `PdxModIDE.UI/App.xaml.cs` | Bootstrap: registra CK3, dirs data/logs, crash handler |
-| `PdxModIDE.UI/MainWindow.xaml.cs` | Theme swap, DataContext=MainViewModel, perfil inicial |
+| `PdxModIDE.UI/MainWindow.xaml.cs` | Theme/Language swap, DataContext=MainViewModel, perfil inicial |
 | `PdxModIDE.UI/ViewModels/MainViewModel.cs` | Estado UI completo, comandos, bindings |
 | `PdxModIDE.Project/ProjectManager.cs` | Orquestador: perfiles, sesión, procesado, validación, persistencia |
 | `PdxModIDE.Core/ModuleProcessor.cs` | Copia game→mod + offset fechas (paralelo, logging) |
