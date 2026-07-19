@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.5]
+
+### Fixed
+
+- **Baronies with a hyphen in the name were not detected in `landed_titles`**: the title-parsing regex (`MapLoader.LoadLandedTitlesFrom`) only allowed `[A-Za-z0-9_]+` in the identifier, so names like `b_dvur-chvojno` failed to match and the barony (and its associated province) was left out of `ProvinceToBarony`/`BaronyToCounty`, staying uncolored in the County/Duchy/Kingdom/Empire map modes. Fix: added the hyphen to the regex character class (`[A-Za-z0-9_-]+`).
+
+---
+
 ## [1.3.4]
 
 ### Fixed

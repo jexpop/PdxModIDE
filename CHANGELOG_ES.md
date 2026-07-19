@@ -7,6 +7,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.3.5]
+
+### Fixed
+
+- **Baronías con guión en el nombre no se detectaban en `landed_titles`**: el regex de parseo de títulos (`MapLoader.LoadLandedTitlesFrom`) solo admitía `[A-Za-z0-9_]+` en el identificador, por lo que nombres como `b_dvur-chvojno` no coincidían y la baronía (y su provincia asociada) quedaba fuera de `ProvinceToBarony`/`BaronyToCounty`, sin colorear en los modos Condado/Ducado/Reino/Imperio del mapa. Solución: se añadió el guión a la clase de caracteres del regex (`[A-Za-z0-9_-]+`).
+
+---
+
 ## [1.3.4]
 
 ### Fixed

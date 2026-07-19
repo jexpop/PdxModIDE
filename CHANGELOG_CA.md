@@ -7,6 +7,14 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.3.5]
+
+### Fixed
+
+- **Baronies amb guionet al nom no es detectaven a `landed_titles`**: el regex de parseig de títols (`MapLoader.LoadLandedTitlesFrom`) només admetia `[A-Za-z0-9_]+` a l'identificador, per la qual cosa noms com `b_dvur-chvojno` no coincidien i la baronia (i la seva província associada) quedava fora de `ProvinceToBarony`/`BaronyToCounty`, sense acolorir-se en els modes Comtat/Ducat/Regne/Imperi del mapa. Solució: s'ha afegit el guionet a la classe de caràcters del regex (`[A-Za-z0-9_-]+`).
+
+---
+
 ## [1.3.4]
 
 ### Fixed

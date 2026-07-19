@@ -213,7 +213,7 @@ namespace PdxModIDE.MapEngine
         {
             if (!Directory.Exists(dir)) return;
 
-            var titleRegex = new Regex(@"^\s*([becdk]_[A-Za-z0-9_]+)\s*=\s*\{");
+            var titleRegex = new Regex(@"^\s*([becdk]_[A-Za-z0-9_-]+)\s*=\s*\{");
             var provinceRegex = new Regex(@"province\s*=\s*(\d+)");
 
             foreach (var file in Directory.EnumerateFiles(dir, "*.txt", SearchOption.AllDirectories))
