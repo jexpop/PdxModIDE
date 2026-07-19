@@ -82,9 +82,13 @@
     <system:String x:Key="HistoryTab_Layers_Text">Activa les caselles "Base" i/o "Mod" per carregar dades històriques de províncies, després activa els modes de superposició: Titular, Comtat, Ducat, Regne o Imperi.</system:String>
     <system:String x:Key="HistoryTab_Province">Província</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
+    <system:String x:Key="HistoryTab_IDLabel">ID:</system:String>
     <system:String x:Key="HistoryTab_Name">Nom: -</system:String>
+    <system:String x:Key="HistoryTab_NameLabel">Nom:</system:String>
     <system:String x:Key="HistoryTab_Color">Color: -</system:String>
+    <system:String x:Key="HistoryTab_ColorLabel">Color:</system:String>
     <system:String x:Key="HistoryTab_Type">Tipus: -</system:String>
+    <system:String x:Key="HistoryTab_TypeLabel">Tipus:</system:String>
     <system:String x:Key="HistoryTab_Title">Títol</system:String>
     <system:String x:Key="HistoryTab_Barony">Baronia: -</system:String>
     <system:String x:Key="HistoryTab_County">Comtat: -</system:String>
@@ -120,6 +124,12 @@
     <system:String x:Key="HistoryTab_NoDuchyData">Activa "Base" i/o "Mod" per veure dades de ducats</system:String>
     <system:String x:Key="HistoryTab_NoKingdomData">Activa "Base" i/o "Mod" per veure dades de regnes</system:String>
     <system:String x:Key="HistoryTab_NoEmpireData">Activa "Base" i/o "Mod" per veure dades d'imperis</system:String>
+    <system:String x:Key="MapTerrain_Land">Terra</system:String>
+    <system:String x:Key="MapTerrain_Sea">Mar</system:String>
+    <system:String x:Key="MapTerrain_Lake">Llac</system:String>
+    <system:String x:Key="MapTerrain_River">Riu</system:String>
+    <system:String x:Key="MapTerrain_Impassable">Impassable</system:String>
+    <system:String x:Key="MapTerrain_Unknown">Desconegut</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Mòduls</system:String>

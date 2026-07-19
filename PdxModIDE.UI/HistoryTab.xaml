@@ -26,10 +26,14 @@
         <StackPanel Grid.Column="0" Margin="5" VerticalAlignment="Top" x:Name="InfoPanel" Visibility="Collapsed">
             <GroupBox Header="{DynamicResource HistoryTab_Province}" Margin="0,0,0,5">
                 <StackPanel>
-                    <Label Content="{DynamicResource HistoryTab_ID}" x:Name="LabelId"/>
-                    <Label Content="{DynamicResource HistoryTab_Name}" x:Name="LabelName"/>
-                    <Label Content="{DynamicResource HistoryTab_Color}" x:Name="LabelColor"/>
-                    <Label Content="{DynamicResource HistoryTab_Type}" x:Name="LabelType"/>
+                    <Label Content="{DynamicResource HistoryTab_IDLabel}" FontWeight="Bold" />
+                    <TextBlock x:Name="TextIdValue" Margin="15,0,0,5" />
+                    <Label Content="{DynamicResource HistoryTab_NameLabel}" FontWeight="Bold" />
+                    <TextBlock x:Name="TextNameValue" Margin="15,0,0,5" TextWrapping="Wrap" />
+                    <Label Content="{DynamicResource HistoryTab_ColorLabel}" FontWeight="Bold" />
+                    <TextBlock x:Name="TextColorValue" Margin="15,0,0,5" />
+                    <Label Content="{DynamicResource HistoryTab_TypeLabel}" FontWeight="Bold" />
+                    <TextBlock x:Name="TextTypeValue" Margin="15,0,0,5" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="{DynamicResource HistoryTab_Title}" Margin="0,0,0,5" x:Name="TitleGroup">

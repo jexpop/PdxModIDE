@@ -67,15 +67,15 @@ namespace PdxModIDE.UI
             var theme = GetSelectedTheme();
             var language = GetSelectedLanguage();
 
-            _viewModel.Theme = theme;
-            _viewModel.Language = language;
-            _viewModel.SaveSettings();
-
             if (Owner is MainWindow mainWindow)
             {
                 mainWindow.ApplyTheme(theme);
                 mainWindow.ApplyLanguage(language);
             }
+
+            _viewModel.Theme = theme;
+            _viewModel.Language = language;
+            _viewModel.SaveSettings();
 
             System.Windows.MessageBox.Show(
                 (string)System.Windows.Application.Current.Resources["Settings_AppliedMessage"],

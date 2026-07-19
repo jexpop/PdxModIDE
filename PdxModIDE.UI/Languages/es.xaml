@@ -82,9 +82,13 @@
     <system:String x:Key="HistoryTab_Layers_Text">Activa las casillas "Base" y/o "Mod" para cargar datos históricos de provincias, luego activa los modos de superposición: Titular, Condado, Ducado, Reino o Imperio.</system:String>
     <system:String x:Key="HistoryTab_Province">Provincia</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
+    <system:String x:Key="HistoryTab_IDLabel">ID:</system:String>
     <system:String x:Key="HistoryTab_Name">Nombre: -</system:String>
+    <system:String x:Key="HistoryTab_NameLabel">Nombre:</system:String>
     <system:String x:Key="HistoryTab_Color">Color: -</system:String>
+    <system:String x:Key="HistoryTab_ColorLabel">Color:</system:String>
     <system:String x:Key="HistoryTab_Type">Tipo: -</system:String>
+    <system:String x:Key="HistoryTab_TypeLabel">Tipo:</system:String>
     <system:String x:Key="HistoryTab_Title">Título</system:String>
     <system:String x:Key="HistoryTab_Barony">Baronía: -</system:String>
     <system:String x:Key="HistoryTab_County">Condado: -</system:String>
@@ -120,6 +124,12 @@
     <system:String x:Key="HistoryTab_NoDuchyData">Activa "Base" y/o "Mod" para ver datos de ducados</system:String>
     <system:String x:Key="HistoryTab_NoKingdomData">Activa "Base" y/o "Mod" para ver datos de reinos</system:String>
     <system:String x:Key="HistoryTab_NoEmpireData">Activa "Base" y/o "Mod" para ver datos de imperios</system:String>
+    <system:String x:Key="MapTerrain_Land">Tierra</system:String>
+    <system:String x:Key="MapTerrain_Sea">Mar</system:String>
+    <system:String x:Key="MapTerrain_Lake">Lago</system:String>
+    <system:String x:Key="MapTerrain_River">Río</system:String>
+    <system:String x:Key="MapTerrain_Impassable">Impasable</system:String>
+    <system:String x:Key="MapTerrain_Unknown">Desconocido</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Módulos</system:String>

@@ -30,6 +30,7 @@ namespace PdxModIDE.UI
         private float _cachedOffX;
         private float _cachedOffY;
         private bool _renderPending;
+        private int _lastProvinceId = -1;
 
         public HistoryTab()
         {
@@ -69,6 +70,8 @@ namespace PdxModIDE.UI
                 _mapLoaded = false;
             if (e.PropertyName == nameof(MainViewModel.CurrentProfile) || e.PropertyName == nameof(MainViewModel.YearOffset))
                 UpdateOffsetLabel();
+            if (e.PropertyName == nameof(MainViewModel.Language) && _lastProvinceId > 0)
+                UpdateProvinceInfo(_lastProvinceId);
         }
 
         private void UpdateOffsetLabel()
@@ -317,6 +320,7 @@ namespace PdxModIDE.UI
                     }
                 }
 
+                _lastProvinceId = -1;
                 _renderer.HighlightProvinceId = -1;
                 _cachedHighlight = _renderer.HighlightProvinceId - 1;
                 InfoPanel.Visibility = Visibility.Collapsed;
@@ -686,14 +690,15 @@ namespace PdxModIDE.UI
                 var province = _mapLoader.GetProvinceFromId(provinceId);
                 if (province == null) return;
 
+                _lastProvinceId = provinceId;
                 InfoPanel.Visibility = Visibility.Visible;
                 InfoPlaceholder.Visibility = Visibility.Collapsed;
                 TitleGroup.Visibility = HasActiveSource() ? Visibility.Visible : Visibility.Collapsed;
 
-                LabelId.Content = $"ID: {province.Id}";
-                LabelName.Content = $"Name: {province.Name}";
-                LabelColor.Content = $"Color: ({province.R},{province.G},{province.B})";
-                LabelType.Content = $"Type: {province.Type ?? "?"}";
+                TextIdValue.Text = province.Id.ToString();
+                TextNameValue.Text = province.Name;
+                TextColorValue.Text = $"({province.R},{province.G},{province.B})";
+                TextTypeValue.Text = TranslateTerrainType(province.Type);
 
                 string barony = _mapLoader.GetTitleFromProvinceId(provinceId) ?? "-";
                 LabelBarony.Content = $"Barony: {barony}";
@@ -750,6 +755,20 @@ namespace PdxModIDE.UI
             {
                 StatusLabel.Content = $"Error: {ex.Message}";
             }
+        }
+
+        private string TranslateTerrainType(string? type)
+        {
+            return type switch
+            {
+                "land" => Res("MapTerrain_Land"),
+                "sea" => Res("MapTerrain_Sea"),
+                "lake" => Res("MapTerrain_Lake"),
+                "river" => Res("MapTerrain_River"),
+                "impassable" => Res("MapTerrain_Impassable"),
+                "unknown" => Res("MapTerrain_Unknown"),
+                _ => type ?? "?"
+            };
         }
 
         private static string Res(string key)

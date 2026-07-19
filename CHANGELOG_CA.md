@@ -7,6 +7,23 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.3.2]
+
+### Added
+
+- **i18n per als camps del panell de província**: noves claus `HistoryTab_IDLabel`, `HistoryTab_NameLabel`, `HistoryTab_ColorLabel`, `HistoryTab_TypeLabel` (només etiqueta, sense placeholder) i `MapTerrain_Land`, `MapTerrain_Sea`, `MapTerrain_Lake`, `MapTerrain_River`, `MapTerrain_Impassable`, `MapTerrain_Unknown` per a la traducció de tipus de terreny en anglès, espanyol i català.
+
+### Changed
+
+- **Disseny del panell de província**: els camps ID, Nom, Color i Tipus ara mostren l'etiqueta en negreta amb el valor en una línia separada a sota. Nom usa `TextWrapping` per a valors llargs.
+- **Ordre de refresc d'idioma**: `ApplyLanguage` i `ApplyTheme` a `MainWindow.xaml.cs` ara executen `RefreshMergedDictionaries()` abans d'establir la propietat del ViewModel, assegurant que els gestors de `PropertyChanged` llegeixin els diccionaris de recursos ja actualitzats.
+
+### Fixed
+
+- **Desfasament d'idioma a la pestanya Mapa**: els valors de tipus de terreny (`MapTerrain_*`) i la informació de província ara s'actualitzen immediatament en canviar d'idioma, en lloc de mostrar la traducció de l'idioma anterior.
+
+---
+
 ## [1.3.1]
 
 ### Added

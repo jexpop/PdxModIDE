@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.2]
+
+### Added
+
+- **i18n for province panel fields**: new resource keys `HistoryTab_IDLabel`, `HistoryTab_NameLabel`, `HistoryTab_ColorLabel`, `HistoryTab_TypeLabel` (label-only, no placeholder) and `MapTerrain_Land`, `MapTerrain_Sea`, `MapTerrain_Lake`, `MapTerrain_River`, `MapTerrain_Impassable`, `MapTerrain_Unknown` for terrain type translation in English, Spanish, and Catalan.
+
+### Changed
+
+- **Province info panel layout**: ID, Name, Color, and Type fields now display the label in bold with the value on a separate line below. Name uses `TextWrapping` for long values.
+- **Language refresh order**: `ApplyLanguage` and `ApplyTheme` in `MainWindow.xaml.cs` now call `RefreshMergedDictionaries()` before setting the ViewModel property, ensuring `PropertyChanged` handlers read the already-updated resource dictionaries.
+
+### Fixed
+
+- **Off-by-one language refresh in Map tab**: terrain type values (`MapTerrain_*`) and province info values now update immediately when switching languages, instead of showing the previous language's translation.
+
+---
+
 ## [1.3.1]
 
 ### Added

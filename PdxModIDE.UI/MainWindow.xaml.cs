@@ -47,9 +47,6 @@ namespace PdxModIDE.UI
 
         public void ApplyTheme(string theme)
         {
-            ViewModel.Theme = theme;
-            ViewModel.SaveSettings();
-
             _currentThemePath = theme switch
             {
                 "dark" => "Themes/DarkTheme.xaml",
@@ -62,13 +59,13 @@ namespace PdxModIDE.UI
             };
 
             RefreshMergedDictionaries();
+
+            ViewModel.Theme = theme;
+            ViewModel.SaveSettings();
         }
 
         public void ApplyLanguage(string language)
         {
-            ViewModel.Language = language;
-            ViewModel.SaveSettings();
-
             _currentLanguagePath = language switch
             {
                 "ca" => "Languages/ca.xaml",
@@ -78,6 +75,9 @@ namespace PdxModIDE.UI
             };
 
             RefreshMergedDictionaries();
+
+            ViewModel.Language = language;
+            ViewModel.SaveSettings();
         }
 
         /// <summary>
