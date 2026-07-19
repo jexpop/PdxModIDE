@@ -11,14 +11,16 @@ namespace PdxModIDE.Rendering
         private SKBitmap? _provincesBitmap;
         private SKImage? _provincesImage;
         private SKImage? _lutImage;
-        private SKImage? _holderLutImage;
         private SKImage? _paletteImage;
+        private byte[]? _holderLutCpu;
+        private byte[]? _paletteCpu;
         private MapLoader? _mapLoader;
         private SKRuntimeEffect? _fullEffect;
         private SKRuntimeEffectUniforms? _lastUniforms;
         private SKRuntimeEffectChildren? _lastChildren;
         private int _lastHighlight = -2;
         private bool _holderMode;
+        private bool _allowShaderOverlay = true;
         private int _lastHolderYear = -1;
 
         private float _zoom = 1.0f;
@@ -108,7 +110,7 @@ half4 main(float2 coord) {
                 return false;
 
             _provincesImage = SKImage.FromBitmap(_provincesBitmap);
-            _lutImage = BuildLutImage(loader.Lut);
+            _lutImage = BuildLutImage(loader.Lut, out _);
             if (_lutImage == null)
                 return false;
 
@@ -134,8 +136,9 @@ half4 main(float2 coord) {
             }
         }
 
-        private static SKImage? BuildLutImage(byte[]? lut)
+        private static SKImage? BuildLutImage(byte[]? lut, out SKBitmap? backingBitmap)
         {
+            backingBitmap = null;
             if (lut == null || lut.Length != 16_777_216) return null;
 
             var info = new SKImageInfo(4096, 4096, SKColorType.Rgba8888, SKAlphaType.Opaque);
@@ -153,6 +156,7 @@ half4 main(float2 coord) {
             }
 
             Marshal.Copy(rgba, 0, ptr, rgba.Length);
+            backingBitmap = bitmap;
             return SKImage.FromBitmap(bitmap);
         }
 
@@ -172,12 +176,8 @@ half4 main(float2 coord) {
             _lastChildren["provinces"] = SKShader.CreateImage(_provincesImage, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, nearest);
             _lastChildren["lut"] = SKShader.CreateImage(_lutImage, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, nearest);
 
-            _lastChildren["holderLut"] = _holderLutImage != null
-                ? SKShader.CreateImage(_holderLutImage, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, nearest)
-                : SKShader.CreateColor(SKColors.Black);
-            _lastChildren["palette"] = _paletteImage != null
-                ? SKShader.CreateImage(_paletteImage, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, nearest)
-                : SKShader.CreateColor(SKColors.Black);
+            _lastChildren["holderLut"] = SKShader.CreateColor(SKColors.Black);
+            _lastChildren["palette"] = SKShader.CreateColor(SKColors.Black);
 
             _lastUniforms = new SKRuntimeEffectUniforms(_fullEffect);
             _lastUniforms["mode"] = 0f;
@@ -188,26 +188,24 @@ half4 main(float2 coord) {
             _holderMode = enabled;
 
             if (holderLutData != null)
-            {
-                _holderLutImage?.Dispose();
-                _holderLutImage = BuildLutImage(holderLutData);
-            }
+                _holderLutCpu = holderLutData;
 
             if (palette != null)
             {
                 _paletteImage?.Dispose();
                 _paletteImage = palette;
-            }
-
-            if (_lastChildren != null)
-            {
-                var nearest = new SKSamplingOptions(SKFilterMode.Nearest);
-                _lastChildren["holderLut"] = _holderLutImage != null
-                    ? SKShader.CreateImage(_holderLutImage, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, nearest)
-                    : SKShader.CreateColor(SKColors.Black);
-                _lastChildren["palette"] = _paletteImage != null
-                    ? SKShader.CreateImage(_paletteImage, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, nearest)
-                    : SKShader.CreateColor(SKColors.Black);
+                // Decode palette to CPU array (RGBA order, 4 bytes per entry, 256 entries)
+                _paletteCpu = new byte[256 * 4];
+                using var tmpBmp = SKBitmap.FromImage(_paletteImage);
+                for (int i = 0; i < 256; i++)
+                {
+                    var c = tmpBmp.GetPixel(i, 0);
+                    int off = i * 4;
+                    _paletteCpu[off] = c.Red;
+                    _paletteCpu[off + 1] = c.Green;
+                    _paletteCpu[off + 2] = c.Blue;
+                    _paletteCpu[off + 3] = c.Alpha;
+                }
             }
         }
 
@@ -230,7 +228,7 @@ half4 main(float2 coord) {
                     _lastUniforms["highlightColor"] = new SKPoint3(-1, -1, -1);
             }
 
-            _lastUniforms["mode"] = _holderMode ? 1f : 0f;
+            _lastUniforms["mode"] = _holderMode && _allowShaderOverlay ? 1f : 0f;
 
             using var shader = _fullEffect.ToShader(_lastUniforms, _lastChildren);
             using var paint = new SKPaint { Shader = shader };
@@ -249,9 +247,101 @@ half4 main(float2 coord) {
         {
             var info = new SKImageInfo(viewWidth, viewHeight);
             using var surface = SKSurface.Create(info);
-            Render(surface.Canvas, viewWidth, viewHeight);
-            using var image = surface.Snapshot();
-            return SKBitmap.FromImage(image);
+            var canvas = surface.Canvas;
+
+            // Always render terrain (mode=0) via shader — this gives us borders and terrain
+            _allowShaderOverlay = false;
+            Render(canvas, viewWidth, viewHeight);
+            _allowShaderOverlay = true;
+
+            using var terrainImage = surface.Snapshot();
+            var terrainBmp = SKBitmap.FromImage(terrainImage);
+
+            // CPU overlay: for each output pixel, lookup province color → holderIdx → palette
+            if (_holderMode && _holderLutCpu != null && _paletteCpu != null && _provincesBitmap != null)
+            {
+                int w = terrainBmp.Width;
+                int h = terrainBmp.Height;
+
+                // Read provinces bitmap pixel data via GetPixels
+                int pw = _provincesBitmap.Width;
+                int ph = _provincesBitmap.Height;
+                int provRowBytes = _provincesBitmap.RowBytes;
+                IntPtr provBase = _provincesBitmap.GetPixels();
+                int provBpp = _provincesBitmap.BytesPerPixel;
+
+                // Read terrain bitmap via GetPixels
+                int outRowBytes = terrainBmp.RowBytes;
+                IntPtr outBase = terrainBmp.GetPixels();
+                int outBpp = terrainBmp.BytesPerPixel;
+
+                // Determine byte offsets based on provinces bitmap format
+                int prB, prG, prR;
+                if (_provincesBitmap.ColorType == SKColorType.Rgba8888)
+                {
+                    prR = 0; prG = 1; prB = 2;
+                }
+                else
+                {
+                    // Default: BGRA8888 (Windows)
+                    prR = 2; prG = 1; prB = 0;
+                }
+
+                // Determine output byte offsets: Skia on Windows uses BGRA
+                int rOff = 2;
+                int gOff = 1;
+                int bOff = 0;
+
+                byte[] outRow = new byte[outRowBytes];
+
+                for (int y = 0; y < h; y++)
+                {
+                    // Read output row
+                    Marshal.Copy(outBase + y * outRowBytes, outRow, 0, outRowBytes);
+
+                    for (int x = 0; x < w; x++)
+                    {
+                        int po = x * outBpp;
+
+                        // Check if border (dark gray ~RGB 25,25,25) or highlight (yellow)
+                        byte pr = outRow[po + rOff];
+                        byte pg = outRow[po + gOff];
+                        byte pb = outRow[po + bOff];
+                        if (pr < 30 && pg < 30 && pb < 30 && pr > 20)
+                            continue;
+                        if (pr == 255 && pg == 255 && pb == 0)
+                            continue;
+
+                        // Map output pixel to provinces image coordinates
+                        int provX = (int)((x - _offsetX) / _zoom + 0.5f);
+                        int provY = (int)((y - _offsetY) / _zoom + 0.5f);
+
+                        if (provX < 0 || provX >= pw || provY < 0 || provY >= ph)
+                            continue;
+
+                        // Read province pixel at (provX, provY)
+                        IntPtr provPixelPtr = provBase + provY * provRowBytes + provX * provBpp;
+                        byte provB = Marshal.ReadByte(provPixelPtr + prB);
+                        byte provG = Marshal.ReadByte(provPixelPtr + prG);
+                        byte provR = Marshal.ReadByte(provPixelPtr + prR);
+
+                        int idx = (provR << 16) | (provG << 8) | provB;
+                        byte holderIdx = _holderLutCpu[idx];
+                        if (holderIdx > 0)
+                        {
+                            int palOff = holderIdx * 4;
+                            outRow[po + rOff] = _paletteCpu[palOff];
+                            outRow[po + gOff] = _paletteCpu[palOff + 1];
+                            outRow[po + bOff] = _paletteCpu[palOff + 2];
+                        }
+                    }
+
+                    // Write modified row back
+                    Marshal.Copy(outRow, 0, outBase + y * outRowBytes, outRowBytes);
+                }
+            }
+
+            return terrainBmp;
         }
 
         public int GetProvinceAt(int x, int y)
@@ -291,7 +381,6 @@ half4 main(float2 coord) {
             _provincesBitmap?.Dispose();
             _provincesImage?.Dispose();
             _lutImage?.Dispose();
-            _holderLutImage?.Dispose();
             _paletteImage?.Dispose();
             _fullEffect?.Dispose();
         }

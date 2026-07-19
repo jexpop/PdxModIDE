@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.3.3 (see `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.3.4 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -77,8 +77,8 @@ MainViewModel.ProcessModulesCommand
 
 | Project | Package | Version | Usage |
 |---------|---------|---------|-------|
-| `PdxModIDE.UI` | `SkiaSharp` / `SkiaSharp.Views.WPF` | 2.88.x | Map render, LUT, palettes |
-| `PdxModIDE.MapEngine` | `SkiaSharp` | 2.88.x | Decode provinces.png, build LUT bitmap |
+| `PdxModIDE.UI` | `SkiaSharp` / `SkiaSharp.Views.WPF` | 3.116.1 | Map render, LUT, palettes |
+| `PdxModIDE.MapEngine` | `SkiaSharp` | 3.116.1 | Decode provinces.png, build LUT bitmap |
 | `PdxModIDE.Core` | `Microsoft.Extensions.Logging.Abstractions` | 8.x | (Optional) abstracted logging |
 | All | `System.Text.Json` | Built-in | Serialization `data/*.json` |
 | `PdxModIDE.UI` | `Microsoft.Xaml.Behaviors.Wpf` | 1.1.x | (If used) XAML behaviors |
@@ -274,6 +274,7 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
   - **Kingdoms** (Kgd.): Colors by kingdom borders (`k_xxx`) → `BuildKingdomLut()`.
   - **Empires** (Emp.): Colors by empire borders (`e_xxx`) → `BuildEmpireLut()`.
   Click province → info panel shows Barony, County, Duchy, Kingdom, Empire, Holder, Liege according to mode.
+  - **Technical note**: overlay is applied on CPU (workaround for `SKShader.CreateImage` bug as child shader). `RenderToBitmap` renders terrain+borders via shader (mode=0), then iterates pixels and applies palette color from the holder LUT. Uses `InvalidateRender()` for cache invalidation.
 - `LogsTab`: Log filters (not fully implemented).
 - `SettingsTab`: Theme, default paths.
 
@@ -331,6 +332,7 @@ MainWindow.ApplyLanguage(language) → updates _currentLanguagePath
 | **Per-game date regex** | Flexibility (CK3/EU4 different formats) | Simple regex; doesn't parse context (e.g. `start_date` vs `end_date`) |
 | **Auto-backup** | Safety against offset errors | Duplicates space; no automatic cleanup |
 | **Cached 16M byte LUT** | Instant map render; avoids rebuild | 16 MB RAM + disk; invalidation only by source file hash |
+| **CPU overlay instead of shader** | `SKShader.CreateImage` as child shader in `SKRuntimeEffect` returns 0 in `eval()` on SkiaSharp 3.116.1 (CPU raster). Workaround: render terrain+borders via shader, apply overlay (holder/county/duchy/etc) on CPU by iterating pixels with `Marshal.Copy`. | 100% CPU; if SkiaSharp fixes it, can migrate back to shader. |
 | **Color cycle for >255 items** | `BuildHolderLut`/`BuildCountyLut` use `(idx-1)%255+1` for wrap-around | Before: index clamped at 255 → hundreds of green counties/holders |
 | **Synchronous Parallel.ForEach in ProcessModule** | Leverages multi-core I/O | Blocks thread pool; `ProcessModulesAsync` does `await Task.CompletedTask` after `Parallel.ForEach` |
 | **Manual ViewModels** | Full control, no magic | Boilerplate `OnPropertyChanged`; easy to introduce binding bugs |
@@ -446,7 +448,7 @@ No mandatory environment variables. All configuration in `data/*.json`.
 | `PdxModIDE.Core/Games/CK3/CK3GamePlugin.cs` | CK3 implementation: regex, extensions, defines path |
 | `PdxModIDE.MapEngine/MapLoader.cs` | Full map loading + LUT cache + holders by year |
 | `PdxModIDE.MapEngine/TitleHistoryLoader.cs` | Parse `history/titles/*.txt` → `TitleHistory` |
-| `PdxModIDE.Rendering/MapRenderer.cs` | SkiaSharp viewport, zoom/pan, color picker, tooltips |
+| `PdxModIDE.Rendering/MapRenderer.cs` | SkiaSharp viewport, zoom/pan, color picker, tooltips. CPU overlay (workaround child shader bug). |
 | `PdxModIDE.Validation/ModuleValidator.cs` | 3-way diff (mod/game/backup) recursive |
 | `PdxModIDE.Data/DataLoader.cs` | Generic Load/Save JSON `data/*.json` |
 | `PdxModIDE.Domain/Models.cs` | Pure entities (Module, GameFile, Profile, EditingSession) |
@@ -454,4 +456,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-07-19 | Project: PdxModIDE | Version: 1.3.3 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*
+*Generated: 2026-07-19 | Project: PdxModIDE | Version: 1.3.4 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

@@ -17,7 +17,7 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.3.3 (veure `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 projectes).
+**Versió actual**: 1.3.4 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
 
@@ -77,8 +77,8 @@ MainViewModel.ProcessModulesCommand
 
 | Projecte | Paquet | Versió | Ús |
 |----------|--------|--------|-----|
-| `PdxModIDE.UI` | `SkiaSharp` / `SkiaSharp.Views.WPF` | 2.88.x | Render mapa, LUT, paletes |
-| `PdxModIDE.MapEngine` | `SkiaSharp` | 2.88.x | Decode provinces.png, build LUT bitmap |
+| `PdxModIDE.UI` | `SkiaSharp` / `SkiaSharp.Views.WPF` | 3.116.1 | Render mapa, LUT, paletes |
+| `PdxModIDE.MapEngine` | `SkiaSharp` | 3.116.1 | Decode provinces.png, build LUT bitmap |
 | `PdxModIDE.Core` | `Microsoft.Extensions.Logging.Abstractions` | 8.x | (Opcional) logging abstraït |
 | Tots | `System.Text.Json` | Built-in | Serialització `data/*.json` |
 | `PdxModIDE.UI` | `Microsoft.Xaml.Behaviors.Wpf` | 1.1.x | (Si s'usa) behaviors XAML |
@@ -274,6 +274,7 @@ Fitxers a `data/` (crea directori si no existeix). `JsonSerializerOptions: Write
   - **Regnes** (Rey.): Aceloreix per límits de regne (`k_xxx`) → `BuildKingdomLut()`.
   - **Imperis** (Imp.): Aceloreix per límits d'imperi (`e_xxx`) → `BuildEmpireLut()`.
   Click província → panell informació mostra Baronia, Comtat, Ducat, Regne, Imperi, Holder, Liege segons mode.
+  - **Nota tècnica**: l'overlay s'aplica per CPU (workaround del bug de `SKShader.CreateImage` com a child shader). `RenderToBitmap` renderitza terreny+vores via shader (mode=0), després itera píxels i aplica color de paleta segons LUT d'holder. Utilitza `InvalidateRender()` per invalidació de cache.
 - `LogsTab`: Filtres log (no implementat completament).
 - `SettingsTab`: Tema, paths defaults.
 
@@ -331,6 +332,7 @@ MainWindow.ApplyLanguage(language) → actualitza _currentLanguagePath
 | **Regex dates per joc** | Flexibilitat (CK3/EU4 formats diferents) | Regex simple; no parseja context (ex. `start_date` vs `end_date`) |
 | **Còpia de seguretat automàtica** | Seguretat davant errors d'offset | Duplica espai; no neteja automàtica |
 | **LUT 16M bytes cachejat** | Render instantani mapa; evita rebuild | 16 MB RAM + disc; invalidació només per hash fitxers font |
+| **Overlay per CPU en lloc de shader** | `SKShader.CreateImage` com a child shader dins `SKRuntimeEffect` retorna 0 en `eval()` a SkiaSharp 3.116.1 (CPU raster). Workaround: renderitzar terreny+vores via shader, aplicar overlay (holder/comtat/ducat/etc) per CPU iterant píxels amb `Marshal.Copy`. | Overlay 100% CPU; si SkiaSharp ho arregla, es pot migrar de tornada al shader. |
 | **Cicle de colors >255 items** | `BuildHolderLut`/`BuildCountyLut` usen `(idx-1)%255+1` per wrap-around | Abans: índex clavat a 255 → centenars de comtats/holders verds |
 | **Parallel.ForEach síncron a ProcessModule** | Aprofita multi-core I/O | Bloqueja thread pool; `ProcessModulesAsync` fa `await Task.CompletedTask` després de `Parallel.ForEach` |
 | **ViewModels manuals** | Control total, sense Magic | Boilerplate `OnPropertyChanged`; fàcil introduir bugs binding |
@@ -446,7 +448,7 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 | `PdxModIDE.Core/Games/CK3/CK3GamePlugin.cs` | Implementació CK3: regex, extensions, defines path |
 | `PdxModIDE.MapEngine/MapLoader.cs` | Càrrega mapa complet + LUT cache + titulars per any |
 | `PdxModIDE.MapEngine/TitleHistoryLoader.cs` | Parse `history/titles/*.txt` → `TitleHistory` |
-| `PdxModIDE.Rendering/MapRenderer.cs` | Viewport SkiaSharp, zoom/pan, color picker, tooltips |
+| `PdxModIDE.Rendering/MapRenderer.cs` | Viewport SkiaSharp, zoom/pan, color picker, tooltips. Overlay per CPU (workaround bug child shader). |
 | `PdxModIDE.Validation/ModuleValidator.cs` | Diff 3-vies (mod/game/backup) recursiu |
 | `PdxModIDE.Data/DataLoader.cs` | Load/Save JSON genèric `data/*.json` |
 | `PdxModIDE.Domain/Models.cs` | Entitats pures (Module, GameFile, Profile, EditingSession) |
@@ -454,4 +456,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-07-19 | Projecte: PdxModIDE | Versió: 1.3.3 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*
+*Generat: 2026-07-19 | Projecte: PdxModIDE | Versió: 1.3.4 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

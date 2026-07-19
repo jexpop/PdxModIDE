@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.3.3 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.3.4 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -77,8 +77,8 @@ MainViewModel.ProcessModulesCommand
 
 | Proyecto | Paquete | Versión | Uso |
 |----------|---------|---------|-----|
-| `PdxModIDE.UI` | `SkiaSharp` / `SkiaSharp.Views.WPF` | 2.88.x | Render mapa, LUT, paletas |
-| `PdxModIDE.MapEngine` | `SkiaSharp` | 2.88.x | Decode provinces.png, build LUT bitmap |
+| `PdxModIDE.UI` | `SkiaSharp` / `SkiaSharp.Views.WPF` | 3.116.1 | Render mapa, LUT, paletas |
+| `PdxModIDE.MapEngine` | `SkiaSharp` | 3.116.1 | Decode provinces.png, build LUT bitmap |
 | `PdxModIDE.Core` | `Microsoft.Extensions.Logging.Abstractions` | 8.x | (Opcional) logging abstraido |
 | Todos | `System.Text.Json` | Built-in | Serialización `data/*.json` |
 | `PdxModIDE.UI` | `Microsoft.Xaml.Behaviors.Wpf` | 1.1.x | (Si se usa) behaviors XAML |
@@ -275,6 +275,7 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
   - **Reinos** (Rey.): Colorea por límites de reino (`k_xxx`) → `BuildKingdomLut()`.
   - **Imperios** (Imp.): Colorea por límites de imperio (`e_xxx`) → `BuildEmpireLut()`.
   Click provincia → panel info muestra Baronía, Condado, Ducado, Reino, Imperio, Holder, Liege según modo.
+  - **Nota técnica**: el overlay se aplica por CPU (workaround bug de `SKShader.CreateImage` como child shader). `RenderToBitmap` renderiza terreno+bordes via shader (mode=0), luego itera píxeles y aplica color de paleta según LUT de holder. Usa `InvalidateRender()` para invalidación de caché.
 - `LogsTab`: Filtros log (no implementado completamente).
 
 **Temas**: `ResourceDictionary` swap en `MainWindow.ApplyTheme(theme)`. Archivos en `Themes/*.xaml`.
@@ -331,6 +332,7 @@ MainWindow.ApplyLanguage(language) → actualiza _currentLanguagePath
 | **Regex fechas por juego** | Flexibilidad (CK3/EU4 formatos distintos) | Regex simple; no parsea contexto (ej. `start_date` vs `end_date`) |
 | **Backup automático** | Seguridad ante errores offset | Duplica espacio; no limpieza automática |
 | **LUT 16M bytes cacheado** | Render instantáneo mapa; evita rebuild | 16 MB RAM + disco; invalidación solo por hash archivos fuente |
+| **Overlay CPU en vez de shader** | `SKShader.CreateImage` como child shader de `SKRuntimeEffect` devuelve 0 en `eval()` en SkiaSharp 3.116.1 (CPU raster). Workaround: renderizar terreno+bordes via shader, aplicar overlay (holder/condado/ducado/etc) en CPU iterando píxeles con `Marshal.Copy`. | Overlay 100% CPU; si SkiaSharp lo arregla, se puede migrar de vuelta al shader. |
 | **Ciclo de colores >255 items** | `BuildHolderLut`/`BuildCountyLut` usan `(idx-1)%255+1` para wrap-around | Antes: índice clavado en 255 → cientos de condados/holders verdes |
 | **Parallel.ForEach síncrono en ProcessModule** | Aprovecha multi-core I/O | Bloquea thread pool; `ProcessModulesAsync` hace `await Task.CompletedTask` tras `Parallel.ForEach` |
 | **ViewModels manuales** | Control total, sin Magic | Boilerplate `OnPropertyChanged`; fácil introducir bugs binding |
@@ -444,7 +446,7 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 | `PdxModIDE.Core/Games/CK3/CK3GamePlugin.cs` | Implementación CK3: regex, extensiones, defines path |
 | `PdxModIDE.MapEngine/MapLoader.cs` | Carga mapa completo + LUT cache + titulares por año |
 | `PdxModIDE.MapEngine/TitleHistoryLoader.cs` | Parse `history/titles/*.txt` → `TitleHistory` |
-| `PdxModIDE.Rendering/MapRenderer.cs` | Viewport SkiaSharp, zoom/pan, color picker, tooltips |
+| `PdxModIDE.Rendering/MapRenderer.cs` | Viewport SkiaSharp, zoom/pan, color picker, tooltips. Overlay por CPU (workaround bug `SKShader.CreateImage` como child shader devuelve 0). |
 | `PdxModIDE.Validation/ModuleValidator.cs` | Diff 3-vías (mod/game/backup) recursivo |
 | `PdxModIDE.Data/DataLoader.cs` | Load/Save JSON genérico `data/*.json` |
 | `PdxModIDE.Domain/Models.cs` | Entidades puras (Module, GameFile, Profile, EditingSession) |
@@ -452,4 +454,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-07-19 | Proyecto: PdxModIDE | Versión: 1.3.3 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*
+*Generado: 2026-07-19 | Proyecto: PdxModIDE | Versión: 1.3.4 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

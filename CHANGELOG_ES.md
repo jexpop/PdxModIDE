@@ -7,6 +7,27 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.3.4]
+
+### Fixed
+
+- **Overlay de titular/condado/ducado/etc roto en pestaña Mapa**: las provincias se mostraban grises en todos los modos de overlay. Causa: `SKShader.CreateImage` como child shader de `SKRuntimeEffect` devuelve 0 en `eval()` en SkiaSharp 3.116.1 (CPU raster). Solución: overlay por CPU en `RenderToBitmap` — lookup por píxel del color de provincia → holderIdx → color de paleta, preservando bordes y highlight. Ver `docs/skia-image-shader-bug-workaround.md`.
+- **Crash al cargar el mapa**: `RenderToBitmap` devolvía un `SKBitmap` ya desechado por un `using var` accidental en la variable retornada.
+
+### Changed
+
+- **`RenderToBitmap`**: ahora renderiza terreno+ bordes vía shader (mode=0) y aplica overlay por CPU. Acceso a píxeles por filas con `GetPixels()` + `Marshal.Copy` para rendimiento.
+- **`SetHolderMode`**: ya no crea `SKImage` del LUT de holder; almacena el `byte[]` para uso directo en CPU.
+- **`BuildShaderCache`**: usa `SKShader.CreateColor(SKColors.Black)` dummy para `holderLut`/`palette` (no usados con mode=0).
+- **`HistoryTab.xaml.cs`**: añadido `InvalidateRender()` para invalidación consistente de caché; reemplaza patrón manual `_cachedWidth = -1; QueueRender()`.
+
+### Removed
+
+- **`_holderLutImage` y `_holderLutBackingBitmap`**: ya no son necesarios al no usar shader para overlay.
+- **Código diagnóstico**: eliminados `File.WriteAllText` y comparaciones bitmap/image usados durante la investigación del bug.
+
+---
+
 ## [1.3.3]
 
 ### Changed

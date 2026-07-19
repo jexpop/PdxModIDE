@@ -189,11 +189,21 @@ namespace PdxModIDE.UI
             }
         }
 
+        private int _renderVersion;
+        private int _cachedRenderVersion = -1;
+
         private void QueueRender()
         {
             if (_renderPending) return;
             _renderPending = true;
             Dispatcher.BeginInvoke(new Action(RenderNow), System.Windows.Threading.DispatcherPriority.Render);
+        }
+
+        private void InvalidateRender()
+        {
+            _renderVersion++;
+            _cachedWidth = -1;
+            QueueRender();
         }
 
         private (int w, int h) GetViewportPx()
@@ -215,6 +225,7 @@ namespace PdxModIDE.UI
             var (vw, vh) = GetViewportPx();
 
             bool needsRender = _renderCache == null ||
+                _cachedRenderVersion != _renderVersion ||
                 _cachedWidth != vw ||
                 _cachedHeight != vh ||
                 _cachedHighlight != _renderer.HighlightProvinceId ||
@@ -232,6 +243,7 @@ namespace PdxModIDE.UI
                 _cachedZoom = _renderer.Zoom;
                 _cachedOffX = _renderer.OffsetX;
                 _cachedOffY = _renderer.OffsetY;
+                _cachedRenderVersion = _renderVersion;
             }
 
             int w = _renderCache.Width;
@@ -444,8 +456,7 @@ namespace PdxModIDE.UI
             else
             {
                 _renderer!.SetHolderMode(false, null, null);
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
             }
         }
 
@@ -466,8 +477,7 @@ namespace PdxModIDE.UI
             {
                 EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
             }
         }
 
@@ -488,8 +498,7 @@ namespace PdxModIDE.UI
             {
                 EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
             }
         }
 
@@ -510,8 +519,7 @@ namespace PdxModIDE.UI
             {
                 EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
             }
         }
 
@@ -532,8 +540,7 @@ namespace PdxModIDE.UI
             {
                 EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
             }
         }
 
@@ -554,8 +561,7 @@ namespace PdxModIDE.UI
             {
                 EnsureAtLeastOneMode();
                 _renderer.SetHolderMode(false, null, null);
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
             }
         }
 
@@ -584,8 +590,7 @@ namespace PdxModIDE.UI
             {
                 _renderer!.SetHolderMode(false, null, null);
                 StatusLabel.Content = Res("HistoryTab_NoHolderData");
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
                 return;
             }
 
@@ -605,8 +610,7 @@ namespace PdxModIDE.UI
 
             string fuente = useBase && useMod ? "Mod+Base" : useMod ? "Mod" : "Base";
             StatusLabel.Content = $"Holder Mode [{fuente}] — year {year} — {indexToHolder.Count} holders";
-            _cachedWidth = -1;
-            QueueRender();
+            InvalidateRender();
         }
 
         private void ApplyCountyMode()
@@ -615,16 +619,14 @@ namespace PdxModIDE.UI
             {
                 _renderer!.SetHolderMode(false, null, null);
                 StatusLabel.Content = Res("HistoryTab_NoCountyData");
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
                 return;
             }
             var countyLut = _mapLoader!.BuildCountyLut(out var indexToCounty);
             var palette = MapLoader.BuildCountyPalette(indexToCounty);
             _renderer!.SetHolderMode(true, countyLut, palette);
             StatusLabel.Content = $"County Mode — {indexToCounty.Count} counties";
-            _cachedWidth = -1;
-            QueueRender();
+            InvalidateRender();
         }
 
         private void ApplyDuchyMode()
@@ -633,16 +635,14 @@ namespace PdxModIDE.UI
             {
                 _renderer!.SetHolderMode(false, null, null);
                 StatusLabel.Content = Res("HistoryTab_NoDuchyData");
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
                 return;
             }
             var duchyLut = _mapLoader!.BuildDuchyLut(out var indexToDuchy);
             var palette = MapLoader.BuildDuchyPalette(indexToDuchy);
             _renderer!.SetHolderMode(true, duchyLut, palette);
             StatusLabel.Content = $"Duchy Mode — {indexToDuchy.Count} duchies";
-            _cachedWidth = -1;
-            QueueRender();
+            InvalidateRender();
         }
 
         private void ApplyKingdomMode()
@@ -651,16 +651,14 @@ namespace PdxModIDE.UI
             {
                 _renderer!.SetHolderMode(false, null, null);
                 StatusLabel.Content = Res("HistoryTab_NoKingdomData");
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
                 return;
             }
             var kingdomLut = _mapLoader!.BuildKingdomLut(out var indexToKingdom);
             var palette = MapLoader.BuildKingdomPalette(indexToKingdom);
             _renderer!.SetHolderMode(true, kingdomLut, palette);
             StatusLabel.Content = $"Kingdom Mode — {indexToKingdom.Count} kingdoms";
-            _cachedWidth = -1;
-            QueueRender();
+            InvalidateRender();
         }
 
         private void ApplyEmpireMode()
@@ -669,16 +667,14 @@ namespace PdxModIDE.UI
             {
                 _renderer!.SetHolderMode(false, null, null);
                 StatusLabel.Content = Res("HistoryTab_NoEmpireData");
-                _cachedWidth = -1;
-                QueueRender();
+                InvalidateRender();
                 return;
             }
             var empireLut = _mapLoader!.BuildEmpireLut(out var indexToEmpire);
             var palette = MapLoader.BuildEmpirePalette(indexToEmpire);
             _renderer!.SetHolderMode(true, empireLut, palette);
             StatusLabel.Content = $"Empire Mode — {indexToEmpire.Count} empires";
-            _cachedWidth = -1;
-            QueueRender();
+            InvalidateRender();
         }
 
         private void UpdateProvinceInfo(int provinceId)
