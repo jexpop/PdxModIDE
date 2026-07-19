@@ -80,7 +80,7 @@
     <system:String x:Key="HistoryTab_Selection_Text">Haz clic en una provincia para ver su información detallada (ID, nombre, color, tipo y títulos asociados).</system:String>
     <system:String x:Key="HistoryTab_Layers">Capas</system:String>
     <system:String x:Key="HistoryTab_Layers_Text">Activa las casillas "Base" y/o "Mod" para cargar datos históricos de provincias, luego activa los modos de superposición: Titular, Condado, Ducado, Reino o Imperio.</system:String>
-    <system:String x:Key="HistoryTab_Province">Provincia</system:String>
+    <system:String x:Key="HistoryTab_Province">PROVINCIA</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
     <system:String x:Key="HistoryTab_IDLabel">ID:</system:String>
     <system:String x:Key="HistoryTab_Name">Nombre: -</system:String>
@@ -89,11 +89,11 @@
     <system:String x:Key="HistoryTab_ColorLabel">Color:</system:String>
     <system:String x:Key="HistoryTab_Type">Tipo: -</system:String>
     <system:String x:Key="HistoryTab_TypeLabel">Tipo:</system:String>
-    <system:String x:Key="HistoryTab_Title">Título</system:String>
-    <system:String x:Key="HistoryTab_Barony">Baronía: -</system:String>
-    <system:String x:Key="HistoryTab_County">Condado: -</system:String>
-    <system:String x:Key="HistoryTab_Holder">Holder: -</system:String>
-    <system:String x:Key="HistoryTab_Liege">Liege: -</system:String>
+    <system:String x:Key="HistoryTab_Title">TÍTULO</system:String>
+    <system:String x:Key="HistoryTab_BaronyLabel">Baronía:</system:String>
+    <system:String x:Key="HistoryTab_CountyLabel">Condado:</system:String>
+    <system:String x:Key="HistoryTab_HolderLabel">Titular:</system:String>
+    <system:String x:Key="HistoryTab_LiegeLabel">Señor:</system:String>
     <system:String x:Key="HistoryTab_ZoomIn">Zoom +</system:String>
     <system:String x:Key="HistoryTab_ZoomOut">Zoom -</system:String>
     <system:String x:Key="HistoryTab_Fit">Ajustar</system:String>

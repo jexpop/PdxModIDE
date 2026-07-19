@@ -701,12 +701,12 @@ namespace PdxModIDE.UI
                 TextTypeValue.Text = TranslateTerrainType(province.Type);
 
                 string barony = _mapLoader.GetTitleFromProvinceId(provinceId) ?? "-";
-                LabelBarony.Content = $"Barony: {barony}";
+                TextBaronyValue.Text = barony;
 
                 string county = "-";
                 if (barony != "-")
                     county = _mapLoader.GetCountyFromBarony(barony) ?? "-";
-                LabelCounty.Content = $"County: {county}";
+                TextCountyValue.Text = county;
 
                 if (county != "-" && int.TryParse(YearBox.Text, out int year))
                 {
@@ -730,18 +730,18 @@ namespace PdxModIDE.UI
                     }
 
                     string sufijo = fuente != null ? $" [{fuente}]" : "";
-                    LabelHolder.Content = $"Holder in {year}{sufijo}: {holder ?? "(no data)"}";
-                    LabelLiege.Content = $"Liege in {year}{sufijo}: {liege ?? "(no data)"}";
+                    TextHolderValue.Text = $"{holder ?? "(no data)"}{sufijo}";
+                    TextLiegeValue.Text = $"{liege ?? "(no data)"}{sufijo}";
                 }
                 else if (county != "-")
                 {
-                    LabelHolder.Content = "Holder: (invalid year)";
-                    LabelLiege.Content = "Liege: (invalid year)";
+                    TextHolderValue.Text = "(invalid year)";
+                    TextLiegeValue.Text = "(invalid year)";
                 }
                 else
                 {
-                    LabelHolder.Content = "Holder: (no data)";
-                    LabelLiege.Content = "Liege: (no data)";
+                    TextHolderValue.Text = "(no data)";
+                    TextLiegeValue.Text = "(no data)";
                 }
 
                 if (_renderer != null)

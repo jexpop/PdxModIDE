@@ -80,7 +80,7 @@
     <system:String x:Key="HistoryTab_Selection_Text">Fes clic en una província per veure'n la informació detallada (ID, nom, color, tipus i títols associats).</system:String>
     <system:String x:Key="HistoryTab_Layers">Capes</system:String>
     <system:String x:Key="HistoryTab_Layers_Text">Activa les caselles "Base" i/o "Mod" per carregar dades històriques de províncies, després activa els modes de superposició: Titular, Comtat, Ducat, Regne o Imperi.</system:String>
-    <system:String x:Key="HistoryTab_Province">Província</system:String>
+    <system:String x:Key="HistoryTab_Province">PROVÍNCIA</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
     <system:String x:Key="HistoryTab_IDLabel">ID:</system:String>
     <system:String x:Key="HistoryTab_Name">Nom: -</system:String>
@@ -89,11 +89,11 @@
     <system:String x:Key="HistoryTab_ColorLabel">Color:</system:String>
     <system:String x:Key="HistoryTab_Type">Tipus: -</system:String>
     <system:String x:Key="HistoryTab_TypeLabel">Tipus:</system:String>
-    <system:String x:Key="HistoryTab_Title">Títol</system:String>
-    <system:String x:Key="HistoryTab_Barony">Baronia: -</system:String>
-    <system:String x:Key="HistoryTab_County">Comtat: -</system:String>
-    <system:String x:Key="HistoryTab_Holder">Holder: -</system:String>
-    <system:String x:Key="HistoryTab_Liege">Liege: -</system:String>
+    <system:String x:Key="HistoryTab_Title">TÍTOL</system:String>
+    <system:String x:Key="HistoryTab_BaronyLabel">Baronia:</system:String>
+    <system:String x:Key="HistoryTab_CountyLabel">Comtat:</system:String>
+    <system:String x:Key="HistoryTab_HolderLabel">Titular:</system:String>
+    <system:String x:Key="HistoryTab_LiegeLabel">Senyor:</system:String>
     <system:String x:Key="HistoryTab_ZoomIn">Zoom +</system:String>
     <system:String x:Key="HistoryTab_ZoomOut">Zoom -</system:String>
     <system:String x:Key="HistoryTab_Fit">Ajustar</system:String>

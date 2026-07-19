@@ -7,6 +7,17 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.3.3]
+
+### Changed
+
+- **Format de panells a la pestanya Mapa**: els headers dels GroupBox "PROVÍNCIA" i "TÍTOL" ara es mostren en negreta amb mida de font més gran per destacar sobre els subtítols.
+- **Panell Títol reestructurat**: ara segueix el mateix format que el panell Província, amb etiquetes en negreta (Baronia, Comtat, Titular, Senyor) i valors en una línia separada a sota. Utilitzen `DynamicResource` per a la traducció correcta segons l'idioma actiu.
+- **Valors de Holder i Liege simplificats**: s'ha eliminat el prefix "in {any}" del valor mostrat; ara es mostra només el nom del titular i la font ([Mod]/[Base]).
+- **Traduccions coherents**: noves claus `HistoryTab_BaronyLabel`, `HistoryTab_CountyLabel`, `HistoryTab_HolderLabel`, `HistoryTab_LiegeLabel` en CA/ES/EN. "Holder" es tradueix com "Titular" a CA/ES; "Liege" com "Senyor" (CA) i "Señor" (ES).
+
+---
+
 ## [1.3.2]
 
 ### Added

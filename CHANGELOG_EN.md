@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.3]
+
+### Changed
+
+- **Panel formatting in Map tab**: GroupBox headers "PROVINCE" and "TITLE" now render in bold with a larger font size to stand out from the subtitles.
+- **Title panel restructured**: now follows the same format as the Province panel, with bold labels (Barony, County, Holder, Liege) and values on a separate line below. Uses `DynamicResource` for correct translation per active language.
+- **Simplified Holder and Liege values**: removed the "in {year}" prefix from the displayed value; now shows only the holder name and source ([Mod]/[Base]).
+- **Coherent translations**: new keys `HistoryTab_BaronyLabel`, `HistoryTab_CountyLabel`, `HistoryTab_HolderLabel`, `HistoryTab_LiegeLabel` in EN/ES/CA.
+
+---
+
 ## [1.3.2]
 
 ### Added
