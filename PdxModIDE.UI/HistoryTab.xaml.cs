@@ -311,6 +311,7 @@ namespace PdxModIDE.UI
                         string barony = _mapLoader.GetTitleFromProvinceId(province.Id) ?? "-";
                         string county = barony != "-" ? (_mapLoader.GetCountyFromBarony(barony) ?? "-") : "-";
                         StatusLabel.Content = $"Prov: {province.Id} | {province.Name} | Tipo: {province.Type ?? "?"} | Bar: {barony} | Cond: {county}";
+                        InfoPlaceholder.Visibility = Visibility.Collapsed;
                         UpdateProvinceInfo(provinceId);
                         return;
                     }
@@ -319,6 +320,7 @@ namespace PdxModIDE.UI
                 _renderer.HighlightProvinceId = -1;
                 _cachedHighlight = _renderer.HighlightProvinceId - 1;
                 InfoPanel.Visibility = Visibility.Collapsed;
+                InfoPlaceholder.Visibility = Visibility.Visible;
                 QueueRender();
                 StatusLabel.Content = $"Coords: {x}, {y} - SIN PROVINCIA";
             }
@@ -685,6 +687,7 @@ namespace PdxModIDE.UI
                 if (province == null) return;
 
                 InfoPanel.Visibility = Visibility.Visible;
+                InfoPlaceholder.Visibility = Visibility.Collapsed;
                 TitleGroup.Visibility = HasActiveSource() ? Visibility.Visible : Visibility.Collapsed;
 
                 LabelId.Content = $"ID: {province.Id}";

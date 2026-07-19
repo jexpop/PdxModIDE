@@ -72,6 +72,14 @@
     <system:String x:Key="DatesTab_SourceNotFound">Origen: (no trobat)</system:String>
 
     <!-- HistoryTab -->
+    <system:String x:Key="HistoryTab_Navigation">Navegació</system:String>
+    <system:String x:Key="HistoryTab_Navigation_Text">• Zoom: utilitza els botons + i - o la roda del ratolí
+• Pan: fes clic dret i arrossega
+• Ajustar: prem el botó Ajustar per restablir la vista</system:String>
+    <system:String x:Key="HistoryTab_Selection">Selecció de província</system:String>
+    <system:String x:Key="HistoryTab_Selection_Text">Fes clic en una província per veure'n la informació detallada (ID, nom, color, tipus i títols associats).</system:String>
+    <system:String x:Key="HistoryTab_Layers">Capes</system:String>
+    <system:String x:Key="HistoryTab_Layers_Text">Activa les caselles "Base" i/o "Mod" per carregar dades històriques de províncies, després activa els modes de superposició: Titular, Comtat, Ducat, Regne o Imperi.</system:String>
     <system:String x:Key="HistoryTab_Province">Província</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
     <system:String x:Key="HistoryTab_Name">Nom: -</system:String>

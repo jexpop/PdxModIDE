@@ -7,6 +7,15 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.3.1]
+
+### Added
+
+- **Panel informativo en pestaña Mapa**: cuando no hay provincia seleccionada, la columna izquierda muestra ahora un panel con instrucciones sobre navegación del mapa (botones de zoom, rueda del ratón, arrastrar con clic derecho, ajustar ventana), selección de provincia (clic en cualquier provincia para ver detalles) y capas (activar casillas Base/Mod y modos de superposición). El panel se oculta al hacer clic en una provincia y reaparece al hacer clic en espacio vacío.
+- **Nuevas claves i18n**: `HistoryTab_Navigation`, `HistoryTab_Navigation_Text`, `HistoryTab_Selection`, `HistoryTab_Selection_Text`, `HistoryTab_Layers`, `HistoryTab_Layers_Text` en inglés, español y catalán.
+
+---
+
 ## [1.3.0]
 
 ### Added

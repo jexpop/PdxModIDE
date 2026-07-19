@@ -17,7 +17,7 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.3.0 (veure `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 projectes).
+**Versió actual**: 1.3.1 (veure `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
 
@@ -454,4 +454,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-07-19 | Projecte: PdxModIDE | Versió: 1.3.0 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*
+*Generat: 2026-07-19 | Projecte: PdxModIDE | Versió: 1.3.1 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*

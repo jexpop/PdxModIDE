@@ -72,6 +72,14 @@
     <system:String x:Key="DatesTab_SourceNotFound">Source: (not found)</system:String>
 
     <!-- HistoryTab -->
+    <system:String x:Key="HistoryTab_Navigation">Navigation</system:String>
+    <system:String x:Key="HistoryTab_Navigation_Text">• Zoom: use the + and - buttons or the mouse wheel
+• Pan: right-click and drag
+• Fit: click the Fit button to reset the view</system:String>
+    <system:String x:Key="HistoryTab_Selection">Province Selection</system:String>
+    <system:String x:Key="HistoryTab_Selection_Text">Click on any province to view its detailed information (ID, name, color, type, and associated titles).</system:String>
+    <system:String x:Key="HistoryTab_Layers">Layers</system:String>
+    <system:String x:Key="HistoryTab_Layers_Text">Enable "Base" and/or "Mod" checkboxes to load historical province data, then activate overlay modes: Holder, County, Duchy, Kingdom, or Empire.</system:String>
     <system:String x:Key="HistoryTab_Province">Province</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
     <system:String x:Key="HistoryTab_Name">Name: -</system:String>

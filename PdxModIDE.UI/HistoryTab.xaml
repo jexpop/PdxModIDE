@@ -11,6 +11,18 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <StackPanel Grid.Column="0" Margin="5" VerticalAlignment="Top" x:Name="InfoPlaceholder" Visibility="Visible">
+            <GroupBox Header="{DynamicResource HistoryTab_Navigation}" Margin="0,0,0,5">
+                <TextBlock Text="{DynamicResource HistoryTab_Navigation_Text}" TextWrapping="Wrap" Margin="5"/>
+            </GroupBox>
+            <GroupBox Header="{DynamicResource HistoryTab_Selection}" Margin="0,0,0,5">
+                <TextBlock Text="{DynamicResource HistoryTab_Selection_Text}" TextWrapping="Wrap" Margin="5"/>
+            </GroupBox>
+            <GroupBox Header="{DynamicResource HistoryTab_Layers}" Margin="0,0,0,5">
+                <TextBlock Text="{DynamicResource HistoryTab_Layers_Text}" TextWrapping="Wrap" Margin="5"/>
+            </GroupBox>
+        </StackPanel>
+
         <StackPanel Grid.Column="0" Margin="5" VerticalAlignment="Top" x:Name="InfoPanel" Visibility="Collapsed">
             <GroupBox Header="{DynamicResource HistoryTab_Province}" Margin="0,0,0,5">
                 <StackPanel>

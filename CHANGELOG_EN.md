@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.1]
+
+### Added
+
+- **Informational placeholder panel in Map tab**: when no province is selected, the left column now shows a panel with instructions on map navigation (zoom buttons, mouse wheel, right-click drag, fit to window), province selection (click any province to view details), and layers (enable Base/Mod checkboxes and overlay modes). The panel is hidden when a province is clicked and reappears when clicking empty space.
+- **New i18n keys**: `HistoryTab_Navigation`, `HistoryTab_Navigation_Text`, `HistoryTab_Selection`, `HistoryTab_Selection_Text`, `HistoryTab_Layers`, `HistoryTab_Layers_Text` in English, Spanish, and Catalan.
+
+---
+
 ## [1.3.0]
 
 ### Added

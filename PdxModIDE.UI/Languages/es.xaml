@@ -72,6 +72,14 @@
     <system:String x:Key="DatesTab_SourceNotFound">Origen: (no encontrado)</system:String>
 
     <!-- HistoryTab -->
+    <system:String x:Key="HistoryTab_Navigation">Navegación</system:String>
+    <system:String x:Key="HistoryTab_Navigation_Text">• Zoom: usa los botones + y - o la rueda del ratón
+• Pan: haz clic derecho y arrastra
+• Ajustar: pulsa el botón Ajustar para restablecer la vista</system:String>
+    <system:String x:Key="HistoryTab_Selection">Selección de provincia</system:String>
+    <system:String x:Key="HistoryTab_Selection_Text">Haz clic en una provincia para ver su información detallada (ID, nombre, color, tipo y títulos asociados).</system:String>
+    <system:String x:Key="HistoryTab_Layers">Capas</system:String>
+    <system:String x:Key="HistoryTab_Layers_Text">Activa las casillas "Base" y/o "Mod" para cargar datos históricos de provincias, luego activa los modos de superposición: Titular, Condado, Ducado, Reino o Imperio.</system:String>
     <system:String x:Key="HistoryTab_Province">Provincia</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
     <system:String x:Key="HistoryTab_Name">Nombre: -</system:String>

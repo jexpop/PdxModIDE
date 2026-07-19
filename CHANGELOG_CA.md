@@ -7,6 +7,15 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.3.1]
+
+### Added
+
+- **Panell informatiu a la pestanya Mapa**: quan no hi ha cap província seleccionada, la columna esquerra ara mostra un panell amb instruccions sobre navegació del mapa (botons de zoom, roda del ratolí, arrossegar amb clic dret, ajustar finestra), selecció de província (clic a qualsevol província per veure'n detalls) i capes (activar caselles Base/Mod i modes de superposició). El panell s'oculta en fer clic a una província i reapareix en fer clic a espai buit.
+- **Noves claus i18n**: `HistoryTab_Navigation`, `HistoryTab_Navigation_Text`, `HistoryTab_Selection`, `HistoryTab_Selection_Text`, `HistoryTab_Layers`, `HistoryTab_Layers_Text` en anglès, espanyol i català.
+
+---
+
 ## [1.3.0]
 
 ### Added
