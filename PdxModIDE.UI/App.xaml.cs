@@ -24,8 +24,10 @@ namespace PdxModIDE.UI
                 var ex = args.ExceptionObject as Exception;
                 File.AppendAllText(Path.Combine("logs", "crash.log"),
                     $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] UNHANDLED: {FormatExceptionChain(ex)}\n");
-                MessageBox.Show($"Error inesperado: {ex?.Message}\n\nDetalles guardados en logs/crash.log",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                string msg = System.Windows.Application.Current.TryFindResource("App_UnhandledError") as string
+                    ?? "Unexpected error: {0}\n\nDetails saved to logs/crash.log";
+                MessageBox.Show(string.Format(msg, ex?.Message),
+                    Res("App_ErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
             };
 
             DispatcherUnhandledException += (_, args) =>
@@ -34,9 +36,16 @@ namespace PdxModIDE.UI
                 File.AppendAllText(Path.Combine("logs", "crash.log"),
                     $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] DISPATCHER: {FormatExceptionChain(ex)}\n");
                 args.Handled = true;
-                MessageBox.Show($"Error en la interfaz: {(ex.InnerException ?? ex).Message}\n\nDetalles guardados en logs/crash.log",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                string msg = System.Windows.Application.Current.TryFindResource("App_UIError") as string
+                    ?? "UI error: {0}\n\nDetails saved to logs/crash.log";
+                MessageBox.Show(string.Format(msg, (ex.InnerException ?? ex).Message),
+                    Res("App_ErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
             };
+        }
+
+        private static string Res(string key)
+        {
+            return System.Windows.Application.Current.TryFindResource(key) as string ?? key;
         }
 
         private static string FormatExceptionChain(Exception? ex)

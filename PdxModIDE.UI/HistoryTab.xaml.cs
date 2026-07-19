@@ -77,13 +77,13 @@ namespace PdxModIDE.UI
             var profile = ViewModel?.CurrentProfile;
             if (profile == null)
             {
-                OffsetLabel.Content = "Fecha Mod: -";
+                OffsetLabel.Content = TryFindResource("HistoryTab_OffsetMod") ?? "Mod Date: -";
                 return;
             }
             if (int.TryParse(YearBox.Text, out int year))
-                OffsetLabel.Content = $"Fecha Mod: {year + profile.YearOffset}";
+                OffsetLabel.Content = $"Mod Date: {year + profile.YearOffset}";
             else
-                OffsetLabel.Content = "Fecha Mod: -";
+                OffsetLabel.Content = TryFindResource("HistoryTab_OffsetMod") ?? "Mod Date: -";
         }
 
         private void TryAutoLoad()
@@ -92,12 +92,12 @@ namespace PdxModIDE.UI
             var profile = ViewModel?.CurrentProfile;
             if (profile == null)
             {
-                StatusLabel.Content = "Sin perfil seleccionado";
+                StatusLabel.Content = Res("HistoryTab_NoProfile");
                 return;
             }
             if (string.IsNullOrEmpty(profile.GameRoot) || !Directory.Exists(profile.GameRoot))
             {
-                StatusLabel.Content = "Configura un perfil con GameRoot válido";
+                StatusLabel.Content = Res("HistoryTab_NoGameRoot");
                 return;
             }
             DoLoad(profile.GameRoot, profile.ModRoot);
@@ -128,7 +128,7 @@ namespace PdxModIDE.UI
                 string? provincesPng = FindFileBase("map_data/provinces.png");
                 if (provincesPng == null)
                 {
-                    StatusLabel.Content = "No se encontró provinces.png";
+                    StatusLabel.Content = Res("HistoryTab_NoProvincesPng");
                     return;
                 }
 
@@ -160,7 +160,7 @@ namespace PdxModIDE.UI
                 var renderer = new MapRenderer();
                 if (!renderer.Load(loader))
                 {
-                    StatusLabel.Content = "Error al cargar el renderizador";
+                    StatusLabel.Content = Res("HistoryTab_RenderError");
                     return;
                 }
 
@@ -178,12 +178,11 @@ namespace PdxModIDE.UI
                         QueueRender();
                     }
                 }), System.Windows.Threading.DispatcherPriority.Render);
-                StatusLabel.Content = $"{loader.ProvincesById.Count} prov, {baseCount} títulos base, {modCount} títulos mod";
+                StatusLabel.Content = $"{loader.ProvincesById.Count} prov, {baseCount} base titles, {modCount} mod titles";
             }
             catch (Exception ex)
             {
                 StatusLabel.Content = $"Error: {ex.Message}";
-                File.AppendAllText("logs/crash.log", $"[{DateTime.Now:HH:mm:ss}] HistoryTab.DoLoad: {ex.Message}\n");
             }
         }
 
@@ -574,7 +573,7 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de titulares";
+                StatusLabel.Content = Res("HistoryTab_NoHolderData");
                 _cachedWidth = -1;
                 QueueRender();
                 return;
@@ -595,7 +594,7 @@ namespace PdxModIDE.UI
             _renderer!.SetHolderMode(true, holderLut, palette);
 
             string fuente = useBase && useMod ? "Mod+Base" : useMod ? "Mod" : "Base";
-            StatusLabel.Content = $"Modo Titular [{fuente}] — año {year} — {indexToHolder.Count} titulares";
+            StatusLabel.Content = $"Holder Mode [{fuente}] — year {year} — {indexToHolder.Count} holders";
             _cachedWidth = -1;
             QueueRender();
         }
@@ -605,7 +604,7 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de condados";
+                StatusLabel.Content = Res("HistoryTab_NoCountyData");
                 _cachedWidth = -1;
                 QueueRender();
                 return;
@@ -613,7 +612,7 @@ namespace PdxModIDE.UI
             var countyLut = _mapLoader!.BuildCountyLut(out var indexToCounty);
             var palette = MapLoader.BuildCountyPalette(indexToCounty);
             _renderer!.SetHolderMode(true, countyLut, palette);
-            StatusLabel.Content = $"Modo Condados — {indexToCounty.Count} condados";
+            StatusLabel.Content = $"County Mode — {indexToCounty.Count} counties";
             _cachedWidth = -1;
             QueueRender();
         }
@@ -623,7 +622,7 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de ducados";
+                StatusLabel.Content = Res("HistoryTab_NoDuchyData");
                 _cachedWidth = -1;
                 QueueRender();
                 return;
@@ -631,7 +630,7 @@ namespace PdxModIDE.UI
             var duchyLut = _mapLoader!.BuildDuchyLut(out var indexToDuchy);
             var palette = MapLoader.BuildDuchyPalette(indexToDuchy);
             _renderer!.SetHolderMode(true, duchyLut, palette);
-            StatusLabel.Content = $"Modo Ducados — {indexToDuchy.Count} ducados";
+            StatusLabel.Content = $"Duchy Mode — {indexToDuchy.Count} duchies";
             _cachedWidth = -1;
             QueueRender();
         }
@@ -641,7 +640,7 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de reinos";
+                StatusLabel.Content = Res("HistoryTab_NoKingdomData");
                 _cachedWidth = -1;
                 QueueRender();
                 return;
@@ -649,7 +648,7 @@ namespace PdxModIDE.UI
             var kingdomLut = _mapLoader!.BuildKingdomLut(out var indexToKingdom);
             var palette = MapLoader.BuildKingdomPalette(indexToKingdom);
             _renderer!.SetHolderMode(true, kingdomLut, palette);
-            StatusLabel.Content = $"Modo Reinos — {indexToKingdom.Count} reinos";
+            StatusLabel.Content = $"Kingdom Mode — {indexToKingdom.Count} kingdoms";
             _cachedWidth = -1;
             QueueRender();
         }
@@ -659,7 +658,7 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = "Activa \"Base\" y/o \"Mod\" para ver datos de imperios";
+                StatusLabel.Content = Res("HistoryTab_NoEmpireData");
                 _cachedWidth = -1;
                 QueueRender();
                 return;
@@ -667,7 +666,7 @@ namespace PdxModIDE.UI
             var empireLut = _mapLoader!.BuildEmpireLut(out var indexToEmpire);
             var palette = MapLoader.BuildEmpirePalette(indexToEmpire);
             _renderer!.SetHolderMode(true, empireLut, palette);
-            StatusLabel.Content = $"Modo Imperios — {indexToEmpire.Count} imperios";
+            StatusLabel.Content = $"Empire Mode — {indexToEmpire.Count} empires";
             _cachedWidth = -1;
             QueueRender();
         }
@@ -682,17 +681,17 @@ namespace PdxModIDE.UI
                 if (province == null) return;
 
                 LabelId.Content = $"ID: {province.Id}";
-                LabelName.Content = $"Nombre: {province.Name}";
+                LabelName.Content = $"Name: {province.Name}";
                 LabelColor.Content = $"Color: ({province.R},{province.G},{province.B})";
-                LabelType.Content = $"Tipo: {province.Type ?? "?"}";
+                LabelType.Content = $"Type: {province.Type ?? "?"}";
 
                 string barony = _mapLoader.GetTitleFromProvinceId(provinceId) ?? "-";
-                LabelBarony.Content = $"Baronía: {barony}";
+                LabelBarony.Content = $"Barony: {barony}";
 
                 string county = "-";
                 if (barony != "-")
                     county = _mapLoader.GetCountyFromBarony(barony) ?? "-";
-                LabelCounty.Content = $"Condado: {county}";
+                LabelCounty.Content = $"County: {county}";
 
                 if (county != "-" && int.TryParse(YearBox.Text, out int year))
                 {
@@ -716,18 +715,18 @@ namespace PdxModIDE.UI
                     }
 
                     string sufijo = fuente != null ? $" [{fuente}]" : "";
-                    LabelHolder.Content = $"Holder en {year}{sufijo}: {holder ?? "(sin datos)"}";
-                    LabelLiege.Content = $"Liege en {year}{sufijo}: {liege ?? "(sin datos)"}";
+                    LabelHolder.Content = $"Holder in {year}{sufijo}: {holder ?? "(no data)"}";
+                    LabelLiege.Content = $"Liege in {year}{sufijo}: {liege ?? "(no data)"}";
                 }
                 else if (county != "-")
                 {
-                    LabelHolder.Content = "Holder: (año inválido)";
-                    LabelLiege.Content = "Liege: (año inválido)";
+                    LabelHolder.Content = "Holder: (invalid year)";
+                    LabelLiege.Content = "Liege: (invalid year)";
                 }
                 else
                 {
-                    LabelHolder.Content = "Holder: (sin datos)";
-                    LabelLiege.Content = "Liege: (sin datos)";
+                    LabelHolder.Content = "Holder: (no data)";
+                    LabelLiege.Content = "Liege: (no data)";
                 }
 
                 if (_renderer != null)
@@ -740,8 +739,12 @@ namespace PdxModIDE.UI
             catch (Exception ex)
             {
                 StatusLabel.Content = $"Error: {ex.Message}";
-                File.AppendAllText("logs/crash.log", $"[{DateTime.Now:HH:mm:ss}] UpdateProvinceInfo: {ex.Message}\n");
             }
+        }
+
+        private static string Res(string key)
+        {
+            return System.Windows.Application.Current.TryFindResource(key) as string ?? key;
         }
     }
 }

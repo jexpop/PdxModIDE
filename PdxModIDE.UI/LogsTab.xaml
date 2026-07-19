@@ -7,33 +7,33 @@
              d:DesignHeight="600" d:DesignWidth="1000">
     <Grid Margin="5">
         <TabControl>
-            <TabItem Header="Visor de logs">
+            <TabItem Header="{DynamicResource LogsTab_Viewer}">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,5">
-                        <Button x:Name="BtnReload" Content="Recargar" Width="80" Margin="0,0,5,0"/>
-                        <TextBlock Text="Filtrar:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <Button x:Name="BtnReload" Content="{DynamicResource LogsTab_Reload}" Width="80" Margin="0,0,5,0"/>
+                        <TextBlock Text="{DynamicResource LogsTab_Filter}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox x:Name="FilterEntry" Width="200" Margin="0,0,5,0"/>
-                        <Button x:Name="BtnApply" Content="Aplicar" Width="80"/>
+                        <Button x:Name="BtnApply" Content="{DynamicResource LogsTab_Apply}" Width="80"/>
                     </StackPanel>
-<RichTextBox x:Name="LogText" Grid.Row="1" IsReadOnly="True"
-                         FontFamily="Consolas" FontSize="12"
-                         VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+                    <RichTextBox x:Name="LogText" Grid.Row="1" IsReadOnly="True"
+                                 FontFamily="Consolas" FontSize="12"
+                                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Configuración de filtros">
+            <TabItem Header="{DynamicResource LogsTab_FilterConfig}">
                 <StackPanel Margin="10">
-                    <TextBlock Text="Filtros de líneas a omitir en error.log" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    <TextBlock Text="{DynamicResource LogsTab_FilterDesc}" FontWeight="SemiBold" Margin="0,0,0,10"/>
                     <ListBox x:Name="FilterList" MinHeight="150" Margin="0,0,0,10"/>
                     <WrapPanel Margin="0,0,0,10">
-                        <TextBlock Text="Nuevo filtro:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Text="{DynamicResource LogsTab_NewFilter}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox x:Name="NewFilterEntry" Width="300" Margin="0,0,5,0"/>
-                        <Button x:Name="BtnAddFilter" Content="Añadir" Width="80" Margin="0,0,5,0"/>
+                        <Button x:Name="BtnAddFilter" Content="{DynamicResource LogsTab_AddFilter}" Width="80" Margin="0,0,5,0"/>
                     </WrapPanel>
-                    <Button x:Name="BtnDeleteFilter" Content="Eliminar seleccionado" Width="150" HorizontalAlignment="Left"/>
+                    <Button x:Name="BtnDeleteFilter" Content="{DynamicResource LogsTab_DeleteFilter}" Width="150" HorizontalAlignment="Left"/>
                 </StackPanel>
             </TabItem>
         </TabControl>

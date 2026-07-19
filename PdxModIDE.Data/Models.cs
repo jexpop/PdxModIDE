@@ -66,7 +66,7 @@ namespace PdxModIDE.Data
         public string Theme { get; set; } = "light";
 
         [JsonPropertyName("language")]
-        public string Language { get; set; } = "es";
+        public string Language { get; set; } = "en";
     }
 
     public class LogFilters

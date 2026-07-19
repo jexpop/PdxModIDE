@@ -11,7 +11,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/LightTheme.xaml"/>
-                <ResourceDictionary Source="Languages/es.xaml"/>
+                <ResourceDictionary Source="Languages/en.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="TabItem">
                 <Setter Property="Background" Value="{DynamicResource TabHeaderBackground}"/>
@@ -76,26 +76,26 @@
                 Width="34" Height="34"
                 Margin="10,10,10,0"
                 HorizontalAlignment="Right"
-                ToolTip="Ajustes generales"
+                ToolTip="{DynamicResource MainWindow_Tooltip_GeneralSettings}"
                 Click="BtnGeneralSettings_Click"/>
 
         <TabControl Grid.Row="1" Margin="10" Background="{DynamicResource TabSelectedBackground}">
-            <TabItem Header="Perfil">
+            <TabItem Header="{DynamicResource MainWindow_Tab_Profile}">
                 <local:ProfileTab/>
             </TabItem>
-            <TabItem Header="Mapa">
+            <TabItem Header="{DynamicResource MainWindow_Tab_Map}">
                 <local:HistoryTab/>
             </TabItem>
-            <TabItem Header="Fechas">
+            <TabItem Header="{DynamicResource MainWindow_Tab_Dates}">
                 <local:DatesTab/>
             </TabItem>
-            <TabItem Header="Módulos">
+            <TabItem Header="{DynamicResource MainWindow_Tab_Modules}">
                 <local:ModulesTab/>
             </TabItem>
-            <TabItem Header="Validación">
+            <TabItem Header="{DynamicResource MainWindow_Tab_Validation}">
                 <local:ValidationTab x:Name="ValidationTabControl"/>
             </TabItem>
-            <TabItem Header="Logs">
+            <TabItem Header="{DynamicResource MainWindow_Tab_Logs}">
                 <local:LogsTab/>
             </TabItem>
         </TabControl>

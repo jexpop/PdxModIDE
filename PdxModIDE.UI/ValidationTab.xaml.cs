@@ -79,10 +79,10 @@ namespace PdxModIDE.UI
             var moduleName = ComboModules.SelectedItem as string;
             if (string.IsNullOrEmpty(moduleName)) return;
 
-            var comparison = (ComboCompare.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() switch
+            var comparison = ComboCompare.SelectedIndex switch
             {
-                "Juego ↔ Mod" => ComparisonType.GameVsMod,
-                "Mod ↔ Backup" => ComparisonType.ModVsBackup,
+                0 => ComparisonType.GameVsMod,
+                1 => ComparisonType.ModVsBackup,
                 _ => ComparisonType.GameVsBackup
             };
 
@@ -96,16 +96,16 @@ namespace PdxModIDE.UI
                 };
                 item.Foreground = r.Status switch
                 {
-                    "Modificado" => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xd1, 0x7b, 0x00)),
-                    "Añadido" => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Green),
-                    "Eliminado" => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Red),
+                    "Modified" => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xd1, 0x7b, 0x00)),
+                    "Added" => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Green),
+                    "Deleted" => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Red),
                     _ => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray)
                 };
                 TreeModSingle.Items.Add(item);
             }
 
             if (results.Count == 0)
-                TreeModSingle.Items.Add(new System.Windows.Controls.TreeViewItem { Header = "Sin diferencias" });
+                TreeModSingle.Items.Add(new System.Windows.Controls.TreeViewItem { Header = Res("ValidationTab_NoDifferences") });
         }
 
         private async void BtnValidateAllModules_Click(object sender, RoutedEventArgs e)
@@ -173,7 +173,7 @@ namespace PdxModIDE.UI
             if (string.IsNullOrEmpty(sel) || _viewModel == null) return;
 
             var current = _viewModel.ProjectService.GetFileMapTo(sel);
-            var dlg = new InputDialog("Excepción de ruta (MOD)", "Ruta alternativa en el MOD:", current ?? "");
+            var dlg = new InputDialog("Path exception (MOD)", "Alternative path in MOD:", current ?? "");
             if (dlg.ShowDialog() == true)
             {
                 _viewModel.ProjectService.SetFileMapTo(sel, string.IsNullOrWhiteSpace(dlg.ResponseText) ? null : dlg.ResponseText);
@@ -195,10 +195,10 @@ namespace PdxModIDE.UI
             _lastDiffFileKey = sel;
             _currentDiff = result.Diff;
 
-            if (result.Status.Contains("IGUAL"))
+            if (result.Status.Contains("SAME"))
                 LabelResult.Foreground = TryFindResource("StatusGreen") as System.Windows.Media.SolidColorBrush
                     ?? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Green);
-            else if (result.Status.Contains("CAMBIADO"))
+            else if (result.Status.Contains("CHANGED"))
                 LabelResult.Foreground = TryFindResource("StatusRed") as System.Windows.Media.SolidColorBrush
                     ?? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Red);
             else
@@ -269,6 +269,11 @@ namespace PdxModIDE.UI
                 dlg.Owner = Window.GetWindow(this);
                 dlg.ShowDialog();
             }
+        }
+
+        private static string Res(string key)
+        {
+            return System.Windows.Application.Current.TryFindResource(key) as string ?? key;
         }
     }
 }

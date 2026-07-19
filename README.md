@@ -3,7 +3,7 @@
 **IDE para gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**  
 Aplicación WPF (.NET 8) que automatiza el copiado de archivos del juego al mod, aplica offset de fechas y valida diferencias.
 
-**Versión actual:** 1.2.0
+**Versión actual:** 1.2.1
 
 ---
 
@@ -86,7 +86,7 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 - **Modos Ducados / Reinos / Imperios**: Checkboxes "Duc.", "Rey.", "Imp." colorean por límites de ducado (`d_xxx`), reino (`k_xxx`), imperio (`e_xxx`) usando jerarquía completa `landed_titles` (baronía → condado → ducado → reino → imperio). Mutua exclusión entre los 5 modos.
 - **Ajustes Generales de la aplicación**: ventana modal accesible mediante icono de tuerca (⚙), con configuración que no depende de un mod/perfil concreto (Tema visual e Idioma). Sustituye a la antigua pestaña "Opciones".
 - **Temas intercambiables**: 6 temas (Light, Dark, CK3, Sepia, Contrast, VSCode Dark/Light); persistencia en `Settings.json`.
-- **Idioma (i18n, en desarrollo)**: selector Español/English en Ajustes Generales, con cambio en caliente vía `ResourceDictionary` XAML (`Languages/es.xaml`, `Languages/en.xaml`). Por ahora solo traduce la propia ventana de Ajustes; el resto de la interfaz se traducirá progresivamente.
+- **Idioma (i18n)**: selector Español/English en Ajustes Generales, con cambio en caliente vía `ResourceDictionary` XAML (`Languages/es.xaml`, `Languages/en.xaml`). Toda la interfaz traducida. Textos específicos de juego en ficheros separados (`{GameKey}.{lang}.xaml`).
 - **Pestañas UI**: Perfil, Mapa, Fechas, Módulos, Validación, Logs.
 
 ---

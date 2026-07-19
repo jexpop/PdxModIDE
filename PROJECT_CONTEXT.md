@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.2.0 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.2.1 (ver `CHANGELOG.md`). Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -296,9 +296,11 @@ MainWindow.ApplyLanguage(language) → actualiza _currentLanguagePath
                                        para que cambiar uno no elimine el otro.
 ```
 
-**Persistencia**: `Settings.Language` (`data/settings.json`, campo `"language"`, default `"es"`) — mismo flujo que `Theme`: `IProjectService.Language` → `ProjectManager.Language` → `MainViewModel.Language` → `MainViewModel.SaveSettings()`.
+**Persistencia**: `Settings.Language` (`data/settings.json`, campo `"language"`, default `"en"`) — mismo flujo que `Theme`: `IProjectService.Language` → `ProjectManager.Language` → `MainViewModel.Language` → `MainViewModel.SaveSettings()`.
 
-**Alcance actual (fase 1)**: solo los textos de `GeneralSettingsWindow` están traducidos (prueba de concepto del mecanismo). El resto de la UI (Perfil, Mapa, Fechas, Módulos, Validación, Logs) sigue con strings hardcoded en español — pendiente de traducir en una fase posterior reutilizando este mismo mecanismo (ver sección 8, TODOs).
+**Fase 2 (completada en 1.2.1)**: Todos los textos de la interfaz han sido extraídos a los diccionarios de idioma (`es.xaml` / `en.xaml`) y todas las pestañas (Perfil, Mapa, Módulos, Fechas, Validación, Logs) y cuadros de diálogo utilizan `{DynamicResource ...}` en XAML o `Res("key")` en code-behind. El cambio de idioma afecta a toda la aplicación al instante.
+
+**Arquitectura de ficheros**: Los textos generales de la aplicación están en `es.xaml` / `en.xaml`. Los textos específicos de cada juego van en ficheros separados `{GameKey}.{lang}.xaml` (ej. `CK3.es.xaml`, `CK3.en.xaml`), cargados automáticamente según el perfil activo mediante `RefreshMergedDictionaries()`.
 
 ---
 
@@ -352,7 +354,7 @@ MainWindow.ApplyLanguage(language) → actualiza _currentLanguagePath
   - `ModuleValidator.CompareFileContents` (igual, distinto, solo en A, solo en B).
 - [ ] **Virtualización listas módulos/archivos** (`VirtualizingStackPanel` + `ItemsControl` → `ListView` con `VirtualizingPanel.IsVirtualizing=True`).
 - [ ] **LUT cache incremental**: invalidar solo provincias modificadas (diff `definition.csv`).
-- [ ] **Internacionalización (en curso desde 1.2.0)**: mecanismo base (`ResourceDictionary` XAML EN/ES, ver sección 5.9) implementado y funcionando solo en `GeneralSettingsWindow`. Falta extraer y traducir los strings hardcoded en español del resto de tabs (`ProfileTab`, `HistoryTab`, `DatesTab`, `ModulesTab`, `ValidationTab`, `LogsTab`) y de `MainViewModel`.
+- [x] **Internacionalización completada (1.2.1)**: todos los strings de la UI extraídos a `es.xaml` / `en.xaml`. Las pestañas y diálogos usan `DynamicResource` o `Res()`. Pendiente traducción de textos específicos de juego a `{GameKey}.{lang}.xaml`.
 
 ### 🟢 Mejora
 - [ ] **Plugins EU4/Imperator/HOI4/Vic3**: nuevos `IGamePlugin` con regex y paths específicos.
@@ -452,4 +454,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-07-19 | Proyecto: PdxModIDE | Versión: 1.2.0 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*
+*Generado: 2026-07-19 | Proyecto: PdxModIDE | Versión: 1.2.1 | Stack: .NET 8 / WPF / SkiaSharp / System.Text.Json*

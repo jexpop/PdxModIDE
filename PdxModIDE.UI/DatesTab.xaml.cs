@@ -64,6 +64,11 @@ namespace PdxModIDE.UI
             }
         }
 
+        private static string Res(string key)
+        {
+            return System.Windows.Application.Current.TryFindResource(key) as string ?? key;
+        }
+
         private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
@@ -86,17 +91,17 @@ namespace PdxModIDE.UI
             if (!string.IsNullOrEmpty(modDate))
             {
                 EndDateTextBox.Text = modDate;
-                EndDateSourceText.Text = "Origen: (mod)";
+                EndDateSourceText.Text = Res("DatesTab_SourceMod");
             }
             else if (!string.IsNullOrEmpty(gameDate))
             {
                 EndDateTextBox.Text = gameDate;
-                EndDateSourceText.Text = "Origen: (juego)";
+                EndDateSourceText.Text = Res("DatesTab_SourceGame");
             }
             else
             {
                 EndDateTextBox.Text = "";
-                EndDateSourceText.Text = "Origen: (no encontrado)";
+                EndDateSourceText.Text = Res("DatesTab_SourceNotFound");
             }
         }
 
@@ -107,7 +112,7 @@ namespace PdxModIDE.UI
             var newDate = EndDateTextBox.Text.Trim();
             if (string.IsNullOrEmpty(newDate))
             {
-                System.Windows.MessageBox.Show("Fecha inválida", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(Res("Msg_InvalidDate"), Res("App_ErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -121,7 +126,7 @@ namespace PdxModIDE.UI
 
             _viewModel.UpdateProfile();
             _viewModel.ProcessModules();
-            System.Windows.MessageBox.Show("Procesado completado", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
+            System.Windows.MessageBox.Show(Res("Msg_ProcessComplete"), Res("Msg_ProcessOK"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

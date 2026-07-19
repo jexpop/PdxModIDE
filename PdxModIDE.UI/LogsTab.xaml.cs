@@ -88,7 +88,7 @@ namespace PdxModIDE.UI
 
             if (logPath == null || !File.Exists(logPath))
             {
-                LogText.AppendText("No se encontró error.log");
+                LogText.AppendText(Res("LogsTab_NoLog"));
                 return;
             }
 
@@ -149,6 +149,11 @@ namespace PdxModIDE.UI
                 SaveFilters();
                 RefreshFilterList();
             }
+        }
+
+        private static string Res(string key)
+        {
+            return System.Windows.Application.Current.TryFindResource(key) as string ?? key;
         }
     }
 }

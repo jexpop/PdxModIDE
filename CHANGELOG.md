@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.1] - 2026-07-19
+
+### Added
+
+- **Internacionalización completa de la UI (fase 2)**: ~140 nuevas claves i18n extraídas a `es.xaml` / `en.xaml` para todas las pestañas y cuadros de diálogo:
+  - MainWindow (tooltips y headers de tabs)
+  - ProfileTab (rutas, botones CRUD, grupo módulos)
+  - ModulesTab (edición, botones add/save/delete)
+  - DatesTab (offset, end_date, módulos a procesar)
+  - HistoryTab (panel provincia/título, zoom, modos, tooltips)
+  - ValidationTab (módulos, archivos, comparación, resultados)
+  - LogsTab (visor, filtros, configuración)
+  - InputDialog (botones Aceptar/Cancelar)
+- **Separación de textos generales vs específicos de juego**: los textos generales de la aplicación residen en `es.xaml` / `en.xaml`. Los textos específicos de cada juego van en `{GameKey}.{lang}.xaml` (ej. `CK3.es.xaml`, `CK3.en.xaml`), cargados dinámicamente según el perfil activo.
+- **`RefreshMergedDictionaries()` mejorado**: ahora carga tres diccionarios (tema + idioma general + idioma específico del juego) y se refresca al cambiar de perfil.
+- **`GetGameLanguagePath()`**: nuevo método que genera la ruta `Languages/{GameKey}.{language}.xaml` para el diccionario específico del juego activo.
+- **Método helper `Res(string key)`** en clases code-behind (MainViewModel, HistoryTab, ValidationTab, DatesTab, LogsTab, App) para resolver strings i18n desde C#.
+- **Archivos placeholder**: `Languages/CK3.es.xaml` y `Languages/CK3.en.xaml` para futuros textos específicos de CK3.
+
+### Changed
+
+- **Idioma por defecto**: el campo `Language` en `Settings` ahora por defecto es `"en"` (inglés) en lugar de `"es"` (español). La aplicación arranca en inglés si no hay `settings.json` previo.
+- **Status codes de validación**: los códigos internos de estado del `ProjectManager` cambian de español a inglés (`"Modified"`, `"Added"`, `"Deleted"`, `"SAME"`, `"CHANGED"`) para consistencia con el idioma por defecto.
+- **`ValidationTab`**: la comparación de módulos ahora usa `SelectedIndex` en lugar de comparar strings traducidos del ComboBox, evitando dependencia del idioma activo.
+- **`MainWindow.xaml`**: la referencia inicial al diccionario de idioma pasa de `Languages/es.xaml` a `Languages/en.xaml`.
+- **Status labels en HistoryTab**: los textos de modo de mapa y etiquetas de información de provincia se muestran en inglés por defecto.
+
+### Fixed
+
+- **Bug en `ApplyLanguage` (MainWindow.xaml.cs)**: el switch de selección de ruta del diccionario de idioma no tenía caso para `"es"`, por lo que al seleccionar Español siempre cargaba el diccionario de inglés.
+
+### Notes
+
+- Los códigos de estado de validación se han unificado a inglés como parte del cambio de idioma por defecto. Los diálogos DiffDialog, DiffChoiceDialog, DiffViewDialog y ValidationTab usan estos códigos para coloreado y filtrado.
+- Los textos específicos de juego (CK3) están preparados estructuralmente pero aún vacíos; se poblarán en versiones futuras.
+
+---
+
 ## [1.2.0] - 2026-07-19
 
 ### Added

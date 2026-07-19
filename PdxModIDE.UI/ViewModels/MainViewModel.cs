@@ -17,7 +17,7 @@ namespace PdxModIDE.UI.ViewModels
         private readonly IProjectService _projectService;
         private Domain.Profile? _currentProfile;
         private string _theme = "light";
-        private string _language = "es";
+        private string _language = "en";
 
         public IProjectService ProjectService => _projectService;
 
@@ -126,10 +126,10 @@ namespace PdxModIDE.UI.ViewModels
             using var dialog = new System.Windows.Forms.FolderBrowserDialog();
             dialog.Description = propertyName switch
             {
-                "GameRoot" => "Seleccionar carpeta raíz del juego",
-                "ModRoot" => "Seleccionar carpeta raíz del mod",
-                "BackupRoot" => "Seleccionar carpeta de backups",
-                _ => "Seleccionar carpeta"
+                "GameRoot" => Res("Msg_BrowseGameRoot"),
+                "ModRoot" => Res("Msg_BrowseModRoot"),
+                "BackupRoot" => Res("Msg_BrowseBackupRoot"),
+                _ => Res("Msg_BrowseFolder")
             };
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -148,7 +148,7 @@ namespace PdxModIDE.UI.ViewModels
 
         private void CreateNewProfile()
         {
-            var dialog = new InputDialog("Nuevo Perfil", "Nombre del perfil:", "Nuevo Perfil");
+            var dialog = new InputDialog(Res("Msg_NewProfileTitle"), Res("Msg_NewProfilePrompt"), Res("Msg_NewProfileTitle"));
             if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.ResponseText))
             {
                 BrowseAndCreateProfile(dialog.ResponseText);
@@ -158,7 +158,7 @@ namespace PdxModIDE.UI.ViewModels
         private void BrowseAndCreateProfile(string profileName)
         {
             using var dialog = new System.Windows.Forms.FolderBrowserDialog();
-            dialog.Description = "Seleccionar carpeta raíz del juego base (CK3, EU4, HOI4, etc.)";
+            dialog.Description = Res("Msg_BrowseGameRootForProfile");
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -184,7 +184,7 @@ namespace PdxModIDE.UI.ViewModels
         {
             if (CurrentProfile == null) return;
 
-            var dialog = new InputDialog("Renombrar Perfil", "Nuevo nombre:", CurrentProfile.Name);
+            var dialog = new InputDialog(Res("Msg_RenameProfileTitle"), Res("Msg_RenameProfilePrompt"), CurrentProfile.Name);
             if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.ResponseText))
             {
                 if (_projectService.RenameProfile(CurrentProfile.Name, dialog.ResponseText))
@@ -195,7 +195,7 @@ namespace PdxModIDE.UI.ViewModels
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("El nombre ya existe o no es válido", "Error",
+                    System.Windows.MessageBox.Show(Res("Msg_NameNotValid"), Res("App_ErrorTitle"),
                         System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
             }
@@ -205,8 +205,9 @@ namespace PdxModIDE.UI.ViewModels
         {
             if (CurrentProfile == null) return;
 
-            var result = System.Windows.MessageBox.Show($"¿Eliminar el perfil '{CurrentProfile.Name}'?",
-                "Confirmar", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question);
+            var result = System.Windows.MessageBox.Show(
+                string.Format(Res("Msg_ConfirmDelete"), CurrentProfile.Name),
+                Res("Msg_ConfirmTitle"), System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question);
             if (result == System.Windows.MessageBoxResult.Yes)
             {
                 DeleteProfile(CurrentProfile);
@@ -258,11 +259,11 @@ namespace PdxModIDE.UI.ViewModels
         {
             if (CurrentProfile == null) return;
 
-            var dialog = new InputDialog("Nuevo Módulo", "Nombre del módulo:", "");
+            var dialog = new InputDialog(Res("Msg_NewModuleTitle"), Res("Msg_NewModulePrompt"), "");
             if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.ResponseText))
             {
                 var name = dialog.ResponseText;
-                var pathDialog = new InputDialog("Ruta del Módulo", "Ruta relativa:", "");
+                var pathDialog = new InputDialog(Res("Msg_NewModulePathTitle"), Res("Msg_NewModulePathPrompt"), "");
                 if (pathDialog.ShowDialog() != true) return;
 
                 _projectService.AddModule(CurrentProfile.Game, name, pathDialog.ResponseText, new List<string>());
@@ -292,8 +293,8 @@ namespace PdxModIDE.UI.ViewModels
             if (CurrentProfile == null || SelectedModule == null) return;
 
             var result = System.Windows.MessageBox.Show(
-                $"¿Eliminar el módulo '{SelectedModule.Name}'?",
-                "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                string.Format(Res("Msg_DeleteModuleConfirm"), SelectedModule.Name),
+                Res("Msg_ConfirmTitle"), MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
@@ -394,7 +395,7 @@ namespace PdxModIDE.UI.ViewModels
 
             UpdateProfile();
             await _projectService.ProcessModulesAsync(YearOffset);
-            System.Windows.MessageBox.Show("Procesado completado", "OK",
+            System.Windows.MessageBox.Show(Res("Msg_ProcessComplete"), Res("Msg_ProcessOK"),
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
@@ -420,18 +421,18 @@ namespace PdxModIDE.UI.ViewModels
         {
             if (CurrentProfile == null) return;
 
-            var dialog = new InputDialog("Guardar END_DATE", "Nueva fecha (formato YYYY.M.D):",
+            var dialog = new InputDialog(Res("Msg_SaveEndDateTitle"), Res("Msg_SaveEndDatePrompt"),
                 ReadModEndDate() ?? ReadEndDate() ?? "");
             if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.ResponseText))
             {
                 if (WriteEndDate(dialog.ResponseText))
                 {
-                    System.Windows.MessageBox.Show("END_DATE guardado en el mod", "OK",
+                    System.Windows.MessageBox.Show(Res("Msg_EndDateSaved"), Res("Msg_EndDateOK"),
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("No se pudo guardar END_DATE", "Error",
+                    System.Windows.MessageBox.Show(Res("Msg_EndDateError"), Res("App_ErrorTitle"),
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -450,6 +451,11 @@ namespace PdxModIDE.UI.ViewModels
             field = value;
             OnPropertyChanged(propertyName);
             return true;
+        }
+
+        private static string Res(string key)
+        {
+            return System.Windows.Application.Current.TryFindResource(key) as string ?? key;
         }
     }
 

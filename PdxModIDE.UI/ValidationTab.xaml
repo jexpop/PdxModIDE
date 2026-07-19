@@ -7,21 +7,21 @@
              d:DesignHeight="600" d:DesignWidth="1000">
     <Grid Margin="5">
         <TabControl>
-            <TabItem Header="Módulos">
+            <TabItem Header="{DynamicResource ValidationTab_Modules}">
                 <Grid>
                     <TabControl>
-                        <TabItem Header="Por módulo">
+                        <TabItem Header="{DynamicResource ValidationTab_PerModule}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="5">
-                                    <TextBlock Text="Módulo a validar:" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{DynamicResource ValidationTab_ModuleToValidate}" FontWeight="SemiBold"/>
                                     <ComboBox x:Name="ComboModules" Margin="0,2,0,10"/>
-                                    <TextBlock Text="Comparación:" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{DynamicResource ValidationTab_Comparison}" FontWeight="SemiBold"/>
                                     <ComboBox x:Name="ComboCompare" Margin="0,2,0,10">
-                                        <ComboBoxItem Content="Juego ↔ Mod" IsSelected="True"/>
-                                        <ComboBoxItem Content="Mod ↔ Backup"/>
-                                        <ComboBoxItem Content="Juego ↔ Backup"/>
+                                        <ComboBoxItem Content="{DynamicResource ValidationTab_Compare_GameVsMod}" IsSelected="True"/>
+                                        <ComboBoxItem Content="{DynamicResource ValidationTab_Compare_ModVsBackup}"/>
+                                        <ComboBoxItem Content="{DynamicResource ValidationTab_Compare_GameVsBackup}"/>
                                     </ComboBox>
-                                    <Button x:Name="BtnCompareModule" Content="Comparar ficheros" Width="150" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                                    <Button x:Name="BtnCompareModule" Content="{DynamicResource ValidationTab_CompareFiles}" Width="150" HorizontalAlignment="Left" Margin="0,0,0,10"/>
                                     <TreeView x:Name="TreeModSingle" MinHeight="200" MaxHeight="400">
                                         <TreeView.Resources>
                                             <HierarchicalDataTemplate DataType="{x:Type TreeViewItem}">
@@ -34,7 +34,7 @@
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="Todos los módulos">
+                        <TabItem Header="{DynamicResource ValidationTab_AllModules}">
                             <Grid Margin="5">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -42,50 +42,50 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="Validación total de módulos" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                <Button Grid.Row="1" x:Name="BtnValidateAllModules" Content="Validar todos los módulos" Width="200" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                                <TextBlock Grid.Row="0" Text="{DynamicResource ValidationTab_AllModulesDesc}" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <Button Grid.Row="1" x:Name="BtnValidateAllModules" Content="{DynamicResource ValidationTab_ValidateAllModules}" Width="200" HorizontalAlignment="Left" Margin="0,0,0,10"/>
                                 <ListView Grid.Row="2" x:Name="ListViewModFull" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,5"
                                           MouseDoubleClick="ListViewModFull_MouseDoubleClick">
                                     <ListView.View>
                                         <GridView>
-                                            <GridViewColumn Header="Módulo" Width="200" DisplayMemberBinding="{Binding ModuleName}"/>
-                                            <GridViewColumn Header="MOD ↔ Backup" Width="300" DisplayMemberBinding="{Binding ModVsBackup}"/>
-                                            <GridViewColumn Header="Juego ↔ Backup" Width="300" DisplayMemberBinding="{Binding GameVsBackup}"/>
+                                            <GridViewColumn Header="{DynamicResource ValidationTab_ModuleCol}" Width="200" DisplayMemberBinding="{Binding ModuleName}"/>
+                                            <GridViewColumn Header="{DynamicResource ValidationTab_ModVsBackupCol}" Width="300" DisplayMemberBinding="{Binding ModVsBackup}"/>
+                                            <GridViewColumn Header="{DynamicResource ValidationTab_GameVsBackupCol}" Width="300" DisplayMemberBinding="{Binding GameVsBackup}"/>
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
-                                <Button Grid.Row="3" x:Name="BtnModuleDetails" Content="Ver detalles del módulo seleccionado" Width="280" HorizontalAlignment="Left"/>
+                                <Button Grid.Row="3" x:Name="BtnModuleDetails" Content="{DynamicResource ValidationTab_ModuleDetails}" Width="280" HorizontalAlignment="Left"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
                 </Grid>
             </TabItem>
-            <TabItem Header="Archivos">
+            <TabItem Header="{DynamicResource ValidationTab_Files}">
                 <Grid>
                     <TabControl>
-                        <TabItem Header="Por archivo">
+                        <TabItem Header="{DynamicResource ValidationTab_PerFile}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="5">
-                                    <TextBlock Text="Archivo a validar:" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{DynamicResource ValidationTab_FileToValidate}" FontWeight="SemiBold"/>
                                     <ComboBox x:Name="ComboFiles" Margin="0,2,0,10"/>
                                     <WrapPanel Margin="0,0,0,10">
-                                        <Button x:Name="BtnAddFile" Content="Añadir archivo…" Width="120" Margin="0,0,5,0"/>
-                                        <Button x:Name="BtnActivateFile" Content="Activar archivo" Width="120" Margin="0,0,5,0"/>
-                                        <Button x:Name="BtnDeactivateFile" Content="Desactivar archivo" Width="120" Margin="0,0,5,0"/>
-                                        <Button x:Name="BtnPathException" Content="Excepción de ruta…" Width="140"/>
+                                        <Button x:Name="BtnAddFile" Content="{DynamicResource ValidationTab_AddFile}" Width="120" Margin="0,0,5,0"/>
+                                        <Button x:Name="BtnActivateFile" Content="{DynamicResource ValidationTab_ActivateFile}" Width="120" Margin="0,0,5,0"/>
+                                        <Button x:Name="BtnDeactivateFile" Content="{DynamicResource ValidationTab_DeactivateFile}" Width="120" Margin="0,0,5,0"/>
+                                        <Button x:Name="BtnPathException" Content="{DynamicResource ValidationTab_PathException}" Width="140"/>
                                     </WrapPanel>
                                     <WrapPanel Margin="0,0,0,10">
-                                        <TextBlock Text="Validar contra:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                        <RadioButton x:Name="RadioGameMode" Content="Juego" GroupName="ValidateMode" IsChecked="True" Margin="0,0,10,0"/>
-                                        <RadioButton x:Name="RadioModMode" Content="Mod" GroupName="ValidateMode"/>
+                                        <TextBlock Text="{DynamicResource ValidationTab_ValidateAgainst}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <RadioButton x:Name="RadioGameMode" Content="{DynamicResource ValidationTab_ValidateGame}" GroupName="ValidateMode" IsChecked="True" Margin="0,0,10,0"/>
+                                        <RadioButton x:Name="RadioModMode" Content="{DynamicResource ValidationTab_ValidateMod}" GroupName="ValidateMode"/>
                                     </WrapPanel>
-                                    <Button x:Name="BtnValidateFile" Content="Validar archivo" Width="150" HorizontalAlignment="Left" Margin="0,0,0,5"/>
+                                    <Button x:Name="BtnValidateFile" Content="{DynamicResource ValidationTab_ValidateFile}" Width="150" HorizontalAlignment="Left" Margin="0,0,0,5"/>
                                     <TextBlock x:Name="LabelResult" Foreground="Gray" Margin="0,0,0,5"/>
-                                    <Button x:Name="BtnViewDiff" Content="Ver diff" Width="100" HorizontalAlignment="Left"/>
+                                    <Button x:Name="BtnViewDiff" Content="{DynamicResource ValidationTab_ViewDiff}" Width="100" HorizontalAlignment="Left"/>
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="Todos los archivos">
+                        <TabItem Header="{DynamicResource ValidationTab_AllFiles}">
                             <Grid Margin="5">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -93,19 +93,19 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="Validación total de archivos" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                <Button Grid.Row="1" x:Name="BtnValidateAllFiles" Content="Validar todos los archivos" Width="200" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                                <TextBlock Grid.Row="0" Text="{DynamicResource ValidationTab_AllFilesDesc}" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <Button Grid.Row="1" x:Name="BtnValidateAllFiles" Content="{DynamicResource ValidationTab_ValidateAllFiles}" Width="200" HorizontalAlignment="Left" Margin="0,0,0,10"/>
                                 <ListView Grid.Row="2" x:Name="ListViewFileFull" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,5"
                                           MouseDoubleClick="ListViewFileFull_MouseDoubleClick">
                                     <ListView.View>
                                         <GridView>
-                                            <GridViewColumn Header="Archivo" Width="260" DisplayMemberBinding="{Binding FileKey}"/>
-                                            <GridViewColumn Header="MOD ↔ Backup" Width="200" DisplayMemberBinding="{Binding ModVsBackup}"/>
-                                            <GridViewColumn Header="Juego ↔ Backup" Width="200" DisplayMemberBinding="{Binding GameVsBackup}"/>
+                                            <GridViewColumn Header="{DynamicResource ValidationTab_FileCol}" Width="260" DisplayMemberBinding="{Binding FileKey}"/>
+                                            <GridViewColumn Header="{DynamicResource ValidationTab_ModVsBackupCol}" Width="200" DisplayMemberBinding="{Binding ModVsBackup}"/>
+                                            <GridViewColumn Header="{DynamicResource ValidationTab_GameVsBackupCol}" Width="200" DisplayMemberBinding="{Binding GameVsBackup}"/>
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
-                                <Button Grid.Row="3" x:Name="BtnFileDiff" Content="Ver diff del archivo seleccionado" Width="250" HorizontalAlignment="Left"/>
+                                <Button Grid.Row="3" x:Name="BtnFileDiff" Content="{DynamicResource ValidationTab_FileDiff}" Width="250" HorizontalAlignment="Left"/>
                             </Grid>
                         </TabItem>
                     </TabControl>

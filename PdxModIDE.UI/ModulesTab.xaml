@@ -15,26 +15,26 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Juego del perfil actual:" FontWeight="SemiBold" Grid.Row="0" Grid.ColumnSpan="2"/>
+        <TextBlock Text="{DynamicResource ModulesTab_CurrentGame}" FontWeight="SemiBold" Grid.Row="0" Grid.ColumnSpan="2"/>
         <TextBlock x:Name="GameLabel" Text="{Binding CurrentProfile.Game}" Foreground="Gray" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,25,0,5"/>
 
         <ListBox x:Name="ModuleList" ItemsSource="{Binding Modules}" SelectedItem="{Binding SelectedModule, Mode=TwoWay}" DisplayMemberPath="Name" Grid.Row="2" Grid.Column="0" Margin="0,5,10,0"/>
 
         <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,5,0,0">
-            <GroupBox Header="Editar módulo" Margin="0,0,0,10">
+            <GroupBox Header="{DynamicResource ModulesTab_EditModule}" Margin="0,0,0,10">
                 <StackPanel>
-                    <TextBlock Text="Nombre del módulo:" Margin="0,5,0,2"/>
+                    <TextBlock Text="{DynamicResource ModulesTab_ModuleName}" Margin="0,5,0,2"/>
                     <TextBox x:Name="EntryName" Text="{Binding SelectedModule.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
-                    <TextBlock Text="Ruta relativa:" Margin="0,5,0,2"/>
+                    <TextBlock Text="{DynamicResource ModulesTab_RelativePath}" Margin="0,5,0,2"/>
                     <TextBox x:Name="EntryPath" Text="{Binding SelectedModule.Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
-                    <TextBlock Text="Extensiones ignoradas (coma):" Margin="0,5,0,2"/>
+                    <TextBlock Text="{DynamicResource ModulesTab_IgnoredExt}" Margin="0,5,0,2"/>
                     <TextBox x:Name="EntryIgnore" Text="{Binding SelectedModule.IgnoreExt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
                 </StackPanel>
             </GroupBox>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Añadir módulo" Width="120" Margin="0,0,10,0" Command="{Binding AddModuleCommand}"/>
-                <Button Content="Guardar cambios" Width="120" Margin="0,0,10,0" Command="{Binding SaveModuleCommand}"/>
-                <Button Content="Eliminar módulo" Width="120" Command="{Binding DeleteModuleCommand}"/>
+                <Button Content="{DynamicResource ModulesTab_AddModule}" Width="120" Margin="0,0,10,0" Command="{Binding AddModuleCommand}"/>
+                <Button Content="{DynamicResource ModulesTab_SaveChanges}" Width="120" Margin="0,0,10,0" Command="{Binding SaveModuleCommand}"/>
+                <Button Content="{DynamicResource ModulesTab_DeleteModule}" Width="120" Command="{Binding DeleteModuleCommand}"/>
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -23,7 +23,7 @@ namespace PdxModIDE.UI
         private static System.Windows.Controls.TabItem CreateFileTab(string header, List<FileComparisonResult> results)
         {
             var tree = new System.Windows.Controls.TreeView();
-            foreach (var r in results.Where(r => r.Status is "Modificado" or "Añadido" or "Eliminado"))
+            foreach (var r in results.Where(r => r.Status is "Modified" or "Added" or "Deleted"))
             {
                 var item = new System.Windows.Controls.TreeViewItem
                 {
@@ -33,11 +33,11 @@ namespace PdxModIDE.UI
                 var app = System.Windows.Application.Current;
                 item.Foreground = r.Status switch
                 {
-                    "Modificado" => (System.Windows.Media.SolidColorBrush)(app.TryFindResource("StatusBlue")
+                    "Modified" => (System.Windows.Media.SolidColorBrush)(app.TryFindResource("StatusBlue")
                         ?? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xd1, 0x7b, 0x00))),
-                    "Añadido" => (System.Windows.Media.SolidColorBrush)(app.TryFindResource("StatusGreen")
+                    "Added" => (System.Windows.Media.SolidColorBrush)(app.TryFindResource("StatusGreen")
                         ?? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Green)),
-                    "Eliminado" => (System.Windows.Media.SolidColorBrush)(app.TryFindResource("StatusRed")
+                    "Deleted" => (System.Windows.Media.SolidColorBrush)(app.TryFindResource("StatusRed")
                         ?? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Red)),
                     _ => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray)
                 };

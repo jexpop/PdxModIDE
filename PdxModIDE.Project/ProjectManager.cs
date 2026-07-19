@@ -422,7 +422,7 @@ namespace PdxModIDE.Project
                                 modVsBackup.Add(new FileComparisonResult
                                 {
                                     RelativePath = f,
-                                    Status = "Eliminado",
+                                    Status = "Deleted",
                                     DiffLines = null
                                 });
                                 backupOnlyMod++;
@@ -433,7 +433,7 @@ namespace PdxModIDE.Project
                             modVsBackup.Add(new FileComparisonResult
                             {
                                 RelativePath = f,
-                                Status = "Añadido",
+                                Status = "Added",
                                 DiffLines = null
                             });
                             modOnly++;
@@ -450,7 +450,7 @@ namespace PdxModIDE.Project
                                 modVsBackup.Add(new FileComparisonResult
                                 {
                                     RelativePath = f,
-                                    Status = "Modificado",
+                                    Status = "Modified",
                                     DiffLines = diff
                                 });
                                 modChanged++;
@@ -464,7 +464,7 @@ namespace PdxModIDE.Project
                                 gameVsBackup.Add(new FileComparisonResult
                                 {
                                     RelativePath = f,
-                                    Status = "Eliminado",
+                                    Status = "Deleted",
                                     DiffLines = null
                                 });
                                 backupOnlyGame++;
@@ -475,7 +475,7 @@ namespace PdxModIDE.Project
                             gameVsBackup.Add(new FileComparisonResult
                             {
                                 RelativePath = f,
-                                Status = "Añadido",
+                                Status = "Added",
                                 DiffLines = null
                             });
                             gameOnly++;
@@ -492,7 +492,7 @@ namespace PdxModIDE.Project
                                 gameVsBackup.Add(new FileComparisonResult
                                 {
                                     RelativePath = f,
-                                    Status = "Modificado",
+                                    Status = "Modified",
                                     DiffLines = diff
                                 });
                                 gameChanged++;
@@ -507,11 +507,11 @@ namespace PdxModIDE.Project
                     {
                         ModuleName = moduleName,
                         ModVsBackupSummary =
-                            $"{totalMod} archivos — {modChanged} modificados, " +
-                            $"{modEqual} iguales, {modOnly} añadidos, {backupOnlyMod} eliminados",
+                            $"{totalMod} files — {modChanged} modified, " +
+                            $"{modEqual} identical, {modOnly} added, {backupOnlyMod} deleted",
                         GameVsBackupSummary =
-                            $"{totalGame} archivos — {gameChanged} modificados, " +
-                            $"{gameEqual} iguales, {gameOnly} añadidos, {backupOnlyGame} eliminados",
+                            $"{totalGame} files — {gameChanged} modified, " +
+                            $"{gameEqual} identical, {gameOnly} added, {backupOnlyGame} deleted",
                         ModVsBackupDetails = modVsBackup,
                         GameVsBackupDetails = gameVsBackup
                     };
@@ -578,16 +578,16 @@ namespace PdxModIDE.Project
                 {
                     var (same, lines) = ModuleValidator.CompareFileContents(lPath!, rPath!);
                     if (same) continue;
-                    status = "Modificado";
+                    status = "Modified";
                     diff = lines;
                 }
                 else if (hasLeft && !hasRight)
                 {
-                    status = "Eliminado";
+                    status = "Deleted";
                 }
                 else
                 {
-                    status = "Añadido";
+                    status = "Added";
                 }
 
                 results.Add(new FileComparisonResult
@@ -603,12 +603,12 @@ namespace PdxModIDE.Project
 
         public (string Status, List<string>? Diff, string RelativePath) ValidateFileSingle(string fileKey, bool compareToGame)
         {
-            if (CurrentDataProfile == null) return ("Sin perfil", null, "");
+            if (CurrentDataProfile == null) return ("No profile", null, "");
 
             if (!_dataFiles.TryGetValue(CurrentDataProfile.Game, out var files))
-                return ("Sin archivos", null, "");
+                return ("No files", null, "");
             if (!files.TryGetValue(fileKey, out var config))
-                return ("Archivo no encontrado", null, "");
+                return ("File not found", null, "");
 
             string relGame = config.Path;
             string relMod = config.MapTo ?? relGame;
@@ -624,7 +624,7 @@ namespace PdxModIDE.Project
             if (compareToGame)
             {
                 leftPath = Path.Combine(gameRoot, relGame);
-                leftLabel = "JUEGO";
+                leftLabel = "GAME";
                 relDisplay = relGame;
             }
             else
@@ -637,15 +637,15 @@ namespace PdxModIDE.Project
             string backupPath = Path.Combine(backupRoot, relGame);
 
             if (!File.Exists(leftPath))
-                return ($"[+] SOLO EN {leftLabel}", null, relDisplay);
+                return ($"[+] ONLY IN {leftLabel}", null, relDisplay);
             if (!File.Exists(backupPath))
-                return ("[-] SOLO EN BACKUP", null, relGame);
+                return ("[-] ONLY IN BACKUP", null, relGame);
 
             var (same, diff) = ModuleValidator.CompareFileContents(leftPath, backupPath);
             if (same)
-                return ("[=] IGUAL", null, relDisplay);
+                return ("[=] SAME", null, relDisplay);
             else
-                return ("[!] CAMBIADO", diff, relDisplay);
+                return ("[!] CHANGED", diff, relDisplay);
         }
 
         public async Task<List<FileValidationResult>> ValidateAllFilesAsync()
@@ -677,13 +677,13 @@ namespace PdxModIDE.Project
                     List<string>? diffMod = null;
 
                     if (!File.Exists(modPath))
-                        estadoMod = "[+] Solo en JUEGO";
+                        estadoMod = "[+] Only in GAME";
                     else if (!File.Exists(backupPath))
-                        estadoMod = "[-] Solo en BACKUP";
+                        estadoMod = "[-] Only in BACKUP";
                     else
                     {
                         var (same, d) = ModuleValidator.CompareFileContents(modPath, backupPath);
-                        estadoMod = same ? "[=] Igual" : "[!] Cambiado";
+                        estadoMod = same ? "[=] Same" : "[!] Changed";
                         diffMod = same ? null : d;
                     }
 
@@ -691,13 +691,13 @@ namespace PdxModIDE.Project
                     List<string>? diffGame = null;
 
                     if (!File.Exists(gamePath))
-                        estadoGame = "[+] Solo en MOD";
+                        estadoGame = "[+] Only in MOD";
                     else if (!File.Exists(backupPath))
-                        estadoGame = "[-] Solo en BACKUP";
+                        estadoGame = "[-] Only in BACKUP";
                     else
                     {
                         var (same, d) = ModuleValidator.CompareFileContents(gamePath, backupPath);
-                        estadoGame = same ? "[=] Igual" : "[!] Cambiado";
+                        estadoGame = same ? "[=] Same" : "[!] Changed";
                         diffGame = same ? null : d;
                     }
 

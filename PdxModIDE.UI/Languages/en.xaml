@@ -3,12 +3,12 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <!--
-        Language dictionary: English (en)
-        Phase 1: Only used in GeneralSettingsWindow as a proof of concept
-        for the hot-swap language mechanism (DynamicResource).
-        The rest of the UI will be translated in later phases.
+        Language dictionary: English (en) — GENERAL application strings.
+        Game-specific strings (CK3, EU4, etc.) go in separate files:
+        {GameKey}.en.xaml (e.g. CK3.en.xaml).
     -->
 
+    <!-- GeneralSettingsWindow -->
     <system:String x:Key="Settings_Title">General Settings</system:String>
     <system:String x:Key="Settings_Subtitle">These settings affect the whole application, not a specific mod.</system:String>
     <system:String x:Key="Settings_ThemeSection">Visual theme</system:String>
@@ -26,5 +26,185 @@
     <system:String x:Key="Settings_CloseButton">Close</system:String>
     <system:String x:Key="Settings_AppliedMessage">Settings applied successfully.</system:String>
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
+
+    <!-- MainWindow -->
+    <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
+    <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
+    <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
+    <system:String x:Key="MainWindow_Tab_Dates">Dates</system:String>
+    <system:String x:Key="MainWindow_Tab_Modules">Modules</system:String>
+    <system:String x:Key="MainWindow_Tab_Validation">Validation</system:String>
+    <system:String x:Key="MainWindow_Tab_Logs">Logs</system:String>
+
+    <!-- ProfileTab -->
+    <system:String x:Key="ProfileTab_SelectProfile">Select profile:</system:String>
+    <system:String x:Key="ProfileTab_Routes">Paths</system:String>
+    <system:String x:Key="ProfileTab_GameRoot">Game root:</system:String>
+    <system:String x:Key="ProfileTab_ModRoot">Mod root:</system:String>
+    <system:String x:Key="ProfileTab_BackupRoot">Backup folder:</system:String>
+    <system:String x:Key="ProfileTab_Browse">Browse</system:String>
+    <system:String x:Key="ProfileTab_SaveProfile">Save profile</system:String>
+    <system:String x:Key="ProfileTab_NewProfile">New profile</system:String>
+    <system:String x:Key="ProfileTab_RenameProfile">Rename profile</system:String>
+    <system:String x:Key="ProfileTab_DeleteProfile">Delete profile</system:String>
+    <system:String x:Key="ProfileTab_DefaultModules">Default enabled modules:</system:String>
+
+    <!-- ModulesTab -->
+    <system:String x:Key="ModulesTab_CurrentGame">Current profile game:</system:String>
+    <system:String x:Key="ModulesTab_EditModule">Edit module</system:String>
+    <system:String x:Key="ModulesTab_ModuleName">Module name:</system:String>
+    <system:String x:Key="ModulesTab_RelativePath">Relative path:</system:String>
+    <system:String x:Key="ModulesTab_IgnoredExt">Ignored extensions (comma):</system:String>
+    <system:String x:Key="ModulesTab_AddModule">Add module</system:String>
+    <system:String x:Key="ModulesTab_SaveChanges">Save changes</system:String>
+    <system:String x:Key="ModulesTab_DeleteModule">Delete module</system:String>
+
+    <!-- DatesTab -->
+    <system:String x:Key="DatesTab_YearOffset">Year offset</system:String>
+    <system:String x:Key="DatesTab_EndDate">END_DATE</system:String>
+    <system:String x:Key="DatesTab_EndDateLabel">Game end date (END_DATE):</system:String>
+    <system:String x:Key="DatesTab_SaveEndDate">Save END_DATE to mod</system:String>
+    <system:String x:Key="DatesTab_ModulesToProcess">Modules to process</system:String>
+    <system:String x:Key="DatesTab_Process">Process</system:String>
+    <system:String x:Key="DatesTab_SourceMod">Source: (mod)</system:String>
+    <system:String x:Key="DatesTab_SourceGame">Source: (game)</system:String>
+    <system:String x:Key="DatesTab_SourceNotFound">Source: (not found)</system:String>
+
+    <!-- HistoryTab -->
+    <system:String x:Key="HistoryTab_Province">Province</system:String>
+    <system:String x:Key="HistoryTab_ID">ID: -</system:String>
+    <system:String x:Key="HistoryTab_Name">Name: -</system:String>
+    <system:String x:Key="HistoryTab_Color">Color: -</system:String>
+    <system:String x:Key="HistoryTab_Type">Type: -</system:String>
+    <system:String x:Key="HistoryTab_Title">Title</system:String>
+    <system:String x:Key="HistoryTab_Barony">Barony: -</system:String>
+    <system:String x:Key="HistoryTab_County">County: -</system:String>
+    <system:String x:Key="HistoryTab_Holder">Holder: -</system:String>
+    <system:String x:Key="HistoryTab_Liege">Liege: -</system:String>
+    <system:String x:Key="HistoryTab_ZoomIn">Zoom +</system:String>
+    <system:String x:Key="HistoryTab_ZoomOut">Zoom -</system:String>
+    <system:String x:Key="HistoryTab_Fit">Fit</system:String>
+    <system:String x:Key="HistoryTab_Year">Year:</system:String>
+    <system:String x:Key="HistoryTab_OffsetMod">Mod Date: -</system:String>
+    <system:String x:Key="HistoryTab_OffsetModTooltip">Resulting date in the mod (year + profile offset)</system:String>
+    <system:String x:Key="HistoryTab_Base">Base</system:String>
+    <system:String x:Key="HistoryTab_BaseTooltip">Show base game data</system:String>
+    <system:String x:Key="HistoryTab_Mod">Mod</system:String>
+    <system:String x:Key="HistoryTab_ModTooltip">Show mod data (applying offset)</system:String>
+    <system:String x:Key="HistoryTab_HolderMode">Holder</system:String>
+    <system:String x:Key="HistoryTab_HolderModeTooltip">Holder (character)</system:String>
+    <system:String x:Key="HistoryTab_CountyMode">County</system:String>
+    <system:String x:Key="HistoryTab_CountyModeTooltip">Counties (c_xxx)</system:String>
+    <system:String x:Key="HistoryTab_DuchyMode">Duchy</system:String>
+    <system:String x:Key="HistoryTab_DuchyModeTooltip">Duchies (d_xxx)</system:String>
+    <system:String x:Key="HistoryTab_KingdomMode">Kingdom</system:String>
+    <system:String x:Key="HistoryTab_KingdomModeTooltip">Kingdoms (k_xxx)</system:String>
+    <system:String x:Key="HistoryTab_EmpireMode">Empire</system:String>
+    <system:String x:Key="HistoryTab_EmpireModeTooltip">Empires (e_xxx)</system:String>
+    <system:String x:Key="HistoryTab_Ready">Ready</system:String>
+    <system:String x:Key="HistoryTab_NoProfile">No profile selected</system:String>
+    <system:String x:Key="HistoryTab_NoGameRoot">Set up a profile with a valid GameRoot</system:String>
+    <system:String x:Key="HistoryTab_NoProvincesPng">provinces.png not found</system:String>
+    <system:String x:Key="HistoryTab_RenderError">Error loading renderer</system:String>
+    <system:String x:Key="HistoryTab_NoHolderData">Activate "Base" and/or "Mod" to view holder data</system:String>
+    <system:String x:Key="HistoryTab_NoCountyData">Activate "Base" and/or "Mod" to view county data</system:String>
+    <system:String x:Key="HistoryTab_NoDuchyData">Activate "Base" and/or "Mod" to view duchy data</system:String>
+    <system:String x:Key="HistoryTab_NoKingdomData">Activate "Base" and/or "Mod" to view kingdom data</system:String>
+    <system:String x:Key="HistoryTab_NoEmpireData">Activate "Base" and/or "Mod" to view empire data</system:String>
+
+    <!-- ValidationTab -->
+    <system:String x:Key="ValidationTab_Modules">Modules</system:String>
+    <system:String x:Key="ValidationTab_PerModule">Per module</system:String>
+    <system:String x:Key="ValidationTab_ModuleToValidate">Module to validate:</system:String>
+    <system:String x:Key="ValidationTab_Comparison">Comparison:</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsMod">Game ↔ Mod</system:String>
+    <system:String x:Key="ValidationTab_Compare_ModVsBackup">Mod ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsBackup">Game ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_CompareFiles">Compare files</system:String>
+    <system:String x:Key="ValidationTab_AllModules">All modules</system:String>
+    <system:String x:Key="ValidationTab_AllModulesDesc">Full module validation</system:String>
+    <system:String x:Key="ValidationTab_ValidateAllModules">Validate all modules</system:String>
+    <system:String x:Key="ValidationTab_ModuleCol">Module</system:String>
+    <system:String x:Key="ValidationTab_ModVsBackupCol">Mod ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_GameVsBackupCol">Game ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_ModuleDetails">View details of selected module</system:String>
+    <system:String x:Key="ValidationTab_Files">Files</system:String>
+    <system:String x:Key="ValidationTab_PerFile">Per file</system:String>
+    <system:String x:Key="ValidationTab_FileToValidate">File to validate:</system:String>
+    <system:String x:Key="ValidationTab_AddFile">Add file…</system:String>
+    <system:String x:Key="ValidationTab_ActivateFile">Activate file</system:String>
+    <system:String x:Key="ValidationTab_DeactivateFile">Deactivate file</system:String>
+    <system:String x:Key="ValidationTab_PathException">Path exception…</system:String>
+    <system:String x:Key="ValidationTab_ValidateAgainst">Validate against:</system:String>
+    <system:String x:Key="ValidationTab_ValidateGame">Game</system:String>
+    <system:String x:Key="ValidationTab_ValidateMod">Mod</system:String>
+    <system:String x:Key="ValidationTab_ValidateFile">Validate file</system:String>
+    <system:String x:Key="ValidationTab_ViewDiff">View diff</system:String>
+    <system:String x:Key="ValidationTab_AllFiles">All files</system:String>
+    <system:String x:Key="ValidationTab_AllFilesDesc">Full file validation</system:String>
+    <system:String x:Key="ValidationTab_ValidateAllFiles">Validate all files</system:String>
+    <system:String x:Key="ValidationTab_FileCol">File</system:String>
+    <system:String x:Key="ValidationTab_FileDiff">View diff of selected file</system:String>
+    <system:String x:Key="ValidationTab_NoDifferences">No differences</system:String>
+
+    <!-- LogsTab -->
+    <system:String x:Key="LogsTab_Viewer">Log viewer</system:String>
+    <system:String x:Key="LogsTab_Reload">Reload</system:String>
+    <system:String x:Key="LogsTab_Filter">Filter:</system:String>
+    <system:String x:Key="LogsTab_Apply">Apply</system:String>
+    <system:String x:Key="LogsTab_FilterConfig">Filter configuration</system:String>
+    <system:String x:Key="LogsTab_FilterDesc">Lines to skip in error.log</system:String>
+    <system:String x:Key="LogsTab_NewFilter">New filter:</system:String>
+    <system:String x:Key="LogsTab_AddFilter">Add</system:String>
+    <system:String x:Key="LogsTab_DeleteFilter">Remove selected</system:String>
+    <system:String x:Key="LogsTab_NoLog">error.log not found</system:String>
+
+    <!-- InputDialog -->
+    <system:String x:Key="InputDialog_Title">Input</system:String>
+    <system:String x:Key="InputDialog_Accept">OK</system:String>
+    <system:String x:Key="InputDialog_Cancel">Cancel</system:String>
+
+    <!-- DiffDialog -->
+    <system:String x:Key="DiffDialog_Title">Details — {0}</system:String>
+
+    <!-- DiffChoiceDialog -->
+    <system:String x:Key="DiffChoiceDialog_Title">Diff — {0}</system:String>
+    <system:String x:Key="DiffChoiceDialog_Prompt">Select comparison:</system:String>
+    <system:String x:Key="DiffChoiceDialog_NoDiff">No diff available</system:String>
+
+    <!-- DiffViewDialog -->
+    <system:String x:Key="DiffViewDialog_Title">Differences — {0}</system:String>
+
+    <!-- App.xaml.cs messages -->
+    <system:String x:Key="App_UnhandledError">Unexpected error: {0}\n\nDetails saved to logs/crash.log</system:String>
+    <system:String x:Key="App_UIError">UI error: {0}\n\nDetails saved to logs/crash.log</system:String>
+    <system:String x:Key="App_ErrorTitle">Error</system:String>
+
+    <!-- MainViewModel messages -->
+    <system:String x:Key="Msg_NewProfileTitle">New Profile</system:String>
+    <system:String x:Key="Msg_NewProfilePrompt">Profile name:</system:String>
+    <system:String x:Key="Msg_RenameProfileTitle">Rename Profile</system:String>
+    <system:String x:Key="Msg_RenameProfilePrompt">New name:</system:String>
+    <system:String x:Key="Msg_NameNotValid">Name already exists or is invalid</system:String>
+    <system:String x:Key="Msg_ConfirmDelete">Delete profile '{0}'?</system:String>
+    <system:String x:Key="Msg_ConfirmTitle">Confirm</system:String>
+    <system:String x:Key="Msg_ProcessComplete">Processing completed</system:String>
+    <system:String x:Key="Msg_ProcessOK">OK</system:String>
+    <system:String x:Key="Msg_SaveEndDateTitle">Save END_DATE</system:String>
+    <system:String x:Key="Msg_SaveEndDatePrompt">New date (format YYYY.M.D):</system:String>
+    <system:String x:Key="Msg_EndDateSaved">END_DATE saved in mod</system:String>
+    <system:String x:Key="Msg_EndDateError">Could not save END_DATE</system:String>
+    <system:String x:Key="Msg_EndDateOK">OK</system:String>
+    <system:String x:Key="Msg_InvalidDate">Invalid date</system:String>
+    <system:String x:Key="Msg_BrowseGameRoot">Select game root folder</system:String>
+    <system:String x:Key="Msg_BrowseModRoot">Select mod root folder</system:String>
+    <system:String x:Key="Msg_BrowseBackupRoot">Select backup folder</system:String>
+    <system:String x:Key="Msg_BrowseFolder">Select folder</system:String>
+    <system:String x:Key="Msg_BrowseGameRootForProfile">Select base game root folder (CK3, EU4, HOI4, etc.)</system:String>
+    <system:String x:Key="Msg_NewModuleTitle">New Module</system:String>
+    <system:String x:Key="Msg_NewModulePrompt">Module name:</system:String>
+    <system:String x:Key="Msg_NewModulePathTitle">Module Path</system:String>
+    <system:String x:Key="Msg_NewModulePathPrompt">Relative path:</system:String>
+    <system:String x:Key="Msg_DeleteModuleConfirm">Delete module '{0}'?</system:String>
 
 </ResourceDictionary>
