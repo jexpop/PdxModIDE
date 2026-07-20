@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.1]
+
+### Added
+
+- **Title name localization in Map tab info panel**: barony and county names now display the real localized name instead of the raw title key (e.g. `b_*`). Names are loaded from the `name` field in `common/landed_titles/*.txt` and from YML localization files (`localization/{lang}/*.yml`). The language follows the app setting (English/Spanish/Catalan) with fallback to English when the language is unavailable in the game.
+- **Map label localization**: overlay labels on the map also use localized names from the same sources.
+- **Support for mod `localization/replace/` folder**: replacement localization files (`localization/replace/{lang}/*.yml`) override the mod's regular localization with Mod > Base priority.
+
+### Fixed
+
+- **YML localization parser**: now correctly handles the CK3 YML format (`key:0 "value"`) which includes a version number after the colon. Previously the version number and quotes were included in the displayed name (e.g. `0 "Tenerife"` instead of `Tenerife`).
+
+---
+
 ## [1.4.0]
 
 ### Added

@@ -112,8 +112,16 @@ namespace PdxModIDE.UI
             }
             if (e.PropertyName == nameof(MainViewModel.CurrentProfile) || e.PropertyName == nameof(MainViewModel.YearOffset))
                 UpdateOffsetLabel();
-            if (e.PropertyName == nameof(MainViewModel.Language) && _lastProvinceId > 0)
-                UpdateProvinceInfo(_lastProvinceId);
+            if (e.PropertyName == nameof(MainViewModel.Language))
+            {
+                if (_lastProvinceId > 0)
+                    UpdateProvinceInfo(_lastProvinceId);
+                if (_mapLoaded && HasActiveSource())
+                {
+                    BuildTitleLabels();
+                    InvalidateRender();
+                }
+            }
         }
 
         private void UpdateOffsetLabel()
@@ -194,6 +202,7 @@ namespace PdxModIDE.UI
                 {
                     _titleHistoryMod = new TitleHistoryLoader();
                     modCount = _titleHistoryMod.LoadAll(modRoot, overwriteDuplicates: true);
+                    loader.LoadModLocalization(modRoot);
                 }
                 else
                 {
@@ -370,9 +379,15 @@ namespace PdxModIDE.UI
                     var province = _mapLoader.GetProvinceFromId(provinceId);
                     if (province != null)
                     {
-                        string barony = _mapLoader.GetTitleFromProvinceId(province.Id) ?? "-";
-                        string county = barony != "-" ? (_mapLoader.GetCountyFromBarony(barony) ?? "-") : "-";
-                        StatusLabel.Content = $"Prov: {province.Id} | {province.Name} | Tipo: {province.Type ?? "?"} | Bar: {barony} | Cond: {county}";
+                        string baronyKey = _mapLoader.GetTitleFromProvinceId(province.Id) ?? "-";
+                        string baronyName = baronyKey != "-" ? GetLocalizedTitleName(baronyKey) : "-";
+                        string countyName = "-";
+                        if (baronyKey != "-")
+                        {
+                            string countyKey = _mapLoader.GetCountyFromBarony(baronyKey) ?? "-";
+                            countyName = countyKey != "-" ? GetLocalizedTitleName(countyKey) : "-";
+                        }
+                        StatusLabel.Content = $"Prov: {province.Id} | {province.Name} | Tipo: {province.Type ?? "?"} | Bar: {baronyName} | Cond: {countyName}";
                         InfoPlaceholder.Visibility = Visibility.Collapsed;
                         UpdateProvinceInfo(provinceId);
                         return;
@@ -450,7 +465,10 @@ namespace PdxModIDE.UI
             {
                 var modRoot = ViewModel?.CurrentProfile?.ModRoot;
                 if (!string.IsNullOrEmpty(modRoot))
+                {
                     _mapLoader.LoadModLandedTitles(modRoot);
+                    _mapLoader.LoadModLocalization(modRoot);
+                }
             }
             else
             {
@@ -773,15 +791,20 @@ namespace PdxModIDE.UI
                 TextColorValue.Text = $"({province.R},{province.G},{province.B})";
                 TextTypeValue.Text = TranslateTerrainType(province.Type);
 
-                string barony = _mapLoader.GetTitleFromProvinceId(provinceId) ?? "-";
-                TextBaronyValue.Text = barony;
+                string baronyKey = _mapLoader.GetTitleFromProvinceId(provinceId) ?? "-";
+                string baronyName = baronyKey != "-" ? GetLocalizedTitleName(baronyKey) : "-";
+                TextBaronyValue.Text = baronyName;
 
-                string county = "-";
-                if (barony != "-")
-                    county = _mapLoader.GetCountyFromBarony(barony) ?? "-";
-                TextCountyValue.Text = county;
+                string countyKey = "-";
+                string countyName = "-";
+                if (baronyKey != "-")
+                {
+                    countyKey = _mapLoader.GetCountyFromBarony(baronyKey) ?? "-";
+                    countyName = countyKey != "-" ? GetLocalizedTitleName(countyKey) : "-";
+                }
+                TextCountyValue.Text = countyName;
 
-                if (county != "-" && int.TryParse(YearBox.Text, out int year))
+                if (countyKey != "-" && int.TryParse(YearBox.Text, out int year))
                 {
                     bool useBase = BaseSourceCheck?.IsChecked == true;
                     bool useMod = ModSourceCheck?.IsChecked == true;
@@ -789,13 +812,13 @@ namespace PdxModIDE.UI
 
                     string? holder = null, liege = null, fuente = null;
 
-                    if (useMod && _titleHistoryMod != null && _titleHistoryMod.AllTitles.TryGetValue(county, out var modHist))
+                    if (useMod && _titleHistoryMod != null && _titleHistoryMod.AllTitles.TryGetValue(countyKey, out var modHist))
                     {
                         holder = TitleHistoryLoader.GetHolderAtYear(modHist, year + offset);
                         liege = TitleHistoryLoader.GetLiegeAtYear(modHist, year + offset);
                         if (holder != null) fuente = "Mod";
                     }
-                    if (holder == null && useBase && _titleHistoryBase != null && _titleHistoryBase.AllTitles.TryGetValue(county, out var baseHist))
+                    if (holder == null && useBase && _titleHistoryBase != null && _titleHistoryBase.AllTitles.TryGetValue(countyKey, out var baseHist))
                     {
                         holder = TitleHistoryLoader.GetHolderAtYear(baseHist, year);
                         liege = TitleHistoryLoader.GetLiegeAtYear(baseHist, year);
@@ -806,7 +829,7 @@ namespace PdxModIDE.UI
                     TextHolderValue.Text = $"{holder ?? "(no data)"}{sufijo}";
                     TextLiegeValue.Text = $"{liege ?? "(no data)"}{sufijo}";
                 }
-                else if (county != "-")
+                else if (countyKey != "-")
                 {
                     TextHolderValue.Text = "(invalid year)";
                     TextLiegeValue.Text = "(invalid year)";
@@ -1080,7 +1103,7 @@ namespace PdxModIDE.UI
 
                 _titleLabels.Add(new TitleLabelInfo
                 {
-                    DisplayName = FormatTitleName(title),
+                    DisplayName = GetLocalizedTitleName(title),
                     CenterX = cx,
                     CenterY = cy,
                     PixelCount = cnt,
@@ -1093,15 +1116,15 @@ namespace PdxModIDE.UI
             }
         }
 
-        private static string FormatTitleName(string titleKey)
+        private string GetLocalizedTitleName(string titleKey)
         {
-            int idx = titleKey.IndexOf('_');
-            if (idx >= 0 && idx < titleKey.Length - 1)
-            {
-                string rest = titleKey.Substring(idx + 1);
-                return char.ToUpper(rest[0]) + rest.Substring(1);
-            }
-            return titleKey;
+            if (_mapLoader == null) return titleKey;
+            return _mapLoader.GetDisplayName(titleKey, GetAppLanguage());
+        }
+
+        private string GetAppLanguage()
+        {
+            return ViewModel?.Language ?? "en";
         }
 
         private void DrawLabels(SKBitmap bitmap)

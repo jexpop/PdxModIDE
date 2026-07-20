@@ -7,6 +7,20 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.1]
+
+### Added
+
+- **Localización de nombres de títulos en el panel de información del mapa**: los nombres de baronía y condado ahora muestran el nombre real localizado en lugar de la clave interna (ej. `b_*`). Los nombres se cargan del campo `name` en `common/landed_titles/*.txt` y de los archivos YML de localización (`localization/{lang}/*.yml`). El idioma sigue la configuración de la aplicación (Inglés/Español/Catalán) con fallback a inglés cuando el idioma no está disponible en el juego.
+- **Localización de etiquetas del mapa**: las etiquetas superpuestas en el mapa también usan nombres localizados de las mismas fuentes.
+- **Soporte para carpeta `localization/replace/` en mods**: los archivos de localización de reemplazo (`localization/replace/{lang}/*.yml`) sobrescriben la localización normal del mod con prioridad Mod > Base.
+
+### Fixed
+
+- **Parser de localización YML**: ahora maneja correctamente el formato YML de CK3 (`clave:0 "valor"`) que incluye un número de versión tras los dos puntos. Anteriormente el número de versión y las comillas se incluían en el nombre mostrado (ej. `0 "Tenerife"` en lugar de `Tenerife`).
+
+---
+
 ## [1.4.0]
 
 ### Added

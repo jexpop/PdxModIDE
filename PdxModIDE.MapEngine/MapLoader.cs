@@ -37,12 +37,16 @@ namespace PdxModIDE.MapEngine
         public Dictionary<string, string> CountyToDuchy { get; } = new();
         public Dictionary<string, string> DuchyToKingdom { get; } = new();
         public Dictionary<string, string> KingdomToEmpire { get; } = new();
+        public Dictionary<string, string> TitleDisplayNames { get; } = new();
+        public Dictionary<string, Dictionary<string, string>> LocalizedNames { get; } = new();
 
         private Dictionary<int, string> _baseProvinceToBarony = new();
         private Dictionary<string, string> _baseBaronyToCounty = new();
         private Dictionary<string, string> _baseCountyToDuchy = new();
         private Dictionary<string, string> _baseDuchyToKingdom = new();
         private Dictionary<string, string> _baseKingdomToEmpire = new();
+        private Dictionary<string, string> _baseTitleDisplayNames = new();
+        private Dictionary<string, Dictionary<string, string>> _baseLocalizedNames = new();
         public Dictionary<int, int> ProvinceIdToPacked { get; } = new();
         public byte[]? Lut { get; private set; }
         public int[]? ProvinceIdMap { get; private set; }
@@ -77,6 +81,7 @@ namespace PdxModIDE.MapEngine
             LoadDefinition();
             LoadDefaultMap();
             LoadLandedTitles();
+            LoadLocalization();
             SaveBaseSnapshot();
             MarkTerrainTypes();
             Lut = BuildOrLoadLut();
@@ -179,6 +184,10 @@ namespace PdxModIDE.MapEngine
             _baseCountyToDuchy = new Dictionary<string, string>(CountyToDuchy);
             _baseDuchyToKingdom = new Dictionary<string, string>(DuchyToKingdom);
             _baseKingdomToEmpire = new Dictionary<string, string>(KingdomToEmpire);
+            _baseTitleDisplayNames = new Dictionary<string, string>(TitleDisplayNames);
+            _baseLocalizedNames = new Dictionary<string, Dictionary<string, string>>();
+            foreach (var kvp in LocalizedNames)
+                _baseLocalizedNames[kvp.Key] = new Dictionary<string, string>(kvp.Value);
         }
 
         public void LoadModLandedTitles(string modRoot)
@@ -186,6 +195,17 @@ namespace PdxModIDE.MapEngine
             string baseDir = Path.Combine(modRoot, "common", "landed_titles");
             if (!Directory.Exists(baseDir)) return;
             LoadLandedTitlesFrom(baseDir);
+        }
+
+        public void LoadModLocalization(string modRoot)
+        {
+            string locDir = Path.Combine(modRoot, "localization");
+            if (!Directory.Exists(locDir)) return;
+            LoadLocalizationFromDir(locDir);
+
+            string replaceDir = Path.Combine(locDir, "replace");
+            if (Directory.Exists(replaceDir))
+                LoadLocalizationFromDir(replaceDir);
         }
 
         public void ResetToBase()
@@ -200,6 +220,12 @@ namespace PdxModIDE.MapEngine
             foreach (var kvp in _baseCountyToDuchy) CountyToDuchy[kvp.Key] = kvp.Value;
             foreach (var kvp in _baseDuchyToKingdom) DuchyToKingdom[kvp.Key] = kvp.Value;
             foreach (var kvp in _baseKingdomToEmpire) KingdomToEmpire[kvp.Key] = kvp.Value;
+            TitleDisplayNames.Clear();
+            foreach (var kvp in _baseTitleDisplayNames)
+                TitleDisplayNames[kvp.Key] = kvp.Value;
+            LocalizedNames.Clear();
+            foreach (var kvp in _baseLocalizedNames)
+                LocalizedNames[kvp.Key] = new Dictionary<string, string>(kvp.Value);
         }
 
         private void LoadLandedTitles()
@@ -215,6 +241,7 @@ namespace PdxModIDE.MapEngine
 
             var titleRegex = new Regex(@"^\s*([becdk]_[A-Za-z0-9_-]+)\s*=\s*\{");
             var provinceRegex = new Regex(@"province\s*=\s*(\d+)");
+            var nameRegex = new Regex(@"^\s*name\s*=\s*""([^""]*)""");
 
             foreach (var file in Directory.EnumerateFiles(dir, "*.txt", SearchOption.AllDirectories))
             {
@@ -245,6 +272,12 @@ namespace PdxModIDE.MapEngine
                             if (county != null)
                                 BaronyToCounty[currentTitle] = county;
                         }
+                    }
+
+                    var nameMatch = nameRegex.Match(line);
+                    if (nameMatch.Success && currentTitle != null)
+                    {
+                        TitleDisplayNames[currentTitle] = nameMatch.Groups[1].Value;
                     }
 
                     // Build hierarchy mappings from stack
@@ -852,6 +885,117 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
             else { r = c; g = 0; bl = x; }
 
             return ((byte)((r + m) * 255), (byte)((g + m) * 255), (byte)((bl + m) * 255));
+        }
+
+        public void LoadLocalization()
+        {
+            string locDir = Path.Combine(_gameRoot, "localization");
+            if (!Directory.Exists(locDir)) return;
+            LocalizedNames.Clear();
+            LoadLocalizationFromDir(locDir);
+        }
+
+        private void LoadLocalizationFromDir(string dir)
+        {
+            foreach (var langSubDir in Directory.EnumerateDirectories(dir))
+            {
+                string dirName = Path.GetFileName(langSubDir).ToLower();
+                string? appLang = Ck3DirToAppLang(dirName);
+                if (appLang == null) continue;
+
+                if (!LocalizedNames.ContainsKey(appLang))
+                    LocalizedNames[appLang] = new Dictionary<string, string>();
+
+                foreach (var file in Directory.EnumerateFiles(langSubDir, "*.yml", SearchOption.AllDirectories))
+                    ParseLocalizationYml(file, appLang);
+            }
+        }
+
+        private void ParseLocalizationYml(string filePath, string appLang)
+        {
+            var dict = LocalizedNames[appLang];
+            string? currentLang = null;
+
+            foreach (var rawLine in File.ReadAllLines(filePath))
+            {
+                string line = rawLine.Trim();
+                if (string.IsNullOrEmpty(line) || line.StartsWith("#"))
+                    continue;
+
+                if (line.StartsWith("l_") && line.EndsWith(":"))
+                {
+                    currentLang = line.Substring(0, line.Length - 1);
+                    continue;
+                }
+
+                if (currentLang == null) continue;
+
+                int colonIdx = line.IndexOf(':');
+                if (colonIdx <= 0) continue;
+
+                string key = line.Substring(0, colonIdx).Trim();
+                if (string.IsNullOrEmpty(key)) continue;
+
+                string valueStr = line.Substring(colonIdx + 1).Trim();
+                if (string.IsNullOrEmpty(valueStr)) continue;
+
+                int quoteStart = valueStr.IndexOf('"');
+                string value;
+                if (quoteStart >= 0)
+                {
+                    int quoteEnd = FindClosingQuote(valueStr, quoteStart);
+                    if (quoteEnd > quoteStart)
+                        value = valueStr.Substring(quoteStart + 1, quoteEnd - quoteStart - 1).Replace("\"\"", "\"");
+                    else
+                        continue;
+                }
+                else
+                {
+                    int commentIdx = valueStr.IndexOf('#');
+                    value = commentIdx >= 0 ? valueStr.Substring(0, commentIdx).Trim() : valueStr;
+                }
+
+                if (!string.IsNullOrEmpty(value))
+                    dict[key] = value;
+            }
+        }
+
+        private static int FindClosingQuote(string text, int start)
+        {
+            for (int i = start + 1; i < text.Length; i++)
+            {
+                if (text[i] == '"')
+                {
+                    if (i + 1 < text.Length && text[i + 1] == '"')
+                        i++;
+                    else
+                        return i;
+                }
+            }
+            return -1;
+        }
+
+        private static string? Ck3DirToAppLang(string dirName) => dirName switch
+        {
+            "english" => "en",
+            "spanish" => "es",
+            _ => null
+        };
+
+        public string GetDisplayName(string titleKey, string language)
+        {
+            if (LocalizedNames.TryGetValue(language, out var langDict) &&
+                langDict.TryGetValue(titleKey, out var localized))
+                return localized;
+
+            if (language != "en" && LocalizedNames.TryGetValue("en", out var enDict) &&
+                enDict.TryGetValue(titleKey, out var english))
+                return english;
+
+            if (TitleDisplayNames.TryGetValue(titleKey, out var name))
+                return name;
+
+            return titleKey;
         }
     }
 }
