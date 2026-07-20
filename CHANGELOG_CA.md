@@ -7,7 +7,11 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
-## [1.3.5]
+## [1.4.0]
+
+### Added
+
+- **Etiquetes de noms de títols al mapa de la pestanya Història**: nova casella "Mostrar noms" (per perfil, `ShowTitleNames`) que dibuixa noms de territori (comtat/ducat/regne/imperi/titular) directament al bitmap renderitzat usant SkiaSharp per CPU. Característiques: mida de font dinàmica proporcional a l'àrea del territori × zoom (limitada 9–18px), rotació al llarg de l'eix principal de la forma del territori (límit ±45°), evitació de solapament (territoris més grans primer, marge 4px), i fons arrodonit semitransparent. Escala el text per omplir el bounding box quan és més curt que l'amplada de la caixa. Els noms de titulars usen `TitleHistoryLoader.GetHolderAtYear` directe (evitant el bug de wrap 255 del LUT).
 
 ### Fixed
 

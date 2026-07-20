@@ -84,6 +84,8 @@
                               Margin="5,0,0,0" Checked="KingdomModeChanged" Unchecked="KingdomModeChanged" ToolTip="{DynamicResource HistoryTab_KingdomModeTooltip}"/>
                     <CheckBox x:Name="EmpireModeCheck" Content="{DynamicResource HistoryTab_EmpireMode}" VerticalAlignment="Center"
                               Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="{DynamicResource HistoryTab_EmpireModeTooltip}"/>
+                    <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"/>
                 </StackPanel>
                 <Label x:Name="StatusLabel" Content="{DynamicResource HistoryTab_Ready}" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray"/>
             </StackPanel>

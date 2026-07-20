@@ -28,6 +28,9 @@ namespace PdxModIDE.Data
 
         [JsonPropertyName("files")]
         public List<string> Files { get; set; } = new();
+
+        [JsonPropertyName("show_title_names")]
+        public bool ShowTitleNames { get; set; } = true;
     }
 
     public class Profile
@@ -40,6 +43,7 @@ namespace PdxModIDE.Data
         public int YearOffset { get; set; } = 10000;
         public List<string> Modules { get; set; } = new();
         public List<string> Files { get; set; } = new();
+        public bool ShowTitleNames { get; set; } = true;
     }
 
     public class ModuleConfig

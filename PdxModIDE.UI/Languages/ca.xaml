@@ -114,6 +114,7 @@
     <system:String x:Key="HistoryTab_KingdomModeTooltip">Regnes (k_xxx)</system:String>
     <system:String x:Key="HistoryTab_EmpireMode">Imperi</system:String>
     <system:String x:Key="HistoryTab_EmpireModeTooltip">Imperis (e_xxx)</system:String>
+    <system:String x:Key="HistoryTab_ShowNames">Mostrar noms</system:String>
     <system:String x:Key="HistoryTab_Ready">A punt</system:String>
     <system:String x:Key="HistoryTab_NoProfile">Sense perfil seleccionat</system:String>
     <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil amb GameRoot vàlid</system:String>

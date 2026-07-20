@@ -43,6 +43,7 @@ namespace PdxModIDE.Domain
         public int YearOffset { get; set; } = 10000;
         public List<string> ModuleIds { get; set; } = new();
         public List<string> FileIds { get; set; } = new();
+        public bool ShowTitleNames { get; set; } = true;
 
         public List<Module> SelectedModules { get; set; } = new();
         public List<GameFile> SelectedFiles { get; set; } = new();

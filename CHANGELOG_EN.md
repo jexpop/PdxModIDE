@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.3.5]
+## [1.4.0]
+
+### Added
+
+- **Title name labels on the History tab map**: new "Show names" checkbox (per profile, `ShowTitleNames`) draws territory names (county/duchy/kingdom/empire/holder) directly on the rendered bitmap using CPU SkiaSharp. Features: dynamic font size proportional to territory area × zoom (clamped 9–18px), rotation along the principal axis of the territory shape (±45° limit), overlap avoidance (largest territories first, 4px margin), and semi-transparent rounded background. Scale text to fill the bounding box when text is shorter than box width. Holder names use direct `TitleHistoryLoader.GetHolderAtYear` (avoiding LUT 255-wrap bug).
 
 ### Fixed
 

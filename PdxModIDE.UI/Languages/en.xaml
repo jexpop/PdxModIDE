@@ -114,6 +114,7 @@
     <system:String x:Key="HistoryTab_KingdomModeTooltip">Kingdoms (k_xxx)</system:String>
     <system:String x:Key="HistoryTab_EmpireMode">Empire</system:String>
     <system:String x:Key="HistoryTab_EmpireModeTooltip">Empires (e_xxx)</system:String>
+    <system:String x:Key="HistoryTab_ShowNames">Show names</system:String>
     <system:String x:Key="HistoryTab_Ready">Ready</system:String>
     <system:String x:Key="HistoryTab_NoProfile">No profile selected</system:String>
     <system:String x:Key="HistoryTab_NoGameRoot">Set up a profile with a valid GameRoot</system:String>

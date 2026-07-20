@@ -77,7 +77,8 @@ namespace PdxModIDE.Data
                     BackupRoot = p.BackupRoot,
                     YearOffset = p.YearOffset,
                     Modules = p.Modules,
-                    Files = p.Files
+                    Files = p.Files,
+                    ShowTitleNames = p.ShowTitleNames
                 });
             }
             catch (JsonException)
@@ -98,7 +99,8 @@ namespace PdxModIDE.Data
                 BackupRoot = p.BackupRoot,
                 YearOffset = p.YearOffset,
                 Modules = p.Modules,
-                Files = p.Files
+                Files = p.Files,
+                ShowTitleNames = p.ShowTitleNames
             });
             string json = JsonSerializer.Serialize(dtos, JsonOptions);
             FileOperations.WriteTextFile("data/profiles.json", json);

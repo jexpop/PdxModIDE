@@ -60,6 +60,7 @@ namespace PdxModIDE.UI.ViewModels
                     if (value != null)
                         _projectService.SelectProfile(value.Name);
                     OnPropertyChanged(nameof(CanProcess));
+                    OnPropertyChanged(nameof(ShowTitleNames));
                     RefreshModules();
                     RefreshFiles();
                 }
@@ -86,6 +87,20 @@ namespace PdxModIDE.UI.ViewModels
                 if (_currentProfile != null)
                 {
                     _currentProfile.YearOffset = value;
+                    OnPropertyChanged();
+                    _projectService.UpdateProfile(_currentProfile);
+                }
+            }
+        }
+
+        public bool ShowTitleNames
+        {
+            get => _currentProfile?.ShowTitleNames ?? true;
+            set
+            {
+                if (_currentProfile != null)
+                {
+                    _currentProfile.ShowTitleNames = value;
                     OnPropertyChanged();
                     _projectService.UpdateProfile(_currentProfile);
                 }

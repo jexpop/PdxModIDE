@@ -161,7 +161,8 @@ namespace PdxModIDE.Project
                 BackupRoot = "",
                 YearOffset = 10000,
                 Modules = new List<string>(),
-                Files = new List<string>()
+                Files = new List<string>(),
+                ShowTitleNames = true
             };
 
             _dataProfiles.Add(dataProfile);
@@ -809,7 +810,8 @@ namespace PdxModIDE.Project
                 BackupRoot = dp.BackupRoot,
                 YearOffset = dp.YearOffset,
                 ModuleIds = new List<string>(dp.Modules),
-                FileIds = new List<string>(dp.Files)
+                FileIds = new List<string>(dp.Files),
+                ShowTitleNames = dp.ShowTitleNames
             };
         }
 
@@ -823,6 +825,7 @@ namespace PdxModIDE.Project
             data.YearOffset = domain.YearOffset;
             data.Modules = new List<string>(domain.ModuleIds);
             data.Files = new List<string>(domain.FileIds);
+            data.ShowTitleNames = domain.ShowTitleNames;
         }
 
         private EditingSession? BuildSession(Domain.Profile? profile)

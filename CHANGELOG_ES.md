@@ -7,7 +7,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
-## [1.3.5]
+## [1.4.0]
+
+### Added
+
+- **Etiquetas de nombres de títulos en el mapa de la pestaña Historia**: nueva casilla "Mostrar nombres" (por perfil, `ShowTitleNames`) que dibuja nombres de territorio (condado/ducado/reino/imperio/titular) directamente en el bitmap renderizado usando SkiaSharp por CPU. Características: tamaño de fuente dinámico proporcional al área del territorio × zoom (limitado 9–18px), rotación a lo largo del eje principal de la forma del territorio (límite ±45°), evitación de solapamiento (territorios más grandes primero, margen 4px), y fondo redondeado semitransparente. Escala el texto para llenar el bounding box cuando es más corto que el ancho de la caja. Los nombres de titulares usan `TitleHistoryLoader.GetHolderAtYear` directo (evitando el bug de wrap 255 del LUT).
 
 ### Fixed
 
