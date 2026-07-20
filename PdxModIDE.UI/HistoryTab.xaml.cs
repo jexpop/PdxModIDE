@@ -387,7 +387,7 @@ namespace PdxModIDE.UI
                             string countyKey = _mapLoader.GetCountyFromBarony(baronyKey) ?? "-";
                             countyName = countyKey != "-" ? GetLocalizedTitleName(countyKey) : "-";
                         }
-                        StatusLabel.Content = $"Prov: {province.Id} | {province.Name} | Tipo: {province.Type ?? "?"} | Bar: {baronyName} | Cond: {countyName}";
+                        StatusLabel.Content = $"Prov: {province.Id} | {GetLocalizedTitleName(province.Name)} | Tipo: {province.Type ?? "?"} | Bar: {baronyName} | Cond: {countyName}";
                         InfoPlaceholder.Visibility = Visibility.Collapsed;
                         UpdateProvinceInfo(provinceId);
                         return;
@@ -790,7 +790,7 @@ namespace PdxModIDE.UI
                 TitleGroup.Visibility = HasActiveSource() && province.Type == "land" ? Visibility.Visible : Visibility.Collapsed;
 
                 TextIdValue.Text = province.Id.ToString();
-                TextNameValue.Text = province.Name;
+                TextNameValue.Text = GetLocalizedTitleName(province.Name);
                 TextColorValue.Text = $"({province.R},{province.G},{province.B})";
                 TextTypeValue.Text = TranslateTerrainType(province.Type);
 

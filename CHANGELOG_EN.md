@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.3]
+
+### Changed
+
+- **Province name localization in Map tab info panel**: the province name field now uses `GetLocalizedTitleName()` to display the localized name from game YML files instead of the raw key from `definition.csv`. Applies to all province types (land, sea, impassable, etc.); falls back to the raw key when no localization entry exists.
+
+---
+
 ## [1.4.2]
 
 ### Changed

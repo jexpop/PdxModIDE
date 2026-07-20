@@ -7,6 +7,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.3]
+
+### Changed
+
+- **Localización del nombre de provincia en el panel de información del mapa**: el campo de nombre de provincia ahora usa `GetLocalizedTitleName()` para mostrar el nombre localizado de los archivos YML del juego en lugar de la clave raw de `definition.csv`. Aplica a todo tipo de provincia (tierra, mar, impasable, etc.); usa la clave raw como fallback si no existe entrada de localización.
+
+---
+
 ## [1.4.2]
 
 ### Changed

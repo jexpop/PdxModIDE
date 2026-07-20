@@ -7,6 +7,14 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.3]
+
+### Changed
+
+- **Localització del nom de província al panell d'informació del mapa**: el camp de nom de província ara utilitza `GetLocalizedTitleName()` per mostrar el nom localitzat dels fitxers YML del joc en lloc de la clau raw de `definition.csv`. Aplica a tot tipus de província (terra, mar, impassable, etc.); utilitza la clau raw com a fallback si no existeix entrada de localització.
+
+---
+
 ## [1.4.2]
 
 ### Changed
