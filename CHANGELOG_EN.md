@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.2]
+
+### Changed
+
+- **Title panel in Map tab**: the title panel (Barony, County, Holder, Liege) is now only shown when the selected province type is `"land"`. For non-land provinces (sea, lake, river, impassable, unknown) the title panel remains hidden even if Base or Mod source is active.
+
+---
+
 ## [1.4.1]
 
 ### Added

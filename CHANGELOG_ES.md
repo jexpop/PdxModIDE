@@ -7,6 +7,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.2]
+
+### Changed
+
+- **Panel de título en la pestaña Mapa**: el panel de título (Barony, County, Holder, Liege) ahora solo se muestra cuando el tipo de provincia seleccionada es `"land"`. Para provincias no terrestres (sea, lake, river, impassable, unknown) el panel permanece oculto incluso si la fuente Base o Mod está activa.
+
+---
+
 ## [1.4.1]
 
 ### Added

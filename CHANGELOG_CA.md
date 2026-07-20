@@ -7,6 +7,14 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.2]
+
+### Changed
+
+- **Panell de títol a la pestanya Mapa**: el panell de títol (Barony, County, Holder, Liege) ara només es mostra quan el tipus de província seleccionada és `"land"`. Per a províncies no terrestres (sea, lake, river, impassable, unknown) el panell roman ocult fins i tot si la font Base o Mod està activa.
+
+---
+
 ## [1.4.1]
 
 ### Added

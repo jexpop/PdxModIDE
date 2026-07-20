@@ -495,7 +495,10 @@ namespace PdxModIDE.UI
             ApplySourceStructure();
 
             if (InfoPanel.Visibility == Visibility.Visible)
-                TitleGroup.Visibility = HasActiveSource() ? Visibility.Visible : Visibility.Collapsed;
+            {
+                var currentProvince = _mapLoader?.GetProvinceFromId(_lastProvinceId);
+                TitleGroup.Visibility = HasActiveSource() && currentProvince?.Type == "land" ? Visibility.Visible : Visibility.Collapsed;
+            }
 
             if (HasActiveSource())
             {
@@ -784,7 +787,7 @@ namespace PdxModIDE.UI
                 _lastProvinceId = provinceId;
                 InfoPanel.Visibility = Visibility.Visible;
                 InfoPlaceholder.Visibility = Visibility.Collapsed;
-                TitleGroup.Visibility = HasActiveSource() ? Visibility.Visible : Visibility.Collapsed;
+                TitleGroup.Visibility = HasActiveSource() && province.Type == "land" ? Visibility.Visible : Visibility.Collapsed;
 
                 TextIdValue.Text = province.Id.ToString();
                 TextNameValue.Text = province.Name;
