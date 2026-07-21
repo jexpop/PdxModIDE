@@ -65,6 +65,7 @@ namespace PdxModIDE.Data
                 foreach (var p in profiles)
                 {
                     p.Modules ??= new List<string>();
+                    p.DatesModules ??= new List<string>();
                     p.Files ??= new List<string>();
                 }
 
@@ -77,6 +78,7 @@ namespace PdxModIDE.Data
                     BackupRoot = p.BackupRoot,
                     YearOffset = p.YearOffset,
                     Modules = p.Modules,
+                    DatesModules = p.DatesModules,
                     Files = p.Files,
                     ShowTitleNames = p.ShowTitleNames
                 });
@@ -99,6 +101,7 @@ namespace PdxModIDE.Data
                 BackupRoot = p.BackupRoot,
                 YearOffset = p.YearOffset,
                 Modules = p.Modules,
+                DatesModules = p.DatesModules,
                 Files = p.Files,
                 ShowTitleNames = p.ShowTitleNames
             });

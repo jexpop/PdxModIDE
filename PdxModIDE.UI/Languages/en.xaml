@@ -52,6 +52,7 @@
 
     <!-- ModulesTab -->
     <system:String x:Key="ModulesTab_CurrentGame">Current profile game:</system:String>
+    <system:String x:Key="ModulesTab_InfoText">Select modules to use globally in the application (Map, Validation, etc.). The Dates tab has its own independent selection.</system:String>
     <system:String x:Key="ModulesTab_EditModule">Edit module</system:String>
     <system:String x:Key="ModulesTab_ModuleName">Module name:</system:String>
     <system:String x:Key="ModulesTab_RelativePath">Relative path:</system:String>
@@ -62,6 +63,7 @@
 
     <!-- DatesTab -->
     <system:String x:Key="DatesTab_YearOffset">Year offset</system:String>
+    <system:String x:Key="DatesTab_InfoText">Activate or deactivate modules to process their dates. This selection only affects this tab.</system:String>
     <system:String x:Key="DatesTab_EndDate">END_DATE</system:String>
     <system:String x:Key="DatesTab_EndDateLabel">Game end date (END_DATE):</system:String>
     <system:String x:Key="DatesTab_SaveEndDate">Save END_DATE to mod</system:String>

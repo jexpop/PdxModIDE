@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.4]
+
+### Added
+
+- **Independent module selection for Dates tab**: module selection is now split into two independent lists. The **Modules tab** controls global module selection (used by all tabs except Dates) with checkboxes. The **Dates tab** has its own independent module selector for processing. The old module selector in the Profile tab has been removed.
+- **Informative text** in Modules tab and Dates tab explaining the scope of each module selection.
+
+### Changed
+
+- **ProjectManager.ProcessModulesAsync** now uses `DatesModules` instead of `Modules` from the profile, so processing only acts on modules selected in the Dates tab.
+- **Auto-persistence**: toggling a module checkbox in either tab now immediately saves the selection to `data/profiles.json`.
+
+---
+
 ## [1.4.3]
 
 ### Changed

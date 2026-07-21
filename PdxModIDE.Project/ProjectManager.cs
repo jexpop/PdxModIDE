@@ -161,6 +161,7 @@ namespace PdxModIDE.Project
                 BackupRoot = "",
                 YearOffset = 10000,
                 Modules = new List<string>(),
+                DatesModules = new List<string>(),
                 Files = new List<string>(),
                 ShowTitleNames = true
             };
@@ -250,7 +251,7 @@ namespace PdxModIDE.Project
 
             await _moduleProcessor.ProcessModulesAsync(
                 CurrentDataProfile.Game,
-                CurrentDataProfile.Modules,
+                CurrentDataProfile.DatesModules,
                 CurrentDataProfile.GameRoot,
                 CurrentDataProfile.ModRoot,
                 CurrentDataProfile.BackupRoot,
@@ -810,6 +811,7 @@ namespace PdxModIDE.Project
                 BackupRoot = dp.BackupRoot,
                 YearOffset = dp.YearOffset,
                 ModuleIds = new List<string>(dp.Modules),
+                DatesModuleIds = new List<string>(dp.DatesModules),
                 FileIds = new List<string>(dp.Files),
                 ShowTitleNames = dp.ShowTitleNames
             };
@@ -824,6 +826,7 @@ namespace PdxModIDE.Project
             data.BackupRoot = domain.BackupRoot;
             data.YearOffset = domain.YearOffset;
             data.Modules = new List<string>(domain.ModuleIds);
+            data.DatesModules = new List<string>(domain.DatesModuleIds);
             data.Files = new List<string>(domain.FileIds);
             data.ShowTitleNames = domain.ShowTitleNames;
         }

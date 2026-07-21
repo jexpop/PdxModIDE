@@ -52,6 +52,7 @@
 
     <!-- ModulesTab -->
     <system:String x:Key="ModulesTab_CurrentGame">Joc del perfil actual:</system:String>
+    <system:String x:Key="ModulesTab_InfoText">Selecciona els mòduls que s'utilitzaran globalment a l'aplicació (Mapa, Validació, etc.). La pestanya Dates té la seva pròpia selecció independent.</system:String>
     <system:String x:Key="ModulesTab_EditModule">Editar mòdul</system:String>
     <system:String x:Key="ModulesTab_ModuleName">Nom del mòdul:</system:String>
     <system:String x:Key="ModulesTab_RelativePath">Ruta relativa:</system:String>
@@ -62,6 +63,7 @@
 
     <!-- DatesTab -->
     <system:String x:Key="DatesTab_YearOffset">Offset d'any</system:String>
+    <system:String x:Key="DatesTab_InfoText">Activa o desactiva mòduls per processar les seves dates. Aquesta selecció només afecta aquesta pestanya.</system:String>
     <system:String x:Key="DatesTab_EndDate">END_DATE</system:String>
     <system:String x:Key="DatesTab_EndDateLabel">Data final del joc (END_DATE):</system:String>
     <system:String x:Key="DatesTab_SaveEndDate">Guardar END_DATE al mod</system:String>

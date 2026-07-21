@@ -52,6 +52,7 @@
 
     <!-- ModulesTab -->
     <system:String x:Key="ModulesTab_CurrentGame">Juego del perfil actual:</system:String>
+    <system:String x:Key="ModulesTab_InfoText">Selecciona los módulos que se usarán globalmente en la aplicación (Mapa, Validación, etc.). La pestaña Fechas tiene su propia selección independiente.</system:String>
     <system:String x:Key="ModulesTab_EditModule">Editar módulo</system:String>
     <system:String x:Key="ModulesTab_ModuleName">Nombre del módulo:</system:String>
     <system:String x:Key="ModulesTab_RelativePath">Ruta relativa:</system:String>
@@ -62,6 +63,7 @@
 
     <!-- DatesTab -->
     <system:String x:Key="DatesTab_YearOffset">Offset de año</system:String>
+    <system:String x:Key="DatesTab_InfoText">Activa o desactiva módulos para procesar sus fechas. Esta selección solo afecta a esta pestaña.</system:String>
     <system:String x:Key="DatesTab_EndDate">END_DATE</system:String>
     <system:String x:Key="DatesTab_EndDateLabel">Fecha final del juego (END_DATE):</system:String>
     <system:String x:Key="DatesTab_SaveEndDate">Guardar END_DATE en el mod</system:String>

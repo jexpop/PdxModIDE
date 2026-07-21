@@ -7,6 +7,20 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.4]
+
+### Added
+
+- **Selecció independent de mòduls per a la pestanya Dates**: la selecció de mòduls ara està dividida en dues llistes independents. La pestanya **Mòduls** controla la selecció global (utilitzada per totes les pestanyes excepte Dates) amb checkboxes. La pestanya **Dates** té el seu propi selector de mòduls independent per al processament. El selector de mòduls anterior a la pestanya Perfil ha estat eliminat.
+- **Text informatiu** a les pestanyes Mòduls i Dates explicant l'abast de cada selecció de mòduls.
+
+### Changed
+
+- **ProjectManager.ProcessModulesAsync** ara utilitza `DatesModules` en lloc de `Modules` del perfil, de manera que el processament només actua sobre els mòduls seleccionats a la pestanya Dates.
+- **Auto-persistència**: en marcar/desmarcar un checkbox de mòdul a qualsevol de les dues pestanyes ara es guarda immediatament a `data/profiles.json`.
+
+---
+
 ## [1.4.3]
 
 ### Changed

@@ -27,6 +27,7 @@ namespace PdxModIDE.UI.ViewModels
             _projectService.Load();
             Profiles = new ObservableCollection<Domain.Profile>(_projectService.Profiles);
             Modules = new ObservableCollection<ModuleViewModel>();
+            DatesModules = new ObservableCollection<ModuleViewModel>();
             Files = new ObservableCollection<FileViewModel>();
 
             BrowseGameRootCommand = new RelayCommand(_ => BrowseFolder("GameRoot"));
@@ -48,6 +49,7 @@ namespace PdxModIDE.UI.ViewModels
 
         public ObservableCollection<Domain.Profile> Profiles { get; }
         public ObservableCollection<ModuleViewModel> Modules { get; }
+        public ObservableCollection<ModuleViewModel> DatesModules { get; }
         public ObservableCollection<FileViewModel> Files { get; }
 
         public Domain.Profile? CurrentProfile
@@ -254,19 +256,41 @@ namespace PdxModIDE.UI.ViewModels
         public void RefreshModules()
         {
             Modules.Clear();
+            DatesModules.Clear();
             if (CurrentProfile == null) return;
 
             var gameModules = _projectService.GetGameModulesAsDomain(CurrentProfile.Game);
             foreach (var kvp in gameModules.OrderBy(k => k.Key))
             {
-                var isActive = CurrentProfile.ModuleIds.Contains(kvp.Key);
-                Modules.Add(new ModuleViewModel
+                var isGlobalActive = CurrentProfile.ModuleIds.Contains(kvp.Key);
+                var globalVm = new ModuleViewModel
                 {
                     Name = kvp.Key,
                     Path = kvp.Value.Path,
                     IgnoreExt = string.Join(", ", kvp.Value.IgnoreExtensions),
-                    IsActive = isActive
-                });
+                    IsActive = isGlobalActive
+                };
+                globalVm.PropertyChanged += (_, e) =>
+                {
+                    if (e.PropertyName == nameof(ModuleViewModel.IsActive))
+                        UpdateProfile();
+                };
+                Modules.Add(globalVm);
+
+                var isDatesActive = CurrentProfile.DatesModuleIds.Contains(kvp.Key);
+                var datesVm = new ModuleViewModel
+                {
+                    Name = kvp.Key,
+                    Path = kvp.Value.Path,
+                    IgnoreExt = string.Join(", ", kvp.Value.IgnoreExtensions),
+                    IsActive = isDatesActive
+                };
+                datesVm.PropertyChanged += (_, e) =>
+                {
+                    if (e.PropertyName == nameof(ModuleViewModel.IsActive))
+                        UpdateDatesModules();
+                };
+                DatesModules.Add(datesVm);
             }
         }
 
@@ -394,6 +418,21 @@ namespace PdxModIDE.UI.ViewModels
             }
         }
 
+        public void UpdateDatesModules()
+        {
+            if (CurrentProfile != null)
+            {
+                CurrentProfile.DatesModuleIds.Clear();
+                foreach (var m in DatesModules)
+                {
+                    if (m.IsActive)
+                        CurrentProfile.DatesModuleIds.Add(m.Name);
+                }
+
+                _projectService.UpdateProfile(CurrentProfile);
+            }
+        }
+
         public void DeleteProfile(Domain.Profile profile)
         {
             if (_projectService.DeleteProfile(profile.Name))
@@ -408,7 +447,7 @@ namespace PdxModIDE.UI.ViewModels
         {
             if (CurrentProfile == null) return;
 
-            UpdateProfile();
+            UpdateDatesModules();
             await _projectService.ProcessModulesAsync(YearOffset);
             System.Windows.MessageBox.Show(Res("Msg_ProcessComplete"), Res("Msg_ProcessOK"),
                 MessageBoxButton.OK, MessageBoxImage.Information);

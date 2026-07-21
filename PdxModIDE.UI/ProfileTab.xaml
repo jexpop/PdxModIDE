@@ -52,25 +52,7 @@
                         Command="{Binding DeleteProfileCommand}"/>
             </StackPanel>
 
-            <GroupBox Header="{DynamicResource ProfileTab_DefaultModules}" Margin="0,0,0,10">
-                <ScrollViewer x:Name="ModulesScroll" MaxHeight="300" VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Disabled">
-                    <ItemsControl ItemsSource="{Binding Modules}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Vertical"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <CheckBox Content="{Binding Name}" 
-                                          IsChecked="{Binding IsActive, Mode=TwoWay}"
-                                          Margin="4,3"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </GroupBox>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

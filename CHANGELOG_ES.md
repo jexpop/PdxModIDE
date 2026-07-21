@@ -7,6 +7,20 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.4]
+
+### Added
+
+- **Selección independiente de módulos para la pestaña Fechas**: la selección de módulos ahora está dividida en dos listas independientes. La pestaña **Módulos** controla la selección global (usada por todas las pestañas excepto Fechas) con checkboxes. La pestaña **Fechas** tiene su propio selector de módulos independiente para el procesado. El selector de módulos anterior en la pestaña Perfil ha sido eliminado.
+- **Texto informativo** en las pestañas Módulos y Fechas explicando el ámbito de cada selección de módulos.
+
+### Changed
+
+- **ProjectManager.ProcessModulesAsync** ahora usa `DatesModules` en lugar de `Modules` del perfil, por lo que el procesado solo actúa sobre los módulos seleccionados en la pestaña Fechas.
+- **Auto-persistencia**: al marcar/desmarcar un checkbox de módulo en cualquiera de las dos pestañas ahora se guarda inmediatamente en `data/profiles.json`.
+
+---
+
 ## [1.4.3]
 
 ### Changed

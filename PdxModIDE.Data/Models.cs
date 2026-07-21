@@ -26,6 +26,9 @@ namespace PdxModIDE.Data
         [JsonPropertyName("modules")]
         public List<string> Modules { get; set; } = new();
 
+        [JsonPropertyName("dates_modules")]
+        public List<string> DatesModules { get; set; } = new();
+
         [JsonPropertyName("files")]
         public List<string> Files { get; set; } = new();
 
@@ -42,6 +45,7 @@ namespace PdxModIDE.Data
         public string BackupRoot { get; set; } = "";
         public int YearOffset { get; set; } = 10000;
         public List<string> Modules { get; set; } = new();
+        public List<string> DatesModules { get; set; } = new();
         public List<string> Files { get; set; } = new();
         public bool ShowTitleNames { get; set; } = true;
     }
