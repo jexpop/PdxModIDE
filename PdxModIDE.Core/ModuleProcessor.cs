@@ -54,7 +54,7 @@ namespace PdxModIDE.Core
             return GameRegistry.GetPlugin(gameKey);
         }
 
-        public void ProcessModule(string gameKey, string moduleName, string gameRoot, string modRoot, string backupRoot, int offset, string profileName)
+        public void ProcessModule(string gameKey, string moduleName, string gameRoot, string modRoot, string backupRoot, int offset, string profileName, bool recurse = true)
         {
             var modules = LoadModules();
             if (!modules.ContainsKey(gameKey) || !modules[gameKey].ContainsKey(moduleName))
@@ -70,9 +70,6 @@ namespace PdxModIDE.Core
 
             string src = Path.Combine(gameRoot, relPath);
             string dstMod = Path.Combine(modRoot, relPath);
-            string dstBackup = Path.Combine(backupRoot, relPath);
-
-            FileOperations.EnsureDirectory(dstBackup);
 
             string logPath = Path.Combine("logs", profileName);
             FileOperations.EnsureDirectory(logPath);
@@ -92,7 +89,7 @@ namespace PdxModIDE.Core
                     return;
                 }
 
-                foreach (var file in Directory.EnumerateFiles(src, "*.*", SearchOption.AllDirectories))
+                foreach (var file in Directory.EnumerateFiles(src, "*.*", recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
                 {
                     string ext = Path.GetExtension(file).ToLowerInvariant();
                     if (ignoreExt.Contains(ext))
@@ -100,10 +97,6 @@ namespace PdxModIDE.Core
 
                     string rel = Path.GetRelativePath(src, file);
                     string fullMod = Path.Combine(dstMod, rel);
-                    string fullBackup = Path.Combine(dstBackup, rel);
-
-                    FileOperations.EnsureDirectory(Path.GetDirectoryName(fullBackup)!);
-                    FileOperations.CopyFilePreserveTimestamps(file, fullBackup);
 
                     if (plugin.IsDateProcessableExtension(ext))
                     {
@@ -168,7 +161,7 @@ namespace PdxModIDE.Core
             return ApplyOffset(text, offset, plugin);
         }
 
-        public async Task ProcessModulesAsync(string gameKey, IEnumerable<string> moduleNames, string gameRoot, string modRoot, string backupRoot, int offset, string profileName)
+        public async Task ProcessModulesAsync(string gameKey, IEnumerable<string> moduleNames, string gameRoot, string modRoot, string backupRoot, int offset, string profileName, bool recurse = true)
         {
             var modules = LoadModules();
             if (!modules.ContainsKey(gameKey))
@@ -186,7 +179,7 @@ namespace PdxModIDE.Core
                 if (!gameModules.ContainsKey(moduleName))
                     return;
 
-                ProcessModule(gameKey, moduleName, gameRoot, modRoot, backupRoot, offset, profileName);
+                ProcessModule(gameKey, moduleName, gameRoot, modRoot, backupRoot, offset, profileName, recurse);
             });
 
             await Task.CompletedTask;

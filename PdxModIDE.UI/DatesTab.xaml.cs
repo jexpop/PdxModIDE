@@ -124,8 +124,7 @@ namespace PdxModIDE.UI
         {
             if (_viewModel == null) return;
 
-            _viewModel.UpdateDatesModules();
-            _viewModel.ProcessModules();
+            _viewModel.ProcessModules(false);
         }
     }
 }

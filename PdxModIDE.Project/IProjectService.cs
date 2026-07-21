@@ -30,7 +30,7 @@ namespace PdxModIDE.Project
         bool UpdateModule(string gameKey, string moduleName, string path, List<string> ignoreExt);
         bool DeleteModule(string gameKey, string moduleName);
 
-        Task ProcessModulesAsync(int? offsetOverride = null);
+        Task ProcessModulesAsync(int? offsetOverride = null, bool recurseSubdirectories = true);
 
         Task<List<ModuleValidationResult>> ValidateAllAsync();
         List<FileComparisonResult> ValidateModuleSingle(string moduleName, ComparisonType comparison);

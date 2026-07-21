@@ -443,12 +443,12 @@ namespace PdxModIDE.UI.ViewModels
             }
         }
 
-        public async void ProcessModules()
+        public async void ProcessModules(bool recurseSubdirectories = true)
         {
             if (CurrentProfile == null) return;
 
             UpdateDatesModules();
-            await _projectService.ProcessModulesAsync(YearOffset);
+            await _projectService.ProcessModulesAsync(YearOffset, recurseSubdirectories);
             System.Windows.MessageBox.Show(Res("Msg_ProcessComplete"), Res("Msg_ProcessOK"),
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }

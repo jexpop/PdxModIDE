@@ -19,6 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.6]
+
+### Changed
+
+- **Non-recursive module processing in Dates tab**: the Dates tab now only processes files directly in the module path without recursing into subdirectories. Added `bool recurseSubdirectories` parameter threaded through `ProcessModulesAsync` / `ProcessModule` to control recursion behavior.
+
+### Removed
+
+- **Auto-backup on module processing**: removed automatic backup copies to the profile's backup folder during module processing. Backups are now a manual operation.
+
+---
+
 ## [1.4.4]
 
 ### Added

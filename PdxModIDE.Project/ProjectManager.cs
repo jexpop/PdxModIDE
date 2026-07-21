@@ -239,7 +239,7 @@ namespace PdxModIDE.Project
             return false;
         }
 
-        public async Task ProcessModulesAsync(int? offsetOverride = null)
+        public async Task ProcessModulesAsync(int? offsetOverride = null, bool recurseSubdirectories = true)
         {
             if (CurrentDataProfile == null)
                 return;
@@ -256,7 +256,8 @@ namespace PdxModIDE.Project
                 CurrentDataProfile.ModRoot,
                 CurrentDataProfile.BackupRoot,
                 offset,
-                CurrentDataProfile.Name
+                CurrentDataProfile.Name,
+                recurseSubdirectories
             );
         }
 

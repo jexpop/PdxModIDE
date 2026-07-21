@@ -19,6 +19,18 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.6]
+
+### Changed
+
+- **Processament de mòduls no recursiu a la pestanya Dates**: la pestanya Dates ara només processa els fitxers directament a la ruta del mòdul sense recórrer subdirectoris. Afegit el paràmetre `bool recurseSubdirectories` a través de `ProcessModulesAsync` / `ProcessModule` per controlar la recursivitat.
+
+### Removed
+
+- **Auto-backup en processar mòduls**: eliminades les còpies automàtiques de backup a la carpeta de backups del perfil durant el processament de mòduls. Els backups ara són una operació manual.
+
+---
+
 ## [1.4.4]
 
 ### Added

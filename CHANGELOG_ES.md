@@ -19,6 +19,18 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.6]
+
+### Changed
+
+- **Procesado de módulos no recursivo en la pestaña Fechas**: la pestaña Fechas ahora solo procesa los archivos directamente en la ruta del módulo sin recorrer subdirectorios. Añadido el parámetro `bool recurseSubdirectories` a través de `ProcessModulesAsync` / `ProcessModule` para controlar la recursividad.
+
+### Removed
+
+- **Auto-backup al procesar módulos**: eliminadas las copias automáticas de backup a la carpeta de backups del perfil durante el procesado de módulos. Los backups ahora son una operación manual.
+
+---
+
 ## [1.4.4]
 
 ### Added
