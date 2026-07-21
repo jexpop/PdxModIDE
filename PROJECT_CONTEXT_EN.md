@@ -212,7 +212,7 @@ ValidateAllAsync() → List<ModuleValidationResult> (parallel)
 ```
 
 `FileComparisonResult`: `{ RelativePath, Status (Equal/Modified/Added/Deleted), DiffLines? }`.
-Line-by-line diff (simple, no LCS).
+Line-by-line diff with bidirectional lookahead (up to 20 lines) for proper interleaving of additions and removals.
 
 **IgnoreExt**: Configurable per module (`ModuleConfig.IgnoreExt`).
 
@@ -266,7 +266,7 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
 - `ModulesTab`: Module list by game, checkbox selection, add/edit/delete module.
 - `FilesTab`: File list, checkbox, editable mapTo.
 - `DatesTab`: Read end_date game/mod, write new end_date.
-- `ValidationTab`: Validate all / individual module / individual file; results grid + diff viewer.
+- `ValidationTab`: Validate all / individual module / individual file; results grid + side-by-side diff viewer (`DiffViewDialog`, Notepad++ Compare style with "Original"/"Modified" panels, line numbers, and color-coded backgrounds).
 - `HistoryTab` (tab "Map", previously two tabs "History (Base)"/"History (Mod)" now unified): Interactive map (SkiaSharp). 5 mutually exclusive modes (checkboxes with tooltips):
   - **Holder** (Tit.): Colors by holder (character) at year in `YearBox` → `BuildHolderLut(year, TitleHistoryLoader)`.
   - **Counties** (Cty.): Colors by county borders (`c_xxx`) → `BuildCountyLut()`.
@@ -449,7 +449,8 @@ No mandatory environment variables. All configuration in `data/*.json`.
 | `PdxModIDE.MapEngine/MapLoader.cs` | Full map loading + LUT cache + holders by year |
 | `PdxModIDE.MapEngine/TitleHistoryLoader.cs` | Parse `history/titles/*.txt` → `TitleHistory` |
 | `PdxModIDE.Rendering/MapRenderer.cs` | SkiaSharp viewport, zoom/pan, color picker, tooltips. CPU overlay (workaround child shader bug). |
-| `PdxModIDE.Validation/ModuleValidator.cs` | 3-way diff (mod/game/backup) recursive |
+| `PdxModIDE.Validation/ModuleValidator.cs` | 3-way diff (mod/game/backup) recursive, bidirectional lookahead for interleaved additions/removals |
+| `PdxModIDE.UI/DiffViewDialog.cs` | Side-by-side diff viewer (Notepad++ Compare style, "Original"/"Modified" panels, line numbers, color-coded backgrounds) |
 | `PdxModIDE.Data/DataLoader.cs` | Generic Load/Save JSON `data/*.json` |
 | `PdxModIDE.Domain/Models.cs` | Pure entities (Module, GameFile, Profile, EditingSession) |
 | `PdxModIDE.IO/FileOperations.cs` | CopyPreserveTimestamps, ReadTextFile, EnsureDirectory |

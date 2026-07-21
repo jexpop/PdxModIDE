@@ -54,23 +54,56 @@ namespace PdxModIDE.Validation
             diff.Add($"+++ {backupPath}");
 
             int i = 0, j = 0;
+            int lookAhead = 20;
             while (i < gameLines.Count || j < backupLines.Count)
             {
                 if (i < gameLines.Count && j < backupLines.Count && gameLines[i] == backupLines[j])
                 {
                     diff.Add($" {gameLines[i]}");
-                    i++;
-                    j++;
+                    i++; j++;
                 }
-                else if (j < backupLines.Count && (i >= gameLines.Count || !gameLines.Skip(i).Take(3).SequenceEqual(backupLines.Skip(j).Take(3))))
+                else if (i < gameLines.Count && j < backupLines.Count)
                 {
-                    diff.Add($"+{backupLines[j]}");
-                    j++;
+                    int foundInGame = -1;
+                    for (int k = 1; k <= lookAhead && i + k < gameLines.Count; k++)
+                    {
+                        if (gameLines[i + k] == backupLines[j])
+                        { foundInGame = i + k; break; }
+                    }
+
+                    int foundInBackup = -1;
+                    for (int k = 1; k <= lookAhead && j + k < backupLines.Count; k++)
+                    {
+                        if (backupLines[j + k] == gameLines[i])
+                        { foundInBackup = j + k; break; }
+                    }
+
+                    if (foundInGame >= 0 && (foundInBackup < 0 || (foundInGame - i) <= (foundInBackup - j)))
+                    {
+                        diff.Add($"-{gameLines[i]}");
+                        i++;
+                    }
+                    else if (foundInBackup >= 0)
+                    {
+                        diff.Add($"+{backupLines[j]}");
+                        j++;
+                    }
+                    else
+                    {
+                        diff.Add($"-{gameLines[i]}");
+                        diff.Add($"+{backupLines[j]}");
+                        i++; j++;
+                    }
                 }
-                else
+                else if (i < gameLines.Count)
                 {
                     diff.Add($"-{gameLines[i]}");
                     i++;
+                }
+                else
+                {
+                    diff.Add($"+{backupLines[j]}");
+                    j++;
                 }
             }
 

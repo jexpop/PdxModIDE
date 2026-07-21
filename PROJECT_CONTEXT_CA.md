@@ -212,7 +212,7 @@ ValidateAllAsync() → List<ModuleValidationResult> (paral·lel)
 ```
 
 `FileComparisonResult`: `{ RelativePath, Status (Igual/Modificat/Afegit/Eliminat), DiffLines? }`.
-Diff línia a línia (simple, no LCS).
+Diff línia a línia amb cerca bidireccional (fins a 20 línies) per entrellaçar correctament addicions i eliminacions.
 
 **IgnoreExt**: Configurable per mòdul (`ModuleConfig.IgnoreExt`).
 
@@ -266,7 +266,7 @@ Fitxers a `data/` (crea directori si no existeix). `JsonSerializerOptions: Write
 - `ModulesTab`: Llista mòduls per joc, checkbox selecció, add/edit/delete module.
 - `FilesTab`: Llista fitxers, checkbox, mapTo editable.
 - `DatesTab`: Llegir end_date game/mod, escriure nou end_date.
-- `ValidationTab`: Validar tot / mòdul individual / fitxer individual; grid resultats + diff viewer.
+- `ValidationTab`: Validar tot / mòdul individual / fitxer individual; grid resultats + visor diff costat a costat (`DiffViewDialog`, estil Compare del Notepad++ amb panells "Original"/"Modified", números de línia i fons de color).
 - `HistoryTab` (pestanya "Mapa", abans dos pestanyes "Història (Base)"/"Història (Mod)" ara unificades): Mapa interactiu (SkiaSharp). 5 modes mútuament excloents (checkboxes amb tooltips):
   - **Titular** (Tit.): Aceloreix per holder (personatge) a l'any `YearBox` → `BuildHolderLut(year, TitleHistoryLoader)`.
   - **Comtats** (Cond.): Aceloreix per límits de comtat (`c_xxx`) → `BuildCountyLut()`.
@@ -449,7 +449,8 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 | `PdxModIDE.MapEngine/MapLoader.cs` | Càrrega mapa complet + LUT cache + titulars per any |
 | `PdxModIDE.MapEngine/TitleHistoryLoader.cs` | Parse `history/titles/*.txt` → `TitleHistory` |
 | `PdxModIDE.Rendering/MapRenderer.cs` | Viewport SkiaSharp, zoom/pan, color picker, tooltips. Overlay per CPU (workaround bug child shader). |
-| `PdxModIDE.Validation/ModuleValidator.cs` | Diff 3-vies (mod/game/backup) recursiu |
+| `PdxModIDE.Validation/ModuleValidator.cs` | Diff 3-vies (mod/game/backup) recursiu, cerca bidireccional per entrellaçar addicions/eliminacions |
+| `PdxModIDE.UI/DiffViewDialog.cs` | Visor diff costat a costat (estil Compare Notepad++, panells "Original"/"Modified", números de línia, fons de color) |
 | `PdxModIDE.Data/DataLoader.cs` | Load/Save JSON genèric `data/*.json` |
 | `PdxModIDE.Domain/Models.cs` | Entitats pures (Module, GameFile, Profile, EditingSession) |
 | `PdxModIDE.IO/FileOperations.cs` | CopyPreserveTimestamps, ReadTextFile, EnsureDirectory |

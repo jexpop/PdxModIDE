@@ -372,6 +372,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Improved diff algorithm in `ModuleValidator.CompareFileContents`**: replaced the basic 3-line lookahead heuristic with a bidirectional lookahead (up to 20 lines) that produces properly interleaved additions and removals instead of outputting all additions first then all removals.
+- **Side-by-side diff viewer (`DiffViewDialog`)**: replaced the unified-format text viewer with a side-by-side view similar to Notepad++ Compare plugin. Shows "Original" and "Modified" panels with line numbers on both sides, color-coded backgrounds (green for additions, red for removals), and paired modification rows when a removal is immediately followed by an addition.
+
 ### Planned
 - **EU4 / Imperator / HOI4 / Victoria 3 support**: new `IGamePlugin` with date regex, defines paths, processable extensions.
 - **Migration to DI container** (Microsoft.Extensions.DependencyInjection) for `ProjectManager`, repositories, processors.

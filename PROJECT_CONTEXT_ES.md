@@ -212,7 +212,7 @@ ValidateAllAsync() → List<ModuleValidationResult> (paralelo)
 ```
 
 `FileComparisonResult`: `{ RelativePath, Status (Modified/Added/Deleted/SAME/CHANGED), DiffLines? }`.
-Diff línea a línea (simple, no LCS).
+Diff línea a línea con búsqueda bidireccional (hasta 20 líneas) para entrelazar correctamente adiciones y eliminaciones.
 
 **IgnoreExt**: Configurable por módulo (`ModuleConfig.IgnoreExt`).
 
@@ -267,7 +267,7 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 - `ModulesTab`: Lista módulos por juego, checkbox selección, add/edit/delete module.
 - `FilesTab`: Lista archivos, checkbox, mapTo editable.
 - `DatesTab`: Leer end_date game/mod, escribir nuevo end_date.
-- `ValidationTab`: Validar todo / módulo individual / archivo individual; grid resultados + diff viewer.
+- `ValidationTab`: Validar todo / módulo individual / archivo individual; grid resultados + visor diff lado a lado (`DiffViewDialog`, estilo Compare de Notepad++ con paneles "Original"/"Modified", números de línea y fondos de color).
 - `HistoryTab` (pestaña "Mapa", antes dos pestañas "Historia (Base)"/"Historia (Mod)" ahora unificadas): Mapa interactivo (SkiaSharp). 5 modos mutuamente excluyentes (checkboxes con tooltips):
   - **Titular** (Tit.): Colorea por holder (personaje) en año `YearBox` → `BuildHolderLut(year, TitleHistoryLoader)`.
   - **Condados** (Cond.): Colorea por límites de condado (`c_xxx`) → `BuildCountyLut()`.
@@ -447,7 +447,8 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 | `PdxModIDE.MapEngine/MapLoader.cs` | Carga mapa completo + LUT cache + titulares por año |
 | `PdxModIDE.MapEngine/TitleHistoryLoader.cs` | Parse `history/titles/*.txt` → `TitleHistory` |
 | `PdxModIDE.Rendering/MapRenderer.cs` | Viewport SkiaSharp, zoom/pan, color picker, tooltips. Overlay por CPU (workaround bug `SKShader.CreateImage` como child shader devuelve 0). |
-| `PdxModIDE.Validation/ModuleValidator.cs` | Diff 3-vías (mod/game/backup) recursivo |
+| `PdxModIDE.Validation/ModuleValidator.cs` | Diff 3-vías (mod/game/backup) recursivo, búsqueda bidireccional para entrelazar adiciones/eliminaciones |
+| `PdxModIDE.UI/DiffViewDialog.cs` | Visor diff lado a lado (estilo Compare Notepad++, paneles "Original"/"Modified", números de línea, fondos de color) |
 | `PdxModIDE.Data/DataLoader.cs` | Load/Save JSON genérico `data/*.json` |
 | `PdxModIDE.Domain/Models.cs` | Entidades puras (Module, GameFile, Profile, EditingSession) |
 | `PdxModIDE.IO/FileOperations.cs` | CopyPreserveTimestamps, ReadTextFile, EnsureDirectory |
