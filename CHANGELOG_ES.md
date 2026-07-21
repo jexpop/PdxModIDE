@@ -7,6 +7,18 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.5]
+
+### Added
+
+- **Versionado seguro de ficheros al procesar módulos**: cuando un fichero de destino ya existe en el directorio mod, ahora se renombra con sufijo `_v1`, `_v2`, etc. en lugar de sobrescribirse. El fichero nuevo conserva el nombre original. Si el contenido del fichero existente es idéntico al nuevo, no se produce ni renombrado ni escritura.
+
+### Fixed
+
+- **Mensaje "Process Complete" duplicado**: eliminado `MessageBox.Show` redundante en `DatesTab.xaml.cs` que causaba la aparición de dos ventanas de confirmación tras procesar módulos desde la pestaña Fechas.
+
+---
+
 ## [1.4.4]
 
 ### Added

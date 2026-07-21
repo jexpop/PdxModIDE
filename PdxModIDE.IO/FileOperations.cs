@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace PdxModIDE.IO
@@ -31,6 +32,40 @@ namespace PdxModIDE.IO
             File.SetCreationTime(destinationPath, creationTime);
             File.SetLastAccessTime(destinationPath, lastAccessTime);
             File.SetLastWriteTime(destinationPath, lastWriteTime);
+        }
+
+        public static string RenameExistingFile(string path)
+        {
+            if (!File.Exists(path))
+                return path;
+
+            string dir = Path.GetDirectoryName(path) ?? ".";
+            string nameWithoutExt = Path.GetFileNameWithoutExtension(path);
+            string ext = Path.GetExtension(path);
+
+            int version = 1;
+            string newPath;
+            do
+            {
+                newPath = Path.Combine(dir, $"{nameWithoutExt}_v{version}{ext}");
+                version++;
+            } while (File.Exists(newPath));
+
+            File.Move(path, newPath);
+            return newPath;
+        }
+
+        public static bool FilesAreEqual(string path1, string path2)
+        {
+            if (!File.Exists(path1) || !File.Exists(path2))
+                return false;
+
+            var fi1 = new FileInfo(path1);
+            var fi2 = new FileInfo(path2);
+            if (fi1.Length != fi2.Length)
+                return false;
+
+            return File.ReadAllBytes(path1).AsSpan().SequenceEqual(File.ReadAllBytes(path2));
         }
 
         public static string ReadTextFile(string path)

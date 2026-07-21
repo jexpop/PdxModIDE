@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.5]
+
+### Added
+
+- **Safe file versioning on module processing**: when a destination file already exists in the mod directory, it is now renamed with a `_v1`, `_v2`, etc. suffix instead of being overwritten. The new file keeps the original name. If the existing file content is identical to the new content, neither renaming nor writing occurs.
+
+### Fixed
+
+- **Duplicate "Process Complete" message box**: removed redundant `MessageBox.Show` in `DatesTab.xaml.cs` that caused two confirmation dialogs to appear after processing modules from the Dates tab.
+
+---
+
 ## [1.4.4]
 
 ### Added

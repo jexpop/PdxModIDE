@@ -126,7 +126,6 @@ namespace PdxModIDE.UI
 
             _viewModel.UpdateDatesModules();
             _viewModel.ProcessModules();
-            System.Windows.MessageBox.Show(Res("Msg_ProcessComplete"), Res("Msg_ProcessOK"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

@@ -7,6 +7,18 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.5]
+
+### Added
+
+- **Versionat segur de fitxers en processar mòduls**: quan un fitxer de destinació ja existeix al directori mod, ara es renombra amb sufix `_v1`, `_v2`, etc. en lloc de sobreescriure's. El fitxer nou conserva el nom original. Si el contingut del fitxer existent és idèntic al nou, no es produeix ni renombrament ni escriptura.
+
+### Fixed
+
+- **Missatge "Process Complete" duplicat**: eliminat `MessageBox.Show` redundant a `DatesTab.xaml.cs` que causava l'aparició de dues finestres de confirmació després de processar mòduls des de la pestanya Dates.
+
+---
+
 ## [1.4.4]
 
 ### Added

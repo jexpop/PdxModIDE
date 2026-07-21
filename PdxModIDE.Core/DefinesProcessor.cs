@@ -107,6 +107,26 @@ namespace PdxModIDE.Core
                 newLines.Add(string.Format(plugin.DefinesOutputFormat, newDate));
             }
 
+            if (FileOperations.FileExists(dstMod))
+            {
+                var existingLines = FileOperations.ReadTextLines(dstMod);
+                if (existingLines.Length == newLines.Count)
+                {
+                    bool same = true;
+                    for (int i = 0; i < newLines.Count; i++)
+                    {
+                        if (existingLines[i] != newLines[i])
+                        {
+                            same = false;
+                            break;
+                        }
+                    }
+                    if (same)
+                        return true;
+                }
+            }
+
+            FileOperations.RenameExistingFile(dstMod);
             File.WriteAllLines(dstMod, newLines, System.Text.Encoding.UTF8);
 
             return true;

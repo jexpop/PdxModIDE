@@ -113,8 +113,17 @@ namespace PdxModIDE.Core
                         if (processed != original)
                         {
                             FileOperations.EnsureDirectory(Path.GetDirectoryName(fullMod)!);
-                            SystemFile.WriteAllText(fullMod, processed, Encoding.UTF8);
-                            log.WriteLine($"Processed (date changed): {rel}");
+
+                            if (SystemFile.Exists(fullMod) && FileOperations.ReadTextFile(fullMod) == processed)
+                            {
+                                log.WriteLine($"No date change (same as mod): {rel}");
+                            }
+                            else
+                            {
+                                FileOperations.RenameExistingFile(fullMod);
+                                SystemFile.WriteAllText(fullMod, processed, Encoding.UTF8);
+                                log.WriteLine($"Processed (date changed): {rel}");
+                            }
                         }
                         else
                         {
@@ -124,8 +133,17 @@ namespace PdxModIDE.Core
                     else
                     {
                         FileOperations.EnsureDirectory(Path.GetDirectoryName(fullMod)!);
-                        FileOperations.CopyFilePreserveTimestamps(file, fullMod);
-                        log.WriteLine($"Copied (no change): {rel}");
+
+                        if (SystemFile.Exists(fullMod) && FileOperations.FilesAreEqual(file, fullMod))
+                        {
+                            log.WriteLine($"No change (same as mod): {rel}");
+                        }
+                        else
+                        {
+                            FileOperations.RenameExistingFile(fullMod);
+                            FileOperations.CopyFilePreserveTimestamps(file, fullMod);
+                            log.WriteLine($"Copied (no change): {rel}");
+                        }
                     }
                 }
             }
