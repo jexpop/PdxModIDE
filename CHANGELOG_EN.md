@@ -370,6 +370,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.7]
+
+### Changed
+
+- **Module validation no longer recurses into subdirectories**: both "All Modules" and single-module validation in the Validation tab now only list files directly in the module path without descending into subdirectories (`SearchOption.TopDirectoryOnly`). This makes validation consistent with the non-recursive processing introduced in 1.4.6 for the Dates tab.
+
+---
+
 ## [Unreleased]
 
 ### Changed

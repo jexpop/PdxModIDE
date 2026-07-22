@@ -369,6 +369,14 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.7]
+
+### Changed
+
+- **La validació de mòduls ja no recorre subdirectoris**: tant la validació "Tots els mòduls" com la d'un sol mòdul a la pestanya Validació ara només llisten els fitxers directament a la ruta del mòdul sense descendir a subdirectoris (`SearchOption.TopDirectoryOnly`). Això fa que la validació sigui consistent amb el processament no recursiu introduït a 1.4.6 per a la pestanya Dates.
+
+---
+
 ## [Unreleased]
 
 ### Changed

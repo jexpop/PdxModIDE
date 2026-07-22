@@ -394,9 +394,9 @@ namespace PdxModIDE.Project
                     string modDir = Path.Combine(CurrentDataProfile.ModRoot, rel);
                     string backupDir = Path.Combine(CurrentDataProfile.BackupRoot, rel);
 
-                    var filesMod = ModuleValidator.ListFilesRecursive(modDir);
-                    var filesGame = ModuleValidator.ListFilesRecursive(gameDir);
-                    var filesBackup = ModuleValidator.ListFilesRecursive(backupDir);
+                    var filesMod = ModuleValidator.ListFiles(modDir);
+                    var filesGame = ModuleValidator.ListFiles(gameDir);
+                    var filesBackup = ModuleValidator.ListFiles(backupDir);
 
                     var allFiles = new HashSet<string>(filesMod);
                     allFiles.UnionWith(filesGame);

@@ -368,6 +368,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.7]
+
+### Changed
+
+- **La validación de módulos ya no recorre subdirectorios**: tanto la validación "Todos los módulos" como la de un solo módulo en la pestaña Validación ahora solo listan los archivos directamente en la ruta del módulo sin descender a subdirectorios (`SearchOption.TopDirectoryOnly`). Esto hace que la validación sea consistente con el procesado no recursivo introducido en 1.4.6 para la pestaña Fechas.
+
+---
+
 ## [Unreleased]
 
 ### Changed

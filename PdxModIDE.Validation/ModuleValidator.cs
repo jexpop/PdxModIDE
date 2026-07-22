@@ -20,7 +20,7 @@ namespace PdxModIDE.Validation
 
             if (Directory.Exists(srcGame))
             {
-                foreach (var file in Directory.EnumerateFiles(srcGame, "*.*", SearchOption.AllDirectories))
+                foreach (var file in Directory.EnumerateFiles(srcGame, "*.*", SearchOption.TopDirectoryOnly))
                 {
                     string rel = Path.GetRelativePath(srcGame, file);
                     gameFiles[rel] = file;
@@ -29,7 +29,7 @@ namespace PdxModIDE.Validation
 
             if (Directory.Exists(srcBackup))
             {
-                foreach (var file in Directory.EnumerateFiles(srcBackup, "*.*", SearchOption.AllDirectories))
+                foreach (var file in Directory.EnumerateFiles(srcBackup, "*.*", SearchOption.TopDirectoryOnly))
                 {
                     string rel = Path.GetRelativePath(srcBackup, file);
                     backupFiles[rel] = file;
@@ -115,13 +115,13 @@ namespace PdxModIDE.Validation
             return FileOperations.ReadTextLines(path).ToList();
         }
 
-        public static List<string> ListFilesRecursive(string basePath)
+        public static List<string> ListFiles(string basePath)
         {
             var result = new List<string>();
             if (!Directory.Exists(basePath))
                 return result;
 
-            foreach (var file in Directory.EnumerateFiles(basePath, "*.*", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(basePath, "*.*", SearchOption.TopDirectoryOnly))
             {
                 string rel = Path.GetRelativePath(basePath, file).Replace("\\", "/");
                 result.Add(rel);
