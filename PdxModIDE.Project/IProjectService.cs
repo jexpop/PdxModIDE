@@ -36,6 +36,7 @@ namespace PdxModIDE.Project
         List<FileComparisonResult> ValidateModuleSingle(string moduleName, ComparisonType comparison);
 
         (string Status, List<string>? Diff, string RelativePath) ValidateFileSingle(string fileKey, bool compareToGame);
+        List<DateModuleInfo> FindDateModules();
         Task<List<FileValidationResult>> ValidateAllFilesAsync();
 
         List<string> GetFileKeys();

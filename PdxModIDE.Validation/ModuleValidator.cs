@@ -154,6 +154,12 @@ namespace PdxModIDE.Validation
         public List<FileComparisonResult> GameVsBackupDetails { get; set; } = new();
     }
 
+    public class DateModuleInfo
+    {
+        public string FolderName { get; set; } = "";
+        public int FileCount { get; set; }
+    }
+
     public class FileValidationResult
     {
         public string FileKey { get; set; } = "";

@@ -204,7 +204,7 @@ interface IGamePlugin {
 
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
-**Diff recursivo tres vías**: Mod vs Backup, Game vs Backup, Game vs Mod.
+**Diff tres vías no recursivo** (solo archivos de primer nivel): Mod vs Backup, Game vs Backup, Game vs Mod.
 
 ```csharp
 ValidateModuleSingle(moduleName, ComparisonType) → List<FileComparisonResult>
@@ -234,6 +234,7 @@ Diff línea a línea con búsqueda bidireccional (hasta 20 líneas) para entrela
 | `CreateProfileWithGameDetection(name, gameRoot)` | Detecta juego + crea |
 | `ProcessModulesAsync(offset?)` | Delega a `ModuleProcessor` |
 | `ValidateAllAsync()` | Delega a `ModuleValidator` (paralelo) |
+| `FindDateModules()` | Escanea la raíz del juego recursivamente buscando carpetas no configuradas con archivos de fecha (solo informativo) |
 | `GetGameModules(gameKey)` | `ModuleConfig` dict |
 | `GetAllModules()` | `Domain.Module` dict nested read-only |
 

@@ -35,6 +35,7 @@ namespace PdxModIDE.UI
 
             BtnCompareModule.Click += BtnCompareModule_Click;
             BtnValidateAllModules.Click += BtnValidateAllModules_Click;
+            BtnFindDateModules.Click += BtnFindDateModules_Click;
             BtnModuleDetails.Click += BtnModuleDetails_Click;
             BtnAddFile.Click += BtnAddFile_Click;
             BtnActivateFile.Click += BtnActivateFile_Click;
@@ -125,6 +126,30 @@ namespace PdxModIDE.UI
                     Result = r
                 });
             }
+        }
+
+        private void BtnFindDateModules_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.CurrentProfile == null) return;
+
+            var results = _viewModel.ProjectService.FindDateModules();
+
+            if (results.Count == 0)
+            {
+                System.Windows.MessageBox.Show(
+                    Res("ValidationTab_NoDateModulesFound"),
+                    Res("ValidationTab_FindDateModulesTitle"),
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var lines = results.Select(r => $"  • {r.FolderName}  ({r.FileCount} {Res("ValidationTab_FindDateModulesFiles")})");
+            var message = Res("ValidationTab_FindDateModulesHeader") + "\n\n" + string.Join("\n", lines);
+
+            System.Windows.MessageBox.Show(
+                message,
+                Res("ValidationTab_FindDateModulesTitle"),
+                MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void BtnModuleDetails_Click(object sender, RoutedEventArgs e)

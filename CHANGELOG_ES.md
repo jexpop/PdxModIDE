@@ -370,6 +370,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [1.4.7]
 
+### Added
+
+- **Botón "Buscar módulos con fecha no configurados" en la pestaña Validación**: nuevo botón que escanea recursivamente la raíz del juego buscando carpetas no configuradas como módulos que contengan archivos con patrones de fecha. Los resultados se muestran en un diálogo informativo (no se modifica ninguna configuración). Usa `Parallel.ForEach` y lectura línea por línea con salida temprana para rendimiento óptimo, omitiendo archivos de más de 1 MB.
+
 ### Changed
 
 - **La validación de módulos ya no recorre subdirectorios**: tanto la validación "Todos los módulos" como la de un solo módulo en la pestaña Validación ahora solo listan los archivos directamente en la ruta del módulo sin descender a subdirectorios (`SearchOption.TopDirectoryOnly`). Esto hace que la validación sea consistente con el procesado no recursivo introducido en 1.4.6 para la pestaña Fechas.

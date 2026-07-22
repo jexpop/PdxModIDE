@@ -168,6 +168,11 @@
     <system:String x:Key="ValidationTab_FileCol">Fitxer</system:String>
     <system:String x:Key="ValidationTab_FileDiff">Veure diff del fitxer seleccionat</system:String>
     <system:String x:Key="ValidationTab_NoDifferences">Sense diferències</system:String>
+    <system:String x:Key="ValidationTab_FindDateModules">Cercar mòduls amb data no configurats…</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesTitle">Mòduls amb data no configurats</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesHeader">Les següents carpetes a l'arrel del joc contenen fitxers amb dates i no estan configurades com a mòduls:</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesFiles">fitxers amb dates</system:String>
+    <system:String x:Key="ValidationTab_NoDateModulesFound">No s'han trobat carpetes no configurades amb fitxers de data.</system:String>
 
     <!-- LogsTab -->
     <system:String x:Key="LogsTab_Viewer">Visor de logs</system:String>

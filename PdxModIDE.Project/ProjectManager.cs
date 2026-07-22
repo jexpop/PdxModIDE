@@ -720,6 +720,74 @@ namespace PdxModIDE.Project
             return results.OrderBy(r => r.FileKey).ToList();
         }
 
+        public List<DateModuleInfo> FindDateModules()
+        {
+            var results = new List<DateModuleInfo>();
+            if (CurrentDataProfile == null) return results;
+
+            var gameRoot = CurrentDataProfile.GameRoot;
+            if (string.IsNullOrEmpty(gameRoot) || !Directory.Exists(gameRoot))
+                return results;
+
+            var plugin = GameRegistry.GetPlugin(CurrentDataProfile.Game);
+            if (plugin == null) return results;
+
+            var configuredModules = _dataModules.TryGetValue(CurrentDataProfile.Game, out var modules)
+                ? modules.Values.Select(m => m.Path).ToHashSet()
+                : new HashSet<string>();
+
+            var allDirs = Directory.EnumerateDirectories(gameRoot, "*", SearchOption.AllDirectories).ToList();
+            var lockObj = new object();
+
+            Parallel.ForEach(allDirs, dir =>
+            {
+                var relPath = Path.GetRelativePath(gameRoot, dir).Replace("\\", "/");
+                if (configuredModules.Contains(relPath))
+                    return;
+
+                int dateFileCount = 0;
+                foreach (var file in Directory.EnumerateFiles(dir, "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    string ext = Path.GetExtension(file).ToLowerInvariant();
+                    if (!plugin.IsDateProcessableExtension(ext))
+                        continue;
+
+                    try
+                    {
+                        var fi = new FileInfo(file);
+                        if (fi.Length > 1024 * 1024)
+                            continue;
+
+                        using (var reader = new StreamReader(file))
+                        {
+                            string? line;
+                            while ((line = reader.ReadLine()) != null)
+                            {
+                                if (plugin.DateRegex.IsMatch(line))
+                                {
+                                    dateFileCount++;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                if (dateFileCount > 0)
+                {
+                    lock (lockObj)
+                    {
+                        results.Add(new DateModuleInfo { FolderName = relPath, FileCount = dateFileCount });
+                    }
+                }
+            });
+
+            return results.OrderBy(r => r.FolderName).ToList();
+        }
+
         public List<string> GetFileKeys()
         {
             if (CurrentDataProfile == null) return new List<string>();

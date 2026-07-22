@@ -43,7 +43,10 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Text="{DynamicResource ValidationTab_AllModulesDesc}" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                <Button Grid.Row="1" x:Name="BtnValidateAllModules" Content="{DynamicResource ValidationTab_ValidateAllModules}" Width="200" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                                <WrapPanel Grid.Row="1" Margin="0,0,0,10">
+                                    <Button x:Name="BtnValidateAllModules" Content="{DynamicResource ValidationTab_ValidateAllModules}" Width="200" Margin="0,0,10,0"/>
+                                    <Button x:Name="BtnFindDateModules" Content="{DynamicResource ValidationTab_FindDateModules}" Width="280"/>
+                                </WrapPanel>
                                 <ListView Grid.Row="2" x:Name="ListViewModFull" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,5"
                                           MouseDoubleClick="ListViewModFull_MouseDoubleClick">
                                     <ListView.View>

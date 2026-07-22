@@ -168,6 +168,11 @@
     <system:String x:Key="ValidationTab_FileCol">File</system:String>
     <system:String x:Key="ValidationTab_FileDiff">View diff of selected file</system:String>
     <system:String x:Key="ValidationTab_NoDifferences">No differences</system:String>
+    <system:String x:Key="ValidationTab_FindDateModules">Find unconfigured date modules…</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesTitle">Unconfigured date modules</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesHeader">The following folders in the game root contain date files and are not configured as modules:</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesFiles">files with dates</system:String>
+    <system:String x:Key="ValidationTab_NoDateModulesFound">No unconfigured folders with date files found.</system:String>
 
     <!-- LogsTab -->
     <system:String x:Key="LogsTab_Viewer">Log viewer</system:String>

@@ -371,6 +371,10 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [1.4.7]
 
+### Added
+
+- **Botó "Cercar mòduls amb data no configurats" a la pestanya Validació**: nou botó que escaneja recursivament l'arrel del joc cercant carpetes no configurades com a mòduls que continguin fitxers amb patrons de data. Els resultats es mostren en un diàleg informatiu (no es modifica cap configuració). Usa `Parallel.ForEach` i lectura línia per línia amb sortida primerenca per a rendiment òptim, ometent fitxers de més d'1 MB.
+
 ### Changed
 
 - **La validació de mòduls ja no recorre subdirectoris**: tant la validació "Tots els mòduls" com la d'un sol mòdul a la pestanya Validació ara només llisten els fitxers directament a la ruta del mòdul sense descendir a subdirectoris (`SearchOption.TopDirectoryOnly`). Això fa que la validació sigui consistent amb el processament no recursiu introduït a 1.4.6 per a la pestanya Dates.

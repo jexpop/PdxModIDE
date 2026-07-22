@@ -168,6 +168,11 @@
     <system:String x:Key="ValidationTab_FileCol">Archivo</system:String>
     <system:String x:Key="ValidationTab_FileDiff">Ver diff del archivo seleccionado</system:String>
     <system:String x:Key="ValidationTab_NoDifferences">Sin diferencias</system:String>
+    <system:String x:Key="ValidationTab_FindDateModules">Buscar módulos con fecha no configurados…</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesTitle">Módulos con fecha no configurados</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesHeader">Las siguientes carpetas en la raíz del juego contienen archivos con fechas y no están configuradas como módulos:</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesFiles">archivos con fechas</system:String>
+    <system:String x:Key="ValidationTab_NoDateModulesFound">No se encontraron carpetas no configuradas con archivos de fecha.</system:String>
 
     <!-- LogsTab -->
     <system:String x:Key="LogsTab_Viewer">Visor de logs</system:String>

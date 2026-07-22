@@ -372,6 +372,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.7]
 
+### Added
+
+- **"Find unconfigured date modules" button in Validation tab**: new button that recursively scans the game root directory looking for folders not yet configured as modules that contain files with date patterns. Results are shown in an informational dialog (no changes are made to any configuration). Uses `Parallel.ForEach` and line-by-line reading with early exit for optimal performance, skipping files over 1 MB.
+
 ### Changed
 
 - **Module validation no longer recurses into subdirectories**: both "All Modules" and single-module validation in the Validation tab now only list files directly in the module path without descending into subdirectories (`SearchOption.TopDirectoryOnly`). This makes validation consistent with the non-recursive processing introduced in 1.4.6 for the Dates tab.
