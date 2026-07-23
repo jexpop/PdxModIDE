@@ -456,4 +456,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-07-23 | Proyecto: PdxModIDE | Versión: 1.4.7 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generado: 2026-07-23 | Proyecto: PdxModIDE | Versión: 1.4.8 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

@@ -1142,6 +1142,8 @@ namespace PdxModIDE.UI
 
             using var canvas = new SKCanvas(bitmap);
 
+            using var typeface = SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+
             var drawnRects = new List<SKRect>();
 
             foreach (var label in _titleLabels.OrderByDescending(l => l.PixelCount))
@@ -1162,12 +1164,16 @@ namespace PdxModIDE.UI
 
                 if (boxW < 30 || boxH < 20) continue;
 
-                float area = label.PixelCount * zoom * zoom;
-                float fontSize = MathF.Sqrt(area) / 9f;
-                fontSize = Math.Clamp(fontSize, 9f, 18f);
-
-                using var font = new SKFont(SKTypeface.Default, fontSize);
+                float maxTextWidth = boxW * 0.85f;
+                float fontSize = Math.Clamp(boxW * 0.14f, 8f, boxW * 0.3f);
+                using var font = new SKFont(typeface, fontSize);
                 float textWidth = font.MeasureText(label.DisplayName);
+                if (textWidth > maxTextWidth)
+                {
+                    fontSize *= maxTextWidth / textWidth;
+                    font.Size = fontSize;
+                    textWidth = font.MeasureText(label.DisplayName);
+                }
                 float textHeight = fontSize;
 
                 float padX = fontSize * 0.35f;
@@ -1201,36 +1207,25 @@ namespace PdxModIDE.UI
                 if (Math.Abs(label.RotationDeg) > 1f)
                     canvas.RotateDegrees(label.RotationDeg);
 
-                float localX = -bgW / 2;
-                float localY = -textHeight * 0.5f - padY;
-
-                using var bgPaint = new SKPaint
-                {
-                    Color = new SKColor(0, 0, 0, 140),
-                    Style = SKPaintStyle.Fill,
-                    IsAntialias = true
-                };
-
                 using var outlinePaint = new SKPaint
                 {
-                    Color = new SKColor(0, 0, 0, 220),
+                    Color = new SKColor(255, 255, 255, 200),
                     IsAntialias = true,
                     Style = SKPaintStyle.Stroke,
-                    StrokeWidth = Math.Max(1.5f, fontSize / 15f)
+                    StrokeWidth = Math.Max(1.5f, fontSize / 10f)
                 };
+
+                canvas.DrawText(label.DisplayName, 0, textHeight * 0.35f, SKTextAlign.Center, font, outlinePaint);
 
                 using var fillPaint = new SKPaint
                 {
-                    Color = SKColors.White,
+                    Color = new SKColor(102, 102, 102),
                     IsAntialias = true,
                     Style = SKPaintStyle.Fill
                 };
 
-                var localRect = new SKRect(localX, localY, localX + bgW, localY + bgH);
-                float radius = Math.Min(4, fontSize * 0.25f);
-                canvas.DrawRoundRect(localRect, radius, radius, bgPaint);
-                canvas.DrawText(label.DisplayName, 0, textHeight * 0.35f, SKTextAlign.Center, font, outlinePaint);
-                canvas.DrawText(label.DisplayName, 0, textHeight * 0.35f, SKTextAlign.Center, font, fillPaint);
+                for (int i = 0; i < 3; i++)
+                    canvas.DrawText(label.DisplayName, 0, textHeight * 0.35f, SKTextAlign.Center, font, fillPaint);
                 canvas.Restore();
             }
         }

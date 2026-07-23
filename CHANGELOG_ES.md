@@ -386,12 +386,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
-## [Unreleased]
+## [1.4.8]
 
 ### Changed
 
-- **Algoritmo de diff mejorado en `ModuleValidator.CompareFileContents`**: se ha reemplazado la heurística básica de mirar 3 líneas adelante por una búsqueda bidireccional (hasta 20 líneas) que produce adiciones y eliminaciones correctamente entrelazadas en lugar de sacar primero todas las adiciones y luego todas las eliminaciones.
-- **Visor diff lado a lado (`DiffViewDialog`)**: se ha sustituido el visor de texto en formato unificado por una vista lado a lado similar al plugin Compare de Notepad++. Muestra paneles "Original" y "Modified" con números de línea en ambos lados, fondos de color (verde para adiciones, rojo para eliminaciones) y filas de modificación emparejadas cuando una eliminación va seguida inmediatamente de una adición.
+- **Las etiquetas del mapa ahora escalan con el tamaño de la provincia**: los nombres de provincia en el mapa de Historia ahora se renderizan con un tamaño de fuente proporcional al bounding box de la provincia (`boxW * 0.14`, clamp 8px–30% del ancho). El texto se reduce automáticamente si supera el 85% del ancho de la provincia.
+- **Estilo y colores de las etiquetas del mapa mejorados**: el relleno del texto cambió de blanco sólido sobre rectángulo negro a gris oscuro (#666) dibujado 3 veces para dar grosor, con un borde blanco semitransparente (`SKColor(255,255,255,200)`) para un aspecto limpio estilo CK3, eliminando el rectángulo negro opaco de fondo.
 
 ### Planned
 - **Soporte EU4 / Imperator / HOI4 / Victoria 3**: nuevos `IGamePlugin` con regex fechas, defines paths, extensiones procesables.
