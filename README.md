@@ -29,16 +29,6 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 
 **Requirements**: .NET 8 SDK, Windows 10/11, a Paradox game installed (CK3 by default).
 
----
-
-## Screenshots
-
-![Map with province labels](screenshots/map.png)
-
----
-
-## English
-
 ## Español
 
 **IDE de escritorio para la gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**
@@ -94,3 +84,9 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 ```
 
 **Requisits**: .NET 8 SDK, Windows 10/11, un joc Paradox instal·lat (CK3 per defecte).
+
+---
+
+## Screenshots
+
+![Map with province labels](screenshots/map.png)
