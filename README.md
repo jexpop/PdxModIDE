@@ -31,6 +31,14 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 
 ---
 
+## Screenshots
+
+![Map with province labels](screenshots/map.png)
+
+---
+
+## English
+
 ## Español
 
 **IDE de escritorio para la gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**
