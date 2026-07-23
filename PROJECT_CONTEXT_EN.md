@@ -458,4 +458,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-07-22 | Project: PdxModIDE | Version: 1.4.7 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-07-23 | Project: PdxModIDE | Version: 1.4.7 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

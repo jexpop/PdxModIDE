@@ -382,6 +382,8 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 ### Fixed
 
 - **Guions baixos (`_`) ocultats en noms de mòduls a la pestanya Dates**: WPF `CheckBox.Content` interpreta els guions baixos com a acceleradors de teclat, ocultant-los. Noms com `common/landed_titles` apareixien com `common/landedtitles`. Corregit usant un `TextBlock` dins del `CheckBox` en lloc d'usar `Content` directament.
+- **Llista de mòduls a la pestanya Dates limitada a 6 columnes**: el càlcul dinàmic de columnes a `RecalculateLayout()` no tenia límit superior, causant solapament de text amb 7 columnes. Limitat a 6 columnes.
+- **Mòduls acabats d'afegir no es processaven fins a reiniciar l'app**: `ModuleProcessor._moduleCache` mai s'invalidava després d'afegir, modificar o eliminar mòduls, de manera que els nous mòduls eren invisibles per al processament. Afegit `_moduleProcessor.InvalidateCache()` després de cada operació CRUD.
 
 ---
 

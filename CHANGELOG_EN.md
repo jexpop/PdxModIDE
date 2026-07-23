@@ -383,6 +383,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Underscore characters (`_`) hidden in Dates tab module names**: WPF `CheckBox.Content` interprets underscores as access key mnemonics, hiding them. Module names like `common/landed_titles` appeared as `common/landedtitles`. Fixed by using a `TextBlock` inside the `CheckBox` instead of setting `Content` directly.
+- **Module list in Dates tab limited to 6 columns**: the dynamic column count in `RecalculateLayout()` had no upper limit, causing text overlap at 7 columns. Capped at 6 columns.
+- **Newly added modules not processed until app restart**: `ModuleProcessor._moduleCache` was never invalidated after adding, updating, or deleting modules, so new modules were invisible to the processing pipeline. Added `_moduleProcessor.InvalidateCache()` after each CRUD operation.
 
 ---
 

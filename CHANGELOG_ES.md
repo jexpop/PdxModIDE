@@ -381,6 +381,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 ### Fixed
 
 - **Guiones bajos (`_`) ocultos en nombres de módulos en pestaña Fechas**: WPF `CheckBox.Content` interpreta los guiones bajos como aceleradores de teclado, ocultándolos. Nombres como `common/landed_titles` se veían como `common/landedtitles`. Corregido usando un `TextBlock` dentro del `CheckBox` en lugar de usar `Content` directamente.
+- **Lista de módulos en pestaña Fechas limitada a 6 columnas**: el cálculo dinámico de columnas en `RecalculateLayout()` no tenía límite superior, causando solapamiento de texto con 7 columnas. Limitado a 6 columnas.
+- **Módulos recién añadidos no se procesaban hasta reiniciar la app**: `ModuleProcessor._moduleCache` nunca se invalidaba tras añadir, modificar o eliminar módulos, por lo que los nuevos módulos eran invisibles para el procesado. Añadido `_moduleProcessor.InvalidateCache()` tras cada operación CRUD.
 
 ---
 

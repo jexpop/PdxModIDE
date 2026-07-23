@@ -310,6 +310,7 @@ namespace PdxModIDE.Project
                 IgnoreExt = ignoreExt
             };
             DataLoader.SaveModules(_dataModules);
+            _moduleProcessor.InvalidateCache();
         }
 
         public bool UpdateModule(string gameKey, string moduleName, string path, List<string> ignoreExt)
@@ -322,6 +323,7 @@ namespace PdxModIDE.Project
                     IgnoreExt = ignoreExt
                 };
                 DataLoader.SaveModules(_dataModules);
+                _moduleProcessor.InvalidateCache();
                 return true;
             }
             return false;
@@ -333,6 +335,7 @@ namespace PdxModIDE.Project
             {
                 _dataModules[gameKey].Remove(moduleName);
                 DataLoader.SaveModules(_dataModules);
+                _moduleProcessor.InvalidateCache();
                 return true;
             }
             return false;

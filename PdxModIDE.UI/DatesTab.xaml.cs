@@ -48,6 +48,7 @@ namespace PdxModIDE.UI
                 if (availableWidth <= 0) return;
 
                 int columns = Math.Max(1, (int)(availableWidth / 210));
+                if (columns > 6) columns = 6;
                 if (columns > totalItems) columns = totalItems;
 
                 double itemWidth = availableWidth / columns;
