@@ -380,6 +380,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Module validation no longer recurses into subdirectories**: both "All Modules" and single-module validation in the Validation tab now only list files directly in the module path without descending into subdirectories (`SearchOption.TopDirectoryOnly`). This makes validation consistent with the non-recursive processing introduced in 1.4.6 for the Dates tab.
 
+### Fixed
+
+- **Underscore characters (`_`) hidden in Dates tab module names**: WPF `CheckBox.Content` interprets underscores as access key mnemonics, hiding them. Module names like `common/landed_titles` appeared as `common/landedtitles`. Fixed by using a `TextBlock` inside the `CheckBox` instead of setting `Content` directly.
+
 ---
 
 ## [Unreleased]
