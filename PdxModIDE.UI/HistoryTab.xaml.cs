@@ -34,6 +34,7 @@ namespace PdxModIDE.UI
 
         private Dictionary<int, ProvincePixelInfo>? _provincePixelInfo;
         private List<TitleLabelInfo>? _titleLabels;
+        private Dictionary<int, string>? _provinceToTitle;
         private byte[]? _currentHolderLut;
         private Dictionary<int, string>? _currentIndexToHolder;
 
@@ -53,6 +54,7 @@ namespace PdxModIDE.UI
 
         private class TitleLabelInfo
         {
+            public string TitleKey { get; set; } = "";
             public string DisplayName { get; set; } = "";
             public float CenterX;
             public float CenterY;
@@ -1039,11 +1041,15 @@ namespace PdxModIDE.UI
                 return;
             }
 
+            _provinceToTitle = new Dictionary<int, string>();
             var groups = new Dictionary<string, (double sumX, double sumY, double sumXX, double sumYY, double sumXY, int count, int minX, int maxX, int minY, int maxY)>();
             foreach (var (pid, info) in _provincePixelInfo)
             {
                 var title = getTitleForProvince(pid);
-                if (title == null) continue;
+                if (title != null)
+                    _provinceToTitle[pid] = title;
+                else
+                    continue;
 
                 if (!groups.TryGetValue(title, out var g))
                 {
@@ -1097,15 +1103,16 @@ namespace PdxModIDE.UI
                         {
                             double angle = Math.Atan2(2 * covXY, covXX - covYY) / 2;
                             rot = (float)(angle * 180 / Math.PI);
-                            if (rot > 50) rot -= 180;
-                            else if (rot < -50) rot += 180;
-                            rot = Math.Clamp(rot, -45f, 45f);
+                            if (rot > 90) rot -= 180;
+                            else if (rot < -90) rot += 180;
+                            rot = Math.Clamp(rot, -90f, 90f);
                         }
                     }
                 }
 
                 _titleLabels.Add(new TitleLabelInfo
                 {
+                    TitleKey = title,
                     DisplayName = GetLocalizedTitleName(title),
                     CenterX = cx,
                     CenterY = cy,
@@ -1181,30 +1188,121 @@ namespace PdxModIDE.UI
                 float bgW = textWidth + padX * 2;
                 float bgH = textHeight + padY * 2;
 
-                float bgX = cx - bgW / 2;
-                float bgY = cy - textHeight * 0.5f - padY;
+                float boxCx = sx1 + boxW / 2;
+                float boxCy = sy1 + boxH / 2;
 
-                bgX = Math.Max(1, bgX);
-                bgY = Math.Max(1, bgY);
-                if (bgX + bgW > bmpW - 1) bgX = bmpW - bgW - 1;
-                if (bgY + bgH > bmpH - 1) bgY = bmpH - bgH - 1;
+                var candidates = new List<(float x, float y, bool canRotate)>();
+                candidates.Add((cx, cy, true));
 
-                var screenRect = new SKRect(bgX, bgY, bgX + bgW, bgY + bgH);
-
-                bool overlaps = false;
-                foreach (var r in drawnRects)
+                float minDim = Math.Min(boxW, boxH);
+                if (minDim > bgW * 1.5f && minDim > bgH * 1.5f)
                 {
-                    if (screenRect.Left < r.Right + 4 && screenRect.Right > r.Left - 4 &&
-                        screenRect.Top < r.Bottom + 4 && screenRect.Bottom > r.Top - 4)
-                    { overlaps = true; break; }
+                    float qx = boxW * 0.25f;
+                    float qy = boxH * 0.25f;
+                    candidates.Add((boxCx, sy1 + qy, false));
+                    candidates.Add((boxCx, sy2 - qy, false));
+                    candidates.Add((sx1 + qx, boxCy, false));
+                    candidates.Add((sx2 - qx, boxCy, false));
+                    candidates.Add((sx1 + qx, sy1 + qy, false));
+                    candidates.Add((sx2 - qx, sy1 + qy, false));
+                    candidates.Add((sx1 + qx, sy2 - qy, false));
+                    candidates.Add((sx2 - qx, sy2 - qy, false));
                 }
-                if (overlaps) continue;
 
-                drawnRects.Add(screenRect);
+                (float px, float py, bool doRotate) = (cx, cy, true);
+                bool placed = false;
+
+                foreach (var (candX, candY, canRot) in candidates)
+                {
+                    float bgX = candX - bgW / 2;
+                    float bgY = candY - textHeight * 0.5f - padY;
+
+                    bgX = Math.Max(1, bgX);
+                    bgY = Math.Max(1, bgY);
+                    if (bgX + bgW > bmpW - 1) bgX = bmpW - bgW - 1;
+                    if (bgY + bgH > bmpH - 1) bgY = bmpH - bgH - 1;
+
+                    bool onOtherLand = false;
+                    if (_mapLoader != null && _mapLoader.ProvinceIdMap != null && _provinceToTitle != null)
+                    {
+                        int mapW = _mapLoader.MapWidth;
+                        int mapH = _mapLoader.MapHeight;
+                        int[] idMap = _mapLoader.ProvinceIdMap;
+
+                        int sampleCols = Math.Min(Math.Max(3, (int)(bgW / Math.Max(1f, fontSize * 0.4f))), 6);
+                        int sampleRows = Math.Min(Math.Max(2, (int)(bgH / Math.Max(1f, fontSize * 0.4f))), 4);
+
+                        float rotRad = (canRot && Math.Abs(label.RotationDeg) > 1f) ? label.RotationDeg * MathF.PI / 180f : 0f;
+                        float cosR = MathF.Cos(rotRad);
+                        float sinR = MathF.Sin(rotRad);
+                        bool useRot = Math.Abs(rotRad) > 0.01f;
+
+                        for (int sy = 0; sy < sampleRows && !onOtherLand; sy++)
+                        {
+                            for (int sx = 0; sx < sampleCols && !onOtherLand; sx++)
+                            {
+                                float localX = (sx + 0.5f) / sampleCols * bgW - bgW / 2;
+                                float localY = (sy + 0.5f) / sampleRows * bgH - bgH / 2;
+
+                                float screenX = candX + localX;
+                                float screenY = candY + localY;
+                                if (useRot)
+                                {
+                                    screenX = candX + localX * cosR - localY * sinR;
+                                    screenY = candY + localX * sinR + localY * cosR;
+                                }
+
+                                float mapXf = (screenX - offX) / zoom;
+                                float mapYf = (screenY - offY) / zoom;
+                                int mapX = (int)Math.Round(mapXf);
+                                int mapY = (int)Math.Round(mapYf);
+
+                                if (mapX < 0 || mapX >= mapW || mapY < 0 || mapY >= mapH)
+                                    continue;
+
+                                int pid = idMap[mapY * mapW + mapX];
+                                if (pid <= 0) continue;
+
+                                if (_provinceToTitle.TryGetValue(pid, out var pixelTitle))
+                                {
+                                    if (pixelTitle != label.TitleKey)
+                                    {
+                                        var pType = _mapLoader.GetProvinceFromId(pid)?.Type;
+                                        if (pType == "land") onOtherLand = true;
+                                    }
+                                }
+                                else
+                                {
+                                    var pType = _mapLoader.GetProvinceFromId(pid)?.Type;
+                                    if (pType == "land") onOtherLand = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (onOtherLand) continue;
+
+                    bool overlaps = false;
+                    foreach (var r in drawnRects)
+                    {
+                        if (bgX < r.Right + 4 && bgX + bgW > r.Left - 4 &&
+                            bgY < r.Bottom + 4 && bgY + bgH > r.Top - 4)
+                        { overlaps = true; break; }
+                    }
+                    if (!overlaps)
+                    {
+                        (px, py, doRotate) = (candX, candY, canRot);
+                        placed = true;
+                        drawnRects.Add(new SKRect(bgX, bgY, bgX + bgW, bgY + bgH));
+                        break;
+                    }
+                }
+
+                if (!placed) continue;
 
                 canvas.Save();
-                canvas.Translate(cx, cy);
-                if (Math.Abs(label.RotationDeg) > 1f)
+                canvas.Translate(px, py);
+                if (doRotate && Math.Abs(label.RotationDeg) > 1f)
                     canvas.RotateDegrees(label.RotationDeg);
 
                 using var outlinePaint = new SKPaint
