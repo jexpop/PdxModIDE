@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using SkiaSharp;
@@ -26,14 +27,42 @@ namespace PdxModIDE.Rendering
         private float _zoom = 1.0f;
         private float _offsetX;
         private float _offsetY;
-        private int _highlightProvinceId = -1;
+        private readonly HashSet<int> _highlightProvinceIds = new HashSet<int>();
+        private int _highlightVersion;
 
         public int Width => _mapLoader?.MapWidth ?? 0;
         public int Height => _mapLoader?.MapHeight ?? 0;
         public float Zoom => _zoom;
         public float OffsetX => _offsetX;
         public float OffsetY => _offsetY;
-        public int HighlightProvinceId { get => _highlightProvinceId; set => _highlightProvinceId = value; }
+
+        public int HighlightProvinceId
+        {
+            get
+            {
+                foreach (var id in _highlightProvinceIds)
+                    return id;
+                return -1;
+            }
+            set
+            {
+                _highlightProvinceIds.Clear();
+                if (value >= 0)
+                    _highlightProvinceIds.Add(value);
+                _highlightVersion++;
+            }
+        }
+
+        public HashSet<int> HighlightProvinceIds => _highlightProvinceIds;
+        public int HighlightVersion => _highlightVersion;
+
+        public void SetHighlightProvinces(HashSet<int> ids)
+        {
+            _highlightProvinceIds.Clear();
+            foreach (var id in ids)
+                _highlightProvinceIds.Add(id);
+            _highlightVersion++;
+        }
 
         private const string ShaderSrc = @"
 uniform shader provinces;
@@ -219,11 +248,17 @@ half4 main(float2 coord) {
             canvas.Translate(_offsetX, _offsetY);
             canvas.Scale(_zoom);
 
-            if (_highlightProvinceId != _lastHighlight)
+            if (_lastHighlight != _highlightVersion)
             {
-                _lastHighlight = _highlightProvinceId;
-                if (_highlightProvinceId >= 0 && _mapLoader?.ProvinceIdToPacked.TryGetValue(_highlightProvinceId, out var packed) == true)
-                    _lastUniforms["highlightColor"] = new SKPoint3((packed >> 16) & 0xFF, (packed >> 8) & 0xFF, packed & 0xFF);
+                _lastHighlight = _highlightVersion;
+                if (_highlightProvinceIds.Count == 1)
+                {
+                    int singleId = HighlightProvinceId;
+                    if (singleId >= 0 && _mapLoader?.ProvinceIdToPacked.TryGetValue(singleId, out var packed) == true)
+                        _lastUniforms["highlightColor"] = new SKPoint3((packed >> 16) & 0xFF, (packed >> 8) & 0xFF, packed & 0xFF);
+                    else
+                        _lastUniforms["highlightColor"] = new SKPoint3(-1, -1, -1);
+                }
                 else
                     _lastUniforms["highlightColor"] = new SKPoint3(-1, -1, -1);
             }
@@ -337,6 +372,56 @@ half4 main(float2 coord) {
                     }
 
                     // Write modified row back
+                    Marshal.Copy(outRow, 0, outBase + y * outRowBytes, outRowBytes);
+                }
+            }
+
+            if (_highlightProvinceIds.Count > 1 && _mapLoader?.ProvinceIdMap != null && _provincesBitmap != null)
+            {
+                int[] idMap = _mapLoader.ProvinceIdMap;
+                int mapW = _mapLoader.MapWidth;
+
+                int outRowBytes = terrainBmp.RowBytes;
+                IntPtr outBase = terrainBmp.GetPixels();
+                int outBpp = terrainBmp.BytesPerPixel;
+
+                int rOff = 2, gOff = 1, bOff = 0;
+
+                int w = terrainBmp.Width;
+                int h = terrainBmp.Height;
+                byte[] outRow = new byte[outRowBytes];
+
+                for (int y = 0; y < h; y++)
+                {
+                    Marshal.Copy(outBase + y * outRowBytes, outRow, 0, outRowBytes);
+
+                    for (int x = 0; x < w; x++)
+                    {
+                        int po = x * outBpp;
+
+                        byte pr = outRow[po + rOff];
+                        byte pg = outRow[po + gOff];
+                        byte pb = outRow[po + bOff];
+                        if (pr < 30 && pg < 30 && pb < 30 && pr > 20)
+                            continue;
+                        if (pr == 255 && pg == 255 && pb == 0)
+                            continue;
+
+                        int provX = (int)((x - _offsetX) / _zoom + 0.5f);
+                        int provY = (int)((y - _offsetY) / _zoom + 0.5f);
+
+                        if (provX < 0 || provX >= _provincesBitmap.Width || provY < 0 || provY >= _provincesBitmap.Height)
+                            continue;
+
+                        int pid = idMap[provY * mapW + provX];
+                        if (pid > 0 && _highlightProvinceIds.Contains(pid))
+                        {
+                            outRow[po + rOff] = 255;
+                            outRow[po + gOff] = 255;
+                            outRow[po + bOff] = 0;
+                        }
+                    }
+
                     Marshal.Copy(outRow, 0, outBase + y * outRowBytes, outRowBytes);
                 }
             }

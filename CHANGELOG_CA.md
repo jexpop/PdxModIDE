@@ -387,15 +387,25 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
-## [1.4.10]
+## [1.4.11]
+
+### Added
+
+- **Selecció múltiple de províncies en mode edició (mapa Història)**: en mode Edició, fer clic en províncies de tipus terra les afegeix o elimina d'una selecció múltiple. El panell d'informació mostra valors combinats quan totes les províncies seleccionades coincideixen, o "(Multiple)" quan difereixen. Fer clic en una província no terrestre neteja la selecció i selecciona només essa. Fer clic en espai buit deselecciona tot.
 
 ### Changed
 
-- **Eliminades etiquetes de depuració grises de la barra del mapa**: el text gris de depuració (`StatusLabel`) amb recompte de províncies, informació de mode i coordenades de clic s'ha eliminat de la pestanya Història, ja que aquesta informació ja està disponible al panell lateral.
-- **Controls de la barra del mapa separats amb separadors visuals**: els grups de zoom, any, font i mode de títols ara estan separats per separadors verticals per a una millor agrupació visual.
-- **Afegit botó d'alternança mode Vista/Edició**: un nou botó a la barra d'eines de la pestanya Història canvia entre "Mode Vistes" (mostra controls de superposició de títols) i "Mode Edició" (prepara per a l'edició del mapa). El mode edició oculta els checks de font i els controls de mode de títol, i desmarca automàticament Base si ambdues fonts estaven actives. El botó només està habilitat quan la font Mod està activa.
+- **El mode edició conserva la superposició de títols i noms**: la capa de títols (titular/comtat/ducat/regne/imperi) i les etiquetes "Mostrar noms" romanen actives al mapa en entrar en mode Edició, utilitzant l'últim mode seleccionat. El check "Mostrar noms" sempre és visible; els checks de mode de títol s'oculten en mode Edició.
+- **El botó d'alternança de mode respecta l'idioma seleccionat**: el text i el tooltip del botó "Mode Vista" / "Mode Edició" utilitzen recursos `DynamicResource` (claus `HistoryTab_ModeView/Edit` i tooltip) disponibles en EN, ES i CA.
+
+### Fixed
+
+- **El ressaltat múltiple de províncies preserva les vores**: el pas CPU de ressaltat ara salta els píxels de vora, de manera que les vores entre províncies seleccionades continuen sent visibles.
+- **Província no terrestre ja no roman ressaltada en fer clic a terra**: quan es selecciona una província no terrestre i després es fa clic en una de terra, la no terrestre s'elimina del conjunt de selecció.
 
 ---
+
+## [1.4.10]
 
 ## [1.4.9]
 

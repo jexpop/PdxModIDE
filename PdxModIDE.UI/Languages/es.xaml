@@ -129,6 +129,11 @@
     <system:String x:Key="HistoryTab_NoDuchyData">Activa "Base" y/o "Mod" para ver datos de ducados</system:String>
     <system:String x:Key="HistoryTab_NoKingdomData">Activa "Base" y/o "Mod" para ver datos de reinos</system:String>
     <system:String x:Key="HistoryTab_NoEmpireData">Activa "Base" y/o "Mod" para ver datos de imperios</system:String>
+    <system:String x:Key="HistoryTab_ModeView">Modo Vistas</system:String>
+    <system:String x:Key="HistoryTab_ModeEdit">Modo Edición</system:String>
+    <system:String x:Key="HistoryTab_ModeViewTooltip">Ir a modo Edición</system:String>
+    <system:String x:Key="HistoryTab_ModeEditTooltip">Ir a modo Vistas</system:String>
+
     <system:String x:Key="MapTerrain_Land">Tierra</system:String>
     <system:String x:Key="MapTerrain_Sea">Mar</system:String>
     <system:String x:Key="MapTerrain_Lake">Lago</system:String>

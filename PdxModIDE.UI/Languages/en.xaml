@@ -129,6 +129,11 @@
     <system:String x:Key="HistoryTab_NoDuchyData">Activate "Base" and/or "Mod" to view duchy data</system:String>
     <system:String x:Key="HistoryTab_NoKingdomData">Activate "Base" and/or "Mod" to view kingdom data</system:String>
     <system:String x:Key="HistoryTab_NoEmpireData">Activate "Base" and/or "Mod" to view empire data</system:String>
+    <system:String x:Key="HistoryTab_ModeView">Mode View</system:String>
+    <system:String x:Key="HistoryTab_ModeEdit">Mode Edit</system:String>
+    <system:String x:Key="HistoryTab_ModeViewTooltip">Go to Edit mode</system:String>
+    <system:String x:Key="HistoryTab_ModeEditTooltip">Go to View mode</system:String>
+
     <system:String x:Key="MapTerrain_Land">Land</system:String>
     <system:String x:Key="MapTerrain_Sea">Sea</system:String>
     <system:String x:Key="MapTerrain_Lake">Lake</system:String>

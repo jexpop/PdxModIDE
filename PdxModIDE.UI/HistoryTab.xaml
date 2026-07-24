@@ -94,9 +94,9 @@
                     <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
                               Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"/>
                 </StackPanel>
-                <Button x:Name="ModeToggleButton" Content="Modo Vistas" Width="100" Height="26"
+                <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeView}" Width="100" Height="26"
                         Margin="10,0,0,0" Click="ModeToggleButton_Click"
-                        ToolTip="Ir a modo Edición"/>
+                        ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>
             </WrapPanel>
 
             <Image x:Name="MapImage" Grid.Row="1"

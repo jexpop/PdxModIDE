@@ -386,15 +386,25 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
-## [1.4.10]
+## [1.4.11]
+
+### Added
+
+- **Selección múltiple de provincias en modo edición (mapa Historia)**: en modo Edición, hacer clic en provincias de tipo tierra las añade o elimina de una selección múltiple. El panel de información muestra valores combinados cuando todas las provincias seleccionadas coinciden, o "(Multiple)" cuando difieren. Hacer clic en una provincia no terrestre limpia la selección y selecciona solo esa. Hacer clic en espacio vacío deselecciona todo.
 
 ### Changed
 
-- **Eliminadas etiquetas de depuración grises de la barra del mapa**: el texto gris de depuración (`StatusLabel`) con conteo de provincias, información de modo y coordenadas de clic se ha eliminado de la pestaña Historia, ya que esta información ya está disponible en el panel lateral.
-- **Controles de la barra del mapa separados con separadores visuales**: los grupos de zoom, año, fuente y modo de títulos ahora están separados por separadores verticales para una mejor agrupación visual.
-- **Añadido botón de alternancia modo Vista/Edición**: un nuevo botón en la barra de herramientas de la pestaña Historia cambia entre "Modo Vistas" (muestra controles de superposición de títulos) y "Modo Edición" (prepara para edición del mapa). El modo edición oculta los checks de fuente y los controles de modo de título, y desmarca automáticamente Base si ambas fuentes estaban activas. El botón solo está habilitado cuando la fuente Mod está activa.
+- **El modo edición conserva la superposición de títulos y nombres**: la capa de títulos (titular/condado/ducado/reino/imperio) y las etiquetas "Mostrar nombres" permanecen activas en el mapa al entrar en modo Edición, usando el último modo seleccionado. El check "Mostrar nombres" siempre está visible; los checks de modo de título se ocultan en modo Edición.
+- **El botón de alternancia de modo respeta el idioma seleccionado**: el texto y tooltip del botón "Modo Vistas" / "Modo Edición" usan recursos `DynamicResource` (claves `HistoryTab_ModeView/Edit` y tooltip) disponibles en EN, ES y CA.
+
+### Fixed
+
+- **El resaltado múltiple de provincias preserva los bordes**: el pase CPU de resaltado ahora salta los píxeles de borde, por lo que los bordes entre provincias seleccionadas siguen siendo visibles.
+- **Provincia no terrestre ya no permanece resaltada al hacer clic en tierra**: cuando se selecciona una provincia no terrestre y luego se hace clic en una de tierra, la no terrestre se elimina del conjunto de selección.
 
 ---
+
+## [1.4.10]
 
 ## [1.4.9]
 

@@ -388,15 +388,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.4.10]
+## [1.4.11]
+
+### Added
+
+- **Multi-province selection in edit mode (History map)**: in Edit mode, clicking land provinces now toggles them into a multi-selection set. The info panel shows combined values when all selected provinces agree, or "(Multiple)" when they differ. Clicking a non-land province clears the selection and selects only that province. Clicking empty space clears all selections.
 
 ### Changed
 
-- **Removed debug status labels from map toolbar**: the gray debug text (`StatusLabel`) showing province count, mode info, and click coordinates has been removed from the History tab, as this information is already available in the side panel.
-- **Map toolbar controls separated with visual separators**: zoom, year, source, and title mode groups are now separated by vertical separators for better visual grouping.
-- **Added View/Edit mode toggle button**: a new button in the History tab toolbar switches between "View Mode" (shows title overlay controls) and "Edit Mode" (prepares for map editing). Edit mode hides source checkboxes and title mode controls, and auto-unchecks Base if both sources were active. Button is only enabled when Mod source is active.
+- **Edit mode preserves title overlay and names**: the title overlay (holder/county/duchy/kingdom/empire) and "Show names" labels remain active on the map when entering Edit mode, using the last selected mode. The "Show names" checkbox is always visible; title mode checkboxes are hidden in Edit mode.
+- **Mode toggle button now respects language setting**: the "Mode View" / "Mode Edit" button text and tooltip use `DynamicResource` resources (`HistoryTab_ModeView/Edit` and tooltip keys) available in EN, ES, and CA.
+
+### Fixed
+
+- **Multi-province highlight preserves borders**: the CPU highlight pass now skips border pixels, so province borders remain visible between selected provinces.
+- **Non-land province no longer stays highlighted after clicking land**: when a non-land province is selected and then a land province is clicked, the non-land is removed from the selection set.
 
 ---
+
+## [1.4.10]
 
 ## [1.4.9]
 
