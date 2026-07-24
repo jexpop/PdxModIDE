@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PdxModIDE.UI"
         mc:Ignorable="d"
-        Title="PdxModIDE" Height="800" Width="1200"
+        Title="Paradox Mod IDE v.1.4.9" Height="800" Width="1200"
         WindowState="Maximized">
     <Window.Resources>
         <ResourceDictionary>

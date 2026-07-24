@@ -95,7 +95,9 @@
     <system:String x:Key="HistoryTab_BaronyLabel">Baronía:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Condado:</system:String>
     <system:String x:Key="HistoryTab_HolderLabel">Titular:</system:String>
-    <system:String x:Key="HistoryTab_LiegeLabel">Señor:</system:String>
+    <system:String x:Key="HistoryTab_DuchyLabel">Ducado:</system:String>
+    <system:String x:Key="HistoryTab_KingdomLabel">Reino:</system:String>
+    <system:String x:Key="HistoryTab_EmpireLabel">Imperio:</system:String>
     <system:String x:Key="HistoryTab_ZoomIn">Zoom +</system:String>
     <system:String x:Key="HistoryTab_ZoomOut">Zoom -</system:String>
     <system:String x:Key="HistoryTab_Fit">Ajustar</system:String>

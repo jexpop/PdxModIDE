@@ -387,6 +387,21 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.9]
+
+### Added
+
+- **El panell d'informació ara mostra la jerarquia completa de títols i noms de titulars amb dinastia**: la pestanya Història reemplaça les files "Holder/Liege" amb files de nivell Ducat, Regne i Imperi. Cada nivell mostra el nom del personatge resolt des de `history/characters/*.txt` amb el cognom de dinastia des de `common/dynasties/*.txt`, amb fallback a l'ID si no es troba.
+- **Carregadors de personatges i dinasties**: nous `CharacterHistoryLoader.cs` i `DynastyLoader.cs` que analitzen noms de personatges i noms de dinastia (incloent fitxers `.yml` localitzats) des del joc base i el directori del mod.
+- **Les etiquetes de titulars al mapa ara mostren noms de personatge**: les etiquetes en mode titular renderitzen el nom del personatge (amb dinastia) en lloc del nom del títol localitzat.
+
+### Changed
+
+- **Títol de finestra actualitzat a "Paradox Mod IDE v.1.4.9"**: `MainWindow.xaml` reflecteix la nova versió.
+- **El panell d'informació s'actualitza en canviar el mode de superposició**: tots els mètodes `Apply*Mode` ara criden `UpdateProvinceInfo(_lastProvinceId)` perquè el panell s'actualitzi immediatament en canviar de mode.
+
+---
+
 ## [1.4.8]
 
 ### Changed

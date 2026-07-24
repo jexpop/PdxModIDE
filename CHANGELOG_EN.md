@@ -388,6 +388,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.9]
+
+### Added
+
+- **Info panel now shows full title hierarchy and holder names with dynasty**: the History tab province info panel replaces the old "Holder/Liege" rows with Duchy, Kingdom, and Empire level rows. Each level shows the character name resolved from `history/characters/*.txt` with dynasty surname from `common/dynasties/*.txt`, falling back to raw ID if not found.
+- **Character and dynasty loaders**: new `CharacterHistoryLoader.cs` and `DynastyLoader.cs` parse character names and dynasty display names (including localized `.yml` files) from both the base game and mod directories.
+- **On-map holder labels now show character names**: holder mode labels on the History map render the resolved character name (with dynasty) instead of the localized title name.
+
+### Changed
+
+- **Window title updated to "Paradox Mod IDE v.1.4.9"**: `MainWindow.xaml` title reflects the new version.
+- **Province info panel refreshes on overlay mode switch**: all `Apply*Mode` methods now call `UpdateProvinceInfo(_lastProvinceId)` so the info panel updates immediately when toggling overlay modes.
+
+---
+
 ## [1.4.8]
 
 ### Changed

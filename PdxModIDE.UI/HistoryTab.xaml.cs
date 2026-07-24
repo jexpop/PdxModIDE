@@ -17,6 +17,10 @@ namespace PdxModIDE.UI
         private MapLoader? _mapLoader;
         private TitleHistoryLoader? _titleHistoryBase;
         private TitleHistoryLoader? _titleHistoryMod;
+        private CharacterHistoryLoader? _characterHistoryBase;
+        private CharacterHistoryLoader? _characterHistoryMod;
+        private DynastyLoader? _dynastyBase;
+        private DynastyLoader? _dynastyMod;
         private MapRenderer? _renderer;
         private WriteableBitmap? _writeableBmp;
         private bool _isDragging;
@@ -199,16 +203,33 @@ namespace PdxModIDE.UI
                 _titleHistoryBase = new TitleHistoryLoader();
                 int baseCount = _titleHistoryBase.LoadAll(gameRoot);
 
+                _characterHistoryBase = new CharacterHistoryLoader();
+                int baseCharCount = _characterHistoryBase.LoadAll(gameRoot);
+
+                _dynastyBase = new DynastyLoader();
+                int baseDynCount = _dynastyBase.LoadAll(gameRoot);
+
                 int modCount = 0;
+                int modCharCount = 0;
+                int modDynCount = 0;
                 if (!string.IsNullOrEmpty(modRoot) && Directory.Exists(modRoot))
                 {
                     _titleHistoryMod = new TitleHistoryLoader();
                     modCount = _titleHistoryMod.LoadAll(modRoot, overwriteDuplicates: true);
+
+                    _characterHistoryMod = new CharacterHistoryLoader();
+                    modCharCount = _characterHistoryMod.LoadAll(modRoot, overwriteDuplicates: true);
+
+                    _dynastyMod = new DynastyLoader();
+                    modDynCount = _dynastyMod.LoadAll(modRoot, overwriteDuplicates: true);
+
                     loader.LoadModLocalization(modRoot);
                 }
                 else
                 {
                     _titleHistoryMod = null;
+                    _characterHistoryMod = null;
+                    _dynastyMod = null;
                 }
 
                 _mapLoader = loader;
@@ -235,7 +256,7 @@ namespace PdxModIDE.UI
                         QueueRender();
                     }
                 }), System.Windows.Threading.DispatcherPriority.Render);
-                StatusLabel.Content = $"{loader.ProvincesById.Count} prov, {baseCount} base titles, {modCount} mod titles";
+                StatusLabel.Content = $"{loader.ProvincesById.Count} prov, {baseCount}+{modCount} titles, {baseCharCount}+{modCharCount} chars, {baseDynCount}+{modDynCount} dyns";
             }
             catch (Exception ex)
             {
@@ -707,8 +728,9 @@ namespace PdxModIDE.UI
             StatusLabel.Content = $"Holder Mode [{fuente}] — year {year} — {indexToHolder.Count} holders";
             BuildTitleLabels();
             InvalidateRender();
+            if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
         }
-
+        
         private void ApplyCountyMode()
         {
             if (!HasActiveSource())
@@ -724,8 +746,9 @@ namespace PdxModIDE.UI
             StatusLabel.Content = $"County Mode — {indexToCounty.Count} counties";
             BuildTitleLabels();
             InvalidateRender();
+            if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
         }
-
+        
         private void ApplyDuchyMode()
         {
             if (!HasActiveSource())
@@ -741,8 +764,9 @@ namespace PdxModIDE.UI
             StatusLabel.Content = $"Duchy Mode — {indexToDuchy.Count} duchies";
             BuildTitleLabels();
             InvalidateRender();
+            if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
         }
-
+        
         private void ApplyKingdomMode()
         {
             if (!HasActiveSource())
@@ -758,8 +782,9 @@ namespace PdxModIDE.UI
             StatusLabel.Content = $"Kingdom Mode — {indexToKingdom.Count} kingdoms";
             BuildTitleLabels();
             InvalidateRender();
+            if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
         }
-
+        
         private void ApplyEmpireMode()
         {
             if (!HasActiveSource())
@@ -775,6 +800,7 @@ namespace PdxModIDE.UI
             StatusLabel.Content = $"Empire Mode — {indexToEmpire.Count} empires";
             BuildTitleLabels();
             InvalidateRender();
+            if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
         }
 
         private void UpdateProvinceInfo(int provinceId)
@@ -809,40 +835,113 @@ namespace PdxModIDE.UI
                 }
                 TextCountyValue.Text = countyName;
 
+                string duchyKey = "-";
+                string duchyName = "-";
+                if (countyKey != "-" && _mapLoader.CountyToDuchy.TryGetValue(countyKey, out var dk))
+                {
+                    duchyKey = dk;
+                    duchyName = GetLocalizedTitleName(duchyKey);
+                }
+                TextDuchyValue.Text = duchyName;
+
+                string kingdomKey = "-";
+                string kingdomName = "-";
+                if (duchyKey != "-" && _mapLoader.DuchyToKingdom.TryGetValue(duchyKey, out var kk))
+                {
+                    kingdomKey = kk;
+                    kingdomName = GetLocalizedTitleName(kingdomKey);
+                }
+                TextKingdomValue.Text = kingdomName;
+
+                string empireKey = "-";
+                string empireName = "-";
+                if (kingdomKey != "-" && _mapLoader.KingdomToEmpire.TryGetValue(kingdomKey, out var ek))
+                {
+                    empireKey = ek;
+                    empireName = GetLocalizedTitleName(empireKey);
+                }
+                TextEmpireValue.Text = empireName;
+
+                TextBaronyLabel.Content = Res("HistoryTab_BaronyLabel");
+                TextCountyLabel.Content = Res("HistoryTab_CountyLabel");
+                TextDuchyLabel.Content = Res("HistoryTab_DuchyLabel");
+                TextKingdomLabel.Content = Res("HistoryTab_KingdomLabel");
+                TextEmpireLabel.Content = Res("HistoryTab_EmpireLabel");
+
                 if (countyKey != "-" && int.TryParse(YearBox.Text, out int year))
                 {
                     bool useBase = BaseSourceCheck?.IsChecked == true;
                     bool useMod = ModSourceCheck?.IsChecked == true;
                     int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
 
-                    string? holder = null, liege = null, fuente = null;
+                    string? targetTitleKey = null;
+                    string holderLevelResKey = "HistoryTab_CountyMode";
 
-                    if (useMod && _titleHistoryMod != null && _titleHistoryMod.AllTitles.TryGetValue(countyKey, out var modHist))
+                    if (DuchyModeCheck?.IsChecked == true)
                     {
-                        holder = TitleHistoryLoader.GetHolderAtYear(modHist, year + offset);
-                        liege = TitleHistoryLoader.GetLiegeAtYear(modHist, year + offset);
-                        if (holder != null) fuente = "Mod";
+                        targetTitleKey = duchyKey != "-" ? duchyKey : null;
+                        holderLevelResKey = "HistoryTab_DuchyMode";
                     }
-                    if (holder == null && useBase && _titleHistoryBase != null && _titleHistoryBase.AllTitles.TryGetValue(countyKey, out var baseHist))
+                    else if (KingdomModeCheck?.IsChecked == true)
                     {
-                        holder = TitleHistoryLoader.GetHolderAtYear(baseHist, year);
-                        liege = TitleHistoryLoader.GetLiegeAtYear(baseHist, year);
-                        if (holder != null) fuente = "Base";
+                        targetTitleKey = kingdomKey != "-" ? kingdomKey : null;
+                        holderLevelResKey = "HistoryTab_KingdomMode";
                     }
+                    else if (EmpireModeCheck?.IsChecked == true)
+                    {
+                        targetTitleKey = empireKey != "-" ? empireKey : null;
+                        holderLevelResKey = "HistoryTab_EmpireMode";
+                    }
+                    else
+                    {
+                        targetTitleKey = countyKey != "-" ? countyKey : null;
+                        holderLevelResKey = "HistoryTab_CountyMode";
+                    }
+
+                    string? holder = null;
+                    string? fuente = null;
+
+                    if (targetTitleKey != null)
+                    {
+                        if (useMod && _titleHistoryMod != null &&
+                            _titleHistoryMod.AllTitles.TryGetValue(targetTitleKey, out var modHist))
+                        {
+                            holder = TitleHistoryLoader.GetHolderAtYear(modHist, year + offset);
+                            if (holder != null) fuente = "Mod";
+                        }
+                        if (holder == null && useBase && _titleHistoryBase != null &&
+                            _titleHistoryBase.AllTitles.TryGetValue(targetTitleKey, out var baseHist))
+                        {
+                            holder = TitleHistoryLoader.GetHolderAtYear(baseHist, year);
+                            if (holder != null) fuente = "Base";
+                        }
+                    }
+
+                    string holderLabelText = Res("HistoryTab_HolderLabel");
+                    string levelName = Res(holderLevelResKey);
+                    TextHolderLabel.Content = $"{holderLabelText} ({levelName})";
 
                     string sufijo = fuente != null ? $" [{fuente}]" : "";
-                    TextHolderValue.Text = $"{holder ?? "(no data)"}{sufijo}";
-                    TextLiegeValue.Text = $"{liege ?? "(no data)"}{sufijo}";
+                    if (holder != null)
+                    {
+                        string holderName = GetCharacterName(holder);
+                        TextHolderValue.Text = $"{holderName}{sufijo}";
+                    }
+                    else
+                    {
+                        TextHolderValue.Text = $"(no data){sufijo}";
+                    }
+
                 }
                 else if (countyKey != "-")
                 {
+                    TextHolderLabel.Content = Res("HistoryTab_HolderLabel");
                     TextHolderValue.Text = "(invalid year)";
-                    TextLiegeValue.Text = "(invalid year)";
                 }
                 else
                 {
+                    TextHolderLabel.Content = Res("HistoryTab_HolderLabel");
                     TextHolderValue.Text = "(no data)";
-                    TextLiegeValue.Text = "(no data)";
                 }
 
                 if (_renderer != null)
@@ -1110,10 +1209,13 @@ namespace PdxModIDE.UI
                     }
                 }
 
+                string displayName = HolderModeCheck?.IsChecked == true
+                    ? GetCharacterName(title)
+                    : GetLocalizedTitleName(title);
                 _titleLabels.Add(new TitleLabelInfo
                 {
                     TitleKey = title,
-                    DisplayName = GetLocalizedTitleName(title),
+                    DisplayName = displayName,
                     CenterX = cx,
                     CenterY = cy,
                     PixelCount = cnt,
@@ -1130,6 +1232,70 @@ namespace PdxModIDE.UI
         {
             if (_mapLoader == null) return titleKey;
             return _mapLoader.GetDisplayName(titleKey, GetAppLanguage());
+        }
+
+        private string GetCharacterName(string characterId)
+        {
+            string? name = null;
+            string? dynastyId = null;
+
+            if (_characterHistoryMod != null)
+            {
+                name = _characterHistoryMod.GetCharacterName(characterId);
+                dynastyId = _characterHistoryMod.GetCharacterDynasty(characterId);
+            }
+            if (name == null && _characterHistoryBase != null)
+            {
+                name = _characterHistoryBase.GetCharacterName(characterId);
+                dynastyId ??= _characterHistoryBase.GetCharacterDynasty(characterId);
+            }
+
+            if (name == null)
+            {
+                string localized = GetLocalizedTitleName(characterId);
+                if (localized != characterId) name = localized;
+                else
+                {
+                    localized = GetLocalizedTitleName("char_" + characterId);
+                    if (localized != "char_" + characterId) name = localized;
+                    else
+                    {
+                        localized = GetLocalizedTitleName("character_" + characterId);
+                        if (localized != "character_" + characterId) name = localized;
+                    }
+                }
+            }
+
+            if (name == null)
+                return characterId;
+
+            if (!string.IsNullOrEmpty(dynastyId))
+            {
+                string dynastyName = GetDynastyDisplayName(dynastyId);
+                if (!string.IsNullOrEmpty(dynastyName))
+                    return $"{name} {dynastyName}";
+            }
+
+            return name;
+        }
+
+        private string GetDynastyDisplayName(string dynastyId)
+        {
+            string? rawName = null;
+
+            if (_dynastyMod != null)
+                rawName = _dynastyMod.GetDynastyName(dynastyId);
+            if (rawName == null && _dynastyBase != null)
+                rawName = _dynastyBase.GetDynastyName(dynastyId);
+
+            if (rawName == null)
+                return "";
+
+            string localized = GetLocalizedTitleName(rawName);
+            if (localized != rawName)
+                return localized;
+
+            return rawName;
         }
 
         private string GetAppLanguage()

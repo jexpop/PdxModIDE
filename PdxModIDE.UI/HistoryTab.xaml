@@ -44,14 +44,18 @@
                     <TextBlock Text="{DynamicResource HistoryTab_Title}" FontWeight="Bold" FontSize="14" />
                 </GroupBox.Header>
                 <StackPanel>
-                    <Label Content="{DynamicResource HistoryTab_BaronyLabel}" FontWeight="Bold" />
+                    <Label x:Name="TextHolderLabel" Content="{DynamicResource HistoryTab_HolderLabel}" FontWeight="Bold" />
+                    <TextBlock x:Name="TextHolderValue" Margin="15,0,0,5" TextWrapping="Wrap" />
+                    <Label x:Name="TextBaronyLabel" Content="{DynamicResource HistoryTab_BaronyLabel}" FontWeight="Bold" />
                     <TextBlock x:Name="TextBaronyValue" Margin="15,0,0,5" />
-                    <Label Content="{DynamicResource HistoryTab_CountyLabel}" FontWeight="Bold" />
+                    <Label x:Name="TextCountyLabel" Content="{DynamicResource HistoryTab_CountyLabel}" FontWeight="Bold" />
                     <TextBlock x:Name="TextCountyValue" Margin="15,0,0,5" />
-                    <Label Content="{DynamicResource HistoryTab_HolderLabel}" FontWeight="Bold" />
-                    <TextBlock x:Name="TextHolderValue" Margin="15,0,0,5" />
-                    <Label Content="{DynamicResource HistoryTab_LiegeLabel}" FontWeight="Bold" />
-                    <TextBlock x:Name="TextLiegeValue" Margin="15,0,0,5" />
+                    <Label x:Name="TextDuchyLabel" Content="{DynamicResource HistoryTab_DuchyLabel}" FontWeight="Bold" />
+                    <TextBlock x:Name="TextDuchyValue" Margin="15,0,0,5" />
+                    <Label x:Name="TextKingdomLabel" Content="{DynamicResource HistoryTab_KingdomLabel}" FontWeight="Bold" />
+                    <TextBlock x:Name="TextKingdomValue" Margin="15,0,0,5" />
+                    <Label x:Name="TextEmpireLabel" Content="{DynamicResource HistoryTab_EmpireLabel}" FontWeight="Bold" />
+                    <TextBlock x:Name="TextEmpireValue" Margin="15,0,0,5" />
                 </StackPanel>
             </GroupBox>
         </StackPanel>

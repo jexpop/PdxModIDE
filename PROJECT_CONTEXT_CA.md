@@ -458,4 +458,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-07-23 | Projecte: PdxModIDE | Versió: 1.4.8 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generat: 2026-07-23 | Projecte: PdxModIDE | Versió: 1.4.9 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

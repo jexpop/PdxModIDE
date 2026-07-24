@@ -95,7 +95,9 @@
     <system:String x:Key="HistoryTab_BaronyLabel">Baronia:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Comtat:</system:String>
     <system:String x:Key="HistoryTab_HolderLabel">Titular:</system:String>
-    <system:String x:Key="HistoryTab_LiegeLabel">Senyor:</system:String>
+    <system:String x:Key="HistoryTab_DuchyLabel">Ducat:</system:String>
+    <system:String x:Key="HistoryTab_KingdomLabel">Regne:</system:String>
+    <system:String x:Key="HistoryTab_EmpireLabel">Imperi:</system:String>
     <system:String x:Key="HistoryTab_ZoomIn">Zoom +</system:String>
     <system:String x:Key="HistoryTab_ZoomOut">Zoom -</system:String>
     <system:String x:Key="HistoryTab_Fit">Ajustar</system:String>
