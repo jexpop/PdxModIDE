@@ -386,6 +386,16 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.10]
+
+### Changed
+
+- **Eliminadas etiquetas de depuración grises de la barra del mapa**: el texto gris de depuración (`StatusLabel`) con conteo de provincias, información de modo y coordenadas de clic se ha eliminado de la pestaña Historia, ya que esta información ya está disponible en el panel lateral.
+- **Controles de la barra del mapa separados con separadores visuales**: los grupos de zoom, año, fuente y modo de títulos ahora están separados por separadores verticales para una mejor agrupación visual.
+- **Añadido botón de alternancia modo Vista/Edición**: un nuevo botón en la barra de herramientas de la pestaña Historia cambia entre "Modo Vistas" (muestra controles de superposición de títulos) y "Modo Edición" (prepara para edición del mapa). El modo edición oculta los checks de fuente y los controles de modo de título, y desmarca automáticamente Base si ambas fuentes estaban activas. El botón solo está habilitado cuando la fuente Mod está activa.
+
+---
+
 ## [1.4.9]
 
 ### Added

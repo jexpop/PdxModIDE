@@ -66,20 +66,23 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
+            <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
                 <Button Content="{DynamicResource HistoryTab_ZoomIn}" Width="70" Height="26" Click="ZoomIn_Click"/>
                 <Button Content="{DynamicResource HistoryTab_ZoomOut}" Width="70" Height="26" Margin="5,0,0,0" Click="ZoomOut_Click"/>
                 <Button Content="{DynamicResource HistoryTab_Fit}" Width="70" Height="26" Margin="5,0,0,0" Click="FitToWindow_Click"/>
-                <Label Content="{DynamicResource HistoryTab_Year}" VerticalAlignment="Center" Margin="10,0,3,0"/>
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
+                <Label Content="{DynamicResource HistoryTab_Year}" VerticalAlignment="Center" Margin="5,0,3,0"/>
                 <TextBox x:Name="YearBox" Width="60" Height="26" VerticalContentAlignment="Center" Text="1200" TextChanged="YearBox_TextChanged"/>
-                <Label x:Name="OffsetLabel" Content="{DynamicResource HistoryTab_OffsetMod}" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray" ToolTip="{DynamicResource HistoryTab_OffsetModTooltip}"/>
+                <Label x:Name="OffsetLabel" Content="{DynamicResource HistoryTab_OffsetMod}" VerticalAlignment="Center" Margin="10,0,0,0" ToolTip="{DynamicResource HistoryTab_OffsetModTooltip}"/>
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
                 <CheckBox x:Name="BaseSourceCheck" Content="{DynamicResource HistoryTab_Base}" VerticalAlignment="Center"
-                          Margin="10,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_BaseTooltip}"/>
+                          Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_BaseTooltip}"/>
                 <CheckBox x:Name="ModSourceCheck" Content="{DynamicResource HistoryTab_Mod}" VerticalAlignment="Center"
                           Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_ModTooltip}"/>
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
                 <StackPanel x:Name="TitleModePanel" Orientation="Horizontal" Visibility="Collapsed">
                     <CheckBox x:Name="HolderModeCheck" Content="{DynamicResource HistoryTab_HolderMode}" VerticalAlignment="Center"
-                              Margin="10,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged" ToolTip="{DynamicResource HistoryTab_HolderModeTooltip}"/>
+                              Margin="5,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged" ToolTip="{DynamicResource HistoryTab_HolderModeTooltip}"/>
                     <CheckBox x:Name="CountyModeCheck" Content="{DynamicResource HistoryTab_CountyMode}" VerticalAlignment="Center"
                               Margin="5,0,0,0" Checked="CountyModeChanged" Unchecked="CountyModeChanged" ToolTip="{DynamicResource HistoryTab_CountyModeTooltip}"/>
                     <CheckBox x:Name="DuchyModeCheck" Content="{DynamicResource HistoryTab_DuchyMode}" VerticalAlignment="Center"
@@ -91,8 +94,10 @@
                     <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
                               Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"/>
                 </StackPanel>
-                <Label x:Name="StatusLabel" Content="{DynamicResource HistoryTab_Ready}" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray"/>
-            </StackPanel>
+                <Button x:Name="ModeToggleButton" Content="Modo Vistas" Width="100" Height="26"
+                        Margin="10,0,0,0" Click="ModeToggleButton_Click"
+                        ToolTip="Ir a modo Edición"/>
+            </WrapPanel>
 
             <Image x:Name="MapImage" Grid.Row="1"
                    MouseDown="MapImage_MouseDown"

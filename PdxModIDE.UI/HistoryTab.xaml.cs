@@ -35,6 +35,7 @@ namespace PdxModIDE.UI
         private float _cachedOffY;
         private bool _renderPending;
         private int _lastProvinceId = -1;
+        private bool _editMode;
 
         private Dictionary<int, ProvincePixelInfo>? _provincePixelInfo;
         private List<TitleLabelInfo>? _titleLabels;
@@ -76,6 +77,7 @@ namespace PdxModIDE.UI
             Loaded += OnLoaded;
             MapImage.SizeChanged += OnMapSizeChanged;
             TitleModePanel.Visibility = Visibility.Collapsed;
+            UpdateEditModeState();
         }
 
         public string Mode { get; set; } = "base";
@@ -95,6 +97,74 @@ namespace PdxModIDE.UI
         {
             if (ShowNamesCheck != null && ViewModel?.CurrentProfile != null)
                 ShowNamesCheck.IsChecked = ViewModel.CurrentProfile.ShowTitleNames;
+        }
+
+        private void UpdateEditModeState()
+        {
+            bool modActive = ModSourceCheck?.IsChecked == true;
+
+            if (!modActive && _editMode)
+            {
+                _editMode = false;
+                ModeToggleButton.Content = "Modo Vistas";
+                ModeToggleButton.ToolTip = "Ir a modo Edición";
+                HolderModeCheck.IsChecked = false;
+                CountyModeCheck.IsChecked = false;
+                DuchyModeCheck.IsChecked = false;
+                KingdomModeCheck.IsChecked = false;
+                EmpireModeCheck.IsChecked = false;
+                ShowNamesCheck.IsChecked = false;
+                _renderer?.SetHolderMode(false, null, null);
+                _titleLabels = null;
+                InvalidateRender();
+            }
+
+            ModeToggleButton.IsEnabled = modActive;
+
+            if (_editMode)
+            {
+                if (BaseSourceCheck?.IsChecked == true && ModSourceCheck?.IsChecked == true)
+                    BaseSourceCheck.IsChecked = false;
+                BaseSourceCheck.Visibility = Visibility.Collapsed;
+                ModSourceCheck.Visibility = Visibility.Collapsed;
+                TitleModePanel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                BaseSourceCheck.Visibility = Visibility.Visible;
+                ModSourceCheck.Visibility = Visibility.Visible;
+                TitleModePanel.Visibility = HasActiveSource() ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private void ModeToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            _editMode = !_editMode;
+            if (_editMode)
+            {
+                ModeToggleButton.Content = "Modo Edición";
+                ModeToggleButton.ToolTip = "Ir a modo Vistas";
+            }
+            else
+            {
+                ModeToggleButton.Content = "Modo Vistas";
+                ModeToggleButton.ToolTip = "Ir a modo Edición";
+            }
+            if (_editMode)
+            {
+                if (BaseSourceCheck?.IsChecked == true && ModSourceCheck?.IsChecked == true)
+                    BaseSourceCheck.IsChecked = false;
+                _renderer?.SetHolderMode(false, null, null);
+                _titleLabels = null;
+                InvalidateRender();
+            }
+            else if (HolderModeCheck.IsChecked == true || CountyModeCheck.IsChecked == true ||
+                     DuchyModeCheck.IsChecked == true || KingdomModeCheck.IsChecked == true ||
+                     EmpireModeCheck.IsChecked == true)
+            {
+                ReapplyActiveMode();
+            }
+            UpdateEditModeState();
         }
 
         private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -151,12 +221,10 @@ namespace PdxModIDE.UI
             var profile = ViewModel?.CurrentProfile;
             if (profile == null)
             {
-                StatusLabel.Content = Res("HistoryTab_NoProfile");
                 return;
             }
             if (string.IsNullOrEmpty(profile.GameRoot) || !Directory.Exists(profile.GameRoot))
             {
-                StatusLabel.Content = Res("HistoryTab_NoGameRoot");
                 return;
             }
             DoLoad(profile.GameRoot, profile.ModRoot);
@@ -187,7 +255,6 @@ namespace PdxModIDE.UI
                 string? provincesPng = FindFileBase("map_data/provinces.png");
                 if (provincesPng == null)
                 {
-                    StatusLabel.Content = Res("HistoryTab_NoProvincesPng");
                     return;
                 }
 
@@ -237,7 +304,6 @@ namespace PdxModIDE.UI
                 var renderer = new MapRenderer();
                 if (!renderer.Load(loader))
                 {
-                    StatusLabel.Content = Res("HistoryTab_RenderError");
                     return;
                 }
 
@@ -256,11 +322,10 @@ namespace PdxModIDE.UI
                         QueueRender();
                     }
                 }), System.Windows.Threading.DispatcherPriority.Render);
-                StatusLabel.Content = $"{loader.ProvincesById.Count} prov, {baseCount}+{modCount} titles, {baseCharCount}+{modCharCount} chars, {baseDynCount}+{modDynCount} dyns";
             }
             catch (Exception ex)
             {
-                StatusLabel.Content = $"Error: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error loading map: {ex.Message}");
             }
         }
 
@@ -410,7 +475,6 @@ namespace PdxModIDE.UI
                             string countyKey = _mapLoader.GetCountyFromBarony(baronyKey) ?? "-";
                             countyName = countyKey != "-" ? GetLocalizedTitleName(countyKey) : "-";
                         }
-                        StatusLabel.Content = $"Prov: {province.Id} | {GetLocalizedTitleName(province.Name)} | Tipo: {province.Type ?? "?"} | Bar: {baronyName} | Cond: {countyName}";
                         InfoPlaceholder.Visibility = Visibility.Collapsed;
                         UpdateProvinceInfo(provinceId);
                         return;
@@ -423,7 +487,6 @@ namespace PdxModIDE.UI
                 InfoPanel.Visibility = Visibility.Collapsed;
                 InfoPlaceholder.Visibility = Visibility.Visible;
                 QueueRender();
-                StatusLabel.Content = $"Coords: {x}, {y} - SIN PROVINCIA";
             }
         }
 
@@ -477,7 +540,7 @@ namespace PdxModIDE.UI
 
         private void UpdateTitleModeVisibility()
         {
-            bool visible = HasActiveSource();
+            bool visible = HasActiveSource() && !_editMode;
             TitleModePanel.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
@@ -514,6 +577,7 @@ namespace PdxModIDE.UI
 
         private void SourceModeChanged(object sender, RoutedEventArgs e)
         {
+            UpdateEditModeState();
             UpdateTitleModeVisibility();
             ApplySourceStructure();
 
@@ -703,7 +767,6 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = Res("HistoryTab_NoHolderData");
                 InvalidateRender();
                 return;
             }
@@ -724,8 +787,6 @@ namespace PdxModIDE.UI
             _currentHolderLut = holderLut;
             _currentIndexToHolder = indexToHolder;
 
-            string fuente = useBase && useMod ? "Mod+Base" : useMod ? "Mod" : "Base";
-            StatusLabel.Content = $"Holder Mode [{fuente}] — year {year} — {indexToHolder.Count} holders";
             BuildTitleLabels();
             InvalidateRender();
             if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
@@ -736,14 +797,12 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = Res("HistoryTab_NoCountyData");
                 InvalidateRender();
                 return;
             }
             var countyLut = _mapLoader!.BuildCountyLut(out var indexToCounty);
             var palette = MapLoader.BuildCountyPalette(indexToCounty);
             _renderer!.SetHolderMode(true, countyLut, palette);
-            StatusLabel.Content = $"County Mode — {indexToCounty.Count} counties";
             BuildTitleLabels();
             InvalidateRender();
             if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
@@ -754,14 +813,12 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = Res("HistoryTab_NoDuchyData");
                 InvalidateRender();
                 return;
             }
             var duchyLut = _mapLoader!.BuildDuchyLut(out var indexToDuchy);
             var palette = MapLoader.BuildDuchyPalette(indexToDuchy);
             _renderer!.SetHolderMode(true, duchyLut, palette);
-            StatusLabel.Content = $"Duchy Mode — {indexToDuchy.Count} duchies";
             BuildTitleLabels();
             InvalidateRender();
             if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
@@ -772,14 +829,12 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = Res("HistoryTab_NoKingdomData");
                 InvalidateRender();
                 return;
             }
             var kingdomLut = _mapLoader!.BuildKingdomLut(out var indexToKingdom);
             var palette = MapLoader.BuildKingdomPalette(indexToKingdom);
             _renderer!.SetHolderMode(true, kingdomLut, palette);
-            StatusLabel.Content = $"Kingdom Mode — {indexToKingdom.Count} kingdoms";
             BuildTitleLabels();
             InvalidateRender();
             if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
@@ -790,14 +845,12 @@ namespace PdxModIDE.UI
             if (!HasActiveSource())
             {
                 _renderer!.SetHolderMode(false, null, null);
-                StatusLabel.Content = Res("HistoryTab_NoEmpireData");
                 InvalidateRender();
                 return;
             }
             var empireLut = _mapLoader!.BuildEmpireLut(out var indexToEmpire);
             var palette = MapLoader.BuildEmpirePalette(indexToEmpire);
             _renderer!.SetHolderMode(true, empireLut, palette);
-            StatusLabel.Content = $"Empire Mode — {indexToEmpire.Count} empires";
             BuildTitleLabels();
             InvalidateRender();
             if (_lastProvinceId > 0) UpdateProvinceInfo(_lastProvinceId);
@@ -953,7 +1006,7 @@ namespace PdxModIDE.UI
             }
             catch (Exception ex)
             {
-                StatusLabel.Content = $"Error: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error updating province info: {ex.Message}");
             }
         }
 

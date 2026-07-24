@@ -388,6 +388,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.10]
+
+### Changed
+
+- **Removed debug status labels from map toolbar**: the gray debug text (`StatusLabel`) showing province count, mode info, and click coordinates has been removed from the History tab, as this information is already available in the side panel.
+- **Map toolbar controls separated with visual separators**: zoom, year, source, and title mode groups are now separated by vertical separators for better visual grouping.
+- **Added View/Edit mode toggle button**: a new button in the History tab toolbar switches between "View Mode" (shows title overlay controls) and "Edit Mode" (prepares for map editing). Edit mode hides source checkboxes and title mode controls, and auto-unchecks Base if both sources were active. Button is only enabled when Mod source is active.
+
+---
+
 ## [1.4.9]
 
 ### Added

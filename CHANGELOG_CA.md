@@ -387,6 +387,16 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.10]
+
+### Changed
+
+- **Eliminades etiquetes de depuració grises de la barra del mapa**: el text gris de depuració (`StatusLabel`) amb recompte de províncies, informació de mode i coordenades de clic s'ha eliminat de la pestanya Història, ja que aquesta informació ja està disponible al panell lateral.
+- **Controls de la barra del mapa separats amb separadors visuals**: els grups de zoom, any, font i mode de títols ara estan separats per separadors verticals per a una millor agrupació visual.
+- **Afegit botó d'alternança mode Vista/Edició**: un nou botó a la barra d'eines de la pestanya Història canvia entre "Mode Vistes" (mostra controls de superposició de títols) i "Mode Edició" (prepara per a l'edició del mapa). El mode edició oculta els checks de font i els controls de mode de títol, i desmarca automàticament Base si ambdues fonts estaven actives. El botó només està habilitat quan la font Mod està activa.
+
+---
+
 ## [1.4.9]
 
 ### Added
