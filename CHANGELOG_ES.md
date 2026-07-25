@@ -404,6 +404,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.12]
+
+### Added
+
+- **Botón "Dividir condado" en el modo edición del mapa**: en modo Edición con la vista de Condados, aparece un botón "Dividir condado" en la parte superior cuando una o más provincias de tierra del mismo condado están seleccionadas. El botón usa texto localizado (EN/ES/CA).
+
+---
+
 ## [1.4.10]
 
 ## [1.4.9]

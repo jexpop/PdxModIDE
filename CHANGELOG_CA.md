@@ -405,6 +405,14 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.12]
+
+### Added
+
+- **Botó "Dividir comtat" al mode edició del mapa**: en mode Edició amb la vista de Comtats, apareix un botó "Dividir comtat" a la part superior quan una o més províncies de terra del mateix comtat estan seleccionades. El botó usa text localitzat (EN/ES/CA).
+
+---
+
 ## [1.4.10]
 
 ## [1.4.9]

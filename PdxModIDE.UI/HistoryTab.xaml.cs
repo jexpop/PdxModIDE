@@ -140,6 +140,55 @@ namespace PdxModIDE.UI
                 EmpireModeCheck.Visibility = Visibility.Visible;
                 ShowNamesCheck.Visibility = Visibility.Visible;
             }
+            UpdateSplitCountyButtonVisibility();
+        }
+
+        private void UpdateSplitCountyButtonVisibility()
+        {
+            bool visible = _editMode && CountyModeCheck?.IsChecked == true && _selectedProvinceIds.Count > 0;
+
+            if (visible && _mapLoader != null)
+            {
+                string? commonCounty = null;
+                foreach (int id in _selectedProvinceIds)
+                {
+                    var province = _mapLoader.GetProvinceFromId(id);
+                    if (province == null || province.Type != "land")
+                    {
+                        visible = false;
+                        break;
+                    }
+
+                    string baronyKey = _mapLoader.GetTitleFromProvinceId(id) ?? "-";
+                    if (baronyKey == "-")
+                    {
+                        visible = false;
+                        break;
+                    }
+
+                    string countyKey = _mapLoader.GetCountyFromBarony(baronyKey) ?? "-";
+                    if (countyKey == "-")
+                    {
+                        visible = false;
+                        break;
+                    }
+
+                    if (commonCounty == null)
+                        commonCounty = countyKey;
+                    else if (commonCounty != countyKey)
+                    {
+                        visible = false;
+                        break;
+                    }
+                }
+            }
+
+            SplitCountyButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void SplitCountyButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Placeholder for future implementation
         }
 
         private void ModeToggleButton_Click(object sender, RoutedEventArgs e)
@@ -500,6 +549,7 @@ namespace PdxModIDE.UI
 
                             _renderer.SetHighlightProvinces(_selectedProvinceIds);
                             QueueRender();
+                            UpdateSplitCountyButtonVisibility();
                         }
                         else
                         {
@@ -515,6 +565,7 @@ namespace PdxModIDE.UI
                 InfoPanel.Visibility = Visibility.Collapsed;
                 InfoPlaceholder.Visibility = Visibility.Visible;
                 QueueRender();
+                UpdateSplitCountyButtonVisibility();
             }
         }
 
@@ -636,6 +687,7 @@ namespace PdxModIDE.UI
             if (!_mapLoaded || _renderer == null) return;
             _titleLabels = null;
             ReapplyActiveMode();
+            UpdateSplitCountyButtonVisibility();
         }
 
         private void ReapplyActiveMode()
@@ -687,6 +739,7 @@ namespace PdxModIDE.UI
                 KingdomModeCheck.IsChecked = false;
                 EmpireModeCheck.IsChecked = false;
                 ApplyCountyMode();
+                UpdateSplitCountyButtonVisibility();
             }
             else
             {
@@ -694,6 +747,7 @@ namespace PdxModIDE.UI
                 _renderer.SetHolderMode(false, null, null);
                 _titleLabels = null;
                 InvalidateRender();
+                UpdateSplitCountyButtonVisibility();
             }
         }
 

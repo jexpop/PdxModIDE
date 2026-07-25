@@ -406,6 +406,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.12]
+
+### Added
+
+- **"Split County" button in Map tab edit mode**: when in Edit mode with County view selected, a "Split County" button appears at the top when one or more land provinces of the same county are selected. The button uses localized text (EN/ES/CA).
+
+---
+
 ## [1.4.10]
 
 ## [1.4.9]

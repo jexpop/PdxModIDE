@@ -97,6 +97,9 @@
                 <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeView}" Width="100" Height="26"
                         Margin="10,0,0,0" Click="ModeToggleButton_Click"
                         ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>
+                <Button x:Name="SplitCountyButton" Content="{DynamicResource HistoryTab_SplitCounty}" Width="120" Height="26"
+                        Margin="5,0,0,0" Click="SplitCountyButton_Click"
+                        Visibility="Collapsed"/>
             </WrapPanel>
 
             <Image x:Name="MapImage" Grid.Row="1"
