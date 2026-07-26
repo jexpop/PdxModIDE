@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -188,7 +189,45 @@ namespace PdxModIDE.UI
 
         private void SplitCountyButton_Click(object sender, RoutedEventArgs e)
         {
-            // Placeholder for future implementation
+            if (_mapLoader == null || ViewModel?.CurrentProfile == null) return;
+
+            string? commonCounty = null;
+            string? commonParent = null;
+            var entries = new ObservableCollection<CountyEntry>();
+
+            foreach (int id in _selectedProvinceIds)
+            {
+                string baronyKey = _mapLoader.GetTitleFromProvinceId(id) ?? "-";
+                if (baronyKey == "-") continue;
+                string ck = _mapLoader.GetCountyFromBarony(baronyKey) ?? "-";
+                if (ck == "-") continue;
+                if (commonCounty == null) commonCounty = ck;
+                if (commonParent == null) commonParent = GetImmediateParentTitle(ck);
+
+                entries.Add(new CountyEntry
+                {
+                    ProvinceId = id.ToString(),
+                    BaronyKey = baronyKey,
+                    CountyKey = ck,
+                    ParentTitle = commonParent ?? "-"
+                });
+            }
+
+            if (entries.Count == 0) return;
+
+            var window = new SplitCountyWindow(commonCounty ?? "-", entries)
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            window.ShowDialog();
+        }
+
+        private string GetImmediateParentTitle(string countyKey)
+        {
+            if (_mapLoader == null) return "-";
+            if (_mapLoader.CountyToDuchy.TryGetValue(countyKey, out var duchy))
+                return duchy;
+            return "-";
         }
 
         private void ModeToggleButton_Click(object sender, RoutedEventArgs e)

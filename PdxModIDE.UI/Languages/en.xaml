@@ -29,6 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.13</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -134,6 +135,15 @@
     <system:String x:Key="HistoryTab_ModeEdit">Mode Edit</system:String>
     <system:String x:Key="HistoryTab_ModeViewTooltip">Go to Edit mode</system:String>
     <system:String x:Key="HistoryTab_ModeEditTooltip">Go to View mode</system:String>
+
+    <!-- SplitCountyWindow -->
+    <system:String x:Key="SplitCounty_Title">Split County — {0}</system:String>
+    <system:String x:Key="SplitCounty_CountyCol">County</system:String>
+    <system:String x:Key="SplitCounty_ParentCol">Higher Title</system:String>
+    <system:String x:Key="SplitCounty_BaronyCol">Barony</system:String>
+    <system:String x:Key="SplitCounty_Close">Close</system:String>
+    <system:String x:Key="SplitCounty_NotFound">County {0} not found in any landed_titles file.</system:String>
+    <system:String x:Key="SplitCounty_Error">Error searching for county: {0}</system:String>
 
     <system:String x:Key="MapTerrain_Land">Land</system:String>
     <system:String x:Key="MapTerrain_Sea">Sea</system:String>

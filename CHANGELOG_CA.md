@@ -7,6 +7,15 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.13]
+
+### Added
+
+- **Finestra "Dividir comtat" mostra les províncies seleccionades amb jerarquia**: en fer clic al botó "Dividir comtat" ara s'obre una nova finestra (`SplitCountyWindow`) llistant cada província seleccionada amb el seu ID, Baronia, Comtat i títol superior immediat (ducat). Les dades s'obtenen directament de la jerarquia carregada a `MapLoader` (CountyToDuchy).
+- **El títol de la finestra principal ara usa localització**: el títol "Paradox Mod IDE v.1.4.13" es carrega des dels diccionaris d'idioma mitjançant `{DynamicResource MainWindow_Title}`.
+
+---
+
 ## [1.4.5]
 
 ### Added

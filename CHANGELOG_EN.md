@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.13]
+
+### Added
+
+- **Split County window shows selected provinces with hierarchy**: clicking the "Split County" button now opens a new window (`SplitCountyWindow`) listing each selected province with its Province ID, Barony, County, and immediate higher title (duchy). Data is obtained directly from the loaded `MapLoader` hierarchy (CountyToDuchy).
+- **MainWindow title now uses localization**: the window title "Paradox Mod IDE v.1.4.13" is now loaded from the language resource dictionaries via `{DynamicResource MainWindow_Title}`.
+
+---
+
 ## [1.4.5]
 
 ### Added

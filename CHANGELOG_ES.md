@@ -7,6 +7,15 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.13]
+
+### Added
+
+- **Ventana "Dividir condado" muestra las provincias seleccionadas con jerarquía**: al hacer clic en el botón "Dividir condado" ahora se abre una nueva ventana (`SplitCountyWindow`) listando cada provincia seleccionada con su ID, Baronía, Condado y título superior inmediato (ducado). Los datos se obtienen directamente de la jerarquía cargada en `MapLoader` (CountyToDuchy).
+- **El título de la ventana principal ahora usa localización**: el título "Paradox Mod IDE v.1.4.13" se carga desde los diccionarios de idioma mediante `{DynamicResource MainWindow_Title}`.
+
+---
+
 ## [1.4.5]
 
 ### Added

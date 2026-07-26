@@ -29,6 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.13</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -134,6 +135,15 @@
     <system:String x:Key="HistoryTab_ModeEdit">Modo Edición</system:String>
     <system:String x:Key="HistoryTab_ModeViewTooltip">Ir a modo Edición</system:String>
     <system:String x:Key="HistoryTab_ModeEditTooltip">Ir a modo Vistas</system:String>
+
+    <!-- SplitCountyWindow -->
+    <system:String x:Key="SplitCounty_Title">Dividir condado — {0}</system:String>
+    <system:String x:Key="SplitCounty_CountyCol">Condado</system:String>
+    <system:String x:Key="SplitCounty_ParentCol">Título superior</system:String>
+    <system:String x:Key="SplitCounty_BaronyCol">Baronía</system:String>
+    <system:String x:Key="SplitCounty_Close">Cerrar</system:String>
+    <system:String x:Key="SplitCounty_NotFound">Condado {0} no encontrado en ningún fichero landed_titles.</system:String>
+    <system:String x:Key="SplitCounty_Error">Error al buscar el condado: {0}</system:String>
 
     <system:String x:Key="MapTerrain_Land">Tierra</system:String>
     <system:String x:Key="MapTerrain_Sea">Mar</system:String>
