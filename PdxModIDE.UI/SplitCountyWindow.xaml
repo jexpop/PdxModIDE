@@ -5,25 +5,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         Title="{DynamicResource SplitCounty_Title}"
-        Height="300" Width="700"
+        Height="520" Width="750"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
         Background="{DynamicResource WindowBackground}">
     <Grid Margin="15">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListView x:Name="CountyList" Grid.Row="0"
+        <TextBlock Grid.Row="0" Text="{Binding SourceFile, StringFormat='Source: {0}'}"
+                   Foreground="{DynamicResource DisabledForeground}"
+                   TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+        <ListView x:Name="CountyList" Grid.Row="1"
                   Background="{DynamicResource ListViewBackground}"
                   Foreground="{DynamicResource ListViewForeground}"
                   BorderBrush="{DynamicResource ControlBorder}"
                   BorderThickness="1">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Province ID" Width="100"
+                    <GridViewColumn Header="Province ID" Width="80"
                                     DisplayMemberBinding="{Binding ProvinceId}"/>
                     <GridViewColumn Header="{DynamicResource SplitCounty_BaronyCol}" Width="150"
                                     DisplayMemberBinding="{Binding BaronyKey}"/>
@@ -35,7 +41,53 @@
             </ListView.View>
         </ListView>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+        <GroupBox Grid.Row="2" Header="New title" Margin="0,10,0,0"
+                  Foreground="{DynamicResource WindowForeground}">
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Title key:" Margin="0,0,5,5"
+                           Foreground="{DynamicResource WindowForeground}" VerticalAlignment="Center"/>
+                <TextBox x:Name="TitleKeyBox" Grid.Row="0" Grid.Column="1" Margin="0,0,10,5"
+                         Background="{DynamicResource TextBoxBackground}"
+                         Foreground="{DynamicResource TextBoxForeground}"
+                         BorderBrush="{DynamicResource ControlBorder}"
+                         ToolTip="e.g. d_newduchy"/>
+
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="County key:" Margin="0,0,5,5"
+                           Foreground="{DynamicResource WindowForeground}" VerticalAlignment="Center"/>
+                <TextBox x:Name="CountyKeyBox" Grid.Row="0" Grid.Column="3" Margin="0,0,0,5"
+                         Background="{DynamicResource TextBoxBackground}"
+                         Foreground="{DynamicResource TextBoxForeground}"
+                         BorderBrush="{DynamicResource ControlBorder}"
+                         ToolTip="e.g. c_newcounty"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Capital:" Margin="0,0,5,5"
+                           Foreground="{DynamicResource WindowForeground}" VerticalAlignment="Center"/>
+                <ComboBox x:Name="CapitalCombo" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                          Margin="0,0,0,5"
+                          Background="{DynamicResource TextBoxBackground}"
+                          Foreground="{DynamicResource TextBoxForeground}"
+                          BorderBrush="{DynamicResource ControlBorder}"/>
+
+                <TextBlock x:Name="ValidationMsg" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+                           Foreground="#FFCC0000" Margin="0,3,0,0"/>
+            </Grid>
+        </GroupBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button x:Name="BtnExecute" Content="{DynamicResource SplitCounty_Execute}"
+                    Width="100" Margin="0,0,8,0" Click="BtnExecute_Click"/>
             <Button x:Name="BtnClose" Content="{DynamicResource SplitCounty_Close}"
                     Width="90" Click="BtnClose_Click"/>
         </StackPanel>

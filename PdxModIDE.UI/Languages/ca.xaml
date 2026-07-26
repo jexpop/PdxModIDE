@@ -144,6 +144,7 @@
     <system:String x:Key="SplitCounty_Close">Tancar</system:String>
     <system:String x:Key="SplitCounty_NotFound">Comtat {0} no trobat a cap fitxer landed_titles.</system:String>
     <system:String x:Key="SplitCounty_Error">Error en cercar el comtat: {0}</system:String>
+    <system:String x:Key="SplitCounty_Execute">Executar</system:String>
 
     <system:String x:Key="MapTerrain_Land">Terra</system:String>
     <system:String x:Key="MapTerrain_Sea">Mar</system:String>

@@ -144,6 +144,7 @@
     <system:String x:Key="SplitCounty_Close">Cerrar</system:String>
     <system:String x:Key="SplitCounty_NotFound">Condado {0} no encontrado en ningún fichero landed_titles.</system:String>
     <system:String x:Key="SplitCounty_Error">Error al buscar el condado: {0}</system:String>
+    <system:String x:Key="SplitCounty_Execute">Ejecutar</system:String>
 
     <system:String x:Key="MapTerrain_Land">Tierra</system:String>
     <system:String x:Key="MapTerrain_Sea">Mar</system:String>

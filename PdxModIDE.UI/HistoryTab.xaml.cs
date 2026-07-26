@@ -213,13 +213,111 @@ namespace PdxModIDE.UI
                 });
             }
 
-            if (entries.Count == 0) return;
+            if (entries.Count == 0 || commonCounty == null) return;
 
-            var window = new SplitCountyWindow(commonCounty ?? "-", entries)
+            string modRoot = ViewModel.CurrentProfile.ModRoot ?? "";
+            string gameRoot = ViewModel.CurrentProfile.GameRoot ?? "";
+
+            var (foundFile, searchCase) = FindCountyFile(commonCounty, modRoot, gameRoot);
+
+            if (foundFile == null)
+            {
+                string msg = string.Format(
+                    Res("SplitCounty_NotFound"),
+                    commonCounty);
+                System.Windows.MessageBox.Show(msg, "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var window = new SplitCountyWindow(commonCounty, entries, foundFile, modRoot, gameRoot, searchCase,
+                _mapLoader, commonCounty, commonParent ?? "-", _selectedProvinceIds)
             {
                 Owner = System.Windows.Application.Current.MainWindow
             };
-            window.ShowDialog();
+
+            if (window.ShowDialog() == true)
+            {
+                ReapplyActiveMode();
+            }
+        }
+
+        private (string? FilePath, SplitSearchCase Case) FindCountyFile(string countyKey, string modRoot, string gameRoot)
+        {
+            if (!string.IsNullOrEmpty(modRoot) && Directory.Exists(modRoot))
+            {
+                string modDir = Path.Combine(modRoot, "common", "landed_titles", "mod");
+                if (Directory.Exists(modDir))
+                {
+                    string? result = SearchInDirectory(modDir, countyKey);
+                    if (result != null) return (result, SplitSearchCase.FoundInMod);
+                }
+
+                string landedDir = Path.Combine(modRoot, "common", "landed_titles");
+                if (Directory.Exists(landedDir))
+                {
+                    string? result = SearchInDirectoryExcludingMod(landedDir, countyKey);
+                    if (result != null) return (result, SplitSearchCase.FoundInLandedTitles);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(gameRoot) && Directory.Exists(gameRoot))
+            {
+                string gameDir = Path.Combine(gameRoot, "common", "landed_titles");
+                if (Directory.Exists(gameDir))
+                {
+                    string? result = SearchInDirectory(gameDir, countyKey);
+                    if (result != null) return (result, SplitSearchCase.CopiedFromGame);
+                }
+            }
+
+            return (null, SplitSearchCase.FoundInLandedTitles);
+        }
+
+        private static string? SearchInDirectory(string dir, string countyKey)
+        {
+            try
+            {
+                foreach (string file in Directory.EnumerateFiles(dir, "*.txt", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        foreach (string line in File.ReadLines(file))
+                        {
+                            if (line.Trim().StartsWith(countyKey + " ="))
+                                return file;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        private static string? SearchInDirectoryExcludingMod(string dir, string countyKey)
+        {
+            try
+            {
+                foreach (string file in Directory.EnumerateFiles(dir, "*.txt", SearchOption.AllDirectories))
+                {
+                    string relative = file[dir.Length..].TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    if (relative.StartsWith("mod" + Path.DirectorySeparatorChar) ||
+                        relative.StartsWith("mod" + Path.AltDirectorySeparatorChar))
+                        continue;
+
+                    try
+                    {
+                        foreach (string line in File.ReadLines(file))
+                        {
+                            if (line.Trim().StartsWith(countyKey + " ="))
+                                return file;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return null;
         }
 
         private string GetImmediateParentTitle(string countyKey)
