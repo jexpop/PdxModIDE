@@ -29,6 +29,7 @@ namespace PdxModIDE.UI
         private readonly string _gameRoot = "";
         private readonly SplitSearchCase _searchCase;
         private readonly MapLoader _mapLoader = null!;
+        private string _targetDir = "";
         private readonly ObservableCollection<CountyEntry> _entries = null!;
         private readonly string _countyKey = "";
         private readonly string _parentTitle = "";
@@ -66,6 +67,30 @@ namespace PdxModIDE.UI
             CapitalCombo.DisplayMemberPath = "BaronyKey";
             if (entries.Count > 0)
                 CapitalCombo.SelectedIndex = 0;
+
+            switch (_searchCase)
+            {
+                case SplitSearchCase.FoundInMod:
+                    _targetDir = Path.GetDirectoryName(_sourceFilePath) ?? "";
+                    break;
+                case SplitSearchCase.FoundInLandedTitles:
+                    _targetDir = Path.Combine(_modRoot, "common", "landed_titles", "mod");
+                    break;
+                case SplitSearchCase.CopiedFromGame:
+                    _targetDir = Path.Combine(_modRoot, "common", "landed_titles", "mod");
+                    break;
+            }
+
+            string browseRoot = Path.Combine(_modRoot, "common", "landed_titles", "mod");
+            if (_targetDir.StartsWith(browseRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                string rel = _targetDir.Substring(browseRoot.Length).TrimStart('\\', '/');
+                TargetFolderBox.Text = string.IsNullOrEmpty(rel) ? "." : rel;
+            }
+            else
+            {
+                TargetFolderBox.Text = _targetDir;
+            }
 
             TitleKeyBox.Text = "";
             CountyKeyBox.Text = "";
@@ -155,22 +180,17 @@ namespace PdxModIDE.UI
                 splitBlocks = new List<string[]>();
             }
 
-            string targetDir = "";
-
             switch (_searchCase)
             {
                 case SplitSearchCase.FoundInMod:
-                    targetDir = Path.GetDirectoryName(_sourceFilePath) ?? "";
                     ProcessFile(_sourceFilePath, _countyKey, baronyKeys, newTitleKey, true);
                     break;
 
                 case SplitSearchCase.FoundInLandedTitles:
-                    targetDir = Path.Combine(_modRoot, "common", "landed_titles", "mod");
                     ProcessFile(_sourceFilePath, _countyKey, baronyKeys, newTitleKey, false);
                     break;
 
                 case SplitSearchCase.CopiedFromGame:
-                    targetDir = Path.Combine(_modRoot, "common", "landed_titles", "mod");
                     string copyDir = Path.Combine(_modRoot, "common", "landed_titles");
                     Directory.CreateDirectory(copyDir);
                     string copyPath = Path.Combine(copyDir, Path.GetFileName(_sourceFilePath));
@@ -182,8 +202,8 @@ namespace PdxModIDE.UI
                     return;
             }
 
-            Directory.CreateDirectory(targetDir);
-            string newFilePath = Path.Combine(targetDir, $"{newTitleKey}.txt");
+            Directory.CreateDirectory(_targetDir);
+            string newFilePath = Path.Combine(_targetDir, $"{newTitleKey}.txt");
             string newContent = BuildNewTitleFile(newTitleKey, newCountyKey, countyAttrs, splitBlocks);
             FileOperations.WriteTextFile(newFilePath, newContent);
 
@@ -330,6 +350,33 @@ namespace PdxModIDE.UI
             sb.AppendLine("\t}");
             sb.AppendLine("}");
             return sb.ToString();
+        }
+
+        private void BtnBrowseFolder_Click(object sender, RoutedEventArgs e)
+        {
+            string browseRoot = Path.Combine(_modRoot, "common", "landed_titles", "mod");
+            Directory.CreateDirectory(browseRoot);
+
+            using var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            dialog.Description = TryFindResource("SplitCounty_BrowseTitle") as string ?? "Select target folder";
+            dialog.SelectedPath = browseRoot;
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _targetDir = dialog.SelectedPath;
+                string rel = _targetDir;
+                if (rel.StartsWith(browseRoot, StringComparison.OrdinalIgnoreCase))
+                {
+                    rel = rel.Substring(browseRoot.Length).TrimStart('\\', '/');
+                    if (string.IsNullOrEmpty(rel)) rel = ".";
+                }
+                TargetFolderBox.Text = rel;
+            }
+        }
+
+        private string? TryFindResource(string key)
+        {
+            return System.Windows.Application.Current.TryFindResource(key) as string;
         }
 
         private void TryDeleteFileIfEmpty(string filePath)

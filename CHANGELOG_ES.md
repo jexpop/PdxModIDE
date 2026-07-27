@@ -19,6 +19,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 ### Cambiado
 
 - **Compilación libre de warnings**: la solución ahora compila con 0 warnings (antes 4).
+- **Selector de carpeta destino en ventana de división de condado**: se añadió un campo "Carpeta destino" con un botón Examinar que abre un selector de carpetas con raíz en `{ModRoot}/common/landed_titles/mod/`. El usuario puede elegir cualquier subdirectorio para escribir el nuevo archivo de títulos.
 
 ---
 

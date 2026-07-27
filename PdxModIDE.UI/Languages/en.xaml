@@ -147,6 +147,9 @@
     <system:String x:Key="SplitCounty_NotFound">County {0} not found in any landed_titles file.</system:String>
     <system:String x:Key="SplitCounty_Error">Error searching for county: {0}</system:String>
     <system:String x:Key="SplitCounty_Execute">Execute</system:String>
+    <system:String x:Key="SplitCounty_TargetFolder">Target folder:</system:String>
+    <system:String x:Key="SplitCounty_Browse">Browse…</system:String>
+    <system:String x:Key="SplitCounty_BrowseTitle">Select target folder for the new title file</system:String>
 
     <system:String x:Key="MapTerrain_Land">Land</system:String>
     <system:String x:Key="MapTerrain_Sea">Sea</system:String>

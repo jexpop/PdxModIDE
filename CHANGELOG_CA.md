@@ -19,6 +19,7 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 ### Canviat
 
 - **Compilació lliure de warnings**: la solució ara compila amb 0 warnings (abans 4).
+- **Selector de carpeta destí a la finestra de divisió de comtat**: s'ha afegit un camp "Carpeta destí" amb un botó d'Explorar que obre un selector de carpetes amb arrel a `{ModRoot}/common/landed_titles/mod/`. L'usuari pot triar qualsevol subdirectori per escriure el nou fitxer de títols.
 
 ---
 

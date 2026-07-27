@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         Title="{DynamicResource SplitCounty_Title}"
-        Height="520" Width="750"
+        Height="570" Width="750"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
@@ -54,6 +54,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Title key:" Margin="0,0,5,5"
@@ -82,6 +83,21 @@
 
                 <TextBlock x:Name="ValidationMsg" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
                            Foreground="#FFCC0000" Margin="0,3,0,0"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0"
+                           Text="{DynamicResource SplitCounty_TargetFolder}"
+                           Margin="0,5,5,0"
+                           Foreground="{DynamicResource WindowForeground}"
+                           VerticalAlignment="Center"/>
+                <TextBox x:Name="TargetFolderBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                         Margin="0,5,5,0" IsReadOnly="True" Height="22"
+                         Background="{DynamicResource TextBoxBackground}"
+                         Foreground="{DynamicResource TextBoxForeground}"
+                         BorderBrush="{DynamicResource ControlBorder}"/>
+                <Button x:Name="BtnBrowseFolder" Grid.Row="3" Grid.Column="3"
+                        Content="{DynamicResource SplitCounty_Browse}"
+                        Width="70" Height="22" Margin="0,5,0,0"
+                        Click="BtnBrowseFolder_Click"/>
             </Grid>
         </GroupBox>
 

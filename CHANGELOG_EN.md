@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Build warning-free**: solution now compiles with 0 warnings (down from 4).
+- **Target folder picker in Split County window**: added a "Target folder" field with a Browse button that opens a folder selector rooted at `{ModRoot}/common/landed_titles/mod/`. The user can choose any subdirectory to write the new title file.
 
 ---
 
