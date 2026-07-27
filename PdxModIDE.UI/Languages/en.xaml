@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.13</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.14</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -133,6 +133,8 @@
     <system:String x:Key="HistoryTab_SplitCounty">Split County</system:String>
     <system:String x:Key="HistoryTab_ModeView">Mode View</system:String>
     <system:String x:Key="HistoryTab_ModeEdit">Mode Edit</system:String>
+    <system:String x:Key="HistoryTab_ModeViewAction">Go to Edit Mode</system:String>
+    <system:String x:Key="HistoryTab_ModeEditAction">Go to View Mode</system:String>
     <system:String x:Key="HistoryTab_ModeViewTooltip">Go to Edit mode</system:String>
     <system:String x:Key="HistoryTab_ModeEditTooltip">Go to View mode</system:String>
 

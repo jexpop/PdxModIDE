@@ -1,4 +1,5 @@
 <UserControl x:Class="PdxModIDE.UI.HistoryTab"
+             IsVisibleChanged="OnIsVisibleChanged"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -94,7 +95,7 @@
                     <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
                               Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"/>
                 </StackPanel>
-                <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeView}" Width="100" Height="26"
+                <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeViewAction}" Width="140" Height="26"
                         Margin="10,0,0,0" Click="ModeToggleButton_Click"
                         ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>
                 <Button x:Name="SplitCountyButton" Content="{DynamicResource HistoryTab_SplitCounty}" Width="120" Height="26"

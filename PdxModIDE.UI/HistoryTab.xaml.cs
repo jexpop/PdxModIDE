@@ -109,8 +109,8 @@ namespace PdxModIDE.UI
             if (!modActive && _editMode)
             {
                 _editMode = false;
-                ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeView");
-                ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeViewTooltip");
+                ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeViewAction");
+                ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeView");
             }
 
             ModeToggleButton.IsEnabled = modActive;
@@ -142,6 +142,54 @@ namespace PdxModIDE.UI
                 ShowNamesCheck.Visibility = Visibility.Visible;
             }
             UpdateSplitCountyButtonVisibility();
+        }
+
+        private void UpdateModeStatusLabel()
+        {
+            var mw = Window.GetWindow(this) as MainWindow;
+
+            bool baseOn = BaseSourceCheck?.IsChecked == true;
+            bool modOn = ModSourceCheck?.IsChecked == true;
+
+            if (!baseOn && !modOn)
+            {
+                if (mw != null) mw.ModeStatusText = "";
+                return;
+            }
+
+            string modeText = _editMode
+                ? (System.Windows.Application.Current.TryFindResource("HistoryTab_ModeEdit") as string ?? "Mode Edit")
+                : (System.Windows.Application.Current.TryFindResource("HistoryTab_ModeView") as string ?? "Mode View");
+
+            string hierarchyText = "";
+            if (!_editMode)
+            {
+                if (HolderModeCheck?.IsChecked == true)
+                    hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_HolderMode") as string ?? "";
+                else if (CountyModeCheck?.IsChecked == true)
+                    hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_CountyMode") as string ?? "";
+                else if (DuchyModeCheck?.IsChecked == true)
+                    hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_DuchyMode") as string ?? "";
+                else if (KingdomModeCheck?.IsChecked == true)
+                    hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_KingdomMode") as string ?? "";
+                else if (EmpireModeCheck?.IsChecked == true)
+                    hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_EmpireMode") as string ?? "";
+            }
+
+            string sourceText = "";
+            if (baseOn && modOn)
+                sourceText = "B+M";
+            else if (baseOn)
+                sourceText = System.Windows.Application.Current.TryFindResource("HistoryTab_Base") as string ?? "";
+            else if (modOn)
+                sourceText = System.Windows.Application.Current.TryFindResource("HistoryTab_Mod") as string ?? "";
+
+            var parts = new List<string> { modeText };
+            if (hierarchyText.Length > 0) parts.Add(hierarchyText);
+            if (sourceText.Length > 0) parts.Add(sourceText);
+
+            if (mw != null)
+                mw.ModeStatusText = string.Join(" · ", parts);
         }
 
         private void UpdateSplitCountyButtonVisibility()
@@ -237,6 +285,8 @@ namespace PdxModIDE.UI
 
             if (window.ShowDialog() == true)
             {
+                if (!string.IsNullOrEmpty(modRoot))
+                    _mapLoader.LoadModLandedTitles(modRoot);
                 ReapplyActiveMode();
             }
         }
@@ -333,15 +383,16 @@ namespace PdxModIDE.UI
             _editMode = !_editMode;
             if (_editMode)
             {
-                ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeEdit");
-                ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeEditTooltip");
+                ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeEditAction");
+                ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeEdit");
             }
             else
             {
-                ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeView");
-                ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeViewTooltip");
+                ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeViewAction");
+                ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeView");
             }
             UpdateEditModeState();
+            UpdateModeStatusLabel();
             if (!_editMode && (HolderModeCheck.IsChecked == true || CountyModeCheck.IsChecked == true ||
                      DuchyModeCheck.IsChecked == true || KingdomModeCheck.IsChecked == true ||
                      EmpireModeCheck.IsChecked == true))
@@ -352,8 +403,13 @@ namespace PdxModIDE.UI
 
         private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if ((bool)e.NewValue && !_mapLoaded)
-                TryAutoLoad();
+            if ((bool)e.NewValue)
+            {
+                if (!_mapLoaded)
+                    TryAutoLoad();
+                else
+                    UpdateModeStatusLabel();
+            }
         }
 
         private void OnMapSizeChanged(object sender, SizeChangedEventArgs e)
@@ -380,6 +436,7 @@ namespace PdxModIDE.UI
                     BuildTitleLabels();
                     InvalidateRender();
                 }
+                UpdateModeStatusLabel();
             }
         }
 
@@ -503,6 +560,7 @@ namespace PdxModIDE.UI
                         if (HasActiveSource())
                             ReapplyActiveMode();
                         QueueRender();
+                        UpdateModeStatusLabel();
                     }
                 }), System.Windows.Threading.DispatcherPriority.Render);
             }
@@ -825,6 +883,7 @@ namespace PdxModIDE.UI
             _titleLabels = null;
             ReapplyActiveMode();
             UpdateSplitCountyButtonVisibility();
+            UpdateModeStatusLabel();
         }
 
         private void ReapplyActiveMode()
@@ -862,6 +921,7 @@ namespace PdxModIDE.UI
                 _titleLabels = null;
                 InvalidateRender();
             }
+            UpdateModeStatusLabel();
         }
 
         private void CountyModeChanged(object sender, RoutedEventArgs e)
@@ -886,6 +946,7 @@ namespace PdxModIDE.UI
                 InvalidateRender();
                 UpdateSplitCountyButtonVisibility();
             }
+            UpdateModeStatusLabel();
         }
 
         private void DuchyModeChanged(object sender, RoutedEventArgs e)
@@ -908,6 +969,7 @@ namespace PdxModIDE.UI
                 _titleLabels = null;
                 InvalidateRender();
             }
+            UpdateModeStatusLabel();
         }
 
         private void KingdomModeChanged(object sender, RoutedEventArgs e)
@@ -930,6 +992,7 @@ namespace PdxModIDE.UI
                 _titleLabels = null;
                 InvalidateRender();
             }
+            UpdateModeStatusLabel();
         }
 
         private void EmpireModeChanged(object sender, RoutedEventArgs e)
@@ -952,6 +1015,7 @@ namespace PdxModIDE.UI
                 InvalidateRender();
                 _titleLabels = null;
             }
+            UpdateModeStatusLabel();
         }
 
         private void ShowNamesChanged(object sender, RoutedEventArgs e)

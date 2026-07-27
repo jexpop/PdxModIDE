@@ -7,11 +7,30 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.14]
+
+### Añadido
+
+- **Indicador de estado de modo**: una etiqueta centrada en la parte superior de la ventana principal muestra el modo actual (Vistas/Edición), el nivel de jerarquía activo (Condado, Ducado, etc.) y la fuente (Base/Mod). Se oculta cuando la pestaña Mapa no está activa o no hay fuente seleccionada.
+
+### Cambiado
+
+- **Botón "Modo Vistas" / "Modo Edición" renombrado para mostrar la acción**: el botón de alternancia ahora muestra "Ir a Modo Edición" / "Ir a Modo Vistas" en lugar del nombre del modo actual. Ancho aumentado a 140px. El Tooltip ahora muestra el nombre del modo actual.
+- **División de condado preserva datos completos de baronías y condado**: los bloques de baronías ahora se analizan con seguimiento de profundidad de llaves. El nuevo archivo de título incluye los bloques completos de baronías originales (atributos como `color`, `cultural_names`, etc.) y los atributos del condado. Los atributos del condado original (excepto `capital`) se trasladan al nuevo condado.
+- **Comentarios `##MOD_DEL` limpios**: sin indentación preservada antes de los marcadores `##MOD_DEL`. Las líneas vacías o de solo espacios dentro de bloques comentados se mantienen sin el prefijo.
+
+### Corregido
+
+- **El mapa se actualiza inmediatamente después de dividir**: se llama a `MapLoader.LoadModLandedTitles` tras una división exitosa para que los diccionarios de jerarquía reflejen los cambios. No es necesario reiniciar la aplicación.
+- **La integración de la jerarquía del mapa se actualiza en tiempo real**: al cambiar de pestaña y volver a la pestaña Mapa se restaura la etiqueta de estado del modo.
+
+---
+
 ## [1.4.13]
 
 ### Added
 
-- **Ventana "Dividir condado" muestra las provincias seleccionadas con jerarquía**: al hacer clic en el botón "Dividir condado" ahora se abre una nueva ventana (`SplitCountyWindow`) listando cada provincia seleccionada con su ID, Baronía, Condado y título superior inmediato (ducado). Los datos se obtienen directamente de la jerarquía cargada en `MapLoader` (CountyToDuchy).
+- **Ventana de división de condado muestra las provincias seleccionadas con jerarquía**: al hacer clic en el botón "Dividir condado" se abre una nueva ventana (`SplitCountyWindow`) que lista cada provincia seleccionada con su ID, Barony, County y título superior inmediato (ducado). Los datos se obtienen directamente de la jerarquía cargada de `MapLoader` (CountyToDuchy).
 - **El título de la ventana principal ahora usa localización**: el título "Paradox Mod IDE v.1.4.13" se carga desde los diccionarios de idioma mediante `{DynamicResource MainWindow_Title}`.
 
 ---

@@ -70,6 +70,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <Label x:Name="ModeStatusLabel" Grid.Row="0"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               FontSize="12" Foreground="Gray"
+               Visibility="Collapsed"/>
         <Button x:Name="BtnGeneralSettings" Grid.Row="0"
                 Content="&#9881;"
                 FontSize="16"
@@ -80,7 +84,8 @@
                 ToolTip="{DynamicResource MainWindow_Tooltip_GeneralSettings}"
                 Click="BtnGeneralSettings_Click"/>
 
-        <TabControl Grid.Row="1" Margin="10" Background="{DynamicResource TabSelectedBackground}">
+        <TabControl x:Name="MainTabControl" Grid.Row="1" Margin="10" Background="{DynamicResource TabSelectedBackground}"
+                     SelectionChanged="MainTabControl_SelectionChanged">
             <TabItem Header="{DynamicResource MainWindow_Tab_Profile}">
                 <local:ProfileTab/>
             </TabItem>

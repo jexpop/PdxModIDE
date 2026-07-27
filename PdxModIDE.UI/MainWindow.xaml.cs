@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using PdxModIDE.Project;
 using PdxModIDE.UI.ViewModels;
 
@@ -8,6 +9,16 @@ namespace PdxModIDE.UI
     {
         private readonly IProjectService _projectService;
         public MainViewModel ViewModel { get; }
+
+        public string ModeStatusText
+        {
+            get => ModeStatusLabel.Content as string ?? "";
+            set
+            {
+                ModeStatusLabel.Content = value;
+                ModeStatusLabel.Visibility = string.IsNullOrEmpty(value) ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
 
         public MainWindow()
         {
@@ -155,6 +166,13 @@ namespace PdxModIDE.UI
                 DataContext = ViewModel
             };
             window.ShowDialog();
+        }
+
+        private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (MainTabControl.SelectedItem is TabItem tab && tab.Content is HistoryTab)
+                return;
+            ModeStatusText = "";
         }
     }
 }

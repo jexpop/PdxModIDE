@@ -7,11 +7,30 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.14]
+
+### Afegit
+
+- **Indicador d'estat de mode**: una etiqueta centrada a la part superior de la finestra principal mostra el mode actual (Vistes/Edició), el nivell de jerarquia actiu (Comtat, Ducat, etc.) i la font (Base/Mod). S'amaga quan la pestanya Mapa no està activa o no hi ha font seleccionada.
+
+### Canviat
+
+- **Botó "Mode Vistes" / "Mode Edició" renombrat per mostrar l'acció**: el botó de commutació ara mostra "Anar a Mode Edició" / "Anar a Mode Vistes" en lloc del nom del mode actual. Ampliat a 140px. El Tooltip ara mostra el nom del mode actual.
+- **Divisió de comtat preserva dades completes de baronies i comtat**: els blocs de baronies ara s'analitzen amb seguiment de profunditat de claus. El nou fitxer de títol inclou els blocs complets de baronies originals (atributs com `color`, `cultural_names`, etc.) i els atributs del comtat. Els atributs del comtat original (excepte `capital`) es traslladen al nou comtat.
+- **Comentaris `##MOD_DEL` nets**: sense indentació preservada abans dels marcadors `##MOD_DEL`. Les línies buides o de només espais dins de blocs comentats es mantenen sense el prefix.
+
+### Corregit
+
+- **El mapa s'actualitza immediatament després de dividir**: es crida a `MapLoader.LoadModLandedTitles` després d'una divisió exitosa perquè els diccionaris de jerarquia reflecteixin els canvis. No cal reiniciar l'aplicació.
+- **La integració de la jerarquia del mapa s'actualitza en temps real**: en canviar de pestanya i tornar a la pestanya Mapa es restaura l'etiqueta d'estat del mode.
+
+---
+
 ## [1.4.13]
 
 ### Added
 
-- **Finestra "Dividir comtat" mostra les províncies seleccionades amb jerarquia**: en fer clic al botó "Dividir comtat" ara s'obre una nova finestra (`SplitCountyWindow`) llistant cada província seleccionada amb el seu ID, Baronia, Comtat i títol superior immediat (ducat). Les dades s'obtenen directament de la jerarquia carregada a `MapLoader` (CountyToDuchy).
+- **Finestra de divisió de comtat mostra les províncies seleccionades amb jerarquia**: en fer clic al botó "Dividir comtat" s'obre una nova finestra (`SplitCountyWindow`) que llista cada província seleccionada amb el seu ID, Barony, County i títol superior immediat (ducat). Les dades s'obtenen directament de la jerarquia carregada de `MapLoader` (CountyToDuchy).
 - **El títol de la finestra principal ara usa localització**: el títol "Paradox Mod IDE v.1.4.13" es carrega des dels diccionaris d'idioma mitjançant `{DynamicResource MainWindow_Title}`.
 
 ---

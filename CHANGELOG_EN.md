@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.14]
+
+### Added
+
+- **Mode status indicator**: a centered label at the top of the main window shows the current mode (View/Edit), active hierarchy level (County, Duchy, etc.), and source (Base/Mod). Hidden when the Map tab is not active or no source is selected.
+
+### Changed
+
+- **"Mode View" / "Mode Edit" button renamed to show action**: the toggle button now displays "Go to Edit Mode" / "Go to View Mode" instead of the current mode name. Widened to 140px. Tooltip now shows the current mode name.
+- **Split county preserves full barony and county data**: barony blocks are now parsed with proper brace-depth tracking. The new title file includes the full original barony blocks (attributes like `color`, `cultural_names`, etc.) and county-level attributes. The original county's attributes (except `capital`) are carried over to the new county.
+- **`##MOD_DEL` comments cleaned**: no indentation preserved before `##MOD_DEL` markers. Empty/whitespace lines inside commented blocks are kept as-is without the prefix.
+
+### Fixed
+
+- **Map updates immediately after split**: `MapLoader.LoadModLandedTitles` is called after a successful split so the title hierarchy dictionaries reflect the changes. No application restart needed.
+- **Map hierarchy integration is now updated in real time**: switching tabs and returning to the Map tab restores the mode status label.
+
+---
+
 ## [1.4.13]
 
 ### Added

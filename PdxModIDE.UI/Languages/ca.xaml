@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.13</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.14</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -133,6 +133,8 @@
     <system:String x:Key="HistoryTab_SplitCounty">Dividir comtat</system:String>
     <system:String x:Key="HistoryTab_ModeView">Mode Vista</system:String>
     <system:String x:Key="HistoryTab_ModeEdit">Mode Edició</system:String>
+    <system:String x:Key="HistoryTab_ModeViewAction">Anar a mode Edició</system:String>
+    <system:String x:Key="HistoryTab_ModeEditAction">Anar a mode Vista</system:String>
     <system:String x:Key="HistoryTab_ModeViewTooltip">Anar a mode Edició</system:String>
     <system:String x:Key="HistoryTab_ModeEditTooltip">Anar a mode Vista</system:String>
 
