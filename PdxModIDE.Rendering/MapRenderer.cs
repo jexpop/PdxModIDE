@@ -22,8 +22,6 @@ namespace PdxModIDE.Rendering
         private int _lastHighlight = -2;
         private bool _holderMode;
         private bool _allowShaderOverlay = true;
-        private int _lastHolderYear = -1;
-
         private float _zoom = 1.0f;
         private float _offsetX;
         private float _offsetY;

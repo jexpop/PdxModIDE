@@ -612,7 +612,7 @@ namespace PdxModIDE.MapEngine
             return BuildCountyLut(0, null, out indexToCounty);
         }
 
-        public byte[] BuildCountyLut(int year, TitleHistoryLoader history, out Dictionary<int, string> indexToCounty)
+        public byte[] BuildCountyLut(int year, TitleHistoryLoader? history, out Dictionary<int, string> indexToCounty)
         {
             indexToCounty = new Dictionary<int, string>();
             var countyToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

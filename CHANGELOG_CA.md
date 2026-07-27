@@ -7,6 +7,21 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.15]
+
+### Corregit
+
+- **CS8625 — null passat a paràmetre no-nullable a `BuildCountyLut`**: es va canviar el paràmetre `TitleHistoryLoader history` a nullable `TitleHistoryLoader?` per permetre el null intencionat.
+- **CS0414 — camp `_lastHolderYear` sense usar a `MapRenderer`**: es va eliminar el camp que s'assignava però mai es llegia.
+- **CS8602 — possible desreferència null de `BaseSourceCheck`/`ModSourceCheck`**: es va afegir operador null-forgiving (`!`) en referències a controls WPF garantits per XAML.
+- **CS8604 — possible argument null a `HashSet<string>.Contains`**: es va afegir guarda explícita `prov.Type == null` abans de cridar a `Contains`.
+
+### Canviat
+
+- **Compilació lliure de warnings**: la solució ara compila amb 0 warnings (abans 4).
+
+---
+
 ## [1.4.14]
 
 ### Afegit

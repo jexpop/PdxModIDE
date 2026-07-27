@@ -119,8 +119,8 @@ namespace PdxModIDE.UI
             {
                 if (BaseSourceCheck?.IsChecked == true && ModSourceCheck?.IsChecked == true)
                     BaseSourceCheck.IsChecked = false;
-                BaseSourceCheck.Visibility = Visibility.Collapsed;
-                ModSourceCheck.Visibility = Visibility.Collapsed;
+                BaseSourceCheck!.Visibility = Visibility.Collapsed;
+                ModSourceCheck!.Visibility = Visibility.Collapsed;
                 TitleModePanel.Visibility = Visibility.Visible;
                 HolderModeCheck.Visibility = Visibility.Collapsed;
                 CountyModeCheck.Visibility = Visibility.Collapsed;
@@ -131,8 +131,8 @@ namespace PdxModIDE.UI
             }
             else
             {
-                BaseSourceCheck.Visibility = Visibility.Visible;
-                ModSourceCheck.Visibility = Visibility.Visible;
+                BaseSourceCheck!.Visibility = Visibility.Visible;
+                ModSourceCheck!.Visibility = Visibility.Visible;
                 TitleModePanel.Visibility = HasActiveSource() ? Visibility.Visible : Visibility.Collapsed;
                 HolderModeCheck.Visibility = Visibility.Visible;
                 CountyModeCheck.Visibility = Visibility.Visible;
@@ -1478,7 +1478,7 @@ namespace PdxModIDE.UI
                     if (pid <= 0) continue;
 
                     var prov = _mapLoader.GetProvinceFromId(pid);
-                    if (prov == null || !landTypes.Contains(prov.Type))
+                    if (prov == null || prov.Type == null || !landTypes.Contains(prov.Type))
                         continue;
 
                     if (!sumX.ContainsKey(pid))

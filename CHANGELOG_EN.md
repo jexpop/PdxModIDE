@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.15]
+
+### Fixed
+
+- **CS8625 — null passed to non-nullable parameter in `BuildCountyLut`**: changed `TitleHistoryLoader history` parameter to nullable `TitleHistoryLoader?` to allow the intentional null sentinel.
+- **CS0414 — unused field `_lastHolderYear` in `MapRenderer`**: removed the field that was assigned but never read.
+- **CS8602 — possible null dereference of `BaseSourceCheck`/`ModSourceCheck`**: added null-forgiving operator (`!`) on WPF control references guaranteed to be initialized by XAML.
+- **CS8604 — possible null argument to `HashSet<string>.Contains`**: added explicit `prov.Type == null` guard before calling `Contains` on the land types set.
+
+### Changed
+
+- **Build warning-free**: solution now compiles with 0 warnings (down from 4).
+
+---
+
 ## [1.4.14]
 
 ### Added
