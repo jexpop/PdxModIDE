@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`##MOD_DEL` comments simplified**: the prefix no longer includes the new title key. Each commented line now starts with `##MOD_DEL ` followed only by the original line content.
 - **New title file includes parent references**: the new title file now shows the original parent title as a comment (`#`) next to the new title header, and the original county key as a comment next to the new county header.
 
+### Fixed
+
+- **Split County no longer overwrites existing title files**: when the target title file (`d_xxx.txt` etc.) already exists in the mod directory, the new county is now appended inside the existing file instead of overwriting it.
+- **Duplicate county detection in Split County**: the application now checks whether the new county key (`c_xxx`) already exists in any `.txt` file under the mod's `common/landed_titles/` directory, ignoring lines commented with `##MOD_DEL`. If the existing block is active, the operation is aborted with an error. If the block is dead (all content is `##MOD_DEL`), the operation proceeds and the dead block is marked with `##MOD_DEL`.
+- **Title-level duplicate detection in Split County**: the application now checks whether the new title file (`d_xxx.txt` etc.) already exists in `common/landed_titles/`. If the file contains active content, the operation is aborted. If all its content is `##MOD_DEL`, it is allowed and the empty block is marked.
+- **Empty original county cleanup**: after a split, if the original county is left with no active baronies, the entire county block is marked with `##MOD_DEL`.
+- **Allow split when county/title key matches origin**: `KeyExists` is bypassed when the new county key matches the original (`newCountyKey == _countyKey`) and `WouldBlockRemainActive` confirms the original would be empty. Same for the title key when it matches the parent (`newTitleKey == _parentTitle`), where the new county is appended to the existing parent block in the source file instead of creating a mod override file.
+- **`WouldBlockRemainActive` without file path restriction**: the check now runs regardless of which file `FindBlockInLandedTitles` found the block in.
+- **`##MOD_DEL` lines filtered in new county files**: lines starting with `##MOD_DEL` from the original county's attributes are no longer copied into the newly created county file.
+- **Original county marked with `##MOD_DEL` in CopiedFromGame same-origin split**: when splitting a game-origin county with the same county key, the original county block is now properly marked as dead in the mod copy.
+
 ---
 
 ## [1.4.15]

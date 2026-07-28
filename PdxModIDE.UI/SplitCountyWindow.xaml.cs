@@ -106,10 +106,17 @@ namespace PdxModIDE.UI
             }
         }
 
+        private string? _countyMarkPath;
+        private string? _titleMarkPath;
+        private bool _needsCountyMark;
+
         private void BtnExecute_Click(object sender, RoutedEventArgs e)
         {
             string newTitleKey = TitleKeyBox.Text.Trim();
             string newCountyKey = CountyKeyBox.Text.Trim();
+            _countyMarkPath = null;
+            _titleMarkPath = null;
+            _needsCountyMark = false;
 
             if (string.IsNullOrEmpty(newTitleKey) || string.IsNullOrEmpty(newCountyKey))
             {
@@ -131,10 +138,62 @@ namespace PdxModIDE.UI
                 return;
             }
 
-            if (KeyExists(newTitleKey) || KeyExists(newCountyKey))
+            if (KeyExists(newTitleKey) && newTitleKey != _parentTitle)
             {
                 ValidationMsg.Text = "Key already exists in the game hierarchy.";
                 return;
+            }
+
+            if (KeyExists(newCountyKey) && newCountyKey != _countyKey)
+            {
+                ValidationMsg.Text = "Key already exists in the game hierarchy.";
+                return;
+            }
+
+            bool isSameOrigin = newCountyKey == _countyKey;
+            var splitBaronyKeys = new HashSet<string>(_entries.Select(e => e.BaronyKey));
+
+            var countyInfo = FindBlockInLandedTitles(newCountyKey);
+            if (countyInfo != null)
+            {
+                bool willBeEmpty = false;
+                if (isSameOrigin)
+                    willBeEmpty = !WouldBlockRemainActive(_sourceFilePath, _countyKey, splitBaronyKeys);
+
+                if (countyInfo.Value.isActive && !willBeEmpty)
+                {
+                    string msg = string.Format(
+                        TryFindResource("SplitCounty_CountyExists") ?? "County {0} already exists in mod's landed_titles.",
+                        newCountyKey);
+                    ValidationMsg.Text = msg;
+                    return;
+                }
+                if (!countyInfo.Value.isActive || willBeEmpty)
+                    _countyMarkPath = countyInfo.Value.filePath;
+            }
+            else if (isSameOrigin)
+            {
+                bool willBeEmpty = !WouldBlockRemainActive(_sourceFilePath, _countyKey, splitBaronyKeys);
+                if (!willBeEmpty)
+                {
+                    string msg = string.Format(
+                        TryFindResource("SplitCounty_CountyExists") ?? "County {0} already exists in mod's landed_titles.",
+                        newCountyKey);
+                    ValidationMsg.Text = msg;
+                    return;
+                }
+                _needsCountyMark = true;
+            }
+
+            var titleInfo = FindTitleInLandedTitles(newTitleKey);
+            if (titleInfo != null)
+            {
+                if (titleInfo.Value.isActive)
+                {
+                    ValidationMsg.Text = $"Title {newTitleKey} already exists with active content in common/landed_titles.";
+                    return;
+                }
+                _titleMarkPath = titleInfo.Value.filePath;
             }
 
             if (CapitalCombo.SelectedItem == null)
@@ -190,6 +249,8 @@ namespace PdxModIDE.UI
                 splitBlocks = new List<string[]>();
             }
 
+            string sourceWritePath = _sourceFilePath;
+
             switch (_searchCase)
             {
                 case SplitSearchCase.FoundInMod:
@@ -206,19 +267,221 @@ namespace PdxModIDE.UI
                     string copyPath = Path.Combine(copyDir, Path.GetFileName(_sourceFilePath));
                     FileOperations.CopyFile(_sourceFilePath, copyPath);
                     ProcessFile(copyPath, _countyKey, baronyKeys, newTitleKey, false);
+                    sourceWritePath = copyPath;
                     break;
 
                 default:
                     return;
             }
 
-            Directory.CreateDirectory(_targetDir);
-            string newFilePath = Path.Combine(_targetDir, $"{newTitleKey}.txt");
-            string newContent = BuildNewTitleFile(newTitleKey, newCountyKey, countyAttrs, splitBlocks);
-            FileOperations.WriteTextFile(newFilePath, newContent);
+            if (_countyMarkPath != null)
+                MarkBlockWithModDel(_countyMarkPath, newCountyKey);
+            else if (_needsCountyMark)
+                MarkBlockWithModDel(sourceWritePath, _countyKey);
+
+            if (_titleMarkPath != null)
+                MarkBlockWithModDel(_titleMarkPath, newTitleKey);
+
+            string countyBlock = BuildCountyBlock(newCountyKey, countyAttrs, splitBlocks);
+
+            if (newTitleKey == _parentTitle)
+            {
+                AppendCountyToExistingFile(sourceWritePath, _parentTitle, countyBlock);
+            }
+            else
+            {
+                Directory.CreateDirectory(_targetDir);
+                string newFilePath = Path.Combine(_targetDir, $"{newTitleKey}.txt");
+
+                if (File.Exists(newFilePath))
+                    AppendCountyToExistingFile(newFilePath, newTitleKey, countyBlock);
+                else
+                {
+                    string newContent = BuildNewTitleFile(newTitleKey, newCountyKey, countyAttrs, splitBlocks);
+                    FileOperations.WriteTextFile(newFilePath, newContent);
+                }
+            }
 
             if (_searchCase == SplitSearchCase.FoundInMod || _searchCase == SplitSearchCase.FoundInLandedTitles)
-                TryDeleteFileIfEmpty(_sourceFilePath);
+            {
+                TryDeleteFileIfEmpty(sourceWritePath);
+                TryMarkCountyEmpty(sourceWritePath, _countyKey);
+            }
+        }
+
+        private (string filePath, bool isActive)? FindBlockInLandedTitles(string key)
+        {
+            string landedDir = Path.Combine(_modRoot, "common", "landed_titles");
+            if (!Directory.Exists(landedDir)) return null;
+
+            foreach (string file in Directory.EnumerateFiles(landedDir, "*.txt", SearchOption.AllDirectories))
+            {
+                var lines = File.ReadAllLines(file);
+                int bi = FindBlockStart(lines.ToList(), key);
+                if (bi < 0) continue;
+
+                int be = FindBlockEnd(lines.ToList(), bi);
+                bool isActive = false;
+                for (int i = bi + 1; i < be; i++)
+                {
+                    string trimmed = lines[i].TrimStart();
+                    if (trimmed.StartsWith("##MOD_DEL")) continue;
+                    var m = TitleRegex.Match(trimmed);
+                    if (m.Success)
+                    {
+                        isActive = true;
+                        break;
+                    }
+                }
+                return (file, isActive);
+            }
+            return null;
+        }
+
+        private (string filePath, bool isActive)? FindTitleInLandedTitles(string titleKey)
+        {
+            string landedDir = Path.Combine(_modRoot, "common", "landed_titles");
+            if (!Directory.Exists(landedDir)) return null;
+
+            string modDir = Path.Combine(landedDir, "mod");
+            string targetFileName = $"{titleKey}.txt";
+
+            foreach (string file in Directory.EnumerateFiles(landedDir, "*.txt", SearchOption.AllDirectories))
+            {
+                string dir = Path.GetDirectoryName(file) ?? "";
+                if (dir.StartsWith(modDir, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (Path.GetFileName(file).Equals(targetFileName, StringComparison.OrdinalIgnoreCase))
+                {
+                    var lines = File.ReadAllLines(file);
+                    int ti = FindBlockStart(lines.ToList(), titleKey);
+                    if (ti < 0) continue;
+
+                    int te = FindBlockEnd(lines.ToList(), ti);
+                    bool isActive = false;
+                    for (int i = ti + 1; i < te; i++)
+                    {
+                        string trimmed = lines[i].TrimStart();
+                        if (trimmed.StartsWith("##MOD_DEL")) continue;
+                        var m = TitleRegex.Match(trimmed);
+                        if (m.Success)
+                        {
+                            isActive = true;
+                            break;
+                        }
+                    }
+                    return (file, isActive);
+                }
+            }
+            return null;
+        }
+
+        private static void MarkBlockWithModDel(string filePath, string blockKey)
+        {
+            var lines = File.ReadAllLines(filePath, Encoding.UTF8).ToList();
+            int bi = FindBlockStart(lines, blockKey);
+            if (bi < 0) return;
+            int be = FindBlockEnd(lines, bi);
+
+            for (int i = bi; i <= be; i++)
+            {
+                string trimmed = lines[i].TrimStart();
+                if (!trimmed.StartsWith("##MOD_DEL"))
+                    lines[i] = "##MOD_DEL " + lines[i];
+            }
+
+            File.WriteAllText(filePath, string.Join(Environment.NewLine, lines), Encoding.UTF8);
+        }
+
+        private static bool WouldBlockRemainActive(string filePath, string blockKey, HashSet<string> excludeBaronyKeys)
+        {
+            var lines = File.ReadAllLines(filePath, Encoding.UTF8).ToList();
+            int bi = FindBlockStart(lines, blockKey);
+            if (bi < 0) return false;
+            int be = FindBlockEnd(lines, bi);
+
+            for (int i = bi + 1; i < be; i++)
+            {
+                string trimmed = lines[i].TrimStart();
+                if (trimmed.StartsWith("##MOD_DEL")) continue;
+                var m = TitleRegex.Match(trimmed);
+                if (m.Success && m.Groups[1].Value.StartsWith("b_") && !excludeBaronyKeys.Contains(m.Groups[1].Value))
+                    return true;
+            }
+            return false;
+        }
+
+        private void TryMarkCountyEmpty(string filePath, string countyKey)
+        {
+            var lines = File.ReadAllLines(filePath, Encoding.UTF8).ToList();
+            int ci = FindBlockStart(lines, countyKey);
+            if (ci < 0) return;
+            int ce = FindBlockEnd(lines, ci);
+
+            bool hasActive = false;
+            for (int i = ci + 1; i < ce; i++)
+            {
+                string trimmed = lines[i].TrimStart();
+                if (trimmed.StartsWith("##MOD_DEL")) continue;
+                var m = TitleRegex.Match(trimmed);
+                if (m.Success && m.Groups[1].Value.StartsWith("b_"))
+                {
+                    hasActive = true;
+                    break;
+                }
+            }
+
+            if (!hasActive)
+                MarkBlockWithModDel(filePath, countyKey);
+        }
+
+        private string BuildCountyBlock(string newCountyKey, List<string> countyAttrs, List<string[]> splitBlocks)
+        {
+            var capEntry = CapitalCombo.SelectedItem as CountyEntry;
+            int capitalId = capEntry != null ? int.Parse(capEntry.ProvinceId) : int.Parse(_entries[0].ProvinceId);
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"\t{newCountyKey} = {{ #{_countyKey}");
+            sb.AppendLine($"\t\tcapital = {capitalId}");
+
+            foreach (var attr in countyAttrs)
+            {
+                string t = attr.TrimStart();
+                if ((t.StartsWith("capital") && !t.StartsWith("capital_")) || t.Length == 0 || t.StartsWith("##MOD_DEL"))
+                    continue;
+                sb.AppendLine($"\t\t{t}");
+            }
+
+            foreach (var block in splitBlocks)
+            {
+                for (int i = 0; i < block.Length; i++)
+                {
+                    string t = block[i].TrimStart();
+                    sb.AppendLine(i == 0 || i == block.Length - 1 ? $"\t\t{t}" : $"\t\t\t{t}");
+                }
+            }
+
+            if (splitBlocks.Count == 0)
+                sb.AppendLine("\t\tplaceholder = 0");
+
+            sb.AppendLine("\t}");
+            return sb.ToString();
+        }
+
+        private static void AppendCountyToExistingFile(string filePath, string titleKey, string countyBlock)
+        {
+            var lines = File.ReadAllLines(filePath, Encoding.UTF8).ToList();
+
+            int ti = FindBlockStart(lines, titleKey);
+            if (ti < 0) return;
+
+            int te = FindBlockEnd(lines, ti);
+
+            var countyLines = countyBlock.Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
+            lines.InsertRange(te, countyLines);
+
+            File.WriteAllText(filePath, string.Join(Environment.NewLine, lines), Encoding.UTF8);
         }
 
         private void ProcessFile(string filePath, string countyKey, HashSet<string> baronyKeys,
@@ -338,7 +601,7 @@ namespace PdxModIDE.UI
             foreach (var attr in countyAttrs)
             {
                 string t = attr.TrimStart();
-                if ((t.StartsWith("capital") && !t.StartsWith("capital_")) || t.Length == 0)
+                if ((t.StartsWith("capital") && !t.StartsWith("capital_")) || t.Length == 0 || t.StartsWith("##MOD_DEL"))
                     continue;
                 sb.AppendLine($"\t\t{t}");
             }

@@ -18,6 +18,17 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 - **Comentaris `##MOD_DEL` simplificats**: el prefix ja no inclou la clau del nou títol. Cada línia comentada ara comença amb `##MOD_DEL ` seguit només del contingut original de la línia.
 - **Nou fitxer de títol inclou referències al pare**: el nou fitxer de títol ara mostra el títol superior original com a comentari (`#`) al costat de la capçalera del nou títol, i la clau del comtat original com a comentari al costat de la capçalera del nou comtat.
 
+### Corregit
+
+- **Dividir comtat ja no sobreescriu fitxers existents**: quan el fitxer de títol destí (`d_xxx.txt` etc.) ja existeix al directori del mod, el nou comtat ara s'afegeix dins del fitxer existent en lloc de sobreescriure'l.
+- **Detecció de comtat duplicat en divisió**: l'aplicació ara verifica si la clau del nou comtat (`c_xxx`) ja existeix en algun fitxer `.txt` sota `common/landed_titles/` del mod, ignorant línies comentades amb `##MOD_DEL`. Si el bloc existent està actiu, l'operació s'avorta. Si el bloc està mort (tot `##MOD_DEL`), es permet i es marca amb `##MOD_DEL`.
+- **Detecció de títol duplicat en divisió**: l'aplicació ara verifica si el fitxer de títol (`d_xxx.txt` etc.) ja existeix a `common/landed_titles/`. Si conté contingut actiu, s'avorta. Si està buit (tot `##MOD_DEL`), es permet i es marca.
+- **Neteja de comtat original buit**: després d'una divisió, si el comtat original es queda sense baronies actives, tot el seu bloc es marca amb `##MOD_DEL`.
+- **Permetre divisió quan clau de comtat/títol coincideix amb l'origen**: `KeyExists` s'omet quan la clau del nou comtat coincideix amb l'original (`newCountyKey == _countyKey`) i `WouldBlockRemainActive` confirma que l'original quedaria buit. Igual per al títol quan coincideix amb el pare (`newTitleKey == _parentTitle`), afegint el nou comtat al bloc del títol pare al fitxer font en lloc de crear un fitxer override a `mod/`.
+- **`WouldBlockRemainActive` sense restricció de ruta**: la comprovació ara s'executa independentment de en quin fitxer `FindBlockInLandedTitles` va trobar el bloc.
+- **Línies `##MOD_DEL` filtrades en nous fitxers de comtat**: les línies que comencen amb `##MOD_DEL` dels atributs del comtat original ja no es copien al nou fitxer de comtat.
+- **Comtat original marcat amb `##MOD_DEL` en divisió CopiedFromGame amb el mateix nom**: en dividir un comtat d'origen del joc amb la mateixa clau, el bloc del comtat original ara es marca correctament com a mort a la còpia del mod.
+
 ---
 
 ## [1.4.15]

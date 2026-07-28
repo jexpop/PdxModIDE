@@ -150,6 +150,7 @@
     <system:String x:Key="SplitCounty_TargetFolder">Carpeta destino:</system:String>
     <system:String x:Key="SplitCounty_Browse">Examinar…</system:String>
     <system:String x:Key="SplitCounty_BrowseTitle">Seleccionar carpeta destino para el nuevo archivo de títulos</system:String>
+    <system:String x:Key="SplitCounty_CountyExists">El condado {0} ya existe en landed_titles del mod.</system:String>
 
     <system:String x:Key="MapTerrain_Land">Tierra</system:String>
     <system:String x:Key="MapTerrain_Sea">Mar</system:String>

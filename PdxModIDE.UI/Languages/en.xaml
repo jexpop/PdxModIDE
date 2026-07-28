@@ -150,6 +150,7 @@
     <system:String x:Key="SplitCounty_TargetFolder">Target folder:</system:String>
     <system:String x:Key="SplitCounty_Browse">Browse…</system:String>
     <system:String x:Key="SplitCounty_BrowseTitle">Select target folder for the new title file</system:String>
+    <system:String x:Key="SplitCounty_CountyExists">County {0} already exists in mod's landed_titles.</system:String>
 
     <system:String x:Key="MapTerrain_Land">Land</system:String>
     <system:String x:Key="MapTerrain_Sea">Sea</system:String>

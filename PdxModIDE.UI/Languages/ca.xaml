@@ -150,6 +150,7 @@
     <system:String x:Key="SplitCounty_TargetFolder">Carpeta destí:</system:String>
     <system:String x:Key="SplitCounty_Browse">Explorar…</system:String>
     <system:String x:Key="SplitCounty_BrowseTitle">Seleccionar carpeta destí per al nou fitxer de títols</system:String>
+    <system:String x:Key="SplitCounty_CountyExists">El comtat {0} ja existeix a landed_titles del mod.</system:String>
 
     <system:String x:Key="MapTerrain_Land">Terra</system:String>
     <system:String x:Key="MapTerrain_Sea">Mar</system:String>

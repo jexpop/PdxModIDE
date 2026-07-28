@@ -18,6 +18,17 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Comentarios `##MOD_DEL` simplificados**: el prefijo ya no incluye la clave del nuevo título. Cada línea comentada ahora comienza con `##MOD_DEL ` seguido solo del contenido original de la línea.
 - **Nuevo archivo de título incluye referencias al padre**: el nuevo archivo de título ahora muestra el título superior original como comentario (`#`) junto al encabezado del nuevo título, y la clave del condado original como comentario junto al encabezado del nuevo condado.
 
+### Corregido
+
+- **Dividir condado ya no sobrescribe archivos existentes**: cuando el archivo de título destino (`d_xxx.txt` etc.) ya existe en el directorio del mod, el nuevo condado ahora se añade dentro del archivo existente en lugar de sobrescribirlo.
+- **Detección de condado duplicado en división**: la aplicación ahora verifica si la clave del nuevo condado (`c_xxx`) ya existe en algún archivo `.txt` bajo `common/landed_titles/` del mod, ignorando líneas comentadas con `##MOD_DEL`. Si el bloque existente está activo, la operación se aborta. Si el bloque está muerto (todo `##MOD_DEL`), se permite y se marca con `##MOD_DEL`.
+- **Detección de título duplicado en división**: la aplicación ahora verifica si el archivo de título (`d_xxx.txt` etc.) ya existe en `common/landed_titles/`. Si contiene contenido activo, se aborta. Si está vacío (todo `##MOD_DEL`), se permite y se marca.
+- **Limpieza de condado original vacío**: tras una división, si el condado original se queda sin baronías activas, todo su bloque se marca con `##MOD_DEL`.
+- **Permitir división cuando clave de condado/título coincide con origen**: `KeyExists` se omite cuando la clave del nuevo condado coincide con la original (`newCountyKey == _countyKey`) y `WouldBlockRemainActive` confirma que el original quedaría vacío. Igual para el título cuando coincide con el padre (`newTitleKey == _parentTitle`), añadiendo el nuevo condado al bloque del título padre en el archivo fuente en lugar de crear un archivo override en `mod/`.
+- **`WouldBlockRemainActive` sin restricción de ruta**: la comprobación ahora se ejecuta independientemente de en qué archivo `FindBlockInLandedTitles` encontró el bloque.
+- **Líneas `##MOD_DEL` filtradas en nuevos archivos de condado**: las líneas que empiezan con `##MOD_DEL` de los atributos del condado original ya no se copian al nuevo archivo de condado.
+- **Condado original marcado con `##MOD_DEL` en división CopiedFromGame con mismo nombre**: al dividir un condado de origen del juego con la misma clave, el bloque del condado original ahora se marca correctamente como muerto en la copia del mod.
+
 ---
 
 ## [1.4.15]
