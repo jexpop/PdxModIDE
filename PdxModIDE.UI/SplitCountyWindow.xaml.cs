@@ -92,8 +92,18 @@ namespace PdxModIDE.UI
                 TargetFolderBox.Text = _targetDir;
             }
 
-            TitleKeyBox.Text = "";
-            CountyKeyBox.Text = "";
+            string firstBarony = entries.Count > 0 ? entries[0].BaronyKey : "";
+            if (firstBarony.StartsWith("b_"))
+            {
+                string suffix = firstBarony.Substring(2);
+                TitleKeyBox.Text = "d_" + suffix;
+                CountyKeyBox.Text = "c_" + suffix;
+            }
+            else
+            {
+                TitleKeyBox.Text = "";
+                CountyKeyBox.Text = "";
+            }
         }
 
         private void BtnExecute_Click(object sender, RoutedEventArgs e)
@@ -240,7 +250,7 @@ namespace PdxModIDE.UI
                     {
                         string trimmed = bl.TrimStart();
                         if (trimmed.Length > 0)
-                            newCountyLines.Add($"##MOD_DEL {newTitleKey} {trimmed}");
+                            newCountyLines.Add($"##MOD_DEL {trimmed}");
                         else
                             newCountyLines.Add(bl);
                     }
@@ -321,8 +331,8 @@ namespace PdxModIDE.UI
             int capitalId = capEntry != null ? int.Parse(capEntry.ProvinceId) : int.Parse(_entries[0].ProvinceId);
 
             var sb = new StringBuilder();
-            sb.AppendLine($"{newTitleKey} = {{");
-            sb.AppendLine($"\t{newCountyKey} = {{");
+            sb.AppendLine($"{newTitleKey} = {{ #{_parentTitle}");
+            sb.AppendLine($"\t{newCountyKey} = {{ #{_countyKey}");
             sb.AppendLine($"\t\tcapital = {capitalId}");
 
             foreach (var attr in countyAttrs)

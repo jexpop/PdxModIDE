@@ -7,6 +7,19 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.16]
+
+### Afegit
+
+- **Claus de títol i comtat per defecte a la finestra de divisió**: el camp "Títol superior" ara es reomple per defecte amb el nom de la primera baronia reemplaçant `b_` per `d_`, i el camp "Comtat" amb `b_` reemplaçat per `c_`.
+
+### Canviat
+
+- **Comentaris `##MOD_DEL` simplificats**: el prefix ja no inclou la clau del nou títol. Cada línia comentada ara comença amb `##MOD_DEL ` seguit només del contingut original de la línia.
+- **Nou fitxer de títol inclou referències al pare**: el nou fitxer de títol ara mostra el títol superior original com a comentari (`#`) al costat de la capçalera del nou títol, i la clau del comtat original com a comentari al costat de la capçalera del nou comtat.
+
+---
+
 ## [1.4.15]
 
 ### Corregit

@@ -7,6 +7,19 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.16]
+
+### Añadido
+
+- **Claves de título y condado por defecto en ventana de división**: el campo "Título superior" ahora se rellena por defecto con el nombre de la primera baronía reemplazando `b_` por `d_`, y el campo "Condado" con `b_` reemplazado por `c_`.
+
+### Cambiado
+
+- **Comentarios `##MOD_DEL` simplificados**: el prefijo ya no incluye la clave del nuevo título. Cada línea comentada ahora comienza con `##MOD_DEL ` seguido solo del contenido original de la línea.
+- **Nuevo archivo de título incluye referencias al padre**: el nuevo archivo de título ahora muestra el título superior original como comentario (`#`) junto al encabezado del nuevo título, y la clave del condado original como comentario junto al encabezado del nuevo condado.
+
+---
+
 ## [1.4.15]
 
 ### Corregido

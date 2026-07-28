@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.16]
+
+### Added
+
+- **Default title and county keys in Split County window**: the "Title key" field now defaults to the first barony's name with `b_` replaced by `d_`, and the "County key" field defaults with `b_` replaced by `c_`.
+
+### Changed
+
+- **`##MOD_DEL` comments simplified**: the prefix no longer includes the new title key. Each commented line now starts with `##MOD_DEL ` followed only by the original line content.
+- **New title file includes parent references**: the new title file now shows the original parent title as a comment (`#`) next to the new title header, and the original county key as a comment next to the new county header.
+
+---
+
 ## [1.4.15]
 
 ### Fixed
