@@ -7,6 +7,20 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.5.0]
+
+### Afegit
+
+- **Selector de vista del mapa**: nou desplegable (ComboBox) a la pestanya Mapa per canviar entre tres vistes: General (només terreny, sense overlay Base/Mod), Titular (comportament actual del mapa de títols amb modes holder/comtat/ducat/regne/imperi i botó d'edició), i Cultural (placeholder per a implementació futura).
+- **Visibilitat de la interfície segons la vista**: en vista General, els checks Base/Mod, el panell de modes de títol i el botó d'edició estan ocults. En vista Titular, tots els controls són visibles. En vista Cultural, Base/Mod són visibles però els modes de títol i el botó d'edició estan ocults.
+- **Font mínima obligatòria**: en vistes que no siguin General, almenys un de Base/Mod ha de romandre marcat — desmarcar l'última font activa no té efecte.
+
+### Canviat
+
+- **Versió actualitzada a 1.5.0**: recurs `MainWindow_Title` actualitzat a tots els fitxers d'idioma.
+
+---
+
 ## [1.4.18]
 
 ### Corregit

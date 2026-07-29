@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.18</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.0</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -120,6 +120,9 @@
     <system:String x:Key="HistoryTab_EmpireMode">Empire</system:String>
     <system:String x:Key="HistoryTab_EmpireModeTooltip">Empires (e_xxx)</system:String>
     <system:String x:Key="HistoryTab_ShowNames">Show names</system:String>
+    <system:String x:Key="HistoryTab_View_General">General</system:String>
+    <system:String x:Key="HistoryTab_View_Title">Title</system:String>
+    <system:String x:Key="HistoryTab_View_Cultural">Cultural</system:String>
     <system:String x:Key="HistoryTab_Ready">Ready</system:String>
     <system:String x:Key="HistoryTab_NoProfile">No profile selected</system:String>
     <system:String x:Key="HistoryTab_NoGameRoot">Set up a profile with a valid GameRoot</system:String>

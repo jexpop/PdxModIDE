@@ -7,6 +7,20 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.5.0]
+
+### Añadido
+
+- **Selector de vista del mapa**: nuevo desplegable (ComboBox) en la pestaña Mapa para cambiar entre tres vistas: General (solo terreno, sin overlay Base/Mod), Titular (comportamiento actual del mapa de títulos con modos holder/condado/ducado/reino/imperio y botón de edición), y Cultural (placeholder para implementación futura).
+- **Visibilidad de UI según la vista**: en vista General, los checks Base/Mod, el panel de modos de título y el botón de edición están ocultos. En vista Titular, todos los controles son visibles. En vista Cultural, Base/Mod son visibles pero los modos de título y el botón de edición están ocultos.
+- **Fuente mínima obligatoria**: en vistas que no sean General, al menos uno de Base/Mod debe permanecer marcado — desmarcar la última fuente activa no tiene efecto.
+
+### Cambiado
+
+- **Versión actualizada a 1.5.0**: recurso `MainWindow_Title` actualizado en todos los ficheros de idioma.
+
+---
+
 ## [1.4.18]
 
 ### Corregido

@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.18</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.0</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -120,6 +120,9 @@
     <system:String x:Key="HistoryTab_EmpireMode">Imperio</system:String>
     <system:String x:Key="HistoryTab_EmpireModeTooltip">Imperios (e_xxx)</system:String>
     <system:String x:Key="HistoryTab_ShowNames">Mostrar nombres</system:String>
+    <system:String x:Key="HistoryTab_View_General">General</system:String>
+    <system:String x:Key="HistoryTab_View_Title">Titular</system:String>
+    <system:String x:Key="HistoryTab_View_Cultural">Cultural</system:String>
     <system:String x:Key="HistoryTab_Ready">Listo</system:String>
     <system:String x:Key="HistoryTab_NoProfile">Sin perfil seleccionado</system:String>
     <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil con GameRoot válido</system:String>

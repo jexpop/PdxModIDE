@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.4.18</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.0</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -120,6 +120,9 @@
     <system:String x:Key="HistoryTab_EmpireMode">Imperi</system:String>
     <system:String x:Key="HistoryTab_EmpireModeTooltip">Imperis (e_xxx)</system:String>
     <system:String x:Key="HistoryTab_ShowNames">Mostrar noms</system:String>
+    <system:String x:Key="HistoryTab_View_General">General</system:String>
+    <system:String x:Key="HistoryTab_View_Title">Titular</system:String>
+    <system:String x:Key="HistoryTab_View_Cultural">Cultural</system:String>
     <system:String x:Key="HistoryTab_Ready">A punt</system:String>
     <system:String x:Key="HistoryTab_NoProfile">Sense perfil seleccionat</system:String>
     <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil amb GameRoot vàlid</system:String>

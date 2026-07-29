@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -39,6 +40,9 @@ namespace PdxModIDE.UI
         private bool _renderPending;
         private readonly HashSet<int> _selectedProvinceIds = new HashSet<int>();
         private bool _editMode;
+
+        private enum MapViewType { General, Title, Cultural }
+        private MapViewType _currentView = MapViewType.General;
 
         private Dictionary<int, ProvincePixelInfo>? _provincePixelInfo;
         private List<TitleLabelInfo>? _titleLabels;
@@ -104,6 +108,32 @@ namespace PdxModIDE.UI
 
         private void UpdateEditModeState()
         {
+            if (_currentView == MapViewType.General)
+            {
+                if (_editMode)
+                {
+                    _editMode = false;
+                    ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeViewAction");
+                    ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeView");
+                }
+                BaseSourceCheck!.Visibility = Visibility.Collapsed;
+                ModSourceCheck!.Visibility = Visibility.Collapsed;
+                TitleModePanel.Visibility = Visibility.Collapsed;
+                ModeToggleButton.Visibility = Visibility.Collapsed;
+                SplitCountyButton.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            if (_currentView == MapViewType.Cultural)
+            {
+                BaseSourceCheck!.Visibility = Visibility.Visible;
+                ModSourceCheck!.Visibility = Visibility.Visible;
+                TitleModePanel.Visibility = Visibility.Collapsed;
+                ModeToggleButton.Visibility = Visibility.Collapsed;
+                SplitCountyButton.Visibility = Visibility.Collapsed;
+                return;
+            }
+
             bool modActive = ModSourceCheck?.IsChecked == true;
 
             if (!modActive && _editMode)
@@ -399,6 +429,70 @@ namespace PdxModIDE.UI
             {
                 ReapplyActiveMode();
             }
+        }
+
+        private void ViewSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewSelector.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+            {
+                MapViewType newView = tag switch
+                {
+                    "General" => MapViewType.General,
+                    "Title" => MapViewType.Title,
+                    "Cultural" => MapViewType.Cultural,
+                    _ => MapViewType.General
+                };
+                SwitchToView(newView);
+            }
+        }
+
+        private void SwitchToView(MapViewType newView)
+        {
+            if (newView == _currentView) return;
+
+            var oldView = _currentView;
+            _currentView = newView;
+
+            switch (newView)
+            {
+                case MapViewType.General:
+                    BaseSourceCheck.IsChecked = false;
+                    if (ModSourceCheck.IsChecked == true)
+                        ModSourceCheck.IsChecked = false;
+
+                    if (_editMode)
+                    {
+                        _editMode = false;
+                        ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeViewAction");
+                        ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeView");
+                    }
+
+                    _renderer?.SetHolderMode(false, null, null);
+                    _titleLabels = null;
+                    InvalidateRender();
+                    break;
+
+                case MapViewType.Title:
+                    if (!HasActiveSource())
+                        BaseSourceCheck.IsChecked = true;
+                    break;
+
+                case MapViewType.Cultural:
+                    if (_editMode)
+                    {
+                        _editMode = false;
+                        ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeViewAction");
+                        ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeView");
+                    }
+                    if (!HasActiveSource())
+                        BaseSourceCheck.IsChecked = true;
+                    _renderer?.SetHolderMode(false, null, null);
+                    _titleLabels = null;
+                    InvalidateRender();
+                    break;
+            }
+
+            UpdateModeStatusLabel();
         }
 
         private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -814,6 +908,11 @@ namespace PdxModIDE.UI
 
         private void UpdateTitleModeVisibility()
         {
+            if (_currentView != MapViewType.Title)
+            {
+                TitleModePanel.Visibility = Visibility.Collapsed;
+                return;
+            }
             bool visible = HasActiveSource() && !_editMode;
             TitleModePanel.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -838,6 +937,7 @@ namespace PdxModIDE.UI
 
         private void EnsureAtLeastOneMode()
         {
+            if (_currentView != MapViewType.Title) return;
             if (!HasActiveSource()) return;
             if (HolderModeCheck.IsChecked == true ||
                 CountyModeCheck.IsChecked == true ||
@@ -851,6 +951,21 @@ namespace PdxModIDE.UI
 
         private void SourceModeChanged(object sender, RoutedEventArgs e)
         {
+            if (_currentView != MapViewType.General &&
+                sender is System.Windows.Controls.CheckBox checkBox &&
+                checkBox.IsChecked == false)
+            {
+                bool otherIsChecked = (checkBox == BaseSourceCheck)
+                    ? ModSourceCheck?.IsChecked == true
+                    : BaseSourceCheck?.IsChecked == true;
+
+                if (!otherIsChecked)
+                {
+                    checkBox.IsChecked = true;
+                    return;
+                }
+            }
+
             UpdateEditModeState();
             UpdateTitleModeVisibility();
             ApplySourceStructure();
@@ -869,7 +984,7 @@ namespace PdxModIDE.UI
                     UpdateProvinceInfo(_selectedProvinceIds.First());
             }
 
-            if (HasActiveSource())
+            if (HasActiveSource() && _currentView == MapViewType.Title)
             {
                 if (HolderModeCheck.IsChecked != true &&
                     CountyModeCheck.IsChecked != true &&

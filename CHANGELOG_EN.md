@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0]
+
+### Added
+
+- **Map view selector**: new dropdown (ComboBox) in the Map tab to switch between three views: General (terrain only, no Base/Mod overlay), Title (current title map behavior with holder/county/duchy/kingdom/empire modes and edit button), and Cultural (placeholder for future implementation).
+- **View-specific UI visibility**: in General view, Base/Mod checkboxes, title mode panel, and edit button are hidden. In Title view, all controls are visible. In Cultural view, Base/Mod are visible but title modes and edit button are hidden.
+- **Minimum source enforcement**: in non-General views, at least one of Base/Mod must always remain checked — unchecking the last active source is a no-op.
+
+### Changed
+
+- **Version updated to 1.5.0**: `MainWindow_Title` resource updated in all language files.
+
+---
+
 ## [1.4.18]
 
 ### Fixed
