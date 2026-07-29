@@ -13,7 +13,7 @@ namespace PdxModIDE.Rendering
         private SKImage? _provincesImage;
         private SKImage? _lutImage;
         private SKImage? _paletteImage;
-        private byte[]? _holderLutCpu;
+        private ushort[]? _holderLutCpu;
         private byte[]? _paletteCpu;
         private MapLoader? _mapLoader;
         private SKRuntimeEffect? _fullEffect;
@@ -210,7 +210,7 @@ half4 main(float2 coord) {
             _lastUniforms["mode"] = 0f;
         }
 
-        public void SetHolderMode(bool enabled, byte[]? holderLutData, SKImage? palette)
+        public void SetHolderMode(bool enabled, ushort[]? holderLutData, SKImage? palette)
         {
             _holderMode = enabled;
 
@@ -221,10 +221,10 @@ half4 main(float2 coord) {
             {
                 _paletteImage?.Dispose();
                 _paletteImage = palette;
-                // Decode palette to CPU array (RGBA order, 4 bytes per entry, 256 entries)
-                _paletteCpu = new byte[256 * 4];
+                int palWidth = palette.Width;
+                _paletteCpu = new byte[palWidth * 4];
                 using var tmpBmp = SKBitmap.FromImage(_paletteImage);
-                for (int i = 0; i < 256; i++)
+                for (int i = 0; i < palWidth; i++)
                 {
                     var c = tmpBmp.GetPixel(i, 0);
                     int off = i * 4;
@@ -359,7 +359,7 @@ half4 main(float2 coord) {
                         byte provR = Marshal.ReadByte(provPixelPtr + prR);
 
                         int idx = (provR << 16) | (provG << 8) | provB;
-                        byte holderIdx = _holderLutCpu[idx];
+                        ushort holderIdx = _holderLutCpu[idx];
                         if (holderIdx > 0)
                         {
                             int palOff = holderIdx * 4;

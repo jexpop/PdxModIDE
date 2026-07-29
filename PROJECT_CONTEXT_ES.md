@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.4.17 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.4.18 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -198,7 +198,7 @@ interface IGamePlugin {
 
 **TitleHistoryLoader**: Parsea `history/titles/*.txt` → `TitleHistory { Holders: SortedList<int, string> }` (año → holder). Usado por `MapLoader.BuildHolderLut(year, history, out indexToHolder)`.
 
-**Modo Condados**: `BuildCountyLut(out indexToCounty)` (sin parámetro año, los límites no cambian) mapea provincia → baronía (`ProvinceToBarony`) → condado (`BaronyToCounty`). Genera LUT 16M entradas coloreando por condado; índices >255 hacen wrap-around (módulo 255) para evitar colisión de color.
+**Modo Condados**: `BuildCountyLut(out indexToCounty)` (sin parámetro año, los límites no cambian) mapea provincia → baronía (`ProvinceToBarony`) → condado (`BaronyToCounty`). Genera LUT 16M entradas coloreando por condado; usa LUT `ushort[]` (16 bits) que soporta hasta 65535 entradas únicas sin wrap-around.
 
 **Modos Ducados/Reinos/Imperios**: Nuevos métodos `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` usan la jerarquía completa `CountyToDuchy` → `DuchyToKingdom` → `KingdomToEmpire` para colorear por cada nivel. En pestaña Mapa: checkboxes mutuamente excluyentes (Tit./Cond./Duc./Rey./Imp.) con tooltips.
 
@@ -334,7 +334,7 @@ MainWindow.ApplyLanguage(language) → actualiza _currentLanguagePath
 | **Backup automático** | Seguridad ante errores offset | Duplica espacio; no limpieza automática |
 | **LUT 16M bytes cacheado** | Render instantáneo mapa; evita rebuild | 16 MB RAM + disco; invalidación solo por hash archivos fuente |
 | **Overlay CPU en vez de shader** | `SKShader.CreateImage` como child shader de `SKRuntimeEffect` devuelve 0 en `eval()` en SkiaSharp 3.116.1 (CPU raster). Workaround: renderizar terreno+bordes via shader, aplicar overlay (holder/condado/ducado/etc) en CPU iterando píxeles con `Marshal.Copy`. | Overlay 100% CPU; si SkiaSharp lo arregla, se puede migrar de vuelta al shader. |
-| **Ciclo de colores >255 items** | `BuildHolderLut`/`BuildCountyLut` usan `(idx-1)%255+1` para wrap-around | Antes: índice clavado en 255 → cientos de condados/holders verdes |
+| **LUT 16-bit para número ilimitado de items** | `BuildHolderLut`/`BuildCountyLut` usan `ushort[]` (65535 máx.) en lugar de `byte[]` (255 máx.) | Sin wrap-around; paleta con tamaño dinámico |
 | **Parallel.ForEach síncrono en ProcessModule** | Aprovecha multi-core I/O | Bloquea thread pool; `ProcessModulesAsync` hace `await Task.CompletedTask` tras `Parallel.ForEach` |
 | **ViewModels manuales** | Control total, sin Magic | Boilerplate `OnPropertyChanged`; fácil introducir bugs binding |
 

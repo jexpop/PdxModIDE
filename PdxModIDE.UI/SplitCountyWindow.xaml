@@ -51,10 +51,11 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Title key:" Margin="0,0,5,5"
@@ -81,20 +82,53 @@
                           Foreground="{DynamicResource TextBoxForeground}"
                           BorderBrush="{DynamicResource ControlBorder}"/>
 
-                <TextBlock x:Name="ValidationMsg" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Color:"
+                           Margin="0,5,5,5"
+                           Foreground="{DynamicResource WindowForeground}"
+                           VerticalAlignment="Center"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
+                            Orientation="Horizontal" Margin="0,5,0,5">
+                    <TextBox x:Name="ColorRBox" Width="36" Margin="0,0,4,0"
+                             Background="{DynamicResource TextBoxBackground}"
+                             Foreground="{DynamicResource TextBoxForeground}"
+                             BorderBrush="{DynamicResource ControlBorder}"
+                             MaxLength="3" TextChanged="ColorBox_TextChanged"/>
+                    <TextBlock Text="R" Foreground="Gray" FontSize="10"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox x:Name="ColorGBox" Width="36" Margin="0,0,4,0"
+                             Background="{DynamicResource TextBoxBackground}"
+                             Foreground="{DynamicResource TextBoxForeground}"
+                             BorderBrush="{DynamicResource ControlBorder}"
+                             MaxLength="3" TextChanged="ColorBox_TextChanged"/>
+                    <TextBlock Text="G" Foreground="Gray" FontSize="10"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox x:Name="ColorBBox" Width="36" Margin="0,0,4,0"
+                             Background="{DynamicResource TextBoxBackground}"
+                             Foreground="{DynamicResource TextBoxForeground}"
+                             BorderBrush="{DynamicResource ControlBorder}"
+                             MaxLength="3" TextChanged="ColorBox_TextChanged"/>
+                    <TextBlock Text="B" Foreground="Gray" FontSize="10"
+                               VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Rectangle x:Name="ColorPreview" Width="28" Height="22"
+                               Stroke="#888" StrokeThickness="1" RadiusX="3" RadiusY="3"
+                               VerticalAlignment="Center" Cursor="Hand"
+                               MouseDown="ColorPreview_MouseDown"/>
+                </StackPanel>
+
+                <TextBlock x:Name="ValidationMsg" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
                            Foreground="#FFCC0000" Margin="0,3,0,0"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0"
+                <TextBlock Grid.Row="4" Grid.Column="0"
                            Text="{DynamicResource SplitCounty_TargetFolder}"
                            Margin="0,5,5,0"
                            Foreground="{DynamicResource WindowForeground}"
                            VerticalAlignment="Center"/>
-                <TextBox x:Name="TargetFolderBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                <TextBox x:Name="TargetFolderBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
                          Margin="0,5,5,0" IsReadOnly="True" Height="22"
                          Background="{DynamicResource TextBoxBackground}"
                          Foreground="{DynamicResource TextBoxForeground}"
                          BorderBrush="{DynamicResource ControlBorder}"/>
-                <Button x:Name="BtnBrowseFolder" Grid.Row="3" Grid.Column="3"
+                <Button x:Name="BtnBrowseFolder" Grid.Row="4" Grid.Column="3"
                         Content="{DynamicResource SplitCounty_Browse}"
                         Width="70" Height="22" Margin="0,5,0,0"
                         Click="BtnBrowseFolder_Click"/>

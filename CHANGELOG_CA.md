@@ -7,6 +7,19 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.18]
+
+### Corregit
+
+- **Colors de comtat correctes per a tots els comtats (no només els primers 255)**: el LUT per a tots els modes de superposició del mapa (Titular, Comtat, Ducat, Regne, Imperi) es va actualitzar de `byte[]` (256 entrades màx., wrap-around a 255) a `ushort[]` (65535 entrades màx., sense wrap-around). Les paletes ara tenen mida dinàmica en lloc de fixa de 256 entrades. Això corregeix un error on els comtats amb índex >255 sobreescrivien les entrades de comtats anteriors a `indexToCounty`, causant que els comtats sobreescrits mostressin el color d'un altre comtat.
+
+### Canviat
+
+- **Tots els mètodes Build*Lut ara retornen `ushort[]`**: `BuildHolderLut`, `BuildCombinedHolderLut`, `BuildCountyLut`, `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` utilitzen valors LUT de 16 bits, eliminant la lògica de wrap-around `(idx-1)%255+1`.
+- **Constructors de paleta amb mida dinàmica**: `BuildHolderPalette` i `BuildCountyPalette` creen bitmaps amb la mida de l'índex màxim real en lloc de fix 256×1.
+
+---
+
 ## [1.4.17]
 
 ### Afegit

@@ -17,7 +17,7 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.4.17 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). Solution: `PdxModIDE.sln` (9 projectes).
+**Versió actual**: 1.4.18 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
 
@@ -198,7 +198,7 @@ interface IGamePlugin {
 
 **TitleHistoryLoader**: Parseja `history/titles/*.txt` → `TitleHistory { Holders: SortedList<int, string> }` (any → holder). Usat per `MapLoader.BuildHolderLut(year, history, out indexToHolder)`.
 
-**Mode Comtats**: `BuildCountyLut(out indexToCounty)` (sense paràmetre any, els límits no canvien) mapeja província → baronia (`ProvinceToBarony`) → comtat (`BaronyToCounty`). Genera LUT 16M entrades acolorint per comtat; índexs >255 fan wrap-around (mòdul 255) per evitar col·lisió de color.
+**Mode Comtats**: `BuildCountyLut(out indexToCounty)` (sense paràmetre any, els límits no canvien) mapeja província → baronia (`ProvinceToBarony`) → comtat (`BaronyToCounty`). Genera LUT 16M entrades acolorint per comtat; usa LUT `ushort[]` (16 bits) que suporta fins a 65535 entrades úniques sense wrap-around.
 
 **Mods Ducats/Regnes/Imperis**: Nous mètodes `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` usen la jerarquia completa `CountyToDuchy` → `DuchyToKingdom` → `KingdomToEmpire` per acolorir per cada nivell. A la pestanya Mapa: checkboxes mútuament excloents (Tit./Cond./Duc./Rey./Imp.) amb tooltips.
 
@@ -334,7 +334,7 @@ MainWindow.ApplyLanguage(language) → actualitza _currentLanguagePath
 | **Còpia de seguretat automàtica** | Seguretat davant errors d'offset | Duplica espai; no neteja automàtica |
 | **LUT 16M bytes cachejat** | Render instantani mapa; evita rebuild | 16 MB RAM + disc; invalidació només per hash fitxers font |
 | **Overlay per CPU en lloc de shader** | `SKShader.CreateImage` com a child shader dins `SKRuntimeEffect` retorna 0 en `eval()` a SkiaSharp 3.116.1 (CPU raster). Workaround: renderitzar terreny+vores via shader, aplicar overlay (holder/comtat/ducat/etc) per CPU iterant píxels amb `Marshal.Copy`. | Overlay 100% CPU; si SkiaSharp ho arregla, es pot migrar de tornada al shader. |
-| **Cicle de colors >255 items** | `BuildHolderLut`/`BuildCountyLut` usen `(idx-1)%255+1` per wrap-around | Abans: índex clavat a 255 → centenars de comtats/holders verds |
+| **LUT 16-bit per a nombre il·limitat d'items** | `BuildHolderLut`/`BuildCountyLut` usen `ushort[]` (65535 màx.) en lloc de `byte[]` (255 màx.) | Sense wrap-around; paleta amb mida dinàmica |
 | **Parallel.ForEach síncron a ProcessModule** | Aprofita multi-core I/O | Bloqueja thread pool; `ProcessModulesAsync` fa `await Task.CompletedTask` després de `Parallel.ForEach` |
 | **ViewModels manuals** | Control total, sense Magic | Boilerplate `OnPropertyChanged`; fàcil introduir bugs binding |
 

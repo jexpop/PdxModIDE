@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.18]
+
+### Fixed
+
+- **County colors correct for all counties (not just first 255)**: the LUT for all map overlay modes (Holder, County, Duchy, Kingdom, Empire) was upgraded from `byte[]` (256 max entries, wrap-around at 255) to `ushort[]` (65535 max entries, no wrap-around). Palettes are now dynamically sized instead of fixed at 256 entries. This fixes an issue where counties with indices >255 would overwrite earlier counties' entries in `indexToCounty`, causing the overwritten counties to display another county's color.
+
+### Changed
+
+- **All Build*Lut methods now return `ushort[]`**: `BuildHolderLut`, `BuildCombinedHolderLut`, `BuildCountyLut`, `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` all use 16-bit LUT values, removing the `(idx-1)%255+1` wrap-around logic.
+- **Palette builders use dynamic size**: `BuildHolderPalette` and `BuildCountyPalette` create bitmaps sized to the actual max index instead of a fixed 256×1.
+
+---
+
 ## [1.4.17]
 
 ### Added

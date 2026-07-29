@@ -39,7 +39,7 @@ namespace PdxModIDE.MapEngine
         public Dictionary<string, string> KingdomToEmpire { get; } = new();
         public Dictionary<string, string> TitleDisplayNames { get; } = new();
         public Dictionary<string, Dictionary<string, string>> LocalizedNames { get; } = new();
-        public Dictionary<string, (byte R, byte G, byte B)> TitleColors { get; } = new();
+        public Dictionary<string, (byte R, byte G, byte B)> TitleColors { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         private Dictionary<int, string> _baseProvinceToBarony = new();
         private Dictionary<string, string> _baseBaronyToCounty = new();
@@ -48,7 +48,7 @@ namespace PdxModIDE.MapEngine
         private Dictionary<string, string> _baseKingdomToEmpire = new();
         private Dictionary<string, string> _baseTitleDisplayNames = new();
         private Dictionary<string, Dictionary<string, string>> _baseLocalizedNames = new();
-        private Dictionary<string, (byte R, byte G, byte B)> _baseTitleColors = new();
+        private Dictionary<string, (byte R, byte G, byte B)> _baseTitleColors = new(StringComparer.OrdinalIgnoreCase);
         public Dictionary<int, int> ProvinceIdToPacked { get; } = new();
         public byte[]? Lut { get; private set; }
         public int[]? ProvinceIdMap { get; private set; }
@@ -190,7 +190,7 @@ namespace PdxModIDE.MapEngine
             _baseLocalizedNames = new Dictionary<string, Dictionary<string, string>>();
             foreach (var kvp in LocalizedNames)
                 _baseLocalizedNames[kvp.Key] = new Dictionary<string, string>(kvp.Value);
-            _baseTitleColors = new Dictionary<string, (byte R, byte G, byte B)>(TitleColors);
+            _baseTitleColors = new Dictionary<string, (byte R, byte G, byte B)>(TitleColors, StringComparer.OrdinalIgnoreCase);
         }
 
         public void LoadModLandedTitles(string modRoot)
@@ -252,6 +252,8 @@ namespace PdxModIDE.MapEngine
             var provinceRegex = new Regex(@"province\s*=\s*(\d+)");
             var nameRegex = new Regex(@"^\s*name\s*=\s*""([^""]*)""");
             var colorRegex = new Regex(@"^\s*color\s*=\s*\{\s*(\d+)\s+(\d+)\s+(\d+)\s*\}");
+            var log = new System.Text.StringBuilder();
+            log.AppendLine($"[LoadLandedTitlesFrom] Scanning: {dir}");
 
             foreach (var file in Directory.EnumerateFiles(dir, "*.txt", SearchOption.AllDirectories))
             {
@@ -316,6 +318,8 @@ namespace PdxModIDE.MapEngine
                         int cg = int.Parse(colorMatch.Groups[2].Value);
                         int cb = int.Parse(colorMatch.Groups[3].Value);
                         TitleColors[currentTitle] = ((byte)cr, (byte)cg, (byte)cb);
+                        if (currentTitle.StartsWith("c_"))
+                            log.AppendLine($"  {currentTitle} := ({cr},{cg},{cb}) from {Path.GetFileName(file)}");
                     }
 
                     int opens = line.Count(c => c == '{');
@@ -345,6 +349,7 @@ namespace PdxModIDE.MapEngine
                     }
                 }
             }
+            System.IO.File.AppendAllText(@"C:\Users\JEXPO\AppData\Local\Temp\pdxmodide_debug.log", log.ToString());
         }
 
         private void MarkTerrainTypes()
@@ -521,12 +526,12 @@ namespace PdxModIDE.MapEngine
             return result;
         }
 
-        public byte[] BuildHolderLut(int year, TitleHistoryLoader history, out Dictionary<int, string> indexToHolder)
+        public ushort[] BuildHolderLut(int year, TitleHistoryLoader history, out Dictionary<int, string> indexToHolder)
         {
             indexToHolder = new Dictionary<int, string>();
             var holderToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             int nextIndex = 1;
-            var lut = new byte[16_777_216];
+            var lut = new ushort[16_777_216];
 
             foreach (var info in ProvincesByColor.Values)
             {
@@ -557,18 +562,17 @@ namespace PdxModIDE.MapEngine
                 if (!holderToIndex.TryGetValue(holder, out var hIdx))
                 {
                     hIdx = nextIndex++;
-                    if (hIdx > 255) hIdx = (hIdx - 1) % 255 + 1; // wrap around 1-255
                     holderToIndex[holder] = hIdx;
                     indexToHolder[hIdx] = holder;
                 }
 
-                lut[idx] = (byte)hIdx;
+                lut[idx] = (ushort)hIdx;
             }
 
             return lut;
         }
 
-        public byte[] BuildCombinedHolderLut(
+        public ushort[] BuildCombinedHolderLut(
             int? baseYear, TitleHistoryLoader? baseHistory,
             int? modYear, TitleHistoryLoader? modHistory,
             out Dictionary<int, string> indexToHolder)
@@ -576,7 +580,7 @@ namespace PdxModIDE.MapEngine
             indexToHolder = new Dictionary<int, string>();
             var holderToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             int nextIndex = 1;
-            var lut = new byte[16_777_216];
+            var lut = new ushort[16_777_216];
 
             foreach (var info in ProvincesByColor.Values)
             {
@@ -617,29 +621,28 @@ namespace PdxModIDE.MapEngine
                 if (!holderToIndex.TryGetValue(holder, out var hIdx))
                 {
                     hIdx = nextIndex++;
-                    if (hIdx > 255) hIdx = (hIdx - 1) % 255 + 1; // wrap around 1-255
                     holderToIndex[holder] = hIdx;
                     indexToHolder[hIdx] = holder;
                 }
 
-                lut[idx] = (byte)hIdx;
+                lut[idx] = (ushort)hIdx;
             }
 
             return lut;
         }
 
-        public byte[] BuildCountyLut(out Dictionary<int, string> indexToCounty)
+        public ushort[] BuildCountyLut(out Dictionary<int, string> indexToCounty)
         {
             // Overload without year/history - county boundaries don't change by year
             return BuildCountyLut(0, null, out indexToCounty);
         }
 
-        public byte[] BuildCountyLut(int year, TitleHistoryLoader? history, out Dictionary<int, string> indexToCounty)
+        public ushort[] BuildCountyLut(int year, TitleHistoryLoader? history, out Dictionary<int, string> indexToCounty)
         {
             indexToCounty = new Dictionary<int, string>();
             var countyToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             int nextIndex = 1;
-            var lut = new byte[16_777_216];
+            var lut = new ushort[16_777_216];
 
             foreach (var info in ProvincesByColor.Values)
             {
@@ -666,26 +669,25 @@ namespace PdxModIDE.MapEngine
                     continue;
                 }
 
-if (!countyToIndex.TryGetValue(county, out var cIdx))
+                if (!countyToIndex.TryGetValue(county, out var cIdx))
                 {
                     cIdx = nextIndex++;
-                    if (cIdx > 255) cIdx = (cIdx - 1) % 255 + 1; // wrap around 1-255
                     countyToIndex[county] = cIdx;
                     indexToCounty[cIdx] = county;
                 }
 
-                lut[idx] = (byte)cIdx;
+                lut[idx] = (ushort)cIdx;
             }
 
             return lut;
         }
 
-        public byte[] BuildDuchyLut(out Dictionary<int, string> indexToDuchy)
+        public ushort[] BuildDuchyLut(out Dictionary<int, string> indexToDuchy)
         {
             indexToDuchy = new Dictionary<int, string>();
             var duchyToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             int nextIndex = 1;
-            var lut = new byte[16_777_216];
+            var lut = new ushort[16_777_216];
 
             foreach (var info in ProvincesByColor.Values)
             {
@@ -715,23 +717,22 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
                 if (!duchyToIndex.TryGetValue(duchy, out var dIdx))
                 {
                     dIdx = nextIndex++;
-                    if (dIdx > 255) dIdx = (dIdx - 1) % 255 + 1;
                     duchyToIndex[duchy] = dIdx;
                     indexToDuchy[dIdx] = duchy;
                 }
 
-                lut[idx] = (byte)dIdx;
+                lut[idx] = (ushort)dIdx;
             }
 
             return lut;
         }
 
-        public byte[] BuildKingdomLut(out Dictionary<int, string> indexToKingdom)
+        public ushort[] BuildKingdomLut(out Dictionary<int, string> indexToKingdom)
         {
             indexToKingdom = new Dictionary<int, string>();
             var kingdomToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             int nextIndex = 1;
-            var lut = new byte[16_777_216];
+            var lut = new ushort[16_777_216];
 
             foreach (var info in ProvincesByColor.Values)
             {
@@ -762,23 +763,22 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
                 if (!kingdomToIndex.TryGetValue(kingdom, out var kIdx))
                 {
                     kIdx = nextIndex++;
-                    if (kIdx > 255) kIdx = (kIdx - 1) % 255 + 1;
                     kingdomToIndex[kingdom] = kIdx;
                     indexToKingdom[kIdx] = kingdom;
                 }
 
-                lut[idx] = (byte)kIdx;
+                lut[idx] = (ushort)kIdx;
             }
 
             return lut;
         }
 
-        public byte[] BuildEmpireLut(out Dictionary<int, string> indexToEmpire)
+        public ushort[] BuildEmpireLut(out Dictionary<int, string> indexToEmpire)
         {
             indexToEmpire = new Dictionary<int, string>();
             var empireToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             int nextIndex = 1;
-            var lut = new byte[16_777_216];
+            var lut = new ushort[16_777_216];
 
             foreach (var info in ProvincesByColor.Values)
             {
@@ -810,12 +810,11 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
                 if (!empireToIndex.TryGetValue(empire, out var eIdx))
                 {
                     eIdx = nextIndex++;
-                    if (eIdx > 255) eIdx = (eIdx - 1) % 255 + 1;
                     empireToIndex[empire] = eIdx;
                     indexToEmpire[eIdx] = empire;
                 }
 
-                lut[idx] = (byte)eIdx;
+                lut[idx] = (ushort)eIdx;
             }
 
             return lut;
@@ -836,10 +835,12 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
 
         public static SKImage BuildHolderPalette(Dictionary<int, string> indexToHolder)
         {
-            var bmp = new SKBitmap(256, 1, SKColorType.Rgba8888, SKAlphaType.Opaque);
-            var pixels = new byte[256 * 4];
+            int maxIdx = indexToHolder.Keys.Count > 0 ? indexToHolder.Keys.Max() : 255;
+            int size = maxIdx + 1;
+            var bmp = new SKBitmap(size, 1, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var pixels = new byte[size * 4];
 
-            for (int i = 0; i < 256; i++)
+            for (int i = 0; i < size; i++)
             {
                 int off = i * 4;
                 if (i == 0 || !indexToHolder.ContainsKey(i))
@@ -866,10 +867,12 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
 
         public SKImage BuildCountyPalette(Dictionary<int, string> indexToCounty)
         {
-            var bmp = new SKBitmap(256, 1, SKColorType.Rgba8888, SKAlphaType.Opaque);
-            var pixels = new byte[256 * 4];
+            int maxIdx = indexToCounty.Keys.Count > 0 ? indexToCounty.Keys.Max() : 255;
+            int size = maxIdx + 1;
+            var bmp = new SKBitmap(size, 1, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var pixels = new byte[size * 4];
 
-            for (int i = 0; i < 256; i++)
+            for (int i = 0; i < size; i++)
             {
                 int off = i * 4;
                 if (i == 0 || !indexToCounty.ContainsKey(i))

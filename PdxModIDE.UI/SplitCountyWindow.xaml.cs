@@ -24,6 +24,7 @@ namespace PdxModIDE.UI
     public partial class SplitCountyWindow : Window
     {
         private static readonly Regex TitleRegex = new(@"^\s*([becdk]_[A-Za-z0-9_-]+)\s*=\s*\{");
+        private static readonly Regex ColorRegex = new(@"^\s*color\s*=\s*\{\s*(\d+)\s+(\d+)\s+(\d+)\s*\}");
         private readonly string _sourceFilePath = "";
         private readonly string _modRoot = "";
         private readonly string _gameRoot = "";
@@ -34,6 +35,9 @@ namespace PdxModIDE.UI
         private readonly string _countyKey = "";
         private readonly string _parentTitle = "";
         private readonly HashSet<int> _selectedProvinceIds = null!;
+        private byte? _customColorR;
+        private byte? _customColorG;
+        private byte? _customColorB;
 
         public SplitCountyWindow()
         {
@@ -104,11 +108,85 @@ namespace PdxModIDE.UI
                 TitleKeyBox.Text = "";
                 CountyKeyBox.Text = "";
             }
+
+            LoadCountyColor();
+        }
+
+        private void LoadCountyColor()
+        {
+            if (!File.Exists(_sourceFilePath)) return;
+            var lines = File.ReadAllLines(_sourceFilePath).ToList();
+            int ci = FindBlockStart(lines, _countyKey);
+            if (ci < 0) return;
+            int ce = FindBlockEnd(lines, ci);
+            var (attrs, _) = ParseBlockChildren(lines, ci, ce);
+            foreach (var attr in attrs)
+            {
+                var m = ColorRegex.Match(attr);
+                if (m.Success)
+                {
+                    ColorRBox.Text = m.Groups[1].Value;
+                    ColorGBox.Text = m.Groups[2].Value;
+                    ColorBBox.Text = m.Groups[3].Value;
+                    break;
+                }
+            }
         }
 
         private string? _countyMarkPath;
         private string? _titleMarkPath;
         private bool _needsCountyMark;
+
+        private void UpdateColorPreview()
+        {
+            if (byte.TryParse(ColorRBox?.Text, out byte r) &&
+                byte.TryParse(ColorGBox?.Text, out byte g) &&
+                byte.TryParse(ColorBBox?.Text, out byte b))
+            {
+                ColorPreview.Fill = new System.Windows.Media.SolidColorBrush(
+                    System.Windows.Media.Color.FromRgb(r, g, b));
+                _customColorR = r;
+                _customColorG = g;
+                _customColorB = b;
+            }
+            else
+            {
+                ColorPreview.Fill = null;
+                _customColorR = null;
+                _customColorG = null;
+                _customColorB = null;
+            }
+        }
+
+        private void ColorBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            UpdateColorPreview();
+        }
+
+        private void ColorPreview_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            using var dialog = new System.Windows.Forms.ColorDialog();
+            if (_customColorR.HasValue && _customColorG.HasValue && _customColorB.HasValue)
+            {
+                dialog.Color = System.Drawing.Color.FromArgb(_customColorR.Value, _customColorG.Value, _customColorB.Value);
+            }
+            else
+            {
+                dialog.Color = System.Drawing.Color.Gray;
+            }
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ColorRBox.Text = dialog.Color.R.ToString();
+                ColorGBox.Text = dialog.Color.G.ToString();
+                ColorBBox.Text = dialog.Color.B.ToString();
+            }
+        }
+
+        private bool HasCustomColor =>
+            _customColorR.HasValue && _customColorG.HasValue && _customColorB.HasValue;
+
+        private string CustomColorLine =>
+            $"\t\tcolor = {{ {_customColorR} {_customColorG} {_customColorB} }}";
 
         private void BtnExecute_Click(object sender, RoutedEventArgs e)
         {
@@ -450,14 +528,25 @@ namespace PdxModIDE.UI
                 string t = attr.TrimStart();
                 if ((t.StartsWith("capital") && !t.StartsWith("capital_")) || t.Length == 0 || t.StartsWith("##MOD_DEL"))
                     continue;
+                if (HasCustomColor && ColorRegex.IsMatch(t))
+                    continue;
                 sb.AppendLine($"\t\t{t}");
             }
+
+            if (HasCustomColor)
+                sb.AppendLine(CustomColorLine);
 
             foreach (var block in splitBlocks)
             {
                 for (int i = 0; i < block.Length; i++)
                 {
                     string t = block[i].TrimStart();
+                    if (HasCustomColor && ColorRegex.IsMatch(t))
+                    {
+                        string indent = i == 0 || i == block.Length - 1 ? "\t\t" : "\t\t\t";
+                        sb.AppendLine($"{indent}color = {{ {_customColorR} {_customColorG} {_customColorB} }}");
+                        continue;
+                    }
                     sb.AppendLine(i == 0 || i == block.Length - 1 ? $"\t\t{t}" : $"\t\t\t{t}");
                 }
             }
@@ -603,14 +692,25 @@ namespace PdxModIDE.UI
                 string t = attr.TrimStart();
                 if ((t.StartsWith("capital") && !t.StartsWith("capital_")) || t.Length == 0 || t.StartsWith("##MOD_DEL"))
                     continue;
+                if (HasCustomColor && ColorRegex.IsMatch(t))
+                    continue;
                 sb.AppendLine($"\t\t{t}");
             }
+
+            if (HasCustomColor)
+                sb.AppendLine(CustomColorLine);
 
             foreach (var block in splitBlocks)
             {
                 for (int i = 0; i < block.Length; i++)
                 {
                     string t = block[i].TrimStart();
+                    if (HasCustomColor && ColorRegex.IsMatch(t))
+                    {
+                        string indent = i == 0 || i == block.Length - 1 ? "\t\t" : "\t\t\t";
+                        sb.AppendLine($"{indent}color = {{ {_customColorR} {_customColorG} {_customColorB} }}");
+                        continue;
+                    }
                     sb.AppendLine(i == 0 || i == block.Length - 1 ? $"\t\t{t}" : $"\t\t\t{t}");
                 }
             }

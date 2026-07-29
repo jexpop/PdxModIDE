@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.4.17 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.4.18 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -198,7 +198,7 @@ interface IGamePlugin {
 
 **TitleHistoryLoader**: Parses `history/titles/*.txt` → `TitleHistory { Holders: SortedList<int, string> }` (year → holder). Used by `MapLoader.BuildHolderLut(year, history, out indexToHolder)`.
 
-**County Mode**: `BuildCountyLut(out indexToCounty)` (no year parameter, borders don't change) maps province → barony (`ProvinceToBarony`) → county (`BaronyToCounty`). Generates 16M entry LUT coloring by county; indices >255 wrap around (modulo 255) to avoid color collision.
+**County Mode**: `BuildCountyLut(out indexToCounty)` (no year parameter, borders don't change) maps province → barony (`ProvinceToBarony`) → county (`BaronyToCounty`). Generates 16M entry LUT coloring by county; uses `ushort[]` LUT (16-bit) supporting up to 65535 unique entries without wrap-around.
 
 **Duchy/Kingdom/Empire Modes**: New methods `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` use the full hierarchy `CountyToDuchy` → `DuchyToKingdom` → `KingdomToEmpire` to color by each level. In the Map tab: mutually exclusive checkboxes (Tit./Cty./Dch./Kgd./Emp.) with tooltips.
 
@@ -334,7 +334,7 @@ MainWindow.ApplyLanguage(language) → updates _currentLanguagePath
 | **Auto-backup** | Safety against offset errors | Duplicates space; no automatic cleanup |
 | **Cached 16M byte LUT** | Instant map render; avoids rebuild | 16 MB RAM + disk; invalidation only by source file hash |
 | **CPU overlay instead of shader** | `SKShader.CreateImage` as child shader in `SKRuntimeEffect` returns 0 in `eval()` on SkiaSharp 3.116.1 (CPU raster). Workaround: render terrain+borders via shader, apply overlay (holder/county/duchy/etc) on CPU by iterating pixels with `Marshal.Copy`. | 100% CPU; if SkiaSharp fixes it, can migrate back to shader. |
-| **Color cycle for >255 items** | `BuildHolderLut`/`BuildCountyLut` use `(idx-1)%255+1` for wrap-around | Before: index clamped at 255 → hundreds of green counties/holders |
+| **16-bit LUT for unlimited items** | `BuildHolderLut`/`BuildCountyLut` use `ushort[]` (65535 max) instead of `byte[]` (255 max) | No wrap-around needed; palette dynamically sized |
 | **Synchronous Parallel.ForEach in ProcessModule** | Leverages multi-core I/O | Blocks thread pool; `ProcessModulesAsync` does `await Task.CompletedTask` after `Parallel.ForEach` |
 | **Manual ViewModels** | Full control, no magic | Boilerplate `OnPropertyChanged`; easy to introduce binding bugs |
 
@@ -458,4 +458,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-07-29 | Project: PdxModIDE | Version: 1.4.17 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-07-29 | Project: PdxModIDE | Version: 1.4.18 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

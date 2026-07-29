@@ -7,6 +7,19 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.18]
+
+### Corregido
+
+- **Colores de condado correctos para todos los condados (no solo los primeros 255)**: el LUT para todos los modos de superposición del mapa (Titular, Condado, Ducado, Reino, Imperio) se actualizó de `byte[]` (256 entradas máx., wrap-around en 255) a `ushort[]` (65535 entradas máx., sin wrap-around). Las paletas ahora tienen tamaño dinámico en lugar de fijo de 256 entradas. Esto corrige un error donde los condados con índice >255 sobrescribían las entradas de condados anteriores en `indexToCounty`, causando que los condados sobrescritos mostraran el color de otro condado.
+
+### Cambiado
+
+- **Todos los métodos Build*Lut ahora devuelven `ushort[]`**: `BuildHolderLut`, `BuildCombinedHolderLut`, `BuildCountyLut`, `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` usan valores LUT de 16 bits, eliminando la lógica de wrap-around `(idx-1)%255+1`.
+- **Constructores de paleta con tamaño dinámico**: `BuildHolderPalette` y `BuildCountyPalette` crean bitmaps con el tamaño del índice máximo real en lugar de fijo 256×1.
+
+---
+
 ## [1.4.17]
 
 ### Añadido

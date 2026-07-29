@@ -43,7 +43,7 @@ namespace PdxModIDE.UI
         private Dictionary<int, ProvincePixelInfo>? _provincePixelInfo;
         private List<TitleLabelInfo>? _titleLabels;
         private Dictionary<int, string>? _provinceToTitle;
-        private byte[]? _currentHolderLut;
+        private ushort[]? _currentHolderLut;
         private Dictionary<int, string>? _currentIndexToHolder;
 
         private class ProvincePixelInfo
