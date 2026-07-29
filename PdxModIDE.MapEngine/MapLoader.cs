@@ -39,6 +39,7 @@ namespace PdxModIDE.MapEngine
         public Dictionary<string, string> KingdomToEmpire { get; } = new();
         public Dictionary<string, string> TitleDisplayNames { get; } = new();
         public Dictionary<string, Dictionary<string, string>> LocalizedNames { get; } = new();
+        public Dictionary<string, (byte R, byte G, byte B)> TitleColors { get; } = new();
 
         private Dictionary<int, string> _baseProvinceToBarony = new();
         private Dictionary<string, string> _baseBaronyToCounty = new();
@@ -47,6 +48,7 @@ namespace PdxModIDE.MapEngine
         private Dictionary<string, string> _baseKingdomToEmpire = new();
         private Dictionary<string, string> _baseTitleDisplayNames = new();
         private Dictionary<string, Dictionary<string, string>> _baseLocalizedNames = new();
+        private Dictionary<string, (byte R, byte G, byte B)> _baseTitleColors = new();
         public Dictionary<int, int> ProvinceIdToPacked { get; } = new();
         public byte[]? Lut { get; private set; }
         public int[]? ProvinceIdMap { get; private set; }
@@ -188,6 +190,7 @@ namespace PdxModIDE.MapEngine
             _baseLocalizedNames = new Dictionary<string, Dictionary<string, string>>();
             foreach (var kvp in LocalizedNames)
                 _baseLocalizedNames[kvp.Key] = new Dictionary<string, string>(kvp.Value);
+            _baseTitleColors = new Dictionary<string, (byte R, byte G, byte B)>(TitleColors);
         }
 
         public void LoadModLandedTitles(string modRoot)
@@ -195,6 +198,9 @@ namespace PdxModIDE.MapEngine
             string baseDir = Path.Combine(modRoot, "common", "landed_titles");
             if (!Directory.Exists(baseDir)) return;
             LoadLandedTitlesFrom(baseDir);
+            string modSubDir = Path.Combine(baseDir, "mod");
+            if (Directory.Exists(modSubDir))
+                LoadLandedTitlesFrom(modSubDir);
         }
 
         public void LoadModLocalization(string modRoot)
@@ -226,6 +232,9 @@ namespace PdxModIDE.MapEngine
             LocalizedNames.Clear();
             foreach (var kvp in _baseLocalizedNames)
                 LocalizedNames[kvp.Key] = new Dictionary<string, string>(kvp.Value);
+            TitleColors.Clear();
+            foreach (var kvp in _baseTitleColors)
+                TitleColors[kvp.Key] = kvp.Value;
         }
 
         private void LoadLandedTitles()
@@ -242,6 +251,7 @@ namespace PdxModIDE.MapEngine
             var titleRegex = new Regex(@"^\s*([becdk]_[A-Za-z0-9_-]+)\s*=\s*\{");
             var provinceRegex = new Regex(@"province\s*=\s*(\d+)");
             var nameRegex = new Regex(@"^\s*name\s*=\s*""([^""]*)""");
+            var colorRegex = new Regex(@"^\s*color\s*=\s*\{\s*(\d+)\s+(\d+)\s+(\d+)\s*\}");
 
             foreach (var file in Directory.EnumerateFiles(dir, "*.txt", SearchOption.AllDirectories))
             {
@@ -252,6 +262,9 @@ namespace PdxModIDE.MapEngine
                 foreach (var rawLine in File.ReadAllLines(file))
                 {
                     string line = rawLine.Trim();
+
+                    if (line.StartsWith("#"))
+                        continue;
 
                     var m = titleRegex.Match(line);
                     if (m.Success)
@@ -294,6 +307,15 @@ namespace PdxModIDE.MapEngine
                             DuchyToKingdom[duchy] = kingdom;
                         if (kingdom != null && empire != null)
                             KingdomToEmpire[kingdom] = empire;
+                    }
+
+                    var colorMatch = colorRegex.Match(line);
+                    if (colorMatch.Success && currentTitle != null)
+                    {
+                        int cr = int.Parse(colorMatch.Groups[1].Value);
+                        int cg = int.Parse(colorMatch.Groups[2].Value);
+                        int cb = int.Parse(colorMatch.Groups[3].Value);
+                        TitleColors[currentTitle] = ((byte)cr, (byte)cg, (byte)cb);
                     }
 
                     int opens = line.Count(c => c == '{');
@@ -842,9 +864,45 @@ if (!countyToIndex.TryGetValue(county, out var cIdx))
             return SKImage.FromBitmap(bmp);
         }
 
-        public static SKImage BuildCountyPalette(Dictionary<int, string> indexToCounty)
+        public SKImage BuildCountyPalette(Dictionary<int, string> indexToCounty)
         {
-            return BuildHolderPalette(indexToCounty);
+            var bmp = new SKBitmap(256, 1, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var pixels = new byte[256 * 4];
+
+            for (int i = 0; i < 256; i++)
+            {
+                int off = i * 4;
+                if (i == 0 || !indexToCounty.ContainsKey(i))
+                {
+                    pixels[off] = 40;
+                    pixels[off + 1] = 40;
+                    pixels[off + 2] = 40;
+                    pixels[off + 3] = 255;
+                }
+                else
+                {
+                    string titleKey = indexToCounty[i];
+                    if (TitleColors.TryGetValue(titleKey, out var color))
+                    {
+                        pixels[off] = color.R;
+                        pixels[off + 1] = color.G;
+                        pixels[off + 2] = color.B;
+                        pixels[off + 3] = 255;
+                    }
+                    else
+                    {
+                        var (h, s, l) = HueSatLum(i);
+                        var (r, g, b) = HslToRgb(h, s, l);
+                        pixels[off] = r;
+                        pixels[off + 1] = g;
+                        pixels[off + 2] = b;
+                        pixels[off + 3] = 255;
+                    }
+                }
+            }
+
+            Marshal.Copy(pixels, 0, bmp.GetPixels(), pixels.Length);
+            return SKImage.FromBitmap(bmp);
         }
 
         public static SKImage BuildDuchyPalette(Dictionary<int, string> indexToDuchy)

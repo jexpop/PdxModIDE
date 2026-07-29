@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.17]
+
+### Added
+
+- **County map mode uses actual landed_titles colors**: the County overlay mode now reads the `color = { r g b }` attribute from `common/landed_titles/*.txt` files and displays those colors on the map instead of procedural index-based colors (golden angle HSL).
+
+### Changed
+
+- **Color loading priority for titles**: colors are loaded with the following priority: `<modRoot>/common/landed_titles/mod/` (highest), then `<modRoot>/common/landed_titles/` (mod root), then `<gameRoot>/common/landed_titles/` (game base). Commented lines (`#color = { ... }`) are ignored. Counties without a defined `color = { ... }` in any source fall back to the procedural HueSatLum color.
+
+---
+
 ## [1.4.16]
 
 ### Added

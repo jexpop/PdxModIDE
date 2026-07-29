@@ -1092,7 +1092,7 @@ namespace PdxModIDE.UI
                 return;
             }
             var countyLut = _mapLoader!.BuildCountyLut(out var indexToCounty);
-            var palette = MapLoader.BuildCountyPalette(indexToCounty);
+            var palette = _mapLoader.BuildCountyPalette(indexToCounty);
             _renderer!.SetHolderMode(true, countyLut, palette);
             BuildTitleLabels();
             InvalidateRender();

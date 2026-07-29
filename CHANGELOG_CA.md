@@ -7,6 +7,18 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.4.17]
+
+### Afegit
+
+- **El mode Comtat del mapa utilitza els colors reals de landed_titles**: el mode de superposició de Comtats ara llegeix l'atribut `color = { r g b }` dels fitxers `common/landed_titles/*.txt` i mostra aquests colors al mapa en lloc dels colors procedimentals basats en índex (angle auri HSL).
+
+### Canviat
+
+- **Prioritat de càrrega de colors per a títols**: els colors es carreguen amb la següent prioritat: `<modRoot>/common/landed_titles/mod/` (màxima), després `<modRoot>/common/landed_titles/` (arrel del mod), després `<gameRoot>/common/landed_titles/` (joc base). Les línies comentades (`#color = { ... }`) s'ignoren. Els comtats sense un `color = { ... }` definit en cap font utilitzen el color procedimental HueSatLum com a fallback.
+
+---
+
 ## [1.4.16]
 
 ### Afegit

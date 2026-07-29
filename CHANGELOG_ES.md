@@ -7,6 +7,18 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.4.17]
+
+### Añadido
+
+- **El modo Condado del mapa usa los colores reales de landed_titles**: el modo de superposición de Condados ahora lee el atributo `color = { r g b }` de los archivos `common/landed_titles/*.txt` y muestra esos colores en el mapa en lugar de los colores procedurales basados en índice (ángulo áureo HSL).
+
+### Cambiado
+
+- **Prioridad de carga de colores para títulos**: los colores se cargan con la siguiente prioridad: `<modRoot>/common/landed_titles/mod/` (máxima), luego `<modRoot>/common/landed_titles/` (raíz del mod), luego `<gameRoot>/common/landed_titles/` (juego base). Las líneas comentadas (`#color = { ... }`) se ignoran. Los condados sin un `color = { ... }` definido en ninguna fuente usan el color procedural HueSatLum como fallback.
+
+---
+
 ## [1.4.16]
 
 ### Añadido
