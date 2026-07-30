@@ -1,0 +1,82 @@
+<UserControl x:Class="PdxModIDE.UI.CulturesTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PdxModIDE.UI"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="1000">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                <Button Content="{DynamicResource CulturesTab_Refresh}" Width="120" HorizontalAlignment="Left"
+                        Click="Refresh_Click"/>
+            </StackPanel>
+
+            <TreeView x:Name="CultureTree" Grid.Row="1"
+                      SelectedItemChanged="CultureTree_SelectedItemChanged">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Cultures}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DisplayName}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding ModCount, StringFormat=' ({0} mod)'}" 
+                                       Foreground="Gray" Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+                <TreeView.Resources>
+                    <DataTemplate DataType="{x:Type local:CultureInfo}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DisplayName}"/>
+                            <TextBlock Text="{Binding Source, StringFormat=' ({0})'}" 
+                                       Foreground="{Binding SourceBrush}" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </TreeView.Resources>
+            </TreeView>
+        </Grid>
+
+        <Grid Grid.Column="1" Margin="10,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <GroupBox Grid.Row="0" Header="{DynamicResource CulturesTab_Details}" Margin="0,0,0,10"
+                      Visibility="Collapsed" x:Name="DetailGroup">
+                <StackPanel>
+                    <Label Content="{DynamicResource CulturesTab_CultureName}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailNameValue" Margin="15,0,0,5" />
+                    <Label Content="{DynamicResource CulturesTab_Heritage}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailHeritageValue" Margin="15,0,0,5" />
+                    <Label Content="{DynamicResource CulturesTab_Source}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailSourceValue" Margin="15,0,0,5" />
+                </StackPanel>
+            </GroupBox>
+
+            <TextBlock x:Name="DetailEmptyText" Grid.Row="0"
+                       Text="{DynamicResource CulturesTab_SelectPrompt}" 
+                       TextWrapping="Wrap" Foreground="Gray"
+                       Margin="0,10,0,0"/>
+
+            <GroupBox Grid.Row="1" Header="{DynamicResource CulturesTab_Stats}">
+                <StackPanel>
+                    <TextBlock x:Name="StatsGroupsText"/>
+                    <TextBlock x:Name="StatsModGroupsText" Margin="0,3,0,0"/>
+                    <TextBlock x:Name="StatsModCulturesText" Margin="0,3,0,0"/>
+                    <TextBlock x:Name="StatsBaseCulturesText" Margin="0,3,0,0"/>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</UserControl>

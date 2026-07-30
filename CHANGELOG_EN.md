@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.2]
+
+### Added
+
+- **Cultures tab**: new tab to the right of Map that displays cultures grouped by heritage in a TreeView, prioritizing mod over base game data.
+- **Culture file parsing**: Clausewitz parser reads `common/culture/cultures/*.txt` recursively, supporting nested blocks, comments, and complex value types (hsv, quoted strings).
+- **Culture localization**: display names loaded from CK3 localization files (`cultures_l_*.yml` and `cultural_heritages_l_*.yml`) for English and Spanish; Catalan falls back to English.
+- **Culture detail panel**: selecting a culture shows its localized name, heritage, and source (Base/Mod).
+- **Statistics panel**: shows total heritage groups, groups with mod changes, mod cultures, and base cultures.
+- **IGamePlugin.CulturesRelativePath**: new interface property for culture directory path (CK3: `common/culture/cultures`).
+
+### Changed
+
+- **Version updated to 1.5.2**: `MainWindow_Title` resource updated in all language files, Catalan version unified to 1.5.2.
+
+### Fixed
+
+- **Culture parser robustness**: `ExtractAttribute` now correctly skips values with trailing blocks (e.g. `color = hsv { 0.72 0.6 0.76 }`) instead of breaking.
+
+---
+
 ## [1.5.1]
 
 ### Added

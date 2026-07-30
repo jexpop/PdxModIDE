@@ -29,10 +29,11 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.1</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.2</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
+    <system:String x:Key="MainWindow_Tab_Cultures">Cultures</system:String>
     <system:String x:Key="MainWindow_Tab_Dates">Dates</system:String>
     <system:String x:Key="MainWindow_Tab_Modules">Modules</system:String>
     <system:String x:Key="MainWindow_Tab_Validation">Validation</system:String>
@@ -165,6 +166,20 @@
     <system:String x:Key="HistoryTab_CultureHeader">CULTURE</system:String>
     <system:String x:Key="HistoryTab_FromCapital">From barony {0}</system:String>
     <system:String x:Key="HistoryTab_NoCultureData">Activate "Base" and/or "Mod" to view culture data</system:String>
+
+    <!-- CulturesTab -->
+    <system:String x:Key="CulturesTab_Refresh">Refresh</system:String>
+    <system:String x:Key="CulturesTab_ShowSource">Show source</system:String>
+    <system:String x:Key="CulturesTab_Details">Culture Details</system:String>
+    <system:String x:Key="CulturesTab_SelectPrompt">Select a culture to view details</system:String>
+    <system:String x:Key="CulturesTab_Stats">Statistics</system:String>
+    <system:String x:Key="CulturesTab_Groups">Heritage groups</system:String>
+    <system:String x:Key="CulturesTab_ModGroups">Groups with mod changes</system:String>
+    <system:String x:Key="CulturesTab_ModCultures">Cultures modified by mod</system:String>
+    <system:String x:Key="CulturesTab_BaseCultures">Base game cultures</system:String>
+    <system:String x:Key="CulturesTab_CultureName">Name:</system:String>
+    <system:String x:Key="CulturesTab_Heritage">Heritage:</system:String>
+    <system:String x:Key="CulturesTab_Source">Source:</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Modules</system:String>

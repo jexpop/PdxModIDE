@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.5.1 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.5.2 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -276,6 +276,7 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
   - **Empires** (Emp.): Colors by empire borders (`e_xxx`) → `BuildEmpireLut()`.
   Click province → info panel shows Barony, County, Duchy, Kingdom, Empire, Holder, Liege according to mode.
   - **Technical note**: overlay is applied on CPU (workaround for `SKShader.CreateImage` bug as child shader). `RenderToBitmap` renders terrain+borders via shader (mode=0), then iterates pixels and applies palette color from the holder LUT. Uses `InvalidateRender()` for cache invalidation.
+- `CulturesTab`: Culture browser with TreeView grouped by heritage. Loads culture definitions from `common/culture/cultures/*.txt` recursively (supports subdirectories like `mod/` for mod-added cultures). Parses Clausewitz blocks (handles `hsv { ... }`, comments, nested blocks). Merges mod over base. Displays localized names from CK3 localization files (`cultures_l_*.yml`, `cultural_heritages_l_*.yml`). Selection panel shows culture name, heritage, source (Base/Mod). Statistics panel.
 - `LogsTab`: Log filters (not fully implemented).
 - `SettingsTab`: Theme, default paths.
 
@@ -458,4 +459,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-07-29 | Project: PdxModIDE | Version: 1.5.0 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-07-30 | Project: PdxModIDE | Version: 1.5.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

@@ -13,6 +13,7 @@ namespace PdxModIDE.Domain.Interfaces
         string LandedTitlesRelativePath { get; }
         string TitleHistoryRelativePath { get; }
         string MapDataRelativePath { get; }
+        string CulturesRelativePath { get; }
 
         string EndDateKey { get; }
         string DefinesOutputFormat { get; }

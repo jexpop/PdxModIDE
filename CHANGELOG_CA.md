@@ -7,6 +7,27 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.5.2]
+
+### Afegit
+
+- **Pestanya Cultures**: nova pestanya a la dreta de Mapa que mostra cultures agrupades per herència en un arbre, prioritzant el mod sobre el joc base.
+- **Anàlisi d'arxius de cultura**: parser Clausewitz que llegeix `common/culture/cultures/*.txt` recursivament, suportant blocs niats, comentaris i tipus de valor complexos (hsv, cadenes).
+- **Localització de cultures**: noms mostrats carregats d'arxius de localització de CK3 (`cultures_l_*.yml` i `cultural_heritages_l_*.yml`) per a anglès i espanyol; català usa anglès com a fallback.
+- **Panell de detalls**: en seleccionar una cultura es mostra el seu nom localitzat, herència i origen (Base/Mod).
+- **Panell d'estadístiques**: mostra grups d'herència totals, grups amb canvis del mod, cultures del mod i del joc base.
+- **IGamePlugin.CulturesRelativePath**: nova propietat d'interfície per a la ruta del directori de cultures (CK3: `common/culture/cultures`).
+
+### Canviat
+
+- **Versió actualitzada a 1.5.2**: recurs `MainWindow_Title` actualitzat a tots els fitxers d'idioma, versió catalana unificada a 1.5.2.
+
+### Corregit
+
+- **Robustesa del parser de cultura**: `ExtractAttribute` ara salta correctament valors amb blocs posteriors (ex. `color = hsv { 0.72 0.6 0.76 }`) en lloc de trencar l'anàlisi.
+
+---
+
 ## [1.5.1]
 
 ### Afegit

@@ -29,10 +29,11 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.1</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.2</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
+    <system:String x:Key="MainWindow_Tab_Cultures">Cultures</system:String>
     <system:String x:Key="MainWindow_Tab_Dates">Dates</system:String>
     <system:String x:Key="MainWindow_Tab_Modules">Mòduls</system:String>
     <system:String x:Key="MainWindow_Tab_Validation">Validació</system:String>
@@ -165,6 +166,20 @@
     <system:String x:Key="HistoryTab_CultureHeader">CULTURA</system:String>
     <system:String x:Key="HistoryTab_FromCapital">Heretat de la baronia {0}</system:String>
     <system:String x:Key="HistoryTab_NoCultureData">Activa "Base" i/o "Mod" per veure dades de cultura</system:String>
+
+    <!-- CulturesTab -->
+    <system:String x:Key="CulturesTab_Refresh">Recarregar</system:String>
+    <system:String x:Key="CulturesTab_ShowSource">Mostrar origen</system:String>
+    <system:String x:Key="CulturesTab_Details">Detalls de cultura</system:String>
+    <system:String x:Key="CulturesTab_SelectPrompt">Selecciona una cultura per veure detalls</system:String>
+    <system:String x:Key="CulturesTab_Stats">Estadístiques</system:String>
+    <system:String x:Key="CulturesTab_Groups">Grups d'herència</system:String>
+    <system:String x:Key="CulturesTab_ModGroups">Grups amb canvis del mod</system:String>
+    <system:String x:Key="CulturesTab_ModCultures">Cultures modificades pel mod</system:String>
+    <system:String x:Key="CulturesTab_BaseCultures">Cultures del joc base</system:String>
+    <system:String x:Key="CulturesTab_CultureName">Nom:</system:String>
+    <system:String x:Key="CulturesTab_Heritage">Herència:</system:String>
+    <system:String x:Key="CulturesTab_Source">Origen:</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Mòduls</system:String>

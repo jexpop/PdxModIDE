@@ -92,6 +92,9 @@
             <TabItem Header="{DynamicResource MainWindow_Tab_Map}">
                 <local:HistoryTab/>
             </TabItem>
+            <TabItem Header="{DynamicResource MainWindow_Tab_Cultures}">
+                <local:CulturesTab/>
+            </TabItem>
             <TabItem Header="{DynamicResource MainWindow_Tab_Dates}">
                 <local:DatesTab/>
             </TabItem>

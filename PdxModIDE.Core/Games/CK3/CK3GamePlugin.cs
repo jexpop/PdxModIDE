@@ -18,6 +18,7 @@ namespace PdxModIDE.Core.Games.CK3
         public string LandedTitlesRelativePath => "common/landed_titles";
         public string TitleHistoryRelativePath => "history/titles";
         public string MapDataRelativePath => "map_data";
+        public string CulturesRelativePath => "common/culture/cultures";
 
         public string EndDateKey => "END_DATE";
         public string DefinesOutputFormat => "\tEND_DATE = \"{0}\"";
