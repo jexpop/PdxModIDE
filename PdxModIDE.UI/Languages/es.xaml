@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.0</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.1</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -161,6 +161,10 @@
     <system:String x:Key="MapTerrain_River">Río</system:String>
     <system:String x:Key="MapTerrain_Impassable">Impasable</system:String>
     <system:String x:Key="MapTerrain_Unknown">Desconocido</system:String>
+    <system:String x:Key="HistoryTab_CultureLabel">Cultura:</system:String>
+    <system:String x:Key="HistoryTab_CultureHeader">CULTURA</system:String>
+    <system:String x:Key="HistoryTab_FromCapital">Heredado de la baronía {0}</system:String>
+    <system:String x:Key="HistoryTab_NoCultureData">Activa "Base" y/o "Mod" para ver datos de cultura</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Módulos</system:String>

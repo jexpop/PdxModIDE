@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.1]
+
+### Added
+
+- **Cultural map view (full implementation)**: new Cultural view renders each province with its culture name and color, including Base/Mod/Ambos source priority and year-based history lookup.
+- **Culture data loading**: new `CultureLoader` parses culture definitions (`common/culture/cultures/*.txt`), province history (`history/provinces/*.txt`), title holder history (`history/titles/*.txt`), and character cultures (`history/characters/*.txt`).
+- **Culture inheritance**: provinces without explicit `culture =` in their history file inherit from the county title holder's culture (holder resolved from title history, culture from character history).
+- **Culture localization**: culture display names loaded from CK3 localization files (`cultures_l_*.yml`) for all supported languages.
+- **Inherited culture display format**: inherited cultures shown as `"Anglosajona (Chelmsford)"` with the capital province name in parentheses.
+- **ShowNamesCheck visibility**: `ShowNamesCheck` moved outside `TitleModePanel` in XAML so it stays visible in Cultural view.
+
+### Changed
+
+- **Version updated to 1.5.1**: `MainWindow_Title` resource updated in all language files.
+
+### Fixed
+
+- **Culture parsing for nested date blocks**: parser now uses depth + dateStack to correctly capture `culture =` on separate lines inside date blocks in province history files.
+- **Culture definition parsing at any depth**: detects culture blocks nested within culture groups using `BlockRe` and single-stack approach.
+- **Float color parsing**: `TryParseFloatColor()` added to handle RGB values with decimal points in culture color definitions.
+- **`Math.Clamp` crash avoidance**: `maxFontSize` computed as `Math.Max(8f, boxW * 0.3f)` instead of `Math.Clamp` to prevent crash when `boxW < 27`.
+- **Map label visibility**: lowered map label bounding-box filter from `30x20` to `20x12` to show more culture labels on the map.
+
+---
+
 ## [1.5.0]
 
 ### Added

@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.0</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.1</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -161,6 +161,10 @@
     <system:String x:Key="MapTerrain_River">Riu</system:String>
     <system:String x:Key="MapTerrain_Impassable">Impassable</system:String>
     <system:String x:Key="MapTerrain_Unknown">Desconegut</system:String>
+    <system:String x:Key="HistoryTab_CultureLabel">Cultura:</system:String>
+    <system:String x:Key="HistoryTab_CultureHeader">CULTURA</system:String>
+    <system:String x:Key="HistoryTab_FromCapital">Heretat de la baronia {0}</system:String>
+    <system:String x:Key="HistoryTab_NoCultureData">Activa "Base" i/o "Mod" per veure dades de cultura</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Mòduls</system:String>

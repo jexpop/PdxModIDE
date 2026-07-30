@@ -23,9 +23,13 @@ namespace PdxModIDE.UI
         private TitleHistoryLoader? _titleHistoryMod;
         private CharacterHistoryLoader? _characterHistoryBase;
         private CharacterHistoryLoader? _characterHistoryMod;
+        private CultureLoader? _cultureBase;
+        private CultureLoader? _cultureMod;
+        private Dictionary<string, string>? _cultureLocalizedNames;
         private DynastyLoader? _dynastyBase;
         private DynastyLoader? _dynastyMod;
         private MapRenderer? _renderer;
+        private System.Windows.Controls.TextBlock? _titleGroupHeader;
         private WriteableBitmap? _writeableBmp;
         private bool _isDragging;
         private bool _mapLoaded;
@@ -121,6 +125,7 @@ namespace PdxModIDE.UI
                 TitleModePanel.Visibility = Visibility.Collapsed;
                 ModeToggleButton.Visibility = Visibility.Collapsed;
                 SplitCountyButton.Visibility = Visibility.Collapsed;
+                ShowNamesCheck.Visibility = Visibility.Collapsed;
                 return;
             }
 
@@ -131,6 +136,7 @@ namespace PdxModIDE.UI
                 TitleModePanel.Visibility = Visibility.Collapsed;
                 ModeToggleButton.Visibility = Visibility.Collapsed;
                 SplitCountyButton.Visibility = Visibility.Collapsed;
+                ShowNamesCheck.Visibility = Visibility.Visible;
                 return;
             }
 
@@ -194,7 +200,9 @@ namespace PdxModIDE.UI
             string hierarchyText = "";
             if (!_editMode)
             {
-                if (HolderModeCheck?.IsChecked == true)
+                if (_currentView == MapViewType.Cultural)
+                    hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_View_Cultural") as string ?? "";
+                else if (HolderModeCheck?.IsChecked == true)
                     hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_HolderMode") as string ?? "";
                 else if (CountyModeCheck?.IsChecked == true)
                     hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_CountyMode") as string ?? "";
@@ -475,6 +483,10 @@ namespace PdxModIDE.UI
                 case MapViewType.Title:
                     if (!HasActiveSource())
                         BaseSourceCheck.IsChecked = true;
+                    UpdateEditModeState();
+                    UpdateTitleModeVisibility();
+                    EnsureAtLeastOneMode();
+                    ReapplyActiveMode();
                     break;
 
                 case MapViewType.Cultural:
@@ -486,9 +498,8 @@ namespace PdxModIDE.UI
                     }
                     if (!HasActiveSource())
                         BaseSourceCheck.IsChecked = true;
-                    _renderer?.SetHolderMode(false, null, null);
-                    _titleLabels = null;
-                    InvalidateRender();
+                    UpdateEditModeState();
+                    ApplyCultureMode();
                     break;
             }
 
@@ -610,6 +621,16 @@ namespace PdxModIDE.UI
                 _dynastyBase = new DynastyLoader();
                 int baseDynCount = _dynastyBase.LoadAll(gameRoot);
 
+                _cultureBase = new CultureLoader();
+                int baseCultureCount = _cultureBase.LoadCultures(gameRoot);
+                _cultureBase.LoadProvinceHistory(gameRoot);
+                loader.LoadModCultures(_cultureBase);
+                var holderIds = _cultureBase.LoadTitleHistory(gameRoot);
+                _cultureBase.LoadCharacterCultures(gameRoot, holderIds);
+                string uiLang = ViewModel?.Language ?? "en";
+                _cultureLocalizedNames = _cultureBase.CultureLocalizedNames;
+                _cultureBase.LoadCultureLocalizedNames(gameRoot, uiLang);
+
                 int modCount = 0;
                 int modCharCount = 0;
                 int modDynCount = 0;
@@ -624,6 +645,9 @@ namespace PdxModIDE.UI
                     _dynastyMod = new DynastyLoader();
                     modDynCount = _dynastyMod.LoadAll(modRoot, overwriteDuplicates: true);
 
+                    _cultureMod = new CultureLoader();
+                    _cultureMod.LoadCultures(modRoot, overwriteDuplicates: true);
+                    _cultureMod.LoadProvinceHistory(modRoot, overwriteDuplicates: true);
                     loader.LoadModLocalization(modRoot);
                 }
                 else
@@ -631,9 +655,11 @@ namespace PdxModIDE.UI
                     _titleHistoryMod = null;
                     _characterHistoryMod = null;
                     _dynastyMod = null;
+                    _cultureMod = null;
                 }
 
                 _mapLoader = loader;
+                _cultureBase.BuildProvinceToCounty(_mapLoader);
 
                 var renderer = new MapRenderer();
                 if (!renderer.Load(loader))
@@ -927,11 +953,14 @@ namespace PdxModIDE.UI
                 {
                     _mapLoader.LoadModLandedTitles(modRoot);
                     _mapLoader.LoadModLocalization(modRoot);
+                    if (_cultureMod != null)
+                        _mapLoader.LoadModCultures(_cultureMod);
                 }
             }
             else
             {
                 _mapLoader.ResetToBase();
+                _mapLoader.ResetBaseCultures();
             }
         }
 
@@ -996,6 +1025,11 @@ namespace PdxModIDE.UI
 
             if (!_mapLoaded || _renderer == null) return;
             _titleLabels = null;
+            if (_currentView == MapViewType.Cultural)
+            {
+                ApplyCultureMode();
+                return;
+            }
             ReapplyActiveMode();
             UpdateSplitCountyButtonVisibility();
             UpdateModeStatusLabel();
@@ -1003,7 +1037,11 @@ namespace PdxModIDE.UI
 
         private void ReapplyActiveMode()
         {
-            if (HolderModeCheck?.IsChecked == true) ApplyHolderMode();
+            if (_currentView == MapViewType.Cultural)
+            {
+                ApplyCultureMode();
+            }
+            else if (HolderModeCheck?.IsChecked == true) ApplyHolderMode();
             else if (CountyModeCheck?.IsChecked == true) ApplyCountyMode();
             else if (DuchyModeCheck?.IsChecked == true) ApplyDuchyMode();
             else if (KingdomModeCheck?.IsChecked == true) ApplyKingdomMode();
@@ -1154,7 +1192,9 @@ namespace PdxModIDE.UI
             UpdateOffsetLabel();
             if (!_mapLoaded || _renderer == null) return;
 
-            if (HolderModeCheck.IsChecked == true)
+            if (_currentView == MapViewType.Cultural)
+                ApplyCultureMode();
+            else if (HolderModeCheck.IsChecked == true)
                 ApplyHolderMode();
             else if (CountyModeCheck.IsChecked == true)
                 ApplyCountyMode();
@@ -1257,6 +1297,40 @@ namespace PdxModIDE.UI
             var empireLut = _mapLoader!.BuildEmpireLut(out var indexToEmpire);
             var palette = MapLoader.BuildEmpirePalette(indexToEmpire);
             _renderer!.SetHolderMode(true, empireLut, palette);
+            BuildTitleLabels();
+            InvalidateRender();
+            UpdateSelectionInfo();
+        }
+
+        private void ApplyCultureMode()
+        {
+            if (!HasActiveSource() || _mapLoader == null)
+            {
+                _renderer?.SetHolderMode(false, null, null);
+                _titleLabels = null;
+                InvalidateRender();
+                return;
+            }
+
+            if (!int.TryParse(YearBox.Text, out int year))
+                year = 867;
+
+            bool useBase = BaseSourceCheck?.IsChecked == true;
+            bool useMod = ModSourceCheck?.IsChecked == true;
+            int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
+
+            int? baseYear = useBase ? year : (int?)null;
+            int? modYear = useMod ? year + offset : (int?)null;
+
+            var cultureLut = _mapLoader.BuildCombinedCultureLut(
+                baseYear, useBase ? _cultureBase : null,
+                modYear, useMod ? _cultureMod : null,
+                out var indexToCulture);
+            var palette = _mapLoader.BuildCulturePalette(indexToCulture);
+            _renderer!.SetHolderMode(true, cultureLut, palette);
+            _currentHolderLut = cultureLut;
+            _currentIndexToHolder = indexToCulture;
+
             BuildTitleLabels();
             InvalidateRender();
             UpdateSelectionInfo();
@@ -1367,12 +1441,6 @@ namespace PdxModIDE.UI
                 });
                 TextEmpireValue.Text = commonEmpire;
 
-                TextBaronyLabel.Content = Res("HistoryTab_BaronyLabel");
-                TextCountyLabel.Content = Res("HistoryTab_CountyLabel");
-                TextDuchyLabel.Content = Res("HistoryTab_DuchyLabel");
-                TextKingdomLabel.Content = Res("HistoryTab_KingdomLabel");
-                TextEmpireLabel.Content = Res("HistoryTab_EmpireLabel");
-
                 bool allLand = provinceIds.All(id =>
                 {
                     var p = _mapLoader.GetProvinceFromId(id);
@@ -1380,8 +1448,68 @@ namespace PdxModIDE.UI
                 });
                 TitleGroup.Visibility = HasActiveSource() && allLand ? Visibility.Visible : Visibility.Collapsed;
 
-                TextHolderLabel.Content = Res("HistoryTab_HolderLabel");
-                TextHolderValue.Text = "(multi-select)";
+                if (_currentView == MapViewType.Cultural)
+                {
+                    if (_titleGroupHeader == null)
+                        _titleGroupHeader = (System.Windows.Controls.TextBlock)TitleGroup.Header;
+                    _titleGroupHeader.Text = Res("HistoryTab_CultureHeader");
+                    TextBaronyLabel.Content = Res("HistoryTab_CultureLabel");
+                    TextCountyLabel.Content = "";
+                    TextDuchyLabel.Content = "";
+                    TextKingdomLabel.Content = "";
+                    TextEmpireLabel.Content = "";
+                    TextCountyValue.Text = "";
+                    TextDuchyValue.Text = "";
+                    TextKingdomValue.Text = "";
+                    TextEmpireValue.Text = "";
+                    TextCountyValue.Visibility = Visibility.Collapsed;
+                    TextDuchyValue.Visibility = Visibility.Collapsed;
+                    TextKingdomValue.Visibility = Visibility.Collapsed;
+                    TextEmpireValue.Visibility = Visibility.Collapsed;
+                    TextHolderLabel.Content = Res("HistoryTab_BaronyLabel");
+                    TextHolderValue.Text = GetCommonValue(provinceIds, pid =>
+                    {
+                        string bk = _mapLoader.GetTitleFromProvinceId(pid) ?? "-";
+                        return bk != "-" ? GetLocalizedTitleName(bk) : "-";
+                    });
+
+                    string? commonCulture = GetCommonValue(provinceIds, pid =>
+                    {
+                        string? cultureKey = null;
+                        if (int.TryParse(YearBox.Text, out int yr))
+                        {
+                            int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
+                            bool useMod = ModSourceCheck?.IsChecked == true;
+                            bool useBase = BaseSourceCheck?.IsChecked == true;
+                            if (useMod && _cultureMod != null &&
+                                _cultureMod.ProvinceCultures.TryGetValue(pid, out var modCultures))
+                                cultureKey = CultureLoader.GetCultureAtYear(modCultures, yr + offset);
+                            if (cultureKey == null && useBase && _cultureBase != null &&
+                                _cultureBase.ProvinceCultures.TryGetValue(pid, out var baseCultures))
+                                cultureKey = CultureLoader.GetCultureAtYear(baseCultures, yr);
+                            if (cultureKey == null && _cultureBase != null)
+                                cultureKey = _cultureBase.GetEffectiveCulture(pid, yr);
+                        }
+                        return cultureKey != null ? GetCultureDisplayName(cultureKey) : "-";
+                    });
+                    TextBaronyValue.Text = commonCulture ?? "-";
+                }
+                else
+                {
+                    if (_titleGroupHeader != null)
+                        _titleGroupHeader.SetResourceReference(System.Windows.Controls.TextBlock.TextProperty, "HistoryTab_Title");
+                    TextBaronyLabel.Content = Res("HistoryTab_BaronyLabel");
+                    TextCountyLabel.Content = Res("HistoryTab_CountyLabel");
+                    TextDuchyLabel.Content = Res("HistoryTab_DuchyLabel");
+                    TextKingdomLabel.Content = Res("HistoryTab_KingdomLabel");
+                    TextEmpireLabel.Content = Res("HistoryTab_EmpireLabel");
+                    TextCountyValue.Visibility = Visibility.Visible;
+                    TextDuchyValue.Visibility = Visibility.Visible;
+                    TextKingdomValue.Visibility = Visibility.Visible;
+                    TextEmpireValue.Visibility = Visibility.Visible;
+                    TextHolderLabel.Content = Res("HistoryTab_HolderLabel");
+                    TextHolderValue.Text = "(multi-select)";
+                }
             }
             catch (Exception ex)
             {
@@ -1449,13 +1577,77 @@ namespace PdxModIDE.UI
                 }
                 TextEmpireValue.Text = empireName;
 
+                if (_titleGroupHeader == null)
+                    _titleGroupHeader = (System.Windows.Controls.TextBlock)TitleGroup.Header;
+
+                _titleGroupHeader.SetResourceReference(System.Windows.Controls.TextBlock.TextProperty, "HistoryTab_Title");
                 TextBaronyLabel.Content = Res("HistoryTab_BaronyLabel");
                 TextCountyLabel.Content = Res("HistoryTab_CountyLabel");
                 TextDuchyLabel.Content = Res("HistoryTab_DuchyLabel");
                 TextKingdomLabel.Content = Res("HistoryTab_KingdomLabel");
                 TextEmpireLabel.Content = Res("HistoryTab_EmpireLabel");
+                TextCountyValue.Visibility = Visibility.Visible;
+                TextDuchyValue.Visibility = Visibility.Visible;
+                TextKingdomValue.Visibility = Visibility.Visible;
+                TextEmpireValue.Visibility = Visibility.Visible;
 
-                if (countyKey != "-" && int.TryParse(YearBox.Text, out int year))
+                if (_currentView == MapViewType.Cultural)
+                {
+                    _titleGroupHeader.Text = Res("HistoryTab_CultureHeader");
+                    TextBaronyLabel.Content = Res("HistoryTab_CultureLabel");
+                    TextCountyLabel.Content = "";
+                    TextDuchyLabel.Content = "";
+                    TextKingdomLabel.Content = "";
+                    TextEmpireLabel.Content = "";
+                    TextCountyValue.Text = "";
+                    TextDuchyValue.Text = "";
+                    TextKingdomValue.Text = "";
+                    TextEmpireValue.Text = "";
+                    TextCountyValue.Visibility = Visibility.Collapsed;
+                    TextDuchyValue.Visibility = Visibility.Collapsed;
+                    TextKingdomValue.Visibility = Visibility.Collapsed;
+                    TextEmpireValue.Visibility = Visibility.Collapsed;
+                    TextHolderLabel.Content = Res("HistoryTab_BaronyLabel");
+                    TextHolderValue.Text = baronyName;
+
+                    string? cultureKey = null;
+                    string? capSuffix = null;
+                    if (int.TryParse(YearBox.Text, out int yr))
+                    {
+                        int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
+                        bool useMod = ModSourceCheck?.IsChecked == true;
+                        bool useBase = BaseSourceCheck?.IsChecked == true;
+
+                        if (useMod && _cultureMod != null &&
+                            _cultureMod.ProvinceCultures.TryGetValue(provinceId, out var modCultures))
+                            cultureKey = CultureLoader.GetCultureAtYear(modCultures, yr + offset);
+                        if (cultureKey == null && useBase && _cultureBase != null &&
+                            _cultureBase.ProvinceCultures.TryGetValue(provinceId, out var baseCultures))
+                            cultureKey = CultureLoader.GetCultureAtYear(baseCultures, yr);
+                        if (cultureKey == null && _cultureBase != null)
+                        {
+                            cultureKey = _cultureBase.GetEffectiveCulture(provinceId, yr);
+                            if (cultureKey != null && _cultureBase.ProvinceToCounty.TryGetValue(provinceId, out var county) &&
+                                _cultureBase.CountyToCapitalProvince.TryGetValue(county, out var capPid))
+                            {
+                                string capBarony = _mapLoader?.GetTitleFromProvinceId(capPid) ?? "";
+                                string capName = !string.IsNullOrEmpty(capBarony) ? GetLocalizedTitleName(capBarony) : "";
+                                capSuffix = !string.IsNullOrEmpty(capName) ? capName : null;
+                            }
+                        }
+                    }
+
+                    if (cultureKey != null)
+                    {
+                        string cultureName = GetCultureDisplayName(cultureKey);
+                        TextBaronyValue.Text = capSuffix != null ? $"{cultureName} ({capSuffix})" : cultureName;
+                    }
+                    else
+                    {
+                        TextBaronyValue.Text = "(no data)";
+                    }
+                }
+                else if (countyKey != "-" && int.TryParse(YearBox.Text, out int year))
                 {
                     bool useBase = BaseSourceCheck?.IsChecked == true;
                     bool useMod = ModSourceCheck?.IsChecked == true;
@@ -1651,7 +1843,30 @@ namespace PdxModIDE.UI
 
             Func<int, string?> getTitleForProvince;
 
-            if (CountyModeCheck?.IsChecked == true)
+            if (_currentView == MapViewType.Cultural)
+            {
+                bool useBase = BaseSourceCheck?.IsChecked == true;
+                bool useMod = ModSourceCheck?.IsChecked == true;
+                int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
+                int.TryParse(YearBox.Text, out int year);
+                int? baseYear = useBase ? year : (int?)null;
+                int? modYear = useMod ? year + offset : (int?)null;
+
+                getTitleForProvince = pid =>
+                {
+                    string? culture = null;
+                    if (modYear.HasValue && _cultureMod != null &&
+                        _cultureMod.ProvinceCultures.TryGetValue(pid, out var modCultures))
+                        culture = CultureLoader.GetCultureAtYear(modCultures, modYear.Value);
+                    if (culture == null && baseYear.HasValue && _cultureBase != null &&
+                        _cultureBase.ProvinceCultures.TryGetValue(pid, out var baseCultures))
+                        culture = CultureLoader.GetCultureAtYear(baseCultures, baseYear.Value);
+                    if (culture == null && baseYear.HasValue && _cultureBase != null)
+                        culture = _cultureBase.GetEffectiveCulture(pid, baseYear.Value);
+                    return culture;
+                };
+            }
+            else if (CountyModeCheck?.IsChecked == true)
             {
                 getTitleForProvince = pid =>
                 {
@@ -1795,9 +2010,11 @@ namespace PdxModIDE.UI
                     }
                 }
 
-                string displayName = HolderModeCheck?.IsChecked == true
-                    ? GetCharacterName(title)
-                    : GetLocalizedTitleName(title);
+                string displayName = _currentView == MapViewType.Cultural
+                    ? GetCultureDisplayName(title)
+                    : HolderModeCheck?.IsChecked == true
+                        ? GetCharacterName(title)
+                        : GetLocalizedTitleName(title);
                 _titleLabels.Add(new TitleLabelInfo
                 {
                     TitleKey = title,
@@ -1884,6 +2101,19 @@ namespace PdxModIDE.UI
             return rawName;
         }
 
+        private string GetCultureDisplayName(string cultureKey)
+        {
+            if (_cultureLocalizedNames != null && _cultureLocalizedNames.TryGetValue(cultureKey, out var localized))
+                return localized;
+            if (_mapLoader != null && _mapLoader.CultureDisplayNames.TryGetValue(cultureKey, out var name))
+                return name;
+            if (_cultureBase != null && _cultureBase.AllCultures.TryGetValue(cultureKey, out var ci) && !string.IsNullOrEmpty(ci.Name))
+                return ci.Name;
+            if (_cultureMod != null && _cultureMod.AllCultures.TryGetValue(cultureKey, out var ci2) && !string.IsNullOrEmpty(ci2.Name))
+                return ci2.Name;
+            return cultureKey;
+        }
+
         private string GetAppLanguage()
         {
             return ViewModel?.Language ?? "en";
@@ -1921,10 +2151,11 @@ namespace PdxModIDE.UI
                 float boxW = sx2 - sx1;
                 float boxH = sy2 - sy1;
 
-                if (boxW < 30 || boxH < 20) continue;
+                if (boxW < 20 || boxH < 12) continue;
 
                 float maxTextWidth = boxW * 0.85f;
-                float fontSize = Math.Clamp(boxW * 0.14f, 8f, boxW * 0.3f);
+                float maxFontSize = Math.Max(8f, boxW * 0.3f);
+                float fontSize = Math.Clamp(boxW * 0.14f, 8f, maxFontSize);
                 using var font = new SKFont(typeface, fontSize);
                 float textWidth = font.MeasureText(label.DisplayName);
                 if (textWidth > maxTextWidth)

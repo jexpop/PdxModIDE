@@ -7,6 +7,31 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.5.1]
+
+### Añadido
+
+- **Vista de mapa Cultural (implementación completa)**: la nueva vista Cultural renderiza cada provincia con el nombre y color de su cultura, incluyendo prioridad de fuente Base/Mod/Ambos y búsqueda histórica por año.
+- **Carga de datos de cultura**: nuevo `CultureLoader` que analiza definiciones de cultura (`common/culture/cultures/*.txt`), historial de provincias (`history/provinces/*.txt`), historial de titulares de títulos (`history/titles/*.txt`) y culturas de personajes (`history/characters/*.txt`).
+- **Herencia de cultura**: las provincias sin `culture =` explícito en su historial heredan la cultura del titular del condado (titular resuelto desde el historial de títulos, cultura desde el historial de personajes).
+- **Localización de culturas**: nombres de cultura mostrados cargados desde archivos de localización de CK3 (`cultures_l_*.yml`) para todos los idiomas soportados.
+- **Formato de herencia**: las culturas heredadas se muestran como `"Anglosajona (Chelmsford)"` con el nombre de la provincia capital entre paréntesis.
+- **Visibilidad de ShowNamesCheck**: `ShowNamesCheck` movido fuera de `TitleModePanel` en XAML para que permanezca visible en la vista Cultural.
+
+### Cambiado
+
+- **Versión actualizada a 1.5.1**: recurso `MainWindow_Title` actualizado en todos los ficheros de idioma.
+
+### Corregido
+
+- **Parseo de culture en bloques de fecha anidados**: el parser ahora usa profundidad + pila de fechas para capturar correctamente `culture =` en líneas separadas dentro de bloques de fecha en archivos de historial de provincias.
+- **Parseo de definiciones de cultura a cualquier profundidad**: detecta bloques de cultura anidados dentro de grupos culturales usando `BlockRe` y un enfoque de pila única.
+- **Parseo de colores flotantes**: se añadió `TryParseFloatColor()` para manejar valores RGB con decimales en definiciones de color de cultura.
+- **Prevención de crash en `Math.Clamp`**: `maxFontSize` se calcula como `Math.Max(8f, boxW * 0.3f)` en lugar de `Math.Clamp` para evitar fallos cuando `boxW < 27`.
+- **Visibilidad de etiquetas en el mapa**: se redujo el filtro de bounding-box de etiquetas de `30x20` a `20x12` para mostrar más etiquetas de cultura en el mapa.
+
+---
+
 ## [1.5.0]
 
 ### Añadido

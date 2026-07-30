@@ -99,9 +99,9 @@
                               Margin="5,0,0,0" Checked="KingdomModeChanged" Unchecked="KingdomModeChanged" ToolTip="{DynamicResource HistoryTab_KingdomModeTooltip}"/>
                     <CheckBox x:Name="EmpireModeCheck" Content="{DynamicResource HistoryTab_EmpireMode}" VerticalAlignment="Center"
                               Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="{DynamicResource HistoryTab_EmpireModeTooltip}"/>
-                    <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"/>
                 </StackPanel>
+                <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
+                          Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"/>
                 <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeViewAction}" Width="140" Height="26"
                         Margin="10,0,0,0" Click="ModeToggleButton_Click"
                         ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>

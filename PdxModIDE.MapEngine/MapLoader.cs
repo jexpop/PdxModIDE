@@ -40,6 +40,8 @@ namespace PdxModIDE.MapEngine
         public Dictionary<string, string> TitleDisplayNames { get; } = new();
         public Dictionary<string, Dictionary<string, string>> LocalizedNames { get; } = new();
         public Dictionary<string, (byte R, byte G, byte B)> TitleColors { get; } = new(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, (byte R, byte G, byte B)> CultureColors { get; } = new(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, string> CultureDisplayNames { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         private Dictionary<int, string> _baseProvinceToBarony = new();
         private Dictionary<string, string> _baseBaronyToCounty = new();
@@ -49,6 +51,8 @@ namespace PdxModIDE.MapEngine
         private Dictionary<string, string> _baseTitleDisplayNames = new();
         private Dictionary<string, Dictionary<string, string>> _baseLocalizedNames = new();
         private Dictionary<string, (byte R, byte G, byte B)> _baseTitleColors = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, (byte R, byte G, byte B)> _baseCultureColors = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, string> _baseCultureDisplayNames = new(StringComparer.OrdinalIgnoreCase);
         public Dictionary<int, int> ProvinceIdToPacked { get; } = new();
         public byte[]? Lut { get; private set; }
         public int[]? ProvinceIdMap { get; private set; }
@@ -191,6 +195,8 @@ namespace PdxModIDE.MapEngine
             foreach (var kvp in LocalizedNames)
                 _baseLocalizedNames[kvp.Key] = new Dictionary<string, string>(kvp.Value);
             _baseTitleColors = new Dictionary<string, (byte R, byte G, byte B)>(TitleColors, StringComparer.OrdinalIgnoreCase);
+            _baseCultureColors = new Dictionary<string, (byte R, byte G, byte B)>(CultureColors, StringComparer.OrdinalIgnoreCase);
+            _baseCultureDisplayNames = new Dictionary<string, string>(CultureDisplayNames);
         }
 
         public void LoadModLandedTitles(string modRoot)
@@ -235,6 +241,12 @@ namespace PdxModIDE.MapEngine
             TitleColors.Clear();
             foreach (var kvp in _baseTitleColors)
                 TitleColors[kvp.Key] = kvp.Value;
+            CultureColors.Clear();
+            foreach (var kvp in _baseCultureColors)
+                CultureColors[kvp.Key] = kvp.Value;
+            CultureDisplayNames.Clear();
+            foreach (var kvp in _baseCultureDisplayNames)
+                CultureDisplayNames[kvp.Key] = kvp.Value;
         }
 
         private void LoadLandedTitles()
@@ -921,6 +933,128 @@ namespace PdxModIDE.MapEngine
         public static SKImage BuildEmpirePalette(Dictionary<int, string> indexToEmpire)
         {
             return BuildHolderPalette(indexToEmpire);
+        }
+
+        public void LoadModCultures(CultureLoader culture)
+        {
+            foreach (var kvp in culture.AllCultures)
+            {
+                var ci = kvp.Value;
+                if (ci.R != 0 || ci.G != 0 || ci.B != 0)
+                    CultureColors[kvp.Key] = (ci.R, ci.G, ci.B);
+                if (!string.IsNullOrEmpty(ci.Name))
+                    CultureDisplayNames[kvp.Key] = ci.Name;
+            }
+        }
+
+        public void ResetBaseCultures()
+        {
+            CultureColors.Clear();
+            foreach (var kvp in _baseCultureColors)
+                CultureColors[kvp.Key] = kvp.Value;
+            CultureDisplayNames.Clear();
+            foreach (var kvp in _baseCultureDisplayNames)
+                CultureDisplayNames[kvp.Key] = kvp.Value;
+        }
+
+        public ushort[] BuildCombinedCultureLut(
+            int? baseYear, CultureLoader? baseCulture,
+            int? modYear, CultureLoader? modCulture,
+            out Dictionary<int, string> indexToCulture)
+        {
+            indexToCulture = new Dictionary<int, string>();
+            var cultureToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            int nextIndex = 1;
+            var lut = new ushort[16_777_216];
+
+            foreach (var info in ProvincesByColor.Values)
+            {
+                int idx = info.ColorPacked;
+                int pid = info.Id;
+
+                if (pid <= 0)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                string? culture = null;
+
+                if (modYear.HasValue && modCulture != null &&
+                    modCulture.ProvinceCultures.TryGetValue(pid, out var modProvCultures))
+                {
+                    culture = CultureLoader.GetCultureAtYear(modProvCultures, modYear.Value);
+                }
+
+                if (culture == null && baseYear.HasValue && baseCulture != null &&
+                    baseCulture.ProvinceCultures.TryGetValue(pid, out var baseProvCultures))
+                {
+                    culture = CultureLoader.GetCultureAtYear(baseProvCultures, baseYear.Value);
+                }
+
+                if (culture == null && baseYear.HasValue && baseCulture != null)
+                    culture = baseCulture.GetEffectiveCulture(pid, baseYear.Value);
+
+                if (culture == null)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                if (!cultureToIndex.TryGetValue(culture, out var cIdx))
+                {
+                    cIdx = nextIndex++;
+                    cultureToIndex[culture] = cIdx;
+                    indexToCulture[cIdx] = culture;
+                }
+
+                lut[idx] = (ushort)cIdx;
+            }
+
+            return lut;
+        }
+
+        public SKImage BuildCulturePalette(Dictionary<int, string> indexToCulture)
+        {
+            int maxIdx = indexToCulture.Keys.Count > 0 ? indexToCulture.Keys.Max() : 255;
+            int size = maxIdx + 1;
+            var bmp = new SKBitmap(size, 1, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var pixels = new byte[size * 4];
+
+            for (int i = 0; i < size; i++)
+            {
+                int off = i * 4;
+                if (i == 0 || !indexToCulture.ContainsKey(i))
+                {
+                    pixels[off] = 40;
+                    pixels[off + 1] = 40;
+                    pixels[off + 2] = 40;
+                    pixels[off + 3] = 255;
+                }
+                else
+                {
+                    string cultureKey = indexToCulture[i];
+                    if (CultureColors.TryGetValue(cultureKey, out var color))
+                    {
+                        pixels[off] = color.R;
+                        pixels[off + 1] = color.G;
+                        pixels[off + 2] = color.B;
+                        pixels[off + 3] = 255;
+                    }
+                    else
+                    {
+                        var (h, s, l) = HueSatLum(i);
+                        var (r, g, b) = HslToRgb(h, s, l);
+                        pixels[off] = r;
+                        pixels[off + 1] = g;
+                        pixels[off + 2] = b;
+                        pixels[off + 3] = 255;
+                    }
+                }
+            }
+
+            Marshal.Copy(pixels, 0, bmp.GetPixels(), pixels.Length);
+            return SKImage.FromBitmap(bmp);
         }
 
         private static (float h, float s, float l) HueSatLum(int index)

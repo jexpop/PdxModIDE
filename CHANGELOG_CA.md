@@ -7,6 +7,31 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.5.1]
+
+### Afegit
+
+- **Vista de mapa Cultural (implementació completa)**: la nova vista Cultural renderitza cada província amb el nom i color de la seva cultura, incloent prioritat de font Base/Mod/Ambos i cerca històrica per any.
+- **Càrrega de dades de cultura**: nou `CultureLoader` que analitza definicions de cultura (`common/culture/cultures/*.txt`), historial de províncies (`history/provinces/*.txt`), historial de titulars de títols (`history/titles/*.txt`) i cultures de personatges (`history/characters/*.txt`).
+- **Herència de cultura**: les províncies sense `culture =` explícit al seu historial hereten la cultura del titular del comtat (titular resolt des de l'historial de títols, cultura des de l'historial de personatges).
+- **Localització de cultures**: noms de cultura mostrats carregats des d'arxius de localització de CK3 (`cultures_l_*.yml`) per a tots els idiomes suportats.
+- **Format d'herència**: les cultures heretades es mostren com `"Anglosaxona (Chelmsford)"` amb el nom de la província capital entre parèntesis.
+- **Visibilitat de ShowNamesCheck**: `ShowNamesCheck` mogut fora de `TitleModePanel` a XAML perquè romangui visible a la vista Cultural.
+
+### Canviat
+
+- **Versió actualitzada a 1.5.1**: recurs `MainWindow_Title` actualitzat a tots els fitxers d'idioma.
+
+### Corregit
+
+- **Parseig de culture en blocs de data niats**: el parser ara usa profunditat + pila de dates per capturar correctament `culture =` en línies separades dins de blocs de data en arxius d'historial de províncies.
+- **Parseig de definicions de cultura a qualsevol profunditat**: detecta blocs de cultura niats dins de grups culturals usant `BlockRe` i un enfocament de pila única.
+- **Parseig de colors flotants**: s'ha afegit `TryParseFloatColor()` per gestionar valors RGB amb decimals en definicions de color de cultura.
+- **Prevenció de crash a `Math.Clamp`**: `maxFontSize` es calcula com `Math.Max(8f, boxW * 0.3f)` en lloc de `Math.Clamp` per evitar errors quan `boxW < 27`.
+- **Visibilitat d'etiquetes al mapa**: s'ha reduït el filtre de bounding-box d'etiquetes de `30x20` a `20x12` per mostrar més etiquetes de cultura al mapa.
+
+---
+
 ## [1.5.0]
 
 ### Afegit

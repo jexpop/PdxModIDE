@@ -7,7 +7,7 @@
 **Desktop IDE for managing and processing Paradox Interactive game mods (CK3, EU4, HOI4, etc.)**
 WPF application (.NET 8) that automates copying game files to the mod directory, applies year offsets, and validates differences.
 
-**Current version:** 1.5.0
+**Current version:** 1.5.1
 
 ### Documentation
 
@@ -34,7 +34,7 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 **IDE de escritorio para la gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**
 Aplicación WPF (.NET 8) que automatiza el copiado de archivos del juego al mod, aplica offset de fechas y valida diferencias.
 
-**Versión actual:** 1.5.0
+**Versión actual:** 1.5.1
 
 ### Documentación
 
