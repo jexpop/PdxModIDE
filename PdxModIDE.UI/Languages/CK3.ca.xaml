@@ -9,4 +9,13 @@
         Per afegir un nou joc, crear {GameKey}.ca.xaml.
     -->
 
+    <!-- CulturesTab: explicacions dels paràmetres de l'ethos -->
+    <system:String x:Key="EthosParam_character_modifier_Desc">Modificadors que s'apliquen als personatges d'aquesta cultura.</system:String>
+    <system:String x:Key="EthosParam_province_modifier_Desc">Modificadors que s'apliquen a les províncies d'aquesta cultura.</system:String>
+    <system:String x:Key="EthosParam_county_modifier_Desc">Modificadors que s'apliquen als comtats d'aquesta cultura.</system:String>
+    <system:String x:Key="EthosParam_culture_modifier_Desc">Modificadors que s'apliquen a nivell de cultura.</system:String>
+    <system:String x:Key="EthosParam_parameters_Desc">Indicadors especials que activen comportaments concrets d'aquest ethos.</system:String>
+    <system:String x:Key="EthosParam_ai_will_do_Desc">Pes guionitzat que determina la probabilitat que la IA adopti aquest ethos.</system:String>
+    <system:String x:Key="EthosParam_desc_Desc">Clau de localització del text de descripció de l'ethos.</system:String>
+
 </ResourceDictionary>

@@ -23,6 +23,8 @@ namespace PdxModIDE.UI
         public string Source { get; set; } = "Base";
         public string Heritage { get; set; } = "";
         public string HeritageDisplayName { get; set; } = "";
+        public string Ethos { get; set; } = "";
+        public EthosInfo? EthosDefinition { get; set; }
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
@@ -48,6 +50,26 @@ namespace PdxModIDE.UI
         private string? _displayName;
         public ObservableCollection<CultureInfo> Cultures { get; set; } = new();
         public int ModCount => Cultures.Count(c => c.Source == "Mod");
+    }
+
+    public class EthosParameter
+    {
+        public string Key { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Description { get; set; } = "";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+    }
+
+    public class EthosInfo
+    {
+        public string Name { get; set; } = "";
+        public string DisplayName
+        {
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : Name;
+            set => _displayName = value;
+        }
+        private string? _displayName;
+        public List<EthosParameter> Parameters { get; set; } = new();
     }
 
     public class NamedColor
@@ -100,6 +122,15 @@ namespace PdxModIDE.UI
                 allByName[c.Name] = c;
 
             var namedColors = LoadNamedColors(gameRoot, modRoot);
+            var ethosDefinitions = LoadEthosDefinitions(gameRoot, modRoot);
+
+            foreach (var ethos in ethosDefinitions.Values)
+            {
+                foreach (var parameter in ethos.Parameters)
+                {
+                    parameter.Description = ResOptional($"EthosParam_{parameter.Key}_Desc");
+                }
+            }
 
             foreach (var culture in allByName.Values)
             {
@@ -119,6 +150,18 @@ namespace PdxModIDE.UI
             {
                 if (localization.TryGetValue(culture.Name, out var displayName))
                     culture.DisplayName = displayName;
+            }
+
+            foreach (var ethos in ethosDefinitions.Values)
+            {
+                if (localization.TryGetValue($"{ethos.Name}_name", out var ethosName))
+                    ethos.DisplayName = ethosName;
+            }
+
+            foreach (var culture in allByName.Values)
+            {
+                if (!string.IsNullOrEmpty(culture.Ethos) && ethosDefinitions.TryGetValue(culture.Ethos, out var ethosDef))
+                    culture.EthosDefinition = ethosDef;
             }
 
             var groups = new Dictionary<string, CultureGroup>(StringComparer.OrdinalIgnoreCase);
@@ -175,7 +218,8 @@ namespace PdxModIDE.UI
             var files = new[]
             {
                 $"culture/cultures_l_{ck3Lang}.yml",
-                $"culture/traditions/cultural_heritages_l_{ck3Lang}.yml"
+                $"culture/traditions/cultural_heritages_l_{ck3Lang}.yml",
+                $"culture/traditions/cultural_traditions_l_{ck3Lang}.yml"
             };
 
             foreach (var root in new[] { modRoot, gameRoot })
@@ -235,6 +279,97 @@ namespace PdxModIDE.UI
             return result;
         }
 
+        private static Dictionary<string, EthosInfo> LoadEthosDefinitions(string gameRoot, string modRoot)
+        {
+            var result = new Dictionary<string, EthosInfo>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var root in new[] { modRoot, gameRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "culture", "pillars");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*ethos.txt", SearchOption.AllDirectories))
+                    ParseEthosFile(file, result);
+            }
+
+            return result;
+        }
+
+        private static void ParseEthosFile(string filePath, Dictionary<string, EthosInfo> output)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string ethosKey = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(ethosKey)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                var ethos = new EthosInfo { Name = ethosKey };
+                ParseEthosParameters(block, ethos.Parameters);
+                output[ethosKey] = ethos;
+            }
+        }
+
+        private static void ParseEthosParameters(string block, List<EthosParameter> parameters)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "type")
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+
+                if (block[pos] == '{')
+                {
+                    string content = ReadBraceContent(block, ref pos);
+                    parameters.Add(new EthosParameter { Key = key, Content = content });
+                }
+                else
+                {
+                    int start = pos;
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                    {
+                        if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                            break;
+                        pos++;
+                    }
+                    parameters.Add(new EthosParameter
+                    {
+                        Key = key,
+                        Content = block.Substring(start, pos - start)
+                    });
+                }
+            }
+        }
+
         private static List<CultureInfo> ParseFile(string filePath, string source)
         {
             var cultures = new List<CultureInfo>();
@@ -271,6 +406,10 @@ namespace PdxModIDE.UI
                 string? heritage = ExtractAttribute(block, "heritage");
                 if (heritage != null)
                     culture.Heritage = heritage;
+
+                string? ethos = ExtractAttribute(block, "ethos");
+                if (ethos != null)
+                    culture.Ethos = ethos;
 
                 ExtractColor(block, culture);
 
@@ -663,6 +802,27 @@ namespace PdxModIDE.UI
                 DetailHeritageValue.Text = culture.HeritageDisplayName;
                 DetailSourceValue.Text = culture.Source;
 
+                if (culture.EthosDefinition != null)
+                {
+                    DetailEthosValue.Text = culture.EthosDefinition.DisplayName;
+                    if (culture.EthosDefinition.Parameters.Count > 0)
+                    {
+                        EthosParametersList.ItemsSource = culture.EthosDefinition.Parameters;
+                        DetailEthosExpander.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        EthosParametersList.ItemsSource = null;
+                        DetailEthosExpander.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    DetailEthosValue.Text = string.IsNullOrEmpty(culture.Ethos) ? "-" : culture.Ethos;
+                    EthosParametersList.ItemsSource = null;
+                    DetailEthosExpander.Visibility = Visibility.Collapsed;
+                }
+
                 if (culture.HasColor)
                 {
                     DetailColorSwatch.Visibility = Visibility.Visible;
@@ -689,12 +849,20 @@ namespace PdxModIDE.UI
                 DetailColorSwatch.Background = System.Windows.Media.Brushes.Transparent;
                 DetailColorValue.Text = "";
                 DetailColorInternalText.Visibility = Visibility.Collapsed;
+                DetailEthosValue.Text = "";
+                EthosParametersList.ItemsSource = null;
+                DetailEthosExpander.Visibility = Visibility.Collapsed;
             }
         }
 
         private static string Res(string key)
         {
             return System.Windows.Application.Current.TryFindResource(key) as string ?? key;
+        }
+
+        private static string ResOptional(string key)
+        {
+            return System.Windows.Application.Current.TryFindResource(key) as string ?? "";
         }
     }
 }

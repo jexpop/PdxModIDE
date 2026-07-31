@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.3</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.4</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -183,6 +183,8 @@
     <system:String x:Key="CulturesTab_Color">Color:</system:String>
     <system:String x:Key="CulturesTab_ColorName">Color name:</system:String>
     <system:String x:Key="CulturesTab_ColorInternal">Game engine internal color (not defined in files).</system:String>
+    <system:String x:Key="CulturesTab_Ethos">Ethos:</system:String>
+    <system:String x:Key="CulturesTab_EthosParameters">Ethos parameters</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Modules</system:String>

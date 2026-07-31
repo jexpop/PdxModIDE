@@ -9,4 +9,13 @@
         To add a new game, create {GameKey}.en.xaml.
     -->
 
+    <!-- CulturesTab: ethos parameter explanations -->
+    <system:String x:Key="EthosParam_character_modifier_Desc">Modifiers applied to characters of this culture.</system:String>
+    <system:String x:Key="EthosParam_province_modifier_Desc">Modifiers applied to provinces belonging to this culture.</system:String>
+    <system:String x:Key="EthosParam_county_modifier_Desc">Modifiers applied to counties of this culture.</system:String>
+    <system:String x:Key="EthosParam_culture_modifier_Desc">Modifiers applied at the culture level.</system:String>
+    <system:String x:Key="EthosParam_parameters_Desc">Special flags that enable specific behaviors of this ethos.</system:String>
+    <system:String x:Key="EthosParam_ai_will_do_Desc">Scripted weight that determines how likely the AI is to adopt this ethos.</system:String>
+    <system:String x:Key="EthosParam_desc_Desc">Localization key of the ethos description text.</system:String>
+
 </ResourceDictionary>

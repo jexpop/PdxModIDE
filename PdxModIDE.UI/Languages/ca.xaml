@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.3</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.4</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -183,6 +183,8 @@
     <system:String x:Key="CulturesTab_Color">Color:</system:String>
     <system:String x:Key="CulturesTab_ColorName">Nom del color:</system:String>
     <system:String x:Key="CulturesTab_ColorInternal">Color intern del motor del joc (no definit als fitxers).</system:String>
+    <system:String x:Key="CulturesTab_Ethos">Ethos:</system:String>
+    <system:String x:Key="CulturesTab_EthosParameters">Paràmetres de l'ethos</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Mòduls</system:String>

@@ -17,7 +17,7 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.5.3 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). Solution: `PdxModIDE.sln` (9 projectes).
+**Versió actual**: 1.5.4 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
 
@@ -278,7 +278,7 @@ Fitxers a `data/` (crea directori si no existeix). `JsonSerializerOptions: Write
   - **Imperis** (Imp.): Aceloreix per límits d'imperi (`e_xxx`) → `BuildEmpireLut()`.
   Click província → panell informació mostra Baronia, Comtat, Ducat, Regne, Imperi, Holder, Liege segons mode.
   - **Nota tècnica**: l'overlay s'aplica per CPU (workaround del bug de `SKShader.CreateImage` com a child shader). `RenderToBitmap` renderitza terreny+vores via shader (mode=0), després itera píxels i aplica color de paleta segons LUT d'holder. Utilitza `InvalidateRender()` per invalidació de cache.
-- `CulturesTab`: Explorador de cultures amb TreeView agrupat per herència. Carrega definicions de `common/culture/cultures/*.txt` recursivament (suporta subdirectoris com `mod/`). Analitza blocs Clausewitz (gestiona `hsv { ... }`, comentaris, blocs niats). Fusiona mod sobre base. Mostra noms localitzats des d'arxius de localització CK3. Panell de selecció amb nom, herència, origen i color (RGB numèric + swatch visual; suporta modes `hsv`/`hsv360`/`rgb` i referències `color = <nom>` resoltes contra `common/named_colors/*.txt`). Estadístiques.
+- `CulturesTab`: Explorador de cultures amb TreeView agrupat per herència. Carrega definicions de `common/culture/cultures/*.txt` recursivament (suporta subdirectoris com `mod/`). Analitza blocs Clausewitz (gestiona `hsv { ... }`, comentaris, blocs niats). Fusiona mod sobre base. Mostra noms localitzats des d'arxius de localització CK3. Panell de selecció amb nom, herència, ethos (de `ethos = ethos_xxx`, localitzat via `cultural_traditions_l_*.yml`), origen i color (RGB numèric + swatch visual; suporta modes `hsv`/`hsv360`/`rgb` i referències `color = <nom>` resoltes contra `common/named_colors/*.txt`). L'ethos és desplegable i mostra els seus paràmetres (ex. `character_modifier`, `province_modifier`, `county_modifier`, `culture_modifier`, `parameters`, `ai_will_do`, `desc`) analitzats des de `common/culture/pillars/*_ethos.txt`, amb prioritat dels fitxers del mod sobre el joc; cada paràmetre inclou una explicació localitzada. Estadístiques.
 - `LogsTab`: Filtres log (no implementat completament).
 - `SettingsTab`: Tema, paths defaults.
 
@@ -461,4 +461,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-07-31 | Projecte: PdxModIDE | Versió: 1.5.3 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generat: 2026-07-31 | Projecte: PdxModIDE | Versió: 1.5.4 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

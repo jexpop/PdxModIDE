@@ -59,6 +59,37 @@
                     <TextBlock x:Name="DetailNameValue" Margin="15,0,0,5" />
                     <Label Content="{DynamicResource CulturesTab_Heritage}" FontWeight="Bold" />
                     <TextBlock x:Name="DetailHeritageValue" Margin="15,0,0,5" />
+                    <Label Content="{DynamicResource CulturesTab_Ethos}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailEthosValue" Margin="15,0,0,5" />
+                    <Expander x:Name="DetailEthosExpander" Margin="15,0,0,5"
+                              Header="{DynamicResource CulturesTab_EthosParameters}"
+                              Visibility="Collapsed">
+                        <ItemsControl x:Name="EthosParametersList" Margin="0,4,0,4">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Expander Header="{Binding Key}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Description}" Foreground="Gray"
+                                                       FontStyle="Italic" TextWrapping="Wrap" Margin="4,2,4,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasDescription}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Content}" FontFamily="Consolas"
+                                                       TextWrapping="Wrap" Margin="4"/>
+                                        </StackPanel>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
                     <Label Content="{DynamicResource CulturesTab_Source}" FontWeight="Bold" />
                     <TextBlock x:Name="DetailSourceValue" Margin="15,0,0,5" />
                     <Label Content="{DynamicResource CulturesTab_Color}" FontWeight="Bold" />

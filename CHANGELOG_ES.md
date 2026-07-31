@@ -7,6 +7,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.5.4]
+
+### Añadido
+
+- **Ethos en los detalles de cultura (pestaña Culturas)**: el panel de detalles ahora muestra el ethos de la cultura (de `ethos = ethos_xxx`, localizado vía `cultural_traditions_l_*.yml`) y una sección desplegable con sus parámetros (`character_modifier`, `province_modifier`, `county_modifier`, `culture_modifier`, `parameters`, `ai_will_do`, `desc`, etc.). Las definiciones de ethos se parsean desde `common/culture/pillars/*_ethos.txt`, con prioridad de los ficheros del mod sobre el juego. Cada parámetro incluye una explicación localizada (claves `EthosParam_*_Desc` en `CK3.*.xaml`).
+
+---
+
 ## [1.5.3]
 
 ### Añadido
