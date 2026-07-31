@@ -7,6 +7,18 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.5.5]
+
+### Añadido
+
+- **Herencia en los detalles de cultura (pestaña Culturas)**: el panel de detalles ahora también muestra los detalles de la herencia de la cultura (de `heritage = heritage_xxx`), con una sección desplegable con sus parámetros (`is_shown`, `audio_parameter`, etc.), replicando la funcionalidad del ethos. Las definiciones de herencia se parsean desde `common/culture/pillars/*_heritage.txt`, con prioridad de los ficheros del mod sobre el juego. Cada parámetro incluye una explicación localizada (claves `HeritageParam_*_Desc` en `CK3.*.xaml`).
+
+### Cambiado
+
+- **Orden del panel de detalles de cultura**: los campos ahora se ordenan Origen, Nombre, Color, Ethos, Herencia (de arriba a abajo).
+
+---
+
 ## [1.5.4]
 
 ### Añadido

@@ -55,10 +55,21 @@
             <GroupBox Grid.Row="0" Header="{DynamicResource CulturesTab_Details}" Margin="0,0,0,10"
                       Visibility="Collapsed" x:Name="DetailGroup">
                 <StackPanel>
+                    <Label Content="{DynamicResource CulturesTab_Source}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailSourceValue" Margin="15,0,0,5" />
                     <Label Content="{DynamicResource CulturesTab_CultureName}" FontWeight="Bold" />
                     <TextBlock x:Name="DetailNameValue" Margin="15,0,0,5" />
-                    <Label Content="{DynamicResource CulturesTab_Heritage}" FontWeight="Bold" />
-                    <TextBlock x:Name="DetailHeritageValue" Margin="15,0,0,5" />
+                    <Label Content="{DynamicResource CulturesTab_Color}" FontWeight="Bold" />
+                    <StackPanel Orientation="Horizontal" Margin="15,0,0,5">
+                        <Border x:Name="DetailColorSwatch" Width="20" Height="20"
+                                BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                CornerRadius="2" Margin="0,0,8,0"/>
+                        <TextBlock x:Name="DetailColorValue" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock x:Name="DetailColorInternalText" Margin="15,0,0,5"
+                               Text="{DynamicResource CulturesTab_ColorInternal}"
+                               TextWrapping="Wrap" Foreground="Gray"
+                               Visibility="Collapsed"/>
                     <Label Content="{DynamicResource CulturesTab_Ethos}" FontWeight="Bold" />
                     <TextBlock x:Name="DetailEthosValue" Margin="15,0,0,5" />
                     <Expander x:Name="DetailEthosExpander" Margin="15,0,0,5"
@@ -90,19 +101,37 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Expander>
-                    <Label Content="{DynamicResource CulturesTab_Source}" FontWeight="Bold" />
-                    <TextBlock x:Name="DetailSourceValue" Margin="15,0,0,5" />
-                    <Label Content="{DynamicResource CulturesTab_Color}" FontWeight="Bold" />
-                    <StackPanel Orientation="Horizontal" Margin="15,0,0,5">
-                        <Border x:Name="DetailColorSwatch" Width="20" Height="20"
-                                BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
-                                CornerRadius="2" Margin="0,0,8,0"/>
-                        <TextBlock x:Name="DetailColorValue" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <TextBlock x:Name="DetailColorInternalText" Margin="15,0,0,5"
-                               Text="{DynamicResource CulturesTab_ColorInternal}"
-                               TextWrapping="Wrap" Foreground="Gray"
-                               Visibility="Collapsed"/>
+                    <Label Content="{DynamicResource CulturesTab_Heritage}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailHeritageValue" Margin="15,0,0,5" />
+                    <Expander x:Name="DetailHeritageExpander" Margin="15,0,0,5"
+                              Header="{DynamicResource CulturesTab_HeritageParameters}"
+                              Visibility="Collapsed">
+                        <ItemsControl x:Name="HeritageParametersList" Margin="0,4,0,4">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Expander Header="{Binding Key}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Description}" Foreground="Gray"
+                                                       FontStyle="Italic" TextWrapping="Wrap" Margin="4,2,4,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasDescription}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Content}" FontFamily="Consolas"
+                                                       TextWrapping="Wrap" Margin="4"/>
+                                        </StackPanel>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
                 </StackPanel>
             </GroupBox>
 

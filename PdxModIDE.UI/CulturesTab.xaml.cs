@@ -23,6 +23,7 @@ namespace PdxModIDE.UI
         public string Source { get; set; } = "Base";
         public string Heritage { get; set; } = "";
         public string HeritageDisplayName { get; set; } = "";
+        public HeritageInfo? HeritageDefinition { get; set; }
         public string Ethos { get; set; } = "";
         public EthosInfo? EthosDefinition { get; set; }
         public byte R { get; set; }
@@ -70,6 +71,26 @@ namespace PdxModIDE.UI
         }
         private string? _displayName;
         public List<EthosParameter> Parameters { get; set; } = new();
+    }
+
+    public class HeritageParameter
+    {
+        public string Key { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Description { get; set; } = "";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+    }
+
+    public class HeritageInfo
+    {
+        public string Name { get; set; } = "";
+        public string DisplayName
+        {
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : Name;
+            set => _displayName = value;
+        }
+        private string? _displayName;
+        public List<HeritageParameter> Parameters { get; set; } = new();
     }
 
     public class NamedColor
@@ -123,12 +144,21 @@ namespace PdxModIDE.UI
 
             var namedColors = LoadNamedColors(gameRoot, modRoot);
             var ethosDefinitions = LoadEthosDefinitions(gameRoot, modRoot);
+            var heritageDefinitions = LoadHeritageDefinitions(gameRoot, modRoot);
 
             foreach (var ethos in ethosDefinitions.Values)
             {
                 foreach (var parameter in ethos.Parameters)
                 {
                     parameter.Description = ResOptional($"EthosParam_{parameter.Key}_Desc");
+                }
+            }
+
+            foreach (var heritage in heritageDefinitions.Values)
+            {
+                foreach (var parameter in heritage.Parameters)
+                {
+                    parameter.Description = ResOptional($"HeritageParam_{parameter.Key}_Desc");
                 }
             }
 
@@ -158,10 +188,22 @@ namespace PdxModIDE.UI
                     ethos.DisplayName = ethosName;
             }
 
+            foreach (var heritage in heritageDefinitions.Values)
+            {
+                if (localization.TryGetValue($"{heritage.Name}_name", out var heritageName))
+                    heritage.DisplayName = heritageName;
+            }
+
             foreach (var culture in allByName.Values)
             {
                 if (!string.IsNullOrEmpty(culture.Ethos) && ethosDefinitions.TryGetValue(culture.Ethos, out var ethosDef))
                     culture.EthosDefinition = ethosDef;
+            }
+
+            foreach (var culture in allByName.Values)
+            {
+                if (!string.IsNullOrEmpty(culture.Heritage) && heritageDefinitions.TryGetValue(culture.Heritage, out var heritageDef))
+                    culture.HeritageDefinition = heritageDef;
             }
 
             var groups = new Dictionary<string, CultureGroup>(StringComparer.OrdinalIgnoreCase);
@@ -362,6 +404,97 @@ namespace PdxModIDE.UI
                         pos++;
                     }
                     parameters.Add(new EthosParameter
+                    {
+                        Key = key,
+                        Content = block.Substring(start, pos - start)
+                    });
+                }
+            }
+        }
+
+        private static Dictionary<string, HeritageInfo> LoadHeritageDefinitions(string gameRoot, string modRoot)
+        {
+            var result = new Dictionary<string, HeritageInfo>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var root in new[] { modRoot, gameRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "culture", "pillars");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*heritage.txt", SearchOption.AllDirectories))
+                    ParseHeritageFile(file, result);
+            }
+
+            return result;
+        }
+
+        private static void ParseHeritageFile(string filePath, Dictionary<string, HeritageInfo> output)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string heritageKey = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(heritageKey)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                var heritage = new HeritageInfo { Name = heritageKey };
+                ParseHeritageParameters(block, heritage.Parameters);
+                output[heritageKey] = heritage;
+            }
+        }
+
+        private static void ParseHeritageParameters(string block, List<HeritageParameter> parameters)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "type")
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+
+                if (block[pos] == '{')
+                {
+                    string content = ReadBraceContent(block, ref pos);
+                    parameters.Add(new HeritageParameter { Key = key, Content = content });
+                }
+                else
+                {
+                    int start = pos;
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                    {
+                        if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                            break;
+                        pos++;
+                    }
+                    parameters.Add(new HeritageParameter
                     {
                         Key = key,
                         Content = block.Substring(start, pos - start)
@@ -802,6 +935,25 @@ namespace PdxModIDE.UI
                 DetailHeritageValue.Text = culture.HeritageDisplayName;
                 DetailSourceValue.Text = culture.Source;
 
+                if (culture.HeritageDefinition != null)
+                {
+                    if (culture.HeritageDefinition.Parameters.Count > 0)
+                    {
+                        HeritageParametersList.ItemsSource = culture.HeritageDefinition.Parameters;
+                        DetailHeritageExpander.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        HeritageParametersList.ItemsSource = null;
+                        DetailHeritageExpander.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    HeritageParametersList.ItemsSource = null;
+                    DetailHeritageExpander.Visibility = Visibility.Collapsed;
+                }
+
                 if (culture.EthosDefinition != null)
                 {
                     DetailEthosValue.Text = culture.EthosDefinition.DisplayName;
@@ -852,6 +1004,8 @@ namespace PdxModIDE.UI
                 DetailEthosValue.Text = "";
                 EthosParametersList.ItemsSource = null;
                 DetailEthosExpander.Visibility = Visibility.Collapsed;
+                HeritageParametersList.ItemsSource = null;
+                DetailHeritageExpander.Visibility = Visibility.Collapsed;
             }
         }
 

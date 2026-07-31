@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.5]
+
+### Added
+
+- **Heritage in culture details (Cultures tab)**: the detail panel now also shows the culture's heritage details (from `heritage = heritage_xxx`), with an expandable section with its parameters (`is_shown`, `audio_parameter`, etc.), mirroring the ethos feature. Heritage definitions are parsed from `common/culture/pillars/*_heritage.txt`, with mod files taking priority over the game. Each parameter includes a localized explanation (`HeritageParam_*_Desc` keys in `CK3.*.xaml`).
+
+### Changed
+
+- **Culture details panel order**: fields are now ordered Source, Name, Color, Ethos, Heritage (from top to bottom).
+
+---
+
 ## [1.5.4]
 
 ### Added

@@ -18,4 +18,8 @@
     <system:String x:Key="EthosParam_ai_will_do_Desc">Scripted weight that determines how likely the AI is to adopt this ethos.</system:String>
     <system:String x:Key="EthosParam_desc_Desc">Localization key of the ethos description text.</system:String>
 
+    <!-- CulturesTab: heritage parameter explanations -->
+    <system:String x:Key="HeritageParam_is_shown_Desc">Conditions that determine when this heritage is shown.</system:String>
+    <system:String x:Key="HeritageParam_audio_parameter_Desc">Audio parameter associated with this heritage.</system:String>
+
 </ResourceDictionary>

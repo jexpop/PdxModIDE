@@ -7,6 +7,18 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.5.5]
+
+### Afegit
+
+- **Herència als detalls de cultura (pestanya Cultures)**: el panell de detalls ara també mostra els detalls de l'herència de la cultura (de `heritage = heritage_xxx`), amb una secció desplegable amb els seus paràmetres (`is_shown`, `audio_parameter`, etc.), replicant la funcionalitat de l'ethos. Les definicions d'herència s'analitzen des de `common/culture/pillars/*_heritage.txt`, amb prioritat dels fitxers del mod sobre el joc. Cada paràmetre inclou una explicació localitzada (claus `HeritageParam_*_Desc` a `CK3.*.xaml`).
+
+### Canviat
+
+- **Ordre del panell de detalls de cultura**: els camps ara s'ordenen Origen, Nom, Color, Ethos, Herència (de dalt a baix).
+
+---
+
 ## [1.5.4]
 
 ### Afegit

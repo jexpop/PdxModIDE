@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.4</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.5</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -179,6 +179,7 @@
     <system:String x:Key="CulturesTab_BaseCultures">Base game cultures</system:String>
     <system:String x:Key="CulturesTab_CultureName">Name:</system:String>
     <system:String x:Key="CulturesTab_Heritage">Heritage:</system:String>
+    <system:String x:Key="CulturesTab_HeritageParameters">Heritage parameters</system:String>
     <system:String x:Key="CulturesTab_Source">Source:</system:String>
     <system:String x:Key="CulturesTab_Color">Color:</system:String>
     <system:String x:Key="CulturesTab_ColorName">Color name:</system:String>
