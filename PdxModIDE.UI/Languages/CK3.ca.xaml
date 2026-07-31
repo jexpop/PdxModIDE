@@ -22,4 +22,9 @@
     <system:String x:Key="HeritageParam_is_shown_Desc">Condicions que determinen quan es mostra aquesta herència.</system:String>
     <system:String x:Key="HeritageParam_audio_parameter_Desc">Paràmetre d'àudio associat a aquesta herència.</system:String>
 
+    <!-- CulturesTab: explicacions dels paràmetres de l'idioma -->
+    <system:String x:Key="LanguageParam_is_shown_Desc">Condicions que determinen quan es mostra aquest idioma.</system:String>
+    <system:String x:Key="LanguageParam_ai_will_do_Desc">Pes guionitzat que determina la probabilitat que la IA adopti aquest idioma.</system:String>
+    <system:String x:Key="LanguageParam_color_Desc">Referència de color associada a aquest idioma.</system:String>
+
 </ResourceDictionary>

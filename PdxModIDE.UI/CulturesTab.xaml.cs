@@ -26,6 +26,8 @@ namespace PdxModIDE.UI
         public HeritageInfo? HeritageDefinition { get; set; }
         public string Ethos { get; set; } = "";
         public EthosInfo? EthosDefinition { get; set; }
+        public string Language { get; set; } = "";
+        public LanguageInfo? LanguageDefinition { get; set; }
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
@@ -93,6 +95,26 @@ namespace PdxModIDE.UI
         public List<HeritageParameter> Parameters { get; set; } = new();
     }
 
+    public class LanguageParameter
+    {
+        public string Key { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Description { get; set; } = "";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+    }
+
+    public class LanguageInfo
+    {
+        public string Name { get; set; } = "";
+        public string DisplayName
+        {
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : Name;
+            set => _displayName = value;
+        }
+        private string? _displayName;
+        public List<LanguageParameter> Parameters { get; set; } = new();
+    }
+
     public class NamedColor
     {
         public string Name { get; set; } = "";
@@ -145,6 +167,7 @@ namespace PdxModIDE.UI
             var namedColors = LoadNamedColors(gameRoot, modRoot);
             var ethosDefinitions = LoadEthosDefinitions(gameRoot, modRoot);
             var heritageDefinitions = LoadHeritageDefinitions(gameRoot, modRoot);
+            var languageDefinitions = LoadLanguageDefinitions(gameRoot, modRoot);
 
             foreach (var ethos in ethosDefinitions.Values)
             {
@@ -159,6 +182,14 @@ namespace PdxModIDE.UI
                 foreach (var parameter in heritage.Parameters)
                 {
                     parameter.Description = ResOptional($"HeritageParam_{parameter.Key}_Desc");
+                }
+            }
+
+            foreach (var language in languageDefinitions.Values)
+            {
+                foreach (var parameter in language.Parameters)
+                {
+                    parameter.Description = ResOptional($"LanguageParam_{parameter.Key}_Desc");
                 }
             }
 
@@ -194,6 +225,12 @@ namespace PdxModIDE.UI
                     heritage.DisplayName = heritageName;
             }
 
+            foreach (var language in languageDefinitions.Values)
+            {
+                if (localization.TryGetValue($"{language.Name}_name", out var languageName))
+                    language.DisplayName = languageName;
+            }
+
             foreach (var culture in allByName.Values)
             {
                 if (!string.IsNullOrEmpty(culture.Ethos) && ethosDefinitions.TryGetValue(culture.Ethos, out var ethosDef))
@@ -204,6 +241,12 @@ namespace PdxModIDE.UI
             {
                 if (!string.IsNullOrEmpty(culture.Heritage) && heritageDefinitions.TryGetValue(culture.Heritage, out var heritageDef))
                     culture.HeritageDefinition = heritageDef;
+            }
+
+            foreach (var culture in allByName.Values)
+            {
+                if (!string.IsNullOrEmpty(culture.Language) && languageDefinitions.TryGetValue(culture.Language, out var languageDef))
+                    culture.LanguageDefinition = languageDef;
             }
 
             var groups = new Dictionary<string, CultureGroup>(StringComparer.OrdinalIgnoreCase);
@@ -261,7 +304,8 @@ namespace PdxModIDE.UI
             {
                 $"culture/cultures_l_{ck3Lang}.yml",
                 $"culture/traditions/cultural_heritages_l_{ck3Lang}.yml",
-                $"culture/traditions/cultural_traditions_l_{ck3Lang}.yml"
+                $"culture/traditions/cultural_traditions_l_{ck3Lang}.yml",
+                $"culture/traditions/cultural_languages_l_{ck3Lang}.yml"
             };
 
             foreach (var root in new[] { modRoot, gameRoot })
@@ -412,6 +456,97 @@ namespace PdxModIDE.UI
             }
         }
 
+        private static Dictionary<string, LanguageInfo> LoadLanguageDefinitions(string gameRoot, string modRoot)
+        {
+            var result = new Dictionary<string, LanguageInfo>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var root in new[] { modRoot, gameRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "culture", "pillars");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*language.txt", SearchOption.AllDirectories))
+                    ParseLanguageFile(file, result);
+            }
+
+            return result;
+        }
+
+        private static void ParseLanguageFile(string filePath, Dictionary<string, LanguageInfo> output)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string languageKey = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(languageKey)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                var language = new LanguageInfo { Name = languageKey };
+                ParseLanguageParameters(block, language.Parameters);
+                output[languageKey] = language;
+            }
+        }
+
+        private static void ParseLanguageParameters(string block, List<LanguageParameter> parameters)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "type")
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+
+                if (block[pos] == '{')
+                {
+                    string content = ReadBraceContent(block, ref pos);
+                    parameters.Add(new LanguageParameter { Key = key, Content = content });
+                }
+                else
+                {
+                    int start = pos;
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                    {
+                        if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                            break;
+                        pos++;
+                    }
+                    parameters.Add(new LanguageParameter
+                    {
+                        Key = key,
+                        Content = block.Substring(start, pos - start)
+                    });
+                }
+            }
+        }
+
         private static Dictionary<string, HeritageInfo> LoadHeritageDefinitions(string gameRoot, string modRoot)
         {
             var result = new Dictionary<string, HeritageInfo>(StringComparer.OrdinalIgnoreCase);
@@ -543,6 +678,10 @@ namespace PdxModIDE.UI
                 string? ethos = ExtractAttribute(block, "ethos");
                 if (ethos != null)
                     culture.Ethos = ethos;
+
+                string? language = ExtractAttribute(block, "language");
+                if (language != null)
+                    culture.Language = language;
 
                 ExtractColor(block, culture);
 
@@ -954,6 +1093,27 @@ namespace PdxModIDE.UI
                     DetailHeritageExpander.Visibility = Visibility.Collapsed;
                 }
 
+                if (culture.LanguageDefinition != null)
+                {
+                    DetailLanguageValue.Text = culture.LanguageDefinition.DisplayName;
+                    if (culture.LanguageDefinition.Parameters.Count > 0)
+                    {
+                        LanguageParametersList.ItemsSource = culture.LanguageDefinition.Parameters;
+                        DetailLanguageExpander.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        LanguageParametersList.ItemsSource = null;
+                        DetailLanguageExpander.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    DetailLanguageValue.Text = string.IsNullOrEmpty(culture.Language) ? "-" : culture.Language;
+                    LanguageParametersList.ItemsSource = null;
+                    DetailLanguageExpander.Visibility = Visibility.Collapsed;
+                }
+
                 if (culture.EthosDefinition != null)
                 {
                     DetailEthosValue.Text = culture.EthosDefinition.DisplayName;
@@ -1006,6 +1166,9 @@ namespace PdxModIDE.UI
                 DetailEthosExpander.Visibility = Visibility.Collapsed;
                 HeritageParametersList.ItemsSource = null;
                 DetailHeritageExpander.Visibility = Visibility.Collapsed;
+                DetailLanguageValue.Text = "";
+                LanguageParametersList.ItemsSource = null;
+                DetailLanguageExpander.Visibility = Visibility.Collapsed;
             }
         }
 

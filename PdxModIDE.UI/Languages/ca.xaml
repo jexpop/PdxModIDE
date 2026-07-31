@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.5</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.6</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -180,6 +180,8 @@
     <system:String x:Key="CulturesTab_CultureName">Nom:</system:String>
     <system:String x:Key="CulturesTab_Heritage">Herència:</system:String>
     <system:String x:Key="CulturesTab_HeritageParameters">Paràmetres de la herència</system:String>
+    <system:String x:Key="CulturesTab_Language">Idioma:</system:String>
+    <system:String x:Key="CulturesTab_LanguageParameters">Paràmetres de l'idioma</system:String>
     <system:String x:Key="CulturesTab_Source">Origen:</system:String>
     <system:String x:Key="CulturesTab_Color">Color:</system:String>
     <system:String x:Key="CulturesTab_ColorName">Nom del color:</system:String>

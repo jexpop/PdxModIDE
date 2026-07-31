@@ -7,6 +7,14 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.5.6]
+
+### Afegit
+
+- **Idioma als detalls de cultura (pestanya Cultures)**: el panell de detalls ara també mostra els detalls de l'idioma de la cultura (de `language = language_xxx`, localitzat via `cultural_languages_l_*.yml`), amb una secció desplegable amb els seus paràmetres (`is_shown`, `ai_will_do`, `color`, etc.), replicant la funcionalitat de l'ethos/herència. Les definicions d'idioma s'analitzen des de `common/culture/pillars/*language.txt`, amb prioritat dels fitxers del mod sobre el joc. Cada paràmetre inclou una explicació localitzada (claus `LanguageParam_*_Desc` a `CK3.*.xaml`). El camp de l'idioma es col·loca al final del panell de detalls.
+
+---
+
 ## [1.5.5]
 
 ### Afegit
