@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.5.2 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.5.3 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -202,6 +202,8 @@ interface IGamePlugin {
 
 **Duchy/Kingdom/Empire Modes**: New methods `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` use the full hierarchy `CountyToDuchy` → `DuchyToKingdom` → `KingdomToEmpire` to color by each level. In the Map tab: mutually exclusive checkboxes (Tit./Cty./Dch./Kgd./Emp.) with tooltips.
 
+**Culture Mode** (`CultureLoader`): `LoadCultures` parses culture definitions from `common/culture/cultures/*.txt` and resolves `color = <name>` references against `common/named_colors/*.txt` (game + mod roots). Title history (`history/titles/*.txt`) and character history (`history/characters/*.txt`) accept both numeric and string character IDs (eastern content: China/Japan/Korea), so provinces without a direct `culture =` inherit the county holder's culture correctly.
+
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
 **Non-recursive three-way diff** (top-level files only): Mod vs Backup, Game vs Backup, Game vs Mod.
@@ -276,7 +278,7 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
   - **Empires** (Emp.): Colors by empire borders (`e_xxx`) → `BuildEmpireLut()`.
   Click province → info panel shows Barony, County, Duchy, Kingdom, Empire, Holder, Liege according to mode.
   - **Technical note**: overlay is applied on CPU (workaround for `SKShader.CreateImage` bug as child shader). `RenderToBitmap` renders terrain+borders via shader (mode=0), then iterates pixels and applies palette color from the holder LUT. Uses `InvalidateRender()` for cache invalidation.
-- `CulturesTab`: Culture browser with TreeView grouped by heritage. Loads culture definitions from `common/culture/cultures/*.txt` recursively (supports subdirectories like `mod/` for mod-added cultures). Parses Clausewitz blocks (handles `hsv { ... }`, comments, nested blocks). Merges mod over base. Displays localized names from CK3 localization files (`cultures_l_*.yml`, `cultural_heritages_l_*.yml`). Selection panel shows culture name, heritage, source (Base/Mod). Statistics panel.
+- `CulturesTab`: Culture browser with TreeView grouped by heritage. Loads culture definitions from `common/culture/cultures/*.txt` recursively (supports subdirectories like `mod/` for mod-added cultures). Parses Clausewitz blocks (handles `hsv { ... }`, comments, nested blocks). Merges mod over base. Displays localized names from CK3 localization files (`cultures_l_*.yml`, `cultural_heritages_l_*.yml`). Selection panel shows culture name, heritage, source (Base/Mod) and color (numeric RGB + visual swatch; supports `hsv`/`hsv360`/`rgb` modes and `color = <name>` references resolved against `common/named_colors/*.txt`). Statistics panel.
 - `LogsTab`: Log filters (not fully implemented).
 - `SettingsTab`: Theme, default paths.
 
@@ -459,4 +461,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-07-30 | Project: PdxModIDE | Version: 1.5.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-07-31 | Project: PdxModIDE | Version: 1.5.3 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

@@ -11,13 +11,21 @@ namespace PdxModIDE.MapEngine
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
+        public bool HasColor { get; set; }
+        public string ColorReference { get; set; } = "";
+    }
+
+    public class NamedColor
+    {
+        public string Name { get; set; } = "";
+        public byte R { get; set; }
+        public byte G { get; set; }
+        public byte B { get; set; }
+        public bool HasColor { get; set; }
     }
 
     public class CultureLoader
     {
-        private static readonly Regex BlockRe = new(@"^\s*(\w[\w.]*)\s*=\s*\{");
-        private static readonly Regex NameRe = new(@"name\s*=\s*""([^""]*)""");
-        private static readonly Regex ColorFloatRe = new(@"color\s*=\s*\{\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\}");
         private static readonly Regex ProvinceBlockRe = new(@"^\s*(\d+)\s*=\s*\{");
         private static readonly Regex CultureRe = new(@"culture\s*=\s*(\w+)");
         private static readonly Regex DateRe = new(@"(\d+)\.(\d+)\.(\d+)\s*=\s*\{");
@@ -25,7 +33,7 @@ namespace PdxModIDE.MapEngine
         public Dictionary<string, CultureInfo> AllCultures { get; } = new(StringComparer.OrdinalIgnoreCase);
         public Dictionary<int, List<(int Year, string Culture)>> ProvinceCultures { get; } = new();
 
-        public int LoadCultures(string gameRoot, bool overwriteDuplicates = false)
+        public int LoadCultures(string gameRoot, bool overwriteDuplicates = false, string? namedColorsRoot = null)
         {
             string folder = Path.Combine(gameRoot, "common", "culture", "cultures");
             if (!Directory.Exists(folder))
@@ -41,7 +49,106 @@ namespace PdxModIDE.MapEngine
                 }
             }
 
+            ResolveNamedColorReferences(gameRoot, namedColorsRoot);
             return AllCultures.Count;
+        }
+
+        private void ResolveNamedColorReferences(string gameRoot, string? namedColorsRoot)
+        {
+            var namedColors = LoadNamedColors(gameRoot, namedColorsRoot);
+            foreach (var kvp in AllCultures)
+            {
+                var ci = kvp.Value;
+                if (ci.HasColor || string.IsNullOrEmpty(ci.ColorReference)) continue;
+
+                if (namedColors.TryGetValue(ci.ColorReference, out var named) && named.HasColor)
+                {
+                    ci.HasColor = true;
+                    ci.R = named.R;
+                    ci.G = named.G;
+                    ci.B = named.B;
+                }
+            }
+        }
+
+        private static Dictionary<string, NamedColor> LoadNamedColors(string gameRoot, string? namedColorsRoot)
+        {
+            var result = new Dictionary<string, NamedColor>(StringComparer.OrdinalIgnoreCase);
+            foreach (var root in new[] { gameRoot, namedColorsRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "named_colors");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*.txt"))
+                    ParseNamedColorsFile(file, result);
+            }
+            return result;
+        }
+
+        private static void ParseNamedColorsFile(string path, Dictionary<string, NamedColor> output)
+        {
+            var text = File.ReadAllText(path);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                if (key == "colors")
+                    ParseNamedColorBlock(block, output);
+            }
+        }
+
+        private static void ParseNamedColorBlock(string block, Dictionary<string, NamedColor> output)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string name = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(name)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (TryParseColorValue(block, ref pos, out byte r, out byte g, out byte b, out _))
+                {
+                    output[name] = new NamedColor
+                    {
+                        Name = name,
+                        R = r,
+                        G = g,
+                        B = b,
+                        HasColor = true
+                    };
+                }
+            }
         }
 
         public int LoadProvinceHistory(string gameRoot, bool overwriteDuplicates = false)
@@ -66,84 +173,331 @@ namespace PdxModIDE.MapEngine
         public static Dictionary<string, CultureInfo> ParseCultureFile(string path)
         {
             var data = new Dictionary<string, CultureInfo>(StringComparer.OrdinalIgnoreCase);
-            var keyStack = new List<string>();
+            string text = File.ReadAllText(path);
+            int pos = 0;
 
-            foreach (string raw in File.ReadAllLines(path))
+            while (pos < text.Length)
             {
-                string line = raw.Trim();
-                if (line.Length == 0)
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
                     continue;
-
-                int hashIdx = line.IndexOf('#');
-                if (hashIdx >= 0)
-                {
-                    line = line.Substring(0, hashIdx).TrimEnd();
-                    if (line.Length == 0)
-                        continue;
                 }
+                pos++;
 
-                int opens = line.Count(c => c == '{');
-                int closes = line.Count(c => c == '}');
-
-                var m = BlockRe.Match(line);
-                if (m.Success)
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
                 {
-                    string key = m.Groups[1].Value;
-                    keyStack.Add(key);
-
-                    if (!data.ContainsKey(key))
-                    {
-                        var info = new CultureInfo();
-                        data[key] = info;
-
-                        var nm = NameRe.Match(line);
-                        if (nm.Success) info.Name = nm.Groups[1].Value;
-
-                        var cm = ColorFloatRe.Match(line);
-                        if (cm.Success)
-                            TryParseFloatColor(cm, info);
-                    }
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
                 }
-                else if (keyStack.Count > 0)
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                if (!data.ContainsKey(key))
                 {
-                    var currentKey = keyStack[^1];
-                    if (data.TryGetValue(currentKey, out var current))
-                    {
-                        var nm2 = NameRe.Match(line);
-                        if (nm2.Success && string.IsNullOrEmpty(current.Name))
-                            current.Name = nm2.Groups[1].Value;
+                    var info = new CultureInfo();
 
-                        var cm2 = ColorFloatRe.Match(line);
-                        if (cm2.Success && current.R == 0 && current.G == 0 && current.B == 0)
-                            TryParseFloatColor(cm2, current);
-                    }
+                    string? nameAttr = ExtractAttribute(block, "name");
+                    if (nameAttr != null) info.Name = nameAttr;
+
+                    ExtractColor(block, info);
+                    data[key] = info;
                 }
-
-                int netCloses = closes - opens;
-                for (int i = 0; i < netCloses && keyStack.Count > 0; i++)
-                    keyStack.RemoveAt(keyStack.Count - 1);
             }
 
             return data;
         }
 
-        private static void TryParseFloatColor(Match cm, PdxModIDE.MapEngine.CultureInfo info)
+        private static string? ExtractAttribute(string block, string attributeName)
         {
-            if (float.TryParse(cm.Groups[1].Value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float fr) &&
-                float.TryParse(cm.Groups[2].Value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float fg) &&
-                float.TryParse(cm.Groups[3].Value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float fb))
+            int pos = 0;
+            while (pos < block.Length)
             {
-                if (fr <= 1.0f && fg <= 1.0f && fb <= 1.0f)
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == attributeName)
                 {
-                    info.R = (byte)(fr * 255);
-                    info.G = (byte)(fg * 255);
-                    info.B = (byte)(fb * 255);
+                    if (block[pos] == '"')
+                    {
+                        pos++;
+                        int start = pos;
+                        while (pos < block.Length && block[pos] != '"') pos++;
+                        if (pos < block.Length)
+                            return block.Substring(start, pos - start);
+                    }
+                    else
+                    {
+                        int start = pos;
+                        while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                        {
+                            if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                                break;
+                            pos++;
+                        }
+                        return block.Substring(start, pos - start);
+                    }
+                }
+
+                SkipValueAndFollowingBlock(block, ref pos);
+            }
+
+            return null;
+        }
+
+        private static void ExtractColor(string block, CultureInfo culture)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "color")
+                {
+                    if (TryParseColorValue(block, ref pos, out byte r, out byte g, out byte b, out _))
+                    {
+                        culture.HasColor = true;
+                        culture.R = r;
+                        culture.G = g;
+                        culture.B = b;
+                    }
+                    else
+                    {
+                        culture.ColorReference = ReadKey(block, ref pos);
+                    }
+                    return;
+                }
+
+                SkipValueAndFollowingBlock(block, ref pos);
+            }
+        }
+
+        private static bool TryParseColorValue(string block, ref int pos, out byte r, out byte g, out byte b, out string display)
+        {
+            r = g = b = 0;
+            display = "";
+
+            string? mode = null;
+            if (block[pos] != '{')
+            {
+                int save = pos;
+                string kw = ReadKey(block, ref pos);
+                if (!string.IsNullOrEmpty(kw))
+                {
+                    SkipWhitespaceAndComments(block, ref pos);
+                    if (pos < block.Length && block[pos] == '{')
+                        mode = kw;
+                    else
+                        pos = save;
+                }
+            }
+
+            if (pos < block.Length && block[pos] == '{')
+            {
+                string content = ReadBraceContent(block, ref pos);
+                return TryParseColorValues(content, mode, out r, out g, out b, out display);
+            }
+
+            return false;
+        }
+
+        private static bool TryParseColorValues(string content, string? mode, out byte r, out byte g, out byte b, out string display)
+        {
+            r = g = b = 0;
+            display = "";
+
+            var numbers = new List<float>();
+            int pos = 0;
+            while (pos < content.Length)
+            {
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos >= content.Length) break;
+
+                int start = pos;
+                while (pos < content.Length && (char.IsDigit(content[pos]) || content[pos] == '.' || content[pos] == '-'))
+                    pos++;
+                if (pos > start &&
+                    float.TryParse(content.Substring(start, pos - start),
+                        System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out float v))
+                    numbers.Add(v);
+            }
+
+            if (numbers.Count < 3) return false;
+
+            display = mode != null
+                ? $"{mode} {{ {FormatColorNumber(numbers[0])} {FormatColorNumber(numbers[1])} {FormatColorNumber(numbers[2])} }}"
+                : $"{FormatColorNumber(numbers[0])} {FormatColorNumber(numbers[1])} {FormatColorNumber(numbers[2])}";
+
+            float fr, fg, fb;
+            switch (mode)
+            {
+                case "hsv":
+                    (fr, fg, fb) = HsvToRgb(numbers[0], numbers[1], numbers[2]);
+                    break;
+                case "hsv360":
+                    (fr, fg, fb) = HsvToRgb(numbers[0] / 360f, numbers[1] / 100f, numbers[2] / 100f);
+                    break;
+                case "rgb":
+                    fr = numbers[0]; fg = numbers[1]; fb = numbers[2];
+                    break;
+                default:
+                    fr = numbers[0]; fg = numbers[1]; fb = numbers[2];
+                    if (fr <= 1f && fg <= 1f && fb <= 1f)
+                    {
+                        fr *= 255f; fg *= 255f; fb *= 255f;
+                    }
+                    break;
+            }
+
+            r = (byte)Math.Clamp(Math.Round(fr), 0, 255);
+            g = (byte)Math.Clamp(Math.Round(fg), 0, 255);
+            b = (byte)Math.Clamp(Math.Round(fb), 0, 255);
+            return true;
+        }
+
+        private static string FormatColorNumber(float value)
+        {
+            return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        private static (float R, float G, float B) HsvToRgb(float h, float s, float v)
+        {
+            float c = v * s;
+            float x = c * (1f - Math.Abs((h * 6f) % 2f - 1f));
+            float m = v - c;
+            float r = 0f, g = 0f, b = 0f;
+            switch ((int)Math.Floor(h * 6f) % 6)
+            {
+                case 0: r = c; g = x; break;
+                case 1: r = x; g = c; break;
+                case 2: g = c; b = x; break;
+                case 3: g = x; b = c; break;
+                case 4: r = x; b = c; break;
+                default: r = c; b = x; break;
+            }
+            return (r + m, g + m, b + m);
+        }
+
+        private static string ReadBraceContent(string text, ref int pos)
+        {
+            int depth = 1;
+            int start = pos + 1;
+            pos++;
+            while (pos < text.Length && depth > 0)
+            {
+                if (text[pos] == '{') depth++;
+                else if (text[pos] == '}') depth--;
+                if (depth > 0) pos++;
+            }
+            string result = text.Substring(start, pos - start);
+            if (pos < text.Length) pos++;
+            return result;
+        }
+
+        private static string ReadBlock(string text, ref int pos)
+        {
+            int depth = 1;
+            int start = pos;
+            while (pos < text.Length && depth > 0)
+            {
+                if (text[pos] == '{') depth++;
+                else if (text[pos] == '}') depth--;
+                if (depth > 0) pos++;
+            }
+            string result = text.Substring(start, pos - start);
+            if (pos < text.Length) pos++;
+            return result;
+        }
+
+        private static string ReadKey(string text, ref int pos)
+        {
+            int start = pos;
+            while (pos < text.Length && (char.IsLetterOrDigit(text[pos]) || text[pos] == '_' || text[pos] == '@'))
+                pos++;
+            return pos > start ? text.Substring(start, pos - start) : "";
+        }
+
+        private static void SkipWhitespaceAndComments(string text, ref int pos)
+        {
+            while (pos < text.Length)
+            {
+                if (char.IsWhiteSpace(text[pos]))
+                {
+                    pos++;
+                }
+                else if (text[pos] == '#' || (text[pos] == '-' && pos + 1 < text.Length && text[pos + 1] == '-'))
+                {
+                    while (pos < text.Length && text[pos] != '\n') pos++;
                 }
                 else
                 {
-                    info.R = (byte)fr;
-                    info.G = (byte)fg;
-                    info.B = (byte)fb;
+                    break;
+                }
+            }
+        }
+
+        private static void SkipValueAndFollowingBlock(string block, ref int pos)
+        {
+            if (pos >= block.Length) return;
+
+            if (block[pos] == '{')
+            {
+                pos++;
+                ReadBlock(block, ref pos);
+            }
+            else if (block[pos] == '"')
+            {
+                pos++;
+                while (pos < block.Length && block[pos] != '"') pos++;
+                if (pos < block.Length) pos++;
+            }
+            else
+            {
+                while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                {
+                    if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                        break;
+                    pos++;
+                }
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos < block.Length && block[pos] == '{')
+                {
+                    pos++;
+                    ReadBlock(block, ref pos);
                 }
             }
         }
@@ -265,15 +619,15 @@ namespace PdxModIDE.MapEngine
 
         public Dictionary<int, string> ProvinceToCounty { get; } = new();
 
-        public Dictionary<string, List<(int Year, int HolderId)>> CountyHolderHistory { get; }
+        public Dictionary<string, List<(int Year, string HolderId)>> CountyHolderHistory { get; }
             = new(StringComparer.OrdinalIgnoreCase);
 
-        public Dictionary<int, string> CharacterCulture { get; } = new();
+        public Dictionary<string, string> CharacterCulture { get; } = new();
 
         private static readonly Regex _countyBlockRe = new(@"^(c_\w+)\s*=\s*\{");
         private static readonly Regex _dateBlockRe = new(@"(\d+)\.\d+\.\d+\s*=\s*\{");
-        private static readonly Regex _holderRe = new(@"holder\s*=\s*(\d+)");
-        private static readonly Regex _charBlockRe = new(@"^(\d+)\s*=\s*\{");
+        private static readonly Regex _holderRe = new(@"holder\s*=\s*""?([\w.]+)""?");
+        private static readonly Regex _charBlockRe = new(@"^([\w.]+)\s*=\s*\{");
         private static readonly Regex _charCultureRe = new(@"culture\s*=\s*""?([\w_]+)""?");
 
         public Dictionary<string, int> CountyToCapitalProvince { get; } = new(StringComparer.OrdinalIgnoreCase);
@@ -343,11 +697,11 @@ namespace PdxModIDE.MapEngine
             return count;
         }
 
-        public HashSet<int> LoadTitleHistory(string gameRoot)
+        public HashSet<string> LoadTitleHistory(string gameRoot)
         {
             string folder = Path.Combine(gameRoot, "history", "titles");
             CountyHolderHistory.Clear();
-            var collectedIds = new HashSet<int>();
+            var collectedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             if (!Directory.Exists(folder))
                 return collectedIds;
@@ -360,8 +714,8 @@ namespace PdxModIDE.MapEngine
 
         private static void ParseTitleHistoryFile(
             string path,
-            Dictionary<string, List<(int Year, int HolderId)>> output,
-            HashSet<int> collectedIds)
+            Dictionary<string, List<(int Year, string HolderId)>> output,
+            HashSet<string> collectedIds)
         {
             string? currentCounty = null;
             var dateStack = new List<(int Year, int Depth)>();
@@ -393,7 +747,7 @@ namespace PdxModIDE.MapEngine
 
                         var hm = _holderRe.Match(line);
                         if (hm.Success)
-                            AddHolderEvent(output, collectedIds, currentCounty, 0, int.Parse(hm.Groups[1].Value));
+                            AddHolderEvent(output, collectedIds, currentCounty, 0, hm.Groups[1].Value);
 
                         continue;
                     }
@@ -411,7 +765,7 @@ namespace PdxModIDE.MapEngine
 
                         var hm = _holderRe.Match(line);
                         if (hm.Success)
-                            AddHolderEvent(output, collectedIds, currentCounty, year, int.Parse(hm.Groups[1].Value));
+                            AddHolderEvent(output, collectedIds, currentCounty, year, hm.Groups[1].Value);
 
                         depth += opens - closes;
                         CleanDateStack(dateStack, depth);
@@ -423,7 +777,7 @@ namespace PdxModIDE.MapEngine
                     if (hm2.Success)
                     {
                         int year = dateStack.Count > 0 ? dateStack[^1].Year : 0;
-                        AddHolderEvent(output, collectedIds, currentCounty, year, int.Parse(hm2.Groups[1].Value));
+                        AddHolderEvent(output, collectedIds, currentCounty, year, hm2.Groups[1].Value);
                     }
                 }
 
@@ -439,13 +793,13 @@ namespace PdxModIDE.MapEngine
         }
 
         private static void AddHolderEvent(
-            Dictionary<string, List<(int Year, int HolderId)>> output,
-            HashSet<int> collectedIds,
-            string county, int year, int holderId)
+            Dictionary<string, List<(int Year, string HolderId)>> output,
+            HashSet<string> collectedIds,
+            string county, int year, string holderId)
         {
             if (!output.TryGetValue(county, out var list))
             {
-                list = new List<(int, int)>();
+                list = new List<(int, string)>();
                 output[county] = list;
             }
             list.Add((year, holderId));
@@ -458,7 +812,7 @@ namespace PdxModIDE.MapEngine
                 stack.RemoveAt(stack.Count - 1);
         }
 
-        public int LoadCharacterCultures(string gameRoot, HashSet<int> relevantIds)
+        public int LoadCharacterCultures(string gameRoot, HashSet<string> relevantIds)
         {
             string folder = Path.Combine(gameRoot, "history", "characters");
             CharacterCulture.Clear();
@@ -475,10 +829,10 @@ namespace PdxModIDE.MapEngine
 
         private static int ParseCharacterFile(
             string path,
-            Dictionary<int, string> output,
-            HashSet<int> relevantIds)
+            Dictionary<string, string> output,
+            HashSet<string> relevantIds)
         {
-            int? currentChar = null;
+            string? currentChar = null;
             int depth = 0;
             int count = 0;
 
@@ -502,7 +856,7 @@ namespace PdxModIDE.MapEngine
                     var cm = _charBlockRe.Match(line);
                     if (cm.Success)
                     {
-                        currentChar = int.Parse(cm.Groups[1].Value);
+                        currentChar = cm.Groups[1].Value;
                         depth += opens - closes;
                         continue;
                     }
@@ -510,12 +864,12 @@ namespace PdxModIDE.MapEngine
                     continue;
                 }
 
-                if (currentChar.HasValue && relevantIds.Contains(currentChar.Value))
+                if (currentChar != null && relevantIds.Contains(currentChar))
                 {
                     var cm = _charCultureRe.Match(line);
-                    if (cm.Success && !output.ContainsKey(currentChar.Value))
+                    if (cm.Success && !output.ContainsKey(currentChar))
                     {
-                        output[currentChar.Value] = cm.Groups[1].Value;
+                        output[currentChar] = cm.Groups[1].Value;
                         count++;
                     }
                 }
@@ -528,9 +882,9 @@ namespace PdxModIDE.MapEngine
             return count;
         }
 
-        private static int? GetHolderAtYear(List<(int Year, int HolderId)> holders, int year)
+        private static string? GetHolderAtYear(List<(int Year, string HolderId)> holders, int year)
         {
-            int? last = null;
+            string? last = null;
             foreach (var (y, h) in holders)
             {
                 if (y <= year)
@@ -555,10 +909,10 @@ namespace PdxModIDE.MapEngine
             if (!CountyHolderHistory.TryGetValue(county, out var holders))
                 return null;
 
-            int? holderId = GetHolderAtYear(holders, year);
+            string? holderId = GetHolderAtYear(holders, year);
             if (holderId == null) return null;
 
-            if (CharacterCulture.TryGetValue(holderId.Value, out string? culture))
+            if (CharacterCulture.TryGetValue(holderId, out string? culture))
                 return culture;
 
             return null;

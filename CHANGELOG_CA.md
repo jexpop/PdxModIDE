@@ -7,6 +7,24 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.5.3]
+
+### Afegit
+
+- **Visualització del color de cultura (pestanya Cultures)**: el panell de detalls ara mostra el color de la cultura com a valor RGB numèric amb un swatch visual. Suporta modes `hsv`, `hsv360` i `rgb`, i resol referències `color = <nom>` contra `common/named_colors/*.txt` (els colors referenciats mostren el seu nom d'origen).
+
+### Canviat
+
+- **`CultureLoader` reescrit com a parser basat en blocs**: `ParseCultureFile` ja no crea entrades espúries per a blocs `color = { ... }`; el color s'assigna a la cultura contenidora. Gestiona `hsv`/`hsv360`/`rgb` i valors RGB enters/flotants.
+- **Resolució de colors amb nom al mapa**: `LoadCultures` resol referències `color = <nom>` contra `common/named_colors/*.txt` tant de l'arrel del joc com del mod, de manera que totes les cultures base i del mod obtenen color.
+- **Herència de cultura amb IDs de personatge tipus string**: el contingut oriental (Xina/Japó/Corea, ex. `holder = tuyuhun0006`, `japanese_yamato_1 = { ... }`) usa IDs de personatge amb nom en lloc de numèrics. L'historial de titulars i les cultures de personatges ara accepten tant IDs numèrics com string, de manera que les províncies orientals sense `culture =` directe hereten correctament la cultura del titular del comtat al mapa.
+
+### Corregit
+
+- **Arxius de cultura amb línies malformades (sense `=`) aturaven l'anàlisi**: línies com `khitan { ... }` interrompien el parser línia a línia, perdent totes les cultures posteriors. El parser per blocs ja no s'atura.
+
+---
+
 ## [1.5.2]
 
 ### Afegit

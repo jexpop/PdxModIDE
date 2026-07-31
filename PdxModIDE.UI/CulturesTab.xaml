@@ -61,6 +61,17 @@
                     <TextBlock x:Name="DetailHeritageValue" Margin="15,0,0,5" />
                     <Label Content="{DynamicResource CulturesTab_Source}" FontWeight="Bold" />
                     <TextBlock x:Name="DetailSourceValue" Margin="15,0,0,5" />
+                    <Label Content="{DynamicResource CulturesTab_Color}" FontWeight="Bold" />
+                    <StackPanel Orientation="Horizontal" Margin="15,0,0,5">
+                        <Border x:Name="DetailColorSwatch" Width="20" Height="20"
+                                BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                CornerRadius="2" Margin="0,0,8,0"/>
+                        <TextBlock x:Name="DetailColorValue" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock x:Name="DetailColorInternalText" Margin="15,0,0,5"
+                               Text="{DynamicResource CulturesTab_ColorInternal}"
+                               TextWrapping="Wrap" Foreground="Gray"
+                               Visibility="Collapsed"/>
                 </StackPanel>
             </GroupBox>
 

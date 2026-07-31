@@ -646,7 +646,7 @@ namespace PdxModIDE.UI
                     modDynCount = _dynastyMod.LoadAll(modRoot, overwriteDuplicates: true);
 
                     _cultureMod = new CultureLoader();
-                    _cultureMod.LoadCultures(modRoot, overwriteDuplicates: true);
+                    _cultureMod.LoadCultures(modRoot, overwriteDuplicates: true, namedColorsRoot: gameRoot);
                     _cultureMod.LoadProvinceHistory(modRoot, overwriteDuplicates: true);
                     loader.LoadModLocalization(modRoot);
                 }

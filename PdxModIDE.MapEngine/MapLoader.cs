@@ -940,7 +940,7 @@ namespace PdxModIDE.MapEngine
             foreach (var kvp in culture.AllCultures)
             {
                 var ci = kvp.Value;
-                if (ci.R != 0 || ci.G != 0 || ci.B != 0)
+                if (ci.HasColor)
                     CultureColors[kvp.Key] = (ci.R, ci.G, ci.B);
                 if (!string.IsNullOrEmpty(ci.Name))
                     CultureDisplayNames[kvp.Key] = ci.Name;

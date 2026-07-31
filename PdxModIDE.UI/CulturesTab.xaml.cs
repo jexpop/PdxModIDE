@@ -23,6 +23,15 @@ namespace PdxModIDE.UI
         public string Source { get; set; } = "Base";
         public string Heritage { get; set; } = "";
         public string HeritageDisplayName { get; set; } = "";
+        public byte R { get; set; }
+        public byte G { get; set; }
+        public byte B { get; set; }
+        public bool HasColor { get; set; }
+        public string ColorDisplay { get; set; } = "";
+        public string ColorReference { get; set; } = "";
+        public System.Windows.Media.Brush ColorBrush => HasColor
+            ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(R, G, B))
+            : System.Windows.Media.Brushes.Transparent;
         public System.Windows.Media.Brush SourceBrush => Source == "Mod"
             ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 120, 212))
             : new SolidColorBrush(System.Windows.Media.Color.FromRgb(150, 150, 150));
@@ -39,6 +48,16 @@ namespace PdxModIDE.UI
         private string? _displayName;
         public ObservableCollection<CultureInfo> Cultures { get; set; } = new();
         public int ModCount => Cultures.Count(c => c.Source == "Mod");
+    }
+
+    public class NamedColor
+    {
+        public string Name { get; set; } = "";
+        public byte R { get; set; }
+        public byte G { get; set; }
+        public byte B { get; set; }
+        public bool HasColor { get; set; }
+        public string ColorDisplay { get; set; } = "";
     }
 
     public partial class CulturesTab : System.Windows.Controls.UserControl
@@ -79,6 +98,22 @@ namespace PdxModIDE.UI
                 allByName[c.Name] = c;
             foreach (var c in modCultures)
                 allByName[c.Name] = c;
+
+            var namedColors = LoadNamedColors(gameRoot, modRoot);
+
+            foreach (var culture in allByName.Values)
+            {
+                if (!culture.HasColor && !string.IsNullOrEmpty(culture.ColorReference)
+                    && namedColors.TryGetValue(culture.ColorReference, out var named)
+                    && named.HasColor)
+                {
+                    culture.HasColor = true;
+                    culture.R = named.R;
+                    culture.G = named.G;
+                    culture.B = named.B;
+                    culture.ColorDisplay = named.ColorDisplay;
+                }
+            }
 
             foreach (var culture in allByName.Values)
             {
@@ -237,6 +272,8 @@ namespace PdxModIDE.UI
                 if (heritage != null)
                     culture.Heritage = heritage;
 
+                ExtractColor(block, culture);
+
                 cultures.Add(culture);
             }
 
@@ -288,6 +325,253 @@ namespace PdxModIDE.UI
             }
 
             return null;
+        }
+
+        private static void ExtractColor(string block, CultureInfo culture)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "color")
+                {
+                    if (TryParseColorValue(block, ref pos, out byte r, out byte g, out byte b, out string display))
+                    {
+                        culture.HasColor = true;
+                        culture.R = r;
+                        culture.G = g;
+                        culture.B = b;
+                        culture.ColorDisplay = display;
+                    }
+                    else
+                    {
+                        culture.ColorReference = ReadKey(block, ref pos);
+                    }
+                    return;
+                }
+
+                SkipValueAndFollowingBlock(block, ref pos);
+            }
+        }
+
+        private static string ReadBraceContent(string text, ref int pos)
+        {
+            int depth = 1;
+            int start = pos + 1;
+            pos++;
+            while (pos < text.Length && depth > 0)
+            {
+                if (text[pos] == '{') depth++;
+                else if (text[pos] == '}') depth--;
+                if (depth > 0) pos++;
+            }
+            string result = text.Substring(start, pos - start);
+            if (pos < text.Length) pos++;
+            return result;
+        }
+
+        private static bool TryParseColorValue(string block, ref int pos, out byte r, out byte g, out byte b, out string display)
+        {
+            r = g = b = 0;
+            display = "";
+
+            string? mode = null;
+            if (block[pos] != '{')
+            {
+                int save = pos;
+                string kw = ReadKey(block, ref pos);
+                if (!string.IsNullOrEmpty(kw))
+                {
+                    SkipWhitespaceAndComments(block, ref pos);
+                    if (pos < block.Length && block[pos] == '{')
+                        mode = kw;
+                    else
+                        pos = save;
+                }
+            }
+
+            if (pos < block.Length && block[pos] == '{')
+            {
+                string content = ReadBraceContent(block, ref pos);
+                return TryParseColorValues(content, mode, out r, out g, out b, out display);
+            }
+
+            return false;
+        }
+
+        private static bool TryParseColorValues(string content, string? mode, out byte r, out byte g, out byte b, out string display)
+        {
+            r = g = b = 0;
+            display = "";
+
+            var numbers = new List<float>();
+            int pos = 0;
+            while (pos < content.Length)
+            {
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos >= content.Length) break;
+
+                int start = pos;
+                while (pos < content.Length && (char.IsDigit(content[pos]) || content[pos] == '.' || content[pos] == '-'))
+                    pos++;
+                if (pos > start &&
+                    float.TryParse(content.Substring(start, pos - start),
+                        System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out float v))
+                    numbers.Add(v);
+            }
+
+            if (numbers.Count < 3) return false;
+
+            display = mode != null
+                ? $"{mode} {{ {FormatColorNumber(numbers[0])} {FormatColorNumber(numbers[1])} {FormatColorNumber(numbers[2])} }}"
+                : $"{FormatColorNumber(numbers[0])} {FormatColorNumber(numbers[1])} {FormatColorNumber(numbers[2])}";
+
+            float fr, fg, fb;
+            switch (mode)
+            {
+                case "hsv":
+                    (fr, fg, fb) = HsvToRgb(numbers[0], numbers[1], numbers[2]);
+                    break;
+                case "hsv360":
+                    (fr, fg, fb) = HsvToRgb(numbers[0] / 360f, numbers[1] / 100f, numbers[2] / 100f);
+                    break;
+                case "rgb":
+                    fr = numbers[0]; fg = numbers[1]; fb = numbers[2];
+                    break;
+                default:
+                    fr = numbers[0]; fg = numbers[1]; fb = numbers[2];
+                    if (fr <= 1f && fg <= 1f && fb <= 1f)
+                    {
+                        fr *= 255f; fg *= 255f; fb *= 255f;
+                    }
+                    break;
+            }
+
+            r = (byte)Math.Clamp(Math.Round(fr), 0, 255);
+            g = (byte)Math.Clamp(Math.Round(fg), 0, 255);
+            b = (byte)Math.Clamp(Math.Round(fb), 0, 255);
+            return true;
+        }
+
+        private static string FormatColorNumber(float value)
+        {
+            return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        private static (float R, float G, float B) HsvToRgb(float h, float s, float v)
+        {
+            float c = v * s;
+            float x = c * (1f - Math.Abs((h * 6f) % 2f - 1f));
+            float m = v - c;
+            float r = 0f, g = 0f, b = 0f;
+            switch ((int)Math.Floor(h * 6f) % 6)
+            {
+                case 0: r = c; g = x; break;
+                case 1: r = x; g = c; break;
+                case 2: g = c; b = x; break;
+                case 3: g = x; b = c; break;
+                case 4: r = x; b = c; break;
+                default: r = c; b = x; break;
+            }
+            return (r + m, g + m, b + m);
+        }
+
+        private static Dictionary<string, NamedColor> LoadNamedColors(string gameRoot, string modRoot)
+        {
+            var result = new Dictionary<string, NamedColor>(StringComparer.OrdinalIgnoreCase);
+            foreach (var root in new[] { gameRoot, modRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "named_colors");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*.txt"))
+                    ParseNamedColorsFile(file, result);
+            }
+            return result;
+        }
+
+        private static void ParseNamedColorsFile(string path, Dictionary<string, NamedColor> output)
+        {
+            var text = File.ReadAllText(path);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                if (key == "colors")
+                    ParseNamedColorBlock(block, output);
+            }
+        }
+
+        private static void ParseNamedColorBlock(string block, Dictionary<string, NamedColor> output)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string name = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(name)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (TryParseColorValue(block, ref pos, out byte r, out byte g, out byte b, out string display))
+                {
+                    output[name] = new NamedColor
+                    {
+                        Name = name,
+                        R = r,
+                        G = g,
+                        B = b,
+                        HasColor = true,
+                        ColorDisplay = display
+                    };
+                }
+            }
         }
 
         private static void SkipValueAndFollowingBlock(string block, ref int pos)
@@ -378,11 +662,33 @@ namespace PdxModIDE.UI
                 DetailNameValue.Text = culture.DisplayName;
                 DetailHeritageValue.Text = culture.HeritageDisplayName;
                 DetailSourceValue.Text = culture.Source;
+
+                if (culture.HasColor)
+                {
+                    DetailColorSwatch.Visibility = Visibility.Visible;
+                    DetailColorValue.Visibility = Visibility.Visible;
+                    DetailColorSwatch.Background = culture.ColorBrush;
+                    DetailColorValue.Text = string.IsNullOrEmpty(culture.ColorReference)
+                        ? culture.ColorDisplay
+                        : $"{culture.ColorDisplay}  |  {Res("CulturesTab_ColorName")} {culture.ColorReference}";
+                    DetailColorInternalText.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    DetailColorSwatch.Visibility = Visibility.Collapsed;
+                    DetailColorValue.Visibility = Visibility.Collapsed;
+                    DetailColorInternalText.Visibility = Visibility.Visible;
+                }
             }
             else
             {
                 DetailGroup.Visibility = Visibility.Collapsed;
                 DetailEmptyText.Visibility = Visibility.Visible;
+                DetailColorSwatch.Visibility = Visibility.Visible;
+                DetailColorValue.Visibility = Visibility.Visible;
+                DetailColorSwatch.Background = System.Windows.Media.Brushes.Transparent;
+                DetailColorValue.Text = "";
+                DetailColorInternalText.Visibility = Visibility.Collapsed;
             }
         }
 
