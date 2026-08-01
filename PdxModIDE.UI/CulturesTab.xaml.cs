@@ -32,6 +32,8 @@ namespace PdxModIDE.UI
         public MartialCustomInfo? MartialCustomDefinition { get; set; }
         public string HeadDetermination { get; set; } = "";
         public HeadDeterminationInfo? HeadDeterminationDefinition { get; set; }
+        public List<string> TraditionKeys { get; set; } = new();
+        public List<TraditionInfo> Traditions { get; set; } = new();
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
@@ -159,6 +161,28 @@ namespace PdxModIDE.UI
         public List<HeadDeterminationParameter> Parameters { get; set; } = new();
     }
 
+    public class TraditionParameter
+    {
+        public string Key { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Description { get; set; } = "";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+    }
+
+    public class TraditionInfo
+    {
+        public string Name { get; set; } = "";
+        public string DisplayName
+        {
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : Name;
+            set => _displayName = value;
+        }
+        private string? _displayName;
+        public string Description { get; set; } = "";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+        public List<TraditionParameter> Parameters { get; set; } = new();
+    }
+
     public class NamedColor
     {
         public string Name { get; set; } = "";
@@ -214,6 +238,7 @@ namespace PdxModIDE.UI
             var languageDefinitions = LoadLanguageDefinitions(gameRoot, modRoot);
             var martialCustomDefinitions = LoadMartialCustomDefinitions(gameRoot, modRoot);
             var headDeterminationDefinitions = LoadHeadDeterminationDefinitions(gameRoot, modRoot);
+            var traditionDefinitions = LoadTraditionDefinitions(gameRoot, modRoot);
 
             foreach (var ethos in ethosDefinitions.Values)
             {
@@ -252,6 +277,18 @@ namespace PdxModIDE.UI
                 foreach (var parameter in headDetermination.Parameters)
                 {
                     parameter.Description = ResOptional($"HeadDeterminationParam_{parameter.Key}_Desc");
+                }
+            }
+
+            foreach (var tradition in traditionDefinitions.Values)
+            {
+                if (localization.TryGetValue($"{tradition.Name}_name", out var tName))
+                    tradition.DisplayName = tName;
+                if (localization.TryGetValue($"{tradition.Name}_desc", out var tDesc))
+                    tradition.Description = tDesc;
+                foreach (var parameter in tradition.Parameters)
+                {
+                    parameter.Description = ResOptional($"TraditionParam_{parameter.Key}_Desc");
                 }
             }
 
@@ -333,6 +370,15 @@ namespace PdxModIDE.UI
             {
                 if (!string.IsNullOrEmpty(culture.HeadDetermination) && headDeterminationDefinitions.TryGetValue(culture.HeadDetermination, out var hdDef))
                     culture.HeadDeterminationDefinition = hdDef;
+            }
+
+            foreach (var culture in allByName.Values)
+            {
+                foreach (var key in culture.TraditionKeys)
+                {
+                    if (traditionDefinitions.TryGetValue(key, out var traditionDef))
+                        culture.Traditions.Add(traditionDef);
+                }
             }
 
             var groups = new Dictionary<string, CultureGroup>(StringComparer.OrdinalIgnoreCase);
@@ -907,6 +953,144 @@ namespace PdxModIDE.UI
             }
         }
 
+        private static Dictionary<string, TraditionInfo> LoadTraditionDefinitions(string gameRoot, string modRoot)
+        {
+            var result = new Dictionary<string, TraditionInfo>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var root in new[] { modRoot, gameRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "culture", "traditions");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*.txt", SearchOption.AllDirectories))
+                    ParseTraditionFile(file, result);
+            }
+
+            return result;
+        }
+
+        private static void ParseTraditionFile(string filePath, Dictionary<string, TraditionInfo> output)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                var tradition = new TraditionInfo { Name = key };
+                ParseTraditionParameters(block, tradition.Parameters);
+                output[key] = tradition;
+            }
+        }
+
+        private static void ParseTraditionParameters(string block, List<TraditionParameter> parameters)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (block[pos] == '{')
+                {
+                    string content = ReadBraceContent(block, ref pos);
+                    parameters.Add(new TraditionParameter { Key = key, Content = content });
+                }
+                else
+                {
+                    int start = pos;
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                    {
+                        if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                            break;
+                        pos++;
+                    }
+                    parameters.Add(new TraditionParameter
+                    {
+                        Key = key,
+                        Content = block.Substring(start, pos - start)
+                    });
+                }
+            }
+        }
+
+        private static List<string> ExtractTraditionsAttribute(string block)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "traditions")
+                {
+                    if (block[pos] == '{')
+                    {
+                        string content = ReadBraceContent(block, ref pos);
+                        return ExtractTraditionKeys(content);
+                    }
+                    return new List<string>();
+                }
+
+                SkipValueAndFollowingBlock(block, ref pos);
+            }
+
+            return new List<string>();
+        }
+
+        private static List<string> ExtractTraditionKeys(string content)
+        {
+            var result = new List<string>();
+            int pos = 0;
+            while (pos < content.Length)
+            {
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos >= content.Length) break;
+                string key = ReadKey(content, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                result.Add(key);
+            }
+            return result;
+        }
+
         private static List<CultureInfo> ParseFile(string filePath, string source)
         {
             var cultures = new List<CultureInfo>();
@@ -959,6 +1143,8 @@ namespace PdxModIDE.UI
                 string? headDetermination = ExtractAttribute(block, "head_determination");
                 if (headDetermination != null)
                     culture.HeadDetermination = headDetermination;
+
+                culture.TraditionKeys = ExtractTraditionsAttribute(block);
 
                 ExtractColor(block, culture);
 
@@ -1345,6 +1531,7 @@ namespace PdxModIDE.UI
         {
             if (e.NewValue is CultureInfo culture)
             {
+                StatsGroup.Visibility = Visibility.Collapsed;
                 DetailGroup.Visibility = Visibility.Visible;
                 DetailEmptyText.Visibility = Visibility.Collapsed;
                 DetailNameValue.Text = culture.DisplayName;
@@ -1454,6 +1641,17 @@ namespace PdxModIDE.UI
                     DetailHeadDeterminationExpander.Visibility = Visibility.Collapsed;
                 }
 
+                if (culture.Traditions.Count > 0)
+                {
+                    TraditionsList.ItemsSource = culture.Traditions;
+                    DetailTraditionsExpander.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    TraditionsList.ItemsSource = null;
+                    DetailTraditionsExpander.Visibility = Visibility.Collapsed;
+                }
+
                 if (culture.HasColor)
                 {
                     DetailColorSwatch.Visibility = Visibility.Visible;
@@ -1473,6 +1671,7 @@ namespace PdxModIDE.UI
             }
             else
             {
+                StatsGroup.Visibility = Visibility.Visible;
                 DetailGroup.Visibility = Visibility.Collapsed;
                 DetailEmptyText.Visibility = Visibility.Visible;
                 DetailColorSwatch.Visibility = Visibility.Visible;
@@ -1494,6 +1693,8 @@ namespace PdxModIDE.UI
                 DetailHeadDeterminationValue.Text = "";
                 HeadDeterminationParametersList.ItemsSource = null;
                 DetailHeadDeterminationExpander.Visibility = Visibility.Collapsed;
+                TraditionsList.ItemsSource = null;
+                DetailTraditionsExpander.Visibility = Visibility.Collapsed;
             }
         }
 

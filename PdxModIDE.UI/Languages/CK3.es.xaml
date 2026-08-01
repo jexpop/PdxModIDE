@@ -35,4 +35,19 @@
     <!-- CulturesTab: explicaciones de los parámetros de la designación del líder -->
     <system:String x:Key="HeadDeterminationParam_head_determination_type_Desc">Cómo se determina el líder cultural.</system:String>
 
+    <!-- CulturesTab: explicaciones de los parámetros de las tradiciones -->
+    <system:String x:Key="TraditionParam_category_Desc">Categoría a la que pertenece esta tradición.</system:String>
+    <system:String x:Key="TraditionParam_layers_Desc">Capas visuales usadas para representar el icono de la tradición.</system:String>
+    <system:String x:Key="TraditionParam_can_pick_Desc">Condiciones que determinan si esta tradición se puede elegir.</system:String>
+    <system:String x:Key="TraditionParam_can_pick_for_hybridization_Desc">Condiciones que determinan si esta tradición se puede elegir al hibridar culturas.</system:String>
+    <system:String x:Key="TraditionParam_parameters_Desc">Indicadores especiales que activan comportamientos concretos de esta tradición.</system:String>
+    <system:String x:Key="TraditionParam_character_modifier_Desc">Modificadores que se aplican a los personajes de esta cultura.</system:String>
+    <system:String x:Key="TraditionParam_province_modifier_Desc">Modificadores que se aplican a las provincias de esta cultura.</system:String>
+    <system:String x:Key="TraditionParam_county_modifier_Desc">Modificadores que se aplican a los condados de esta cultura.</system:String>
+    <system:String x:Key="TraditionParam_culture_modifier_Desc">Modificadores que se aplican a nivel de cultura.</system:String>
+    <system:String x:Key="TraditionParam_effects_Desc">Efectos que se aplican al adoptar esta tradición.</system:String>
+    <system:String x:Key="TraditionParam_cost_Desc">Coste de prestigio necesario para adoptar esta tradición.</system:String>
+    <system:String x:Key="TraditionParam_ai_will_do_Desc">Peso guionizado que determina la probabilidad de que la IA adopte esta tradición.</system:String>
+    <system:String x:Key="TraditionParam_desc_Desc">Clave de localización del texto de descripción de la tradición.</system:String>
+
 </ResourceDictionary>

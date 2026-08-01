@@ -35,4 +35,19 @@
     <!-- CulturesTab: head determination parameter explanations -->
     <system:String x:Key="HeadDeterminationParam_head_determination_type_Desc">How the cultural head is determined.</system:String>
 
+    <!-- CulturesTab: tradition parameter explanations -->
+    <system:String x:Key="TraditionParam_category_Desc">Category this tradition belongs to.</system:String>
+    <system:String x:Key="TraditionParam_layers_Desc">Visual layers used to render the tradition icon.</system:String>
+    <system:String x:Key="TraditionParam_can_pick_Desc">Conditions that determine whether this tradition can be picked.</system:String>
+    <system:String x:Key="TraditionParam_can_pick_for_hybridization_Desc">Conditions that determine whether this tradition can be picked when hybridizing cultures.</system:String>
+    <system:String x:Key="TraditionParam_parameters_Desc">Special flags that enable specific behaviors of this tradition.</system:String>
+    <system:String x:Key="TraditionParam_character_modifier_Desc">Modifiers applied to characters of this culture.</system:String>
+    <system:String x:Key="TraditionParam_province_modifier_Desc">Modifiers applied to provinces of this culture.</system:String>
+    <system:String x:Key="TraditionParam_county_modifier_Desc">Modifiers applied to counties of this culture.</system:String>
+    <system:String x:Key="TraditionParam_culture_modifier_Desc">Modifiers applied at the culture level.</system:String>
+    <system:String x:Key="TraditionParam_effects_Desc">Effects applied when adopting this tradition.</system:String>
+    <system:String x:Key="TraditionParam_cost_Desc">Prestige cost required to adopt this tradition.</system:String>
+    <system:String x:Key="TraditionParam_ai_will_do_Desc">Scripted weight that determines how likely the AI is to adopt this tradition.</system:String>
+    <system:String x:Key="TraditionParam_desc_Desc">Localization key of the tradition description text.</system:String>
+
 </ResourceDictionary>

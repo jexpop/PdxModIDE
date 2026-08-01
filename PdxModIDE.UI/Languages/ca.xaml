@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.7</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.8</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -192,6 +192,8 @@
     <system:String x:Key="CulturesTab_MartialCustomParameters">Paràmetres de la tradició marcial</system:String>
     <system:String x:Key="CulturesTab_HeadDetermination">Designació del líder:</system:String>
     <system:String x:Key="CulturesTab_HeadDeterminationParameters">Paràmetres de la designació del líder</system:String>
+    <system:String x:Key="CulturesTab_Traditions">Tradicions:</system:String>
+    <system:String x:Key="CulturesTab_TraditionsParameters">Tradicions de la cultura</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Mòduls</system:String>

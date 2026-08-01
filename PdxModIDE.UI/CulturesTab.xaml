@@ -46,13 +46,15 @@
             </TreeView>
         </Grid>
 
-        <Grid Grid.Column="1" Margin="10,0,0,0">
+        <Grid Grid.Column="1" Margin="20,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <GroupBox Grid.Row="0" Header="{DynamicResource CulturesTab_Details}" Margin="0,0,0,10"
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+            <GroupBox Header="{DynamicResource CulturesTab_Details}" Margin="0,0,0,10"
                       Visibility="Collapsed" x:Name="DetailGroup">
                 <StackPanel>
                     <Label Content="{DynamicResource CulturesTab_Source}" FontWeight="Bold" />
@@ -225,15 +227,70 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Expander>
+                    <Label Content="{DynamicResource CulturesTab_Traditions}" FontWeight="Bold" />
+                    <Expander x:Name="DetailTraditionsExpander" Margin="15,0,0,5"
+                              Header="{DynamicResource CulturesTab_TraditionsParameters}"
+                              Visibility="Collapsed">
+                        <ItemsControl x:Name="TraditionsList" Margin="0,4,0,4">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Expander Header="{Binding DisplayName}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Description}" Foreground="Gray"
+                                                       FontStyle="Italic" TextWrapping="Wrap" Margin="4,2,4,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasDescription}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <ItemsControl ItemsSource="{Binding Parameters}" Margin="0,4,0,0">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Expander Header="{Binding Key}">
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding Description}" Foreground="Gray"
+                                                                           FontStyle="Italic" TextWrapping="Wrap" Margin="4,2,4,0">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding HasDescription}" Value="True">
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                                <TextBlock Text="{Binding Content}" FontFamily="Consolas"
+                                                                           TextWrapping="Wrap" Margin="4"/>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
                 </StackPanel>
             </GroupBox>
 
-            <TextBlock x:Name="DetailEmptyText" Grid.Row="0"
+            <TextBlock x:Name="DetailEmptyText"
                        Text="{DynamicResource CulturesTab_SelectPrompt}" 
                        TextWrapping="Wrap" Foreground="Gray"
                        Margin="0,10,0,0"/>
+            </StackPanel>
+            </ScrollViewer>
 
-            <GroupBox Grid.Row="1" Header="{DynamicResource CulturesTab_Stats}">
+            <GroupBox Grid.Row="0" Header="{DynamicResource CulturesTab_Stats}" x:Name="StatsGroup">
                 <StackPanel>
                     <TextBlock x:Name="StatsGroupsText"/>
                     <TextBlock x:Name="StatsModGroupsText" Margin="0,3,0,0"/>

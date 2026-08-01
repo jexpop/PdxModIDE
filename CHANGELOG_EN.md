@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.8]
+
+### Added
+
+- **Traditions in culture details (Cultures tab)**: the detail panel now also shows the culture's traditions (from `traditions = { ... }` in the culture definition), each with its localized name (`tradition_<name>_name`), its localized description (`tradition_<name>_desc`), and an expandable section with its parameters (`category`, `layers`, `can_pick`, `can_pick_for_hybridization`, `parameters`, `character_modifier`, `province_modifier`, `county_modifier`, `culture_modifier`, `effects`, `cost`, `ai_will_do`, `desc`, etc.), mirroring the ethos/heritage/language/martial custom/head determination features. Definitions are parsed from `common/culture/traditions/*.txt`, with mod files taking priority over the game. Each parameter includes a localized explanation (`TraditionParam_*_Desc` keys in `CK3.*.xaml`).
+- **`IGamePlugin.TraditionsRelativePath`**: new interface property for the traditions directory path (CK3: `common/culture/traditions`).
+
+### Changed
+
+- **Culture details panel layout**: the detail panel is now inside a vertical `ScrollViewer` so it no longer overflows the window when many sections are expanded. The statistics panel moved to the top of the right column and is only shown when no culture is selected. The gap between the culture tree and the detail panel was increased.
+
+---
+
 ## [1.5.7]
 
 ### Added

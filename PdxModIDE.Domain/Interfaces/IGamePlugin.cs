@@ -14,6 +14,7 @@ namespace PdxModIDE.Domain.Interfaces
         string TitleHistoryRelativePath { get; }
         string MapDataRelativePath { get; }
         string CulturesRelativePath { get; }
+        string TraditionsRelativePath { get; }
 
         string EndDateKey { get; }
         string DefinesOutputFormat { get; }

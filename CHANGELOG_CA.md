@@ -7,6 +7,19 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.5.8]
+
+### Afegit
+
+- **Tradicions als detalls de cultura (pestanya Cultures)**: el panell de detalls ara també mostra les tradicions de la cultura (de `traditions = { ... }` en la definició de cultura), cadascuna amb el seu nom localitzat (`tradition_<name>_name`), la seva descripció localitzada (`tradition_<name>_desc`) i una secció desplegable amb els seus paràmetres (`category`, `layers`, `can_pick`, `can_pick_for_hybridization`, `parameters`, `character_modifier`, `province_modifier`, `county_modifier`, `culture_modifier`, `effects`, `cost`, `ai_will_do`, `desc`, etc.), replicant la funcionalitat de l'ethos/herència/idioma/tradició marcial/designació del líder. Les definicions s'analitzen des de `common/culture/traditions/*.txt`, amb prioritat dels fitxers del mod sobre el joc. Cada paràmetre inclou una explicació localitzada (claus `TraditionParam_*_Desc` a `CK3.*.xaml`).
+- **`IGamePlugin.TraditionsRelativePath`**: nova propietat d'interfície per a la ruta del directori de tradicions (CK3: `common/culture/traditions`).
+
+### Canviat
+
+- **Disposició del panell de detalls de cultura**: el panell de detalls ara està dins d'un `ScrollViewer` vertical perquè ja no surti de la finestra quan s'expandeixen moltes seccions. El panell d'estadístiques s'ha mogut a la part superior de la columna dreta i només es mostra quan no hi ha cultura seleccionada. S'ha augmentat l'espai entre l'arbre de cultures i el panell de detalls.
+
+---
+
 ## [1.5.7]
 
 ### Afegit

@@ -35,4 +35,19 @@
     <!-- CulturesTab: explicacions dels paràmetres de la designació del líder -->
     <system:String x:Key="HeadDeterminationParam_head_determination_type_Desc">Com es determina el líder cultural.</system:String>
 
+    <!-- CulturesTab: explicacions dels paràmetres de les tradicions -->
+    <system:String x:Key="TraditionParam_category_Desc">Categoria a la qual pertany aquesta tradició.</system:String>
+    <system:String x:Key="TraditionParam_layers_Desc">Capes visuals utilitzades per representar la icona de la tradició.</system:String>
+    <system:String x:Key="TraditionParam_can_pick_Desc">Condicions que determinen si aquesta tradició es pot triar.</system:String>
+    <system:String x:Key="TraditionParam_can_pick_for_hybridization_Desc">Condicions que determinen si aquesta tradició es pot triar en hibridar cultures.</system:String>
+    <system:String x:Key="TraditionParam_parameters_Desc">Indicadors especials que activen comportaments concrets d'aquesta tradició.</system:String>
+    <system:String x:Key="TraditionParam_character_modifier_Desc">Modificadors que s'apliquen als personatges d'aquesta cultura.</system:String>
+    <system:String x:Key="TraditionParam_province_modifier_Desc">Modificadors que s'apliquen a les províncies d'aquesta cultura.</system:String>
+    <system:String x:Key="TraditionParam_county_modifier_Desc">Modificadors que s'apliquen als comtats d'aquesta cultura.</system:String>
+    <system:String x:Key="TraditionParam_culture_modifier_Desc">Modificadors que s'apliquen a nivell de cultura.</system:String>
+    <system:String x:Key="TraditionParam_effects_Desc">Efectes que s'apliquen en adoptar aquesta tradició.</system:String>
+    <system:String x:Key="TraditionParam_cost_Desc">Cost de prestigi necessari per adoptar aquesta tradició.</system:String>
+    <system:String x:Key="TraditionParam_ai_will_do_Desc">Pes guionitzat que determina la probabilitat que la IA adopti aquesta tradició.</system:String>
+    <system:String x:Key="TraditionParam_desc_Desc">Clau de localització del text de descripció de la tradició.</system:String>
+
 </ResourceDictionary>
