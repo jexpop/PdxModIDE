@@ -27,4 +27,12 @@
     <system:String x:Key="LanguageParam_ai_will_do_Desc">Pes guionitzat que determina la probabilitat que la IA adopti aquest idioma.</system:String>
     <system:String x:Key="LanguageParam_color_Desc">Referència de color associada a aquest idioma.</system:String>
 
+    <!-- CulturesTab: explicacions dels paràmetres de la tradició marcial -->
+    <system:String x:Key="MartialCustomParam_parameters_Desc">Indicadors especials que activen comportaments concrets d'aquesta tradició marcial.</system:String>
+    <system:String x:Key="MartialCustomParam_can_pick_Desc">Condicions que determinen quan es pot triar aquesta tradició marcial.</system:String>
+    <system:String x:Key="MartialCustomParam_ai_will_do_Desc">Pes guionitzat que determina la probabilitat que la IA adopti aquesta tradició marcial.</system:String>
+
+    <!-- CulturesTab: explicacions dels paràmetres de la designació del líder -->
+    <system:String x:Key="HeadDeterminationParam_head_determination_type_Desc">Com es determina el líder cultural.</system:String>
+
 </ResourceDictionary>

@@ -7,6 +7,15 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.5.7]
+
+### Añadido
+
+- **Tradición marcial en los detalles de cultura (pestaña Culturas)**: el panel de detalles ahora también muestra la tradición marcial de la cultura (de `martial_custom = martial_custom_xxx`, localizada vía las claves `martial_custom_<name>_name` en `cultural_traditions_l_*.yml`), con una sección desplegable con sus parámetros (`parameters`, `can_pick`, `ai_will_do`, etc.), replicando la funcionalidad del ethos/herencia/idioma. Las definiciones se parsean desde `common/culture/pillars/*martial_custom.txt`, con prioridad de los ficheros del mod sobre el juego. Cada parámetro incluye una explicación localizada (claves `MartialCustomParam_*_Desc` en `CK3.*.xaml`).
+- **Designación del líder en los detalles de cultura (pestaña Culturas)**: el panel de detalles ahora también muestra la designación del líder de la cultura (de `head_determination = head_determination_xxx`, localizada vía `head_determination_l_*.yml`), con una sección desplegable con sus parámetros (`head_determination_type`, etc.). Las definiciones se parsean desde `common/culture/pillars/*head_determination.txt`, con prioridad de los ficheros del mod sobre el juego. Cada parámetro incluye una explicación localizada (claves `HeadDeterminationParam_*_Desc` en `CK3.*.xaml`). Ambos campos nuevos se colocan tras el campo del idioma, siguiendo el orden del fichero de definición de cultura.
+
+---
+
 ## [1.5.6]
 
 ### Añadido

@@ -28,6 +28,10 @@ namespace PdxModIDE.UI
         public EthosInfo? EthosDefinition { get; set; }
         public string Language { get; set; } = "";
         public LanguageInfo? LanguageDefinition { get; set; }
+        public string MartialCustom { get; set; } = "";
+        public MartialCustomInfo? MartialCustomDefinition { get; set; }
+        public string HeadDetermination { get; set; } = "";
+        public HeadDeterminationInfo? HeadDeterminationDefinition { get; set; }
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
@@ -115,6 +119,46 @@ namespace PdxModIDE.UI
         public List<LanguageParameter> Parameters { get; set; } = new();
     }
 
+    public class MartialCustomParameter
+    {
+        public string Key { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Description { get; set; } = "";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+    }
+
+    public class MartialCustomInfo
+    {
+        public string Name { get; set; } = "";
+        public string DisplayName
+        {
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : Name;
+            set => _displayName = value;
+        }
+        private string? _displayName;
+        public List<MartialCustomParameter> Parameters { get; set; } = new();
+    }
+
+    public class HeadDeterminationParameter
+    {
+        public string Key { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Description { get; set; } = "";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+    }
+
+    public class HeadDeterminationInfo
+    {
+        public string Name { get; set; } = "";
+        public string DisplayName
+        {
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : Name;
+            set => _displayName = value;
+        }
+        private string? _displayName;
+        public List<HeadDeterminationParameter> Parameters { get; set; } = new();
+    }
+
     public class NamedColor
     {
         public string Name { get; set; } = "";
@@ -168,6 +212,8 @@ namespace PdxModIDE.UI
             var ethosDefinitions = LoadEthosDefinitions(gameRoot, modRoot);
             var heritageDefinitions = LoadHeritageDefinitions(gameRoot, modRoot);
             var languageDefinitions = LoadLanguageDefinitions(gameRoot, modRoot);
+            var martialCustomDefinitions = LoadMartialCustomDefinitions(gameRoot, modRoot);
+            var headDeterminationDefinitions = LoadHeadDeterminationDefinitions(gameRoot, modRoot);
 
             foreach (var ethos in ethosDefinitions.Values)
             {
@@ -190,6 +236,22 @@ namespace PdxModIDE.UI
                 foreach (var parameter in language.Parameters)
                 {
                     parameter.Description = ResOptional($"LanguageParam_{parameter.Key}_Desc");
+                }
+            }
+
+            foreach (var martialCustom in martialCustomDefinitions.Values)
+            {
+                foreach (var parameter in martialCustom.Parameters)
+                {
+                    parameter.Description = ResOptional($"MartialCustomParam_{parameter.Key}_Desc");
+                }
+            }
+
+            foreach (var headDetermination in headDeterminationDefinitions.Values)
+            {
+                foreach (var parameter in headDetermination.Parameters)
+                {
+                    parameter.Description = ResOptional($"HeadDeterminationParam_{parameter.Key}_Desc");
                 }
             }
 
@@ -231,6 +293,18 @@ namespace PdxModIDE.UI
                     language.DisplayName = languageName;
             }
 
+            foreach (var martialCustom in martialCustomDefinitions.Values)
+            {
+                if (localization.TryGetValue($"{martialCustom.Name}_name", out var mcName))
+                    martialCustom.DisplayName = mcName;
+            }
+
+            foreach (var headDetermination in headDeterminationDefinitions.Values)
+            {
+                if (localization.TryGetValue(headDetermination.Name, out var hdName))
+                    headDetermination.DisplayName = hdName;
+            }
+
             foreach (var culture in allByName.Values)
             {
                 if (!string.IsNullOrEmpty(culture.Ethos) && ethosDefinitions.TryGetValue(culture.Ethos, out var ethosDef))
@@ -247,6 +321,18 @@ namespace PdxModIDE.UI
             {
                 if (!string.IsNullOrEmpty(culture.Language) && languageDefinitions.TryGetValue(culture.Language, out var languageDef))
                     culture.LanguageDefinition = languageDef;
+            }
+
+            foreach (var culture in allByName.Values)
+            {
+                if (!string.IsNullOrEmpty(culture.MartialCustom) && martialCustomDefinitions.TryGetValue(culture.MartialCustom, out var mcDef))
+                    culture.MartialCustomDefinition = mcDef;
+            }
+
+            foreach (var culture in allByName.Values)
+            {
+                if (!string.IsNullOrEmpty(culture.HeadDetermination) && headDeterminationDefinitions.TryGetValue(culture.HeadDetermination, out var hdDef))
+                    culture.HeadDeterminationDefinition = hdDef;
             }
 
             var groups = new Dictionary<string, CultureGroup>(StringComparer.OrdinalIgnoreCase);
@@ -305,7 +391,8 @@ namespace PdxModIDE.UI
                 $"culture/cultures_l_{ck3Lang}.yml",
                 $"culture/traditions/cultural_heritages_l_{ck3Lang}.yml",
                 $"culture/traditions/cultural_traditions_l_{ck3Lang}.yml",
-                $"culture/traditions/cultural_languages_l_{ck3Lang}.yml"
+                $"culture/traditions/cultural_languages_l_{ck3Lang}.yml",
+                $"culture/head_determination_l_{ck3Lang}.yml"
             };
 
             foreach (var root in new[] { modRoot, gameRoot })
@@ -638,6 +725,188 @@ namespace PdxModIDE.UI
             }
         }
 
+        private static Dictionary<string, MartialCustomInfo> LoadMartialCustomDefinitions(string gameRoot, string modRoot)
+        {
+            var result = new Dictionary<string, MartialCustomInfo>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var root in new[] { modRoot, gameRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "culture", "pillars");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*martial_custom.txt", SearchOption.AllDirectories))
+                    ParseMartialCustomFile(file, result);
+            }
+
+            return result;
+        }
+
+        private static void ParseMartialCustomFile(string filePath, Dictionary<string, MartialCustomInfo> output)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                var martialCustom = new MartialCustomInfo { Name = key };
+                ParseMartialCustomParameters(block, martialCustom.Parameters);
+                output[key] = martialCustom;
+            }
+        }
+
+        private static void ParseMartialCustomParameters(string block, List<MartialCustomParameter> parameters)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "type")
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+
+                if (block[pos] == '{')
+                {
+                    string content = ReadBraceContent(block, ref pos);
+                    parameters.Add(new MartialCustomParameter { Key = key, Content = content });
+                }
+                else
+                {
+                    int start = pos;
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                    {
+                        if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                            break;
+                        pos++;
+                    }
+                    parameters.Add(new MartialCustomParameter
+                    {
+                        Key = key,
+                        Content = block.Substring(start, pos - start)
+                    });
+                }
+            }
+        }
+
+        private static Dictionary<string, HeadDeterminationInfo> LoadHeadDeterminationDefinitions(string gameRoot, string modRoot)
+        {
+            var result = new Dictionary<string, HeadDeterminationInfo>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var root in new[] { modRoot, gameRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "culture", "pillars");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*head_determination.txt", SearchOption.AllDirectories))
+                    ParseHeadDeterminationFile(file, result);
+            }
+
+            return result;
+        }
+
+        private static void ParseHeadDeterminationFile(string filePath, Dictionary<string, HeadDeterminationInfo> output)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                var headDetermination = new HeadDeterminationInfo { Name = key };
+                ParseHeadDeterminationParameters(block, headDetermination.Parameters);
+                output[key] = headDetermination;
+            }
+        }
+
+        private static void ParseHeadDeterminationParameters(string block, List<HeadDeterminationParameter> parameters)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "type")
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+
+                if (block[pos] == '{')
+                {
+                    string content = ReadBraceContent(block, ref pos);
+                    parameters.Add(new HeadDeterminationParameter { Key = key, Content = content });
+                }
+                else
+                {
+                    int start = pos;
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                    {
+                        if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                            break;
+                        pos++;
+                    }
+                    parameters.Add(new HeadDeterminationParameter
+                    {
+                        Key = key,
+                        Content = block.Substring(start, pos - start)
+                    });
+                }
+            }
+        }
+
         private static List<CultureInfo> ParseFile(string filePath, string source)
         {
             var cultures = new List<CultureInfo>();
@@ -682,6 +951,14 @@ namespace PdxModIDE.UI
                 string? language = ExtractAttribute(block, "language");
                 if (language != null)
                     culture.Language = language;
+
+                string? martialCustom = ExtractAttribute(block, "martial_custom");
+                if (martialCustom != null)
+                    culture.MartialCustom = martialCustom;
+
+                string? headDetermination = ExtractAttribute(block, "head_determination");
+                if (headDetermination != null)
+                    culture.HeadDetermination = headDetermination;
 
                 ExtractColor(block, culture);
 
@@ -1135,6 +1412,48 @@ namespace PdxModIDE.UI
                     DetailEthosExpander.Visibility = Visibility.Collapsed;
                 }
 
+                if (culture.MartialCustomDefinition != null)
+                {
+                    DetailMartialCustomValue.Text = culture.MartialCustomDefinition.DisplayName;
+                    if (culture.MartialCustomDefinition.Parameters.Count > 0)
+                    {
+                        MartialCustomParametersList.ItemsSource = culture.MartialCustomDefinition.Parameters;
+                        DetailMartialCustomExpander.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        MartialCustomParametersList.ItemsSource = null;
+                        DetailMartialCustomExpander.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    DetailMartialCustomValue.Text = string.IsNullOrEmpty(culture.MartialCustom) ? "-" : culture.MartialCustom;
+                    MartialCustomParametersList.ItemsSource = null;
+                    DetailMartialCustomExpander.Visibility = Visibility.Collapsed;
+                }
+
+                if (culture.HeadDeterminationDefinition != null)
+                {
+                    DetailHeadDeterminationValue.Text = culture.HeadDeterminationDefinition.DisplayName;
+                    if (culture.HeadDeterminationDefinition.Parameters.Count > 0)
+                    {
+                        HeadDeterminationParametersList.ItemsSource = culture.HeadDeterminationDefinition.Parameters;
+                        DetailHeadDeterminationExpander.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        HeadDeterminationParametersList.ItemsSource = null;
+                        DetailHeadDeterminationExpander.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    DetailHeadDeterminationValue.Text = string.IsNullOrEmpty(culture.HeadDetermination) ? "-" : culture.HeadDetermination;
+                    HeadDeterminationParametersList.ItemsSource = null;
+                    DetailHeadDeterminationExpander.Visibility = Visibility.Collapsed;
+                }
+
                 if (culture.HasColor)
                 {
                     DetailColorSwatch.Visibility = Visibility.Visible;
@@ -1169,6 +1488,12 @@ namespace PdxModIDE.UI
                 DetailLanguageValue.Text = "";
                 LanguageParametersList.ItemsSource = null;
                 DetailLanguageExpander.Visibility = Visibility.Collapsed;
+                DetailMartialCustomValue.Text = "";
+                MartialCustomParametersList.ItemsSource = null;
+                DetailMartialCustomExpander.Visibility = Visibility.Collapsed;
+                DetailHeadDeterminationValue.Text = "";
+                HeadDeterminationParametersList.ItemsSource = null;
+                DetailHeadDeterminationExpander.Visibility = Visibility.Collapsed;
             }
         }
 

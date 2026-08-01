@@ -163,6 +163,68 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Expander>
+                    <Label Content="{DynamicResource CulturesTab_MartialCustom}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailMartialCustomValue" Margin="15,0,0,5" />
+                    <Expander x:Name="DetailMartialCustomExpander" Margin="15,0,0,5"
+                              Header="{DynamicResource CulturesTab_MartialCustomParameters}"
+                              Visibility="Collapsed">
+                        <ItemsControl x:Name="MartialCustomParametersList" Margin="0,4,0,4">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Expander Header="{Binding Key}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Description}" Foreground="Gray"
+                                                       FontStyle="Italic" TextWrapping="Wrap" Margin="4,2,4,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasDescription}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Content}" FontFamily="Consolas"
+                                                       TextWrapping="Wrap" Margin="4"/>
+                                        </StackPanel>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
+                    <Label Content="{DynamicResource CulturesTab_HeadDetermination}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailHeadDeterminationValue" Margin="15,0,0,5" />
+                    <Expander x:Name="DetailHeadDeterminationExpander" Margin="15,0,0,5"
+                              Header="{DynamicResource CulturesTab_HeadDeterminationParameters}"
+                              Visibility="Collapsed">
+                        <ItemsControl x:Name="HeadDeterminationParametersList" Margin="0,4,0,4">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Expander Header="{Binding Key}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Description}" Foreground="Gray"
+                                                       FontStyle="Italic" TextWrapping="Wrap" Margin="4,2,4,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasDescription}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Content}" FontFamily="Consolas"
+                                                       TextWrapping="Wrap" Margin="4"/>
+                                        </StackPanel>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
                 </StackPanel>
             </GroupBox>
 

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.7]
+
+### Added
+
+- **Martial custom in culture details (Cultures tab)**: the detail panel now also shows the culture's martial custom (from `martial_custom = martial_custom_xxx`, localized via `martial_custom_<name>_name` keys in `cultural_traditions_l_*.yml`), with an expandable section with its parameters (`parameters`, `can_pick`, `ai_will_do`, etc.), mirroring the ethos/heritage/language features. Definitions are parsed from `common/culture/pillars/*martial_custom.txt`, with mod files taking priority over the game. Each parameter includes a localized explanation (`MartialCustomParam_*_Desc` keys in `CK3.*.xaml`).
+- **Head determination in culture details (Cultures tab)**: the detail panel now also shows the culture's head determination (from `head_determination = head_determination_xxx`, localized via `head_determination_l_*.yml`), with an expandable section with its parameters (`head_determination_type`, etc.). Definitions are parsed from `common/culture/pillars/*head_determination.txt`, with mod files taking priority over the game. Each parameter includes a localized explanation (`HeadDeterminationParam_*_Desc` keys in `CK3.*.xaml`). Both new fields are placed after the language field, following the order of the culture definition file.
+
+---
+
 ## [1.5.6]
 
 ### Added

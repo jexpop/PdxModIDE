@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.6</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.7</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -188,6 +188,10 @@
     <system:String x:Key="CulturesTab_ColorInternal">Color interno del motor del juego (no definido en los ficheros).</system:String>
     <system:String x:Key="CulturesTab_Ethos">Ethos:</system:String>
     <system:String x:Key="CulturesTab_EthosParameters">Parámetros del ethos</system:String>
+    <system:String x:Key="CulturesTab_MartialCustom">Tradición marcial:</system:String>
+    <system:String x:Key="CulturesTab_MartialCustomParameters">Parámetros de la tradición marcial</system:String>
+    <system:String x:Key="CulturesTab_HeadDetermination">Designación del líder:</system:String>
+    <system:String x:Key="CulturesTab_HeadDeterminationParameters">Parámetros de la designación del líder</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Módulos</system:String>

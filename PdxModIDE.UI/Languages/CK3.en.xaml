@@ -27,4 +27,12 @@
     <system:String x:Key="LanguageParam_ai_will_do_Desc">Scripted weight that determines how likely the AI is to adopt this language.</system:String>
     <system:String x:Key="LanguageParam_color_Desc">Color reference associated with this language.</system:String>
 
+    <!-- CulturesTab: martial custom parameter explanations -->
+    <system:String x:Key="MartialCustomParam_parameters_Desc">Special flags that enable specific behaviors of this martial custom.</system:String>
+    <system:String x:Key="MartialCustomParam_can_pick_Desc">Conditions that determine when this martial custom can be picked.</system:String>
+    <system:String x:Key="MartialCustomParam_ai_will_do_Desc">Scripted weight that determines how likely the AI is to adopt this martial custom.</system:String>
+
+    <!-- CulturesTab: head determination parameter explanations -->
+    <system:String x:Key="HeadDeterminationParam_head_determination_type_Desc">How the cultural head is determined.</system:String>
+
 </ResourceDictionary>
