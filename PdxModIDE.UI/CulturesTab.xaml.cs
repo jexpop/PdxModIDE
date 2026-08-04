@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using PdxModIDE.Core.Games;
 using PdxModIDE.UI.ViewModels;
@@ -32,6 +34,8 @@ namespace PdxModIDE.UI
         public MartialCustomInfo? MartialCustomDefinition { get; set; }
         public string HeadDetermination { get; set; } = "";
         public HeadDeterminationInfo? HeadDeterminationDefinition { get; set; }
+        public string NameList { get; set; } = "";
+        public NameListInfo? NameListDefinition { get; set; }
         public List<string> TraditionKeys { get; set; } = new();
         public List<TraditionInfo> Traditions { get; set; } = new();
         public byte R { get; set; }
@@ -161,6 +165,27 @@ namespace PdxModIDE.UI
         public List<HeadDeterminationParameter> Parameters { get; set; } = new();
     }
 
+    public class NameListParameter
+    {
+        public string Key { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Category { get; set; } = "";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+    }
+
+    public class NameListInfo
+    {
+        public string Name { get; set; } = "";
+        public string DisplayName
+        {
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : Name;
+            set => _displayName = value;
+        }
+        private string? _displayName;
+        public List<NameListParameter> Parameters { get; set; } = new();
+    }
+
     public class TraditionParameter
     {
         public string Key { get; set; } = "";
@@ -238,6 +263,7 @@ namespace PdxModIDE.UI
             var languageDefinitions = LoadLanguageDefinitions(gameRoot, modRoot);
             var martialCustomDefinitions = LoadMartialCustomDefinitions(gameRoot, modRoot);
             var headDeterminationDefinitions = LoadHeadDeterminationDefinitions(gameRoot, modRoot);
+            var nameListDefinitions = LoadNameListDefinitions(gameRoot, modRoot);
             var traditionDefinitions = LoadTraditionDefinitions(gameRoot, modRoot);
 
             foreach (var ethos in ethosDefinitions.Values)
@@ -342,6 +368,17 @@ namespace PdxModIDE.UI
                     headDetermination.DisplayName = hdName;
             }
 
+            foreach (var nameList in nameListDefinitions.Values)
+            {
+                if (localization.TryGetValue(nameList.Name, out var nlName))
+                    nameList.DisplayName = nlName;
+                foreach (var parameter in nameList.Parameters)
+                {
+                    parameter.Category = Res($"NameListCategory_{GetNameListCategory(parameter.Key)}");
+                    parameter.Description = ResOptional($"NameListParam_{parameter.Key}_Desc");
+                }
+            }
+
             foreach (var culture in allByName.Values)
             {
                 if (!string.IsNullOrEmpty(culture.Ethos) && ethosDefinitions.TryGetValue(culture.Ethos, out var ethosDef))
@@ -370,6 +407,12 @@ namespace PdxModIDE.UI
             {
                 if (!string.IsNullOrEmpty(culture.HeadDetermination) && headDeterminationDefinitions.TryGetValue(culture.HeadDetermination, out var hdDef))
                     culture.HeadDeterminationDefinition = hdDef;
+            }
+
+            foreach (var culture in allByName.Values)
+            {
+                if (!string.IsNullOrEmpty(culture.NameList) && nameListDefinitions.TryGetValue(culture.NameList, out var nlDef))
+                    culture.NameListDefinition = nlDef;
             }
 
             foreach (var culture in allByName.Values)
@@ -438,7 +481,8 @@ namespace PdxModIDE.UI
                 $"culture/traditions/cultural_heritages_l_{ck3Lang}.yml",
                 $"culture/traditions/cultural_traditions_l_{ck3Lang}.yml",
                 $"culture/traditions/cultural_languages_l_{ck3Lang}.yml",
-                $"culture/head_determination_l_{ck3Lang}.yml"
+                $"culture/head_determination_l_{ck3Lang}.yml",
+                $"culture/culture_name_lists_l_{ck3Lang}.yml"
             };
 
             foreach (var root in new[] { modRoot, gameRoot })
@@ -953,6 +997,103 @@ namespace PdxModIDE.UI
             }
         }
 
+        private static Dictionary<string, NameListInfo> LoadNameListDefinitions(string gameRoot, string modRoot)
+        {
+            var result = new Dictionary<string, NameListInfo>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var root in new[] { modRoot, gameRoot })
+            {
+                if (string.IsNullOrEmpty(root)) continue;
+                var dir = Path.Combine(root, "common", "culture", "name_lists");
+                if (!Directory.Exists(dir)) continue;
+                foreach (var file in Directory.GetFiles(dir, "*.txt", SearchOption.AllDirectories))
+                    ParseNameListFile(file, result);
+            }
+
+            return result;
+        }
+
+        private static void ParseNameListFile(string filePath, Dictionary<string, NameListInfo> output)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') continue;
+                pos++;
+
+                string block = ReadBlock(text, ref pos);
+                var nameList = new NameListInfo { Name = key };
+                ParseNameListParameters(block, nameList.Parameters);
+                output[key] = nameList;
+            }
+        }
+
+        private static void ParseNameListParameters(string block, List<NameListParameter> parameters)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=') continue;
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) continue;
+
+                if (block[pos] == '{')
+                {
+                    string content = ReadBraceContent(block, ref pos);
+                    parameters.Add(new NameListParameter { Key = key, Content = content });
+                }
+                else
+                {
+                    int start = pos;
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                    {
+                        if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                            break;
+                        pos++;
+                    }
+                    parameters.Add(new NameListParameter
+                    {
+                        Key = key,
+                        Content = block.Substring(start, pos - start)
+                    });
+                }
+            }
+        }
+
+        private static string GetNameListCategory(string key)
+        {
+            return key switch
+            {
+                "dynasty_name_first" or "founder_named_dynasties" or "house_based_map_names" or "suggest_family_names" or "suggest_ancestor_names" or "always_use_patronym" => "Options",
+                "male_names" or "female_names" or "dynasty_names" or "cadet_dynasty_names" or "mercenary_names" => "NameLists",
+                "pat_grf_name_chance" or "mat_grf_name_chance" or "father_name_chance" or "pat_grm_name_chance" or "mat_grm_name_chance" or "mother_name_chance" => "Chances",
+                "patronym_prefix_male" or "patronym_prefix_male_vowel" or "patronym_prefix_female" or "patronym_prefix_female_vowel" or "patronym_suffix_male" or "patronym_suffix_female" or "dynasty_of_location_prefix" or "bastard_dynasty_prefix" => "PrefixesSuffixes",
+                _ => "Other"
+            };
+        }
+
         private static Dictionary<string, TraditionInfo> LoadTraditionDefinitions(string gameRoot, string modRoot)
         {
             var result = new Dictionary<string, TraditionInfo>(StringComparer.OrdinalIgnoreCase);
@@ -1143,6 +1284,10 @@ namespace PdxModIDE.UI
                 string? headDetermination = ExtractAttribute(block, "head_determination");
                 if (headDetermination != null)
                     culture.HeadDetermination = headDetermination;
+
+                string? nameList = ExtractAttribute(block, "name_list");
+                if (nameList != null)
+                    culture.NameList = nameList;
 
                 culture.TraditionKeys = ExtractTraditionsAttribute(block);
 
@@ -1641,6 +1786,29 @@ namespace PdxModIDE.UI
                     DetailHeadDeterminationExpander.Visibility = Visibility.Collapsed;
                 }
 
+                if (culture.NameListDefinition != null)
+                {
+                    DetailNameListValue.Text = culture.NameListDefinition.DisplayName;
+                    if (culture.NameListDefinition.Parameters.Count > 0)
+                    {
+                        var view = new CollectionViewSource { Source = culture.NameListDefinition.Parameters };
+                        view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(NameListParameter.Category)));
+                        NameListParametersList.ItemsSource = view.View;
+                        DetailNameListExpander.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        NameListParametersList.ItemsSource = null;
+                        DetailNameListExpander.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    DetailNameListValue.Text = string.IsNullOrEmpty(culture.NameList) ? "-" : culture.NameList;
+                    NameListParametersList.ItemsSource = null;
+                    DetailNameListExpander.Visibility = Visibility.Collapsed;
+                }
+
                 if (culture.Traditions.Count > 0)
                 {
                     TraditionsList.ItemsSource = culture.Traditions;
@@ -1693,6 +1861,9 @@ namespace PdxModIDE.UI
                 DetailHeadDeterminationValue.Text = "";
                 HeadDeterminationParametersList.ItemsSource = null;
                 DetailHeadDeterminationExpander.Visibility = Visibility.Collapsed;
+                DetailNameListValue.Text = "";
+                NameListParametersList.ItemsSource = null;
+                DetailNameListExpander.Visibility = Visibility.Collapsed;
                 TraditionsList.ItemsSource = null;
                 DetailTraditionsExpander.Visibility = Visibility.Collapsed;
             }

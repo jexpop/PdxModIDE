@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.5.8]
+## [1.5.9]
+
+### Added
+
+- **Name list in culture details (Cultures tab)**: the detail panel now shows the culture's name list (from `name_list = name_list_xxx` in the culture definition), with its localized display name and an expandable section with all its parameters grouped by category: **Options** (boolean flags like `dynasty_name_first`, `founder_named_dynasties`, `house_based_map_names`, `suggest_family_names`, `suggest_ancestor_names`, `always_use_patronym`), **Name lists** (`male_names`, `female_names`, `dynasty_names`, `cadet_dynasty_names`, `mercenary_names`), **Chances** (`pat_grf_name_chance`, `mat_grf_name_chance`, `father_name_chance`, `pat_grm_name_chance`, `mat_grm_name_chance`, `mother_name_chance`), **Prefixes &amp; suffixes** (`patronym_prefix_*`, `patronym_suffix_*`, `dynasty_of_location_prefix`, `bastard_dynasty_prefix`), and **Other** (`grammar_transform`). Definitions are parsed from `common/culture/name_lists/*.txt`, with mod files taking priority over the game. Each parameter includes a localized explanation (`NameListParam_*_Desc` keys in `en/es/ca.xaml`).
+
+### Changed
+
+- **Culture details panel order**: the Name list block is now placed after Traditions (at the end of the detail panel).
 
 ### Added
 

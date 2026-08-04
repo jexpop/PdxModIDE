@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.8</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.9</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -194,6 +194,39 @@
     <system:String x:Key="CulturesTab_HeadDeterminationParameters">Paràmetres de la designació del líder</system:String>
     <system:String x:Key="CulturesTab_Traditions">Tradicions:</system:String>
     <system:String x:Key="CulturesTab_TraditionsParameters">Tradicions de la cultura</system:String>
+    <system:String x:Key="CulturesTab_NameList">Llista de noms:</system:String>
+    <system:String x:Key="CulturesTab_NameListParameters">Contingut de la llista de noms</system:String>
+    <system:String x:Key="NameListCategory_Options">Opcions</system:String>
+    <system:String x:Key="NameListCategory_NameLists">Llistes de noms</system:String>
+    <system:String x:Key="NameListCategory_Chances">Probabilitats</system:String>
+    <system:String x:Key="NameListCategory_PrefixesSuffixes">Prefixos i sufixos</system:String>
+    <system:String x:Key="NameListCategory_Other">Altres</system:String>
+    <system:String x:Key="NameListParam_dynasty_name_first_Desc">Mostra el nom de la dinastia abans del nom propi.</system:String>
+    <system:String x:Key="NameListParam_founder_named_dynasties_Desc">Utilitzar el nom del fundador al crear noves dinasties o branques cadetes.</system:String>
+    <system:String x:Key="NameListParam_house_based_map_names_Desc">Permetre usar noms de casa com a noms de regne al mapa.</system:String>
+    <system:String x:Key="NameListParam_suggest_family_names_Desc">Suggerir noms de la família.</system:String>
+    <system:String x:Key="NameListParam_suggest_ancestor_names_Desc">Suggerir noms d'un avantpassat.</system:String>
+    <system:String x:Key="NameListParam_always_use_patronym_Desc">Mostrar sempre patronímics als noms.</system:String>
+    <system:String x:Key="NameListParam_male_names_Desc">Llista de noms propis masculins, opcionalment amb pesos.</system:String>
+    <system:String x:Key="NameListParam_female_names_Desc">Llista de noms propis femenins, opcionalment amb pesos.</system:String>
+    <system:String x:Key="NameListParam_dynasty_names_Desc">Llista de noms de dinastia (suporta entrades amb prefix + nom base).</system:String>
+    <system:String x:Key="NameListParam_cadet_dynasty_names_Desc">Llista de noms de dinasties cadetes (suporta entrades amb prefix + nom base).</system:String>
+    <system:String x:Key="NameListParam_mercenary_names_Desc">Noms i escuts utilitzats per mercenaris d'aquesta cultura.</system:String>
+    <system:String x:Key="NameListParam_dynasty_of_location_prefix_Desc">Prefix al generar un nom de dinastia basat en un títol.</system:String>
+    <system:String x:Key="NameListParam_bastard_dynasty_prefix_Desc">Prefix usat per a noms de dinasties bastardes.</system:String>
+    <system:String x:Key="NameListParam_pat_grf_name_chance_Desc">Probabilitat que fills varons heretin el nom de l'avi pater.</system:String>
+    <system:String x:Key="NameListParam_mat_grf_name_chance_Desc">Probabilitat que fills varons heretin el nom de l'avi mater.</system:String>
+    <system:String x:Key="NameListParam_father_name_chance_Desc">Probabilitat que fills varons heretin el nom del pare.</system:String>
+    <system:String x:Key="NameListParam_pat_grm_name_chance_Desc">Probabilitat que filles heretin el nom de l'avia paterna.</system:String>
+    <system:String x:Key="NameListParam_mat_grm_name_chance_Desc">Probabilitat que filles heretin el nom de l'avia materna.</system:String>
+    <system:String x:Key="NameListParam_mother_name_chance_Desc">Probabilitat que filles heretin el nom de la mare.</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_Desc">Prefix patronímic després del nom del pare (masculí).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_vowel_Desc">Prefix patronímic després del nom del pare (variant vocal).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_Desc">Prefix patronímic després del nom de la mare (femení).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_vowel_Desc">Prefix patronímic després del nom de la mare (variant vocal).</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_male_Desc">Sufix patronímic després del nom del pare.</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_female_Desc">Sufix patronímic després del nom de la mare.</system:String>
+    <system:String x:Key="NameListParam_grammar_transform_Desc">Regla de transformació gramatical aplicada a aquesta llista de noms.</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Mòduls</system:String>

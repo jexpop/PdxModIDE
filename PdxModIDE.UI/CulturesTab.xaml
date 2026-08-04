@@ -280,6 +280,49 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Expander>
+                    <Label Content="{DynamicResource CulturesTab_NameList}" FontWeight="Bold" />
+                    <TextBlock x:Name="DetailNameListValue" Margin="15,0,0,5" />
+                    <Expander x:Name="DetailNameListExpander" Margin="15,0,0,5"
+                              Header="{DynamicResource CulturesTab_NameListParameters}"
+                              Visibility="Collapsed">
+                        <ItemsControl x:Name="NameListParametersList" Margin="0,4,0,4">
+                            <ItemsControl.GroupStyle>
+                                <GroupStyle>
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Expander Header="{Binding Name}" IsExpanded="True" FontWeight="Bold">
+                                                <ItemsControl ItemsSource="{Binding Items}" Margin="0,4,0,4">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Expander Header="{Binding Key}">
+                                                                <StackPanel>
+                                                                    <TextBlock Text="{Binding Description}" Foreground="Gray"
+                                                                               FontStyle="Italic" TextWrapping="Wrap" Margin="4,2,4,0">
+                                                                        <TextBlock.Style>
+                                                                            <Style TargetType="TextBlock">
+                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding HasDescription}" Value="True">
+                                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </TextBlock.Style>
+                                                                    </TextBlock>
+                                                                    <TextBlock Text="{Binding Content}" FontFamily="Consolas"
+                                                                               TextWrapping="Wrap" Margin="4"/>
+                                                                </StackPanel>
+                                                            </Expander>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Expander>
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                </GroupStyle>
+                            </ItemsControl.GroupStyle>
+                        </ItemsControl>
+                    </Expander>
                 </StackPanel>
             </GroupBox>
 

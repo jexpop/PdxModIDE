@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.8</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.9</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -194,6 +194,39 @@
     <system:String x:Key="CulturesTab_HeadDeterminationParameters">Parámetros de la designación del líder</system:String>
     <system:String x:Key="CulturesTab_Traditions">Tradiciones:</system:String>
     <system:String x:Key="CulturesTab_TraditionsParameters">Tradiciones de la cultura</system:String>
+    <system:String x:Key="CulturesTab_NameList">Lista de nombres:</system:String>
+    <system:String x:Key="CulturesTab_NameListParameters">Contenido de la lista de nombres</system:String>
+    <system:String x:Key="NameListCategory_Options">Opciones</system:String>
+    <system:String x:Key="NameListCategory_NameLists">Listas de nombres</system:String>
+    <system:String x:Key="NameListCategory_Chances">Probabilidades</system:String>
+    <system:String x:Key="NameListCategory_PrefixesSuffixes">Prefijos y sufijos</system:String>
+    <system:String x:Key="NameListCategory_Other">Otros</system:String>
+    <system:String x:Key="NameListParam_dynasty_name_first_Desc">Mostrar el nombre de dinastía antes del nombre propio.</system:String>
+    <system:String x:Key="NameListParam_founder_named_dynasties_Desc">Usar el nombre del fundador al crear nuevas dinastías o ramas cadetes.</system:String>
+    <system:String x:Key="NameListParam_house_based_map_names_Desc">Permitir usar nombres de casa como nombres de reino en el mapa.</system:String>
+    <system:String x:Key="NameListParam_suggest_family_names_Desc">Sugerir nombres de la familia.</system:String>
+    <system:String x:Key="NameListParam_suggest_ancestor_names_Desc">Sugerir nombres de un ancestro.</system:String>
+    <system:String x:Key="NameListParam_always_use_patronym_Desc">Mostrar siempre patronímicos en los nombres.</system:String>
+    <system:String x:Key="NameListParam_male_names_Desc">Lista de nombres propios masculinos, opcionalmente con pesos.</system:String>
+    <system:String x:Key="NameListParam_female_names_Desc">Lista de nombres propios femeninos, opcionalmente con pesos.</system:String>
+    <system:String x:Key="NameListParam_dynasty_names_Desc">Lista de nombres de dinastía (soporta entradas con prefijo + nombre base).</system:String>
+    <system:String x:Key="NameListParam_cadet_dynasty_names_Desc">Lista de nombres de dinastías cadetes (soporta entradas con prefijo + nombre base).</system:String>
+    <system:String x:Key="NameListParam_mercenary_names_Desc">Nombres y escudos usados por mercenarios de esta cultura.</system:String>
+    <system:String x:Key="NameListParam_dynasty_of_location_prefix_Desc">Prefijo al generar un nombre de dinastía basado en un título.</system:String>
+    <system:String x:Key="NameListParam_bastard_dynasty_prefix_Desc">Prefijo usado para nombres de dinastías bastardas.</system:String>
+    <system:String x:Key="NameListParam_pat_grf_name_chance_Desc">Probabilidad de que hijos varones hereden nombre del abuelo paterno.</system:String>
+    <system:String x:Key="NameListParam_mat_grf_name_chance_Desc">Probabilidad de que hijos varones hereden nombre del abuelo materno.</system:String>
+    <system:String x:Key="NameListParam_father_name_chance_Desc">Probabilidad de que hijos varones hereden nombre del padre.</system:String>
+    <system:String x:Key="NameListParam_pat_grm_name_chance_Desc">Probabilidad de que hijas hereden nombre de la abuela paterna.</system:String>
+    <system:String x:Key="NameListParam_mat_grm_name_chance_Desc">Probabilidad de que hijas hereden nombre de la abuela materna.</system:String>
+    <system:String x:Key="NameListParam_mother_name_chance_Desc">Probabilidad de que hijas hereden nombre de la madre.</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_Desc">Prefijo patronímico tras el nombre del padre (masculino).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_vowel_Desc">Prefijo patronímico tras el nombre del padre (variante vocal).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_Desc">Prefijo patronímico tras el nombre de la madre (femenino).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_vowel_Desc">Prefijo patronímico tras el nombre de la madre (variante vocal).</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_male_Desc">Sufijo patronímico tras el nombre del padre.</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_female_Desc">Sufijo patronímico tras el nombre de la madre.</system:String>
+    <system:String x:Key="NameListParam_grammar_transform_Desc">Regla de transformación gramatical aplicada a esta lista de nombres.</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Módulos</system:String>

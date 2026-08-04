@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.8</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.9</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -194,6 +194,39 @@
     <system:String x:Key="CulturesTab_HeadDeterminationParameters">Head determination parameters</system:String>
     <system:String x:Key="CulturesTab_Traditions">Traditions:</system:String>
     <system:String x:Key="CulturesTab_TraditionsParameters">Culture traditions</system:String>
+    <system:String x:Key="CulturesTab_NameList">Name list:</system:String>
+    <system:String x:Key="CulturesTab_NameListParameters">Name list contents</system:String>
+    <system:String x:Key="NameListCategory_Options">Options</system:String>
+    <system:String x:Key="NameListCategory_NameLists">Name lists</system:String>
+    <system:String x:Key="NameListCategory_Chances">Chances</system:String>
+    <system:String x:Key="NameListCategory_PrefixesSuffixes">Prefixes &amp; suffixes</system:String>
+    <system:String x:Key="NameListCategory_Other">Other</system:String>
+    <system:String x:Key="NameListParam_dynasty_name_first_Desc">Display the dynasty name before the given name.</system:String>
+    <system:String x:Key="NameListParam_founder_named_dynasties_Desc">Use the founder's name when creating new dynasties or cadet branches.</system:String>
+    <system:String x:Key="NameListParam_house_based_map_names_Desc">Allow house names to be used as realm names on the map.</system:String>
+    <system:String x:Key="NameListParam_suggest_family_names_Desc">Suggest names from within the family.</system:String>
+    <system:String x:Key="NameListParam_suggest_ancestor_names_Desc">Suggest names from an ancestor.</system:String>
+    <system:String x:Key="NameListParam_always_use_patronym_Desc">Always display patronyms in names.</system:String>
+    <system:String x:Key="NameListParam_male_names_Desc">List of male given names, optionally weighted.</system:String>
+    <system:String x:Key="NameListParam_female_names_Desc">List of female given names, optionally weighted.</system:String>
+    <system:String x:Key="NameListParam_dynasty_names_Desc">Dynasty name list (supports prefix + base name entries).</system:String>
+    <system:String x:Key="NameListParam_cadet_dynasty_names_Desc">List of cadet dynasty names (supports prefix + base name entries).</system:String>
+    <system:String x:Key="NameListParam_mercenary_names_Desc">Names and coats of arms used by mercenaries of this culture.</system:String>
+    <system:String x:Key="NameListParam_dynasty_of_location_prefix_Desc">Prefix added when generating a dynasty name based on a title.</system:String>
+    <system:String x:Key="NameListParam_bastard_dynasty_prefix_Desc">Prefix used for bastard dynasty names.</system:String>
+    <system:String x:Key="NameListParam_pat_grf_name_chance_Desc">Chance of male children being named after their paternal grandfather.</system:String>
+    <system:String x:Key="NameListParam_mat_grf_name_chance_Desc">Chance of male children being named after their maternal grandfather.</system:String>
+    <system:String x:Key="NameListParam_father_name_chance_Desc">Chance of male children being named after their father.</system:String>
+    <system:String x:Key="NameListParam_pat_grm_name_chance_Desc">Chance of female children being named after their paternal grandmother.</system:String>
+    <system:String x:Key="NameListParam_mat_grm_name_chance_Desc">Chance of female children being named after their maternal grandmother.</system:String>
+    <system:String x:Key="NameListParam_mother_name_chance_Desc">Chance of female children being named after their mother.</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_Desc">Patronym prefix after the father's name (male).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_vowel_Desc">Patronym prefix after the father's name (vowel variant).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_Desc">Patronym prefix after the mother's name (female).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_vowel_Desc">Patronym prefix after the mother's name (vowel variant).</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_male_Desc">Patronym suffix after the father's name.</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_female_Desc">Patronym suffix after the mother's name.</system:String>
+    <system:String x:Key="NameListParam_grammar_transform_Desc">Grammar transform rule applied to this name list.</system:String>
 
     <!-- ValidationTab -->
     <system:String x:Key="ValidationTab_Modules">Modules</system:String>

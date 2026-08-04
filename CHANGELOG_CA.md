@@ -7,7 +7,15 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
-## [1.5.8]
+## [1.5.9]
+
+### Afegit
+
+- **Llista de noms als detalls de cultura (pestanya Cultures)**: el panell de detalls ara mostra la llista de noms de la cultura (de `name_list = name_list_xxx` a la definició de cultura), amb el seu nom localitzat i una secció desplegable amb tots els seus paràmetres agrupats per categoria: **Opcions** (flags booleanes com `dynasty_name_first`, `founder_named_dynasties`, `house_based_map_names`, `suggest_family_names`, `suggest_ancestor_names`, `always_use_patronym`), **Llistes de noms** (`male_names`, `female_names`, `dynasty_names`, `cadet_dynasty_names`, `mercenary_names`), **Probabilitats** (`pat_grf_name_chance`, `mat_grf_name_chance`, `father_name_chance`, `pat_grm_name_chance`, `mat_grm_name_chance`, `mother_name_chance`), **Prefixos i sufixos** (`patronym_prefix_*`, `patronym_suffix_*`, `dynasty_of_location_prefix`, `bastard_dynasty_prefix`), i **Altres** (`grammar_transform`). Les definicions s'analitzen des de `common/culture/name_lists/*.txt`, amb prioritat dels fitxers del mod sobre el joc. Cada paràmetre inclou una explicació localitzada (claus `NameListParam_*_Desc` a `en/es/ca.xaml`).
+
+### Canviat
+
+- **Ordre del panell de detalls de cultura**: el bloc Llista de noms es situa ara després de Tradicions (al final del panell de detalls).
 
 ### Afegit
 
