@@ -8,7 +8,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using PdxModIDE.Core.Games;
+using PdxModIDE.ModelEngine;
 using PdxModIDE.UI.ViewModels;
 
 namespace PdxModIDE.UI
@@ -38,6 +40,16 @@ namespace PdxModIDE.UI
         public NameListInfo? NameListDefinition { get; set; }
         public List<string> TraditionKeys { get; set; } = new();
         public List<TraditionInfo> Traditions { get; set; } = new();
+
+        public List<string> CoaGfx { get; set; } = new();
+        public List<string> BuildingGfx { get; set; } = new();
+        public List<string> ClothingGfx { get; set; } = new();
+        public List<string> UnitGfx { get; set; } = new();
+        public string HouseCoaFrame { get; set; } = "";
+        public string DynastyCoaFrame { get; set; } = "";
+        public string HouseCoaMaskOffset { get; set; } = "";
+        public string HouseCoaMaskScale { get; set; } = "";
+
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
@@ -221,6 +233,22 @@ namespace PdxModIDE.UI
     public partial class CulturesTab : System.Windows.Controls.UserControl
     {
         private MainViewModel? _viewModel;
+        private PdxAssetResolver? _gfxResolver;
+
+        private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
+
+        private static void LogGfx(string msg)
+        {
+            try
+            {
+                string dir = Path.Combine(AppContext.BaseDirectory, "logs");
+                Directory.CreateDirectory(dir);
+                File.AppendAllText(Path.Combine(dir, "gfx_debug.log"),
+                    $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\r\n");
+            }
+            catch { }
+        }
 
         public CulturesTab()
         {
@@ -242,6 +270,17 @@ namespace PdxModIDE.UI
             var modRoot = _viewModel.CurrentProfile.ModRoot;
             var gameKey = _viewModel.CurrentProfile.Game;
             var appLang = _viewModel.Language;
+
+            try
+            {
+                _gfxResolver = new PdxAssetResolver(Path.Combine(gameRoot, "gfx", "models"));
+                LogGfx($"LoadCultures: gameRoot='{gameRoot}' resolver entities={_gfxResolver.EntityCount} meshes={_gfxResolver.MeshCount}");
+            }
+            catch (Exception ex)
+            {
+                _gfxResolver = null;
+                LogGfx($"LoadCultures: resolver FAILED: {ex.Message}");
+            }
 
             var plugin = GameRegistry.GetPlugin(gameKey);
             var culturePath = plugin?.CulturesRelativePath ?? "common/culture/cultures";
@@ -1291,6 +1330,8 @@ namespace PdxModIDE.UI
 
                 culture.TraditionKeys = ExtractTraditionsAttribute(block);
 
+                ExtractGfxAttributes(block, culture);
+
                 ExtractColor(block, culture);
 
                 cultures.Add(culture);
@@ -1820,6 +1861,31 @@ namespace PdxModIDE.UI
                     DetailTraditionsExpander.Visibility = Visibility.Collapsed;
                 }
 
+                bool hasGfx = culture.CoaGfx.Count > 0 || culture.BuildingGfx.Count > 0 || 
+                              culture.ClothingGfx.Count > 0 || culture.UnitGfx.Count > 0 ||
+                              !string.IsNullOrEmpty(culture.HouseCoaFrame) || !string.IsNullOrEmpty(culture.DynastyCoaFrame) ||
+                              !string.IsNullOrEmpty(culture.HouseCoaMaskOffset) || !string.IsNullOrEmpty(culture.HouseCoaMaskScale);
+
+                if (hasGfx)
+                {
+                    DetailCoaGfxValue.Text = culture.CoaGfx.Count > 0 ? string.Join(", ", culture.CoaGfx) : "-";
+                    DetailBuildingGfxValue.Text = culture.BuildingGfx.Count > 0 ? string.Join(", ", culture.BuildingGfx) : "-";
+                    DetailClothingGfxValue.Text = culture.ClothingGfx.Count > 0 ? string.Join(", ", culture.ClothingGfx) : "-";
+                    DetailUnitGfxValue.Text = culture.UnitGfx.Count > 0 ? string.Join(", ", culture.UnitGfx) : "-";
+                    DetailHouseCoaFrameValue.Text = string.IsNullOrEmpty(culture.HouseCoaFrame) ? "-" : culture.HouseCoaFrame;
+                    DetailDynastyCoaFrameValue.Text = string.IsNullOrEmpty(culture.DynastyCoaFrame) ? "-" : culture.DynastyCoaFrame;
+                    DetailHouseCoaMaskOffsetValue.Text = string.IsNullOrEmpty(culture.HouseCoaMaskOffset) ? "-" : $"{{{culture.HouseCoaMaskOffset}}}";
+                    DetailHouseCoaMaskScaleValue.Text = string.IsNullOrEmpty(culture.HouseCoaMaskScale) ? "-" : $"{{{culture.HouseCoaMaskScale}}}";
+                    DetailGfxExpander.Visibility = Visibility.Visible;
+                    DetailGfxExpander.IsExpanded = true;
+                    LoadGfxModel(culture);
+                }
+                else
+                {
+                    DetailGfxExpander.Visibility = Visibility.Collapsed;
+                    ClearGfxViewport();
+                }
+
                 if (culture.HasColor)
                 {
                     DetailColorSwatch.Visibility = Visibility.Visible;
@@ -1866,6 +1932,411 @@ namespace PdxModIDE.UI
                 DetailNameListExpander.Visibility = Visibility.Collapsed;
                 TraditionsList.ItemsSource = null;
                 DetailTraditionsExpander.Visibility = Visibility.Collapsed;
+                DetailGfxExpander.Visibility = Visibility.Collapsed;
+                ClearGfxViewport();
+            }
+        }
+
+        private void LoadGfxModel(CultureInfo culture)
+        {
+            ClearGfxViewport();
+            string gameRoot = _viewModel?.CurrentProfile?.GameRoot ?? "";
+            if (string.IsNullOrEmpty(gameRoot) || !Directory.Exists(gameRoot))
+                return;
+
+            RenderCategory(gameRoot, culture.BuildingGfx, BuildingGfxViewport3D, BuildingGfxViewportBorder);
+            RenderCategory(gameRoot, culture.ClothingGfx, ClothingGfxViewport3D, ClothingGfxViewportBorder);
+RenderCategory(gameRoot, culture.UnitGfx, UnitGfxViewport3D, UnitGfxViewportBorder);
+        }
+
+        private void RenderCategory(string gameRoot, List<string> keys, Viewport3D viewport, Border border)
+        {
+            foreach (var key in keys)
+            {
+                if (string.IsNullOrEmpty(key)) continue;
+
+                ResolvedAsset? resolved = null;
+                if (_gfxResolver != null)
+                    resolved = _gfxResolver.Resolve(key);
+                else
+                {
+                    string? meshPath = FindMeshFile(gameRoot, key);
+                    if (meshPath != null)
+                        resolved = new ResolvedAsset { MeshPath = meshPath };
+                }
+
+                LogGfx($"LoadGfxModel key='{key}' resolver={(resolved?.MeshPath ?? "(null)")}");
+                if (resolved != null && !string.IsNullOrEmpty(resolved.MeshPath) && File.Exists(resolved.MeshPath))
+                {
+                    RenderMesh(resolved, viewport, border, gameRoot);
+                    return;
+                }
+            }
+        }
+
+        private static string? FindDiffuseFile(string gameRoot, string meshPath, List<PdxMesh> meshes)
+        {
+            string? meshDir = Path.GetDirectoryName(meshPath);
+            string modelsDir = Path.Combine(gameRoot, "gfx", "models");
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var m in meshes)
+            {
+                if (string.IsNullOrEmpty(m.DiffuseTexture) || !seen.Add(m.DiffuseTexture)) continue;
+                string? resolvedPath = meshDir != null ? Path.Combine(meshDir, m.DiffuseTexture) : null;
+                if (resolvedPath == null || !File.Exists(resolvedPath))
+                {
+                    resolvedPath = null;
+                    foreach (var f in Directory.EnumerateFiles(modelsDir, m.DiffuseTexture, SearchOption.AllDirectories))
+                    { resolvedPath = f; break; }
+                }
+                if (resolvedPath != null && IsGoodDiffuse(resolvedPath))
+                    return resolvedPath;
+            }
+            return null;
+        }
+
+        private static PdxModIDE.ModelEngine.DdsImage? GetDecoded(string filePath)
+        {
+            lock (_textureDecodeCache)
+            {
+                if (_textureDecodeCache.TryGetValue(filePath, out var cached)) return cached;
+                PdxModIDE.ModelEngine.DdsImage? dds = null;
+                try { dds = DdsDecoder.Decode(filePath); } catch { }
+                _textureDecodeCache[filePath] = dds;
+                return dds;
+            }
+        }
+
+        private static bool IsGoodDiffuse(string filePath)
+        {
+            try
+            {
+                var dds = GetDecoded(filePath);
+                if (dds == null || dds.Data == null || dds.Data.Length < 4) return false;
+                long total = dds.Data.Length / 4;
+                long dark = 0;
+                for (int i = 0; i + 3 < dds.Data.Length; i += 4)
+                {
+                    int r = dds.Data[i], g = dds.Data[i + 1], b = dds.Data[i + 2];
+                    if (r + g + b < 24) dark++;
+                }
+                return total > 0 && (double)dark / total < 0.90;
+            }
+            catch { return false; }
+        }
+
+        private static string? FindMeshFile(string gameRoot, string key)
+        {
+            string modelsDir = Path.Combine(gameRoot, "gfx", "models");
+            if (!Directory.Exists(modelsDir)) return null;
+
+            string name = Path.GetFileName(key.Replace("\\", "/")).Replace(".mesh", "").ToLowerInvariant();
+            string baseFile = name + ".mesh";
+            string lodFile = name + "_lod.mesh";
+
+            foreach (var file in Directory.EnumerateFiles(modelsDir, "*.mesh", SearchOption.AllDirectories))
+            {
+                string baseName = Path.GetFileName(file).ToLowerInvariant();
+                if (baseName == baseFile || baseName == lodFile)
+                    return file;
+            }
+            return null;
+        }
+
+        private void RenderMesh(ResolvedAsset resolved, Viewport3D viewport, Border border, string gameRoot)
+        {
+            PdxModel model;
+            try
+            {
+                model = PdxMeshParser.ParseMeshFile(resolved.MeshPath);
+                LogGfx($"RenderMesh parsed '{resolved.MeshPath}' meshes={model.Meshes.Count}");
+            }
+            catch (Exception ex)
+            {
+                LogGfx($"RenderMesh PARSE FAILED: {ex.Message}");
+                return;
+            }
+
+            var positions = new Point3DCollection();
+            var triangleIndices = new Int32Collection();
+            var textureCoordinates = new PointCollection();
+            foreach (var m in model.Meshes)
+            {
+                if (m.Positions == null || m.Positions.Length % 3 != 0) continue;
+                int baseIdx = positions.Count;
+                for (int i = 0; i < m.Positions.Length; i += 3)
+                    positions.Add(new Point3D(m.Positions[i], m.Positions[i + 1], m.Positions[i + 2]));
+                if (m.Triangles != null)
+                {
+                    foreach (var t in m.Triangles)
+                        triangleIndices.Add(baseIdx + t);
+                }
+                if (m.UVSets != null && m.UVSets.Count > 0 && m.UVSets[0] != null && m.UVSets[0].Length % 2 == 0)
+                {
+                    var uv = m.UVSets[0];
+                    for (int i = 0; i < uv.Length; i += 2)
+                        textureCoordinates.Add(new System.Windows.Point(uv[i], 1 - uv[i + 1]));
+                }
+            }
+            if (positions.Count == 0) return;
+
+            var normalsArr = new Vector3D[positions.Count];
+            for (int i = 0; i + 2 < triangleIndices.Count; i += 3)
+            {
+                int a = triangleIndices[i], b = triangleIndices[i + 1], c = triangleIndices[i + 2];
+                if (a < 0 || b < 0 || c < 0 || a >= positions.Count || b >= positions.Count || c >= positions.Count)
+                    continue;
+                var e1 = positions[b] - positions[a];
+                var e2 = positions[c] - positions[a];
+                var n = Vector3D.CrossProduct(e1, e2);
+                if (n.Length < 1e-12) continue;
+                n.Normalize();
+                normalsArr[a] += n;
+                normalsArr[b] += n;
+                normalsArr[c] += n;
+            }
+            var normalsColl = new Vector3DCollection();
+            foreach (var n in normalsArr)
+            {
+                var nn = n;
+                if (nn.LengthSquared > 1e-12) nn.Normalize();
+                normalsColl.Add(nn);
+            }
+
+            LogGfx($"RenderMesh geometry positions={positions.Count} tris={triangleIndices.Count} normals={normalsColl.Count}");
+
+            double minX = double.MaxValue, minY = double.MaxValue, minZ = double.MaxValue;
+            double maxX = double.MinValue, maxY = double.MinValue, maxZ = double.MinValue;
+            foreach (var p in positions)
+            {
+                if (p.X < minX) minX = p.X; if (p.X > maxX) maxX = p.X;
+                if (p.Y < minY) minY = p.Y; if (p.Y > maxY) maxY = p.Y;
+                if (p.Z < minZ) minZ = p.Z; if (p.Z > maxZ) maxZ = p.Z;
+            }
+            double cx = (minX + maxX) / 2;
+            double cy = (minY + maxY) / 2;
+            double cz = (minZ + maxZ) / 2;
+            double size = Math.Max(maxX - minX, Math.Max(maxY - minY, maxZ - minZ));
+            if (size < 0.0001) size = 1;
+
+            var meshGeometry = new MeshGeometry3D
+            {
+                Positions = positions,
+                TriangleIndices = triangleIndices,
+                Normals = normalsColl
+            };
+            if (textureCoordinates.Count == positions.Count)
+                meshGeometry.TextureCoordinates = textureCoordinates;
+
+            var materialGroup = new MaterialGroup();
+            System.Windows.Media.Brush diffuseBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(175, 175, 180));
+            string? diffusePath = !string.IsNullOrEmpty(resolved.DiffusePath) ? resolved.DiffusePath : FindDiffuseFile(gameRoot, resolved.MeshPath, model.Meshes);
+            if (diffusePath != null && File.Exists(diffusePath))
+            {
+                var texture = LoadTexture(diffusePath);
+                if (texture != null)
+                {
+                    texture.Freeze();
+                    diffuseBrush = new ImageBrush(texture);
+                }
+            }
+            LogGfx($"RenderMesh texture='{(diffusePath ?? "(ninguna)")}'");
+            materialGroup.Children.Add(new DiffuseMaterial(diffuseBrush));
+            materialGroup.Children.Add(new SpecularMaterial(new SolidColorBrush(System.Windows.Media.Color.FromRgb(70, 70, 70)), 60));
+
+            var geometryModel = new GeometryModel3D(meshGeometry, materialGroup)
+            {
+                BackMaterial = materialGroup,
+                Transform = new TranslateTransform3D(-cx, -cy, -cz)
+            };
+
+            var modelGroup = new Model3DGroup();
+            modelGroup.Children.Add(new AmbientLight(System.Windows.Media.Color.FromRgb(90, 90, 90)));
+            modelGroup.Children.Add(new DirectionalLight(System.Windows.Media.Colors.White, new Vector3D(-1, -0.5, -1)));
+            modelGroup.Children.Add(new DirectionalLight(System.Windows.Media.Color.FromArgb(190, 190, 190, 190), new Vector3D(1, 0.5, 1)));
+            modelGroup.Children.Add(geometryModel);
+
+            double distance = Math.Max(size * 1.6, 1.0);
+            var camera = new PerspectiveCamera(new Point3D(0, 0, -distance), new Vector3D(0, 0, 1), new Vector3D(0, 1, 0), 45);
+            camera.NearPlaneDistance = 0.01;
+            camera.FarPlaneDistance = distance * 10;
+
+            viewport.Camera = camera;
+            viewport.Children.Clear();
+            viewport.Children.Add(new ModelVisual3D { Content = modelGroup });
+            border.Visibility = Visibility.Visible;
+            border.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 32, 36));
+            LogGfx($"RenderMesh DONE camera-set size={size:0.####}");
+        }
+
+        private void ClearGfxViewport()
+        {
+            foreach (var vp in new[] { CoaGfxViewport3D, BuildingGfxViewport3D, ClothingGfxViewport3D, UnitGfxViewport3D })
+            {
+                if (vp != null) { vp.Children.Clear(); vp.Camera = null; }
+            }
+            foreach (var b in new[] { CoaGfxViewportBorder, BuildingGfxViewportBorder, ClothingGfxViewportBorder, UnitGfxViewportBorder })
+            {
+                if (b != null) b.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private static System.Windows.Media.Imaging.BitmapSource? LoadTexture(string filePath)
+        {
+            lock (_textureBitmapCache)
+            {
+                if (_textureBitmapCache.TryGetValue(filePath, out var cached)) return cached;
+            }
+            try
+            {
+                var dds = GetDecoded(filePath);
+                if (dds == null || dds.Data == null || dds.Data.Length == 0) return null;
+                int stride = dds.Width * 4;
+                var bmp = System.Windows.Media.Imaging.BitmapSource.Create(
+                    dds.Width, dds.Height, 96, 96,
+                    System.Windows.Media.PixelFormats.Bgra32,
+                    null, dds.Data, stride);
+                bmp.Freeze();
+                lock (_textureBitmapCache) _textureBitmapCache[filePath] = bmp;
+                return bmp;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void ExtractGfxAttributes(string block, CultureInfo culture)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "coa_gfx")
+                {
+                    if (block[pos] == '{')
+                    {
+                        string content = ReadBraceContent(block, ref pos);
+                        culture.CoaGfx = ExtractGfxList(content);
+                    }
+                    continue;
+                }
+
+                if (key == "building_gfx")
+                {
+                    if (block[pos] == '{')
+                    {
+                        string content = ReadBraceContent(block, ref pos);
+                        culture.BuildingGfx = ExtractGfxList(content);
+                    }
+                    continue;
+                }
+
+                if (key == "clothing_gfx")
+                {
+                    if (block[pos] == '{')
+                    {
+                        string content = ReadBraceContent(block, ref pos);
+                        culture.ClothingGfx = ExtractGfxList(content);
+                    }
+                    continue;
+                }
+
+                if (key == "unit_gfx")
+                {
+                    if (block[pos] == '{')
+                    {
+                        string content = ReadBraceContent(block, ref pos);
+                        culture.UnitGfx = ExtractGfxList(content);
+                    }
+                    continue;
+                }
+
+                if (key == "house_coa_frame")
+                {
+                    culture.HouseCoaFrame = ExtractSimpleValue(block, ref pos);
+                    continue;
+                }
+
+                if (key == "dynasty_coa_frame")
+                {
+                    culture.DynastyCoaFrame = ExtractSimpleValue(block, ref pos);
+                    continue;
+                }
+
+                if (key == "house_coa_mask_offset")
+                {
+                    if (block[pos] == '{')
+                    {
+                        culture.HouseCoaMaskOffset = ReadBraceContent(block, ref pos);
+                    }
+                    continue;
+                }
+
+                if (key == "house_coa_mask_scale")
+                {
+                    if (block[pos] == '{')
+                    {
+                        culture.HouseCoaMaskScale = ReadBraceContent(block, ref pos);
+                    }
+                    continue;
+                }
+
+                SkipValueAndFollowingBlock(block, ref pos);
+            }
+        }
+
+        private static List<string> ExtractGfxList(string content)
+        {
+            var result = new List<string>();
+            int pos = 0;
+            while (pos < content.Length)
+            {
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos >= content.Length) break;
+                string key = ReadKey(content, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                result.Add(key);
+            }
+            return result;
+        }
+
+        private static string ExtractSimpleValue(string block, ref int pos)
+        {
+            if (block[pos] == '"')
+            {
+                pos++;
+                int start = pos;
+                while (pos < block.Length && block[pos] != '"') pos++;
+                if (pos < block.Length) pos++;
+                return block.Substring(start, pos - start - 1);
+            }
+            else
+            {
+                int start = pos;
+                while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                {
+                    if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                        break;
+                    pos++;
+                }
+                return block.Substring(start, pos - start);
             }
         }
 

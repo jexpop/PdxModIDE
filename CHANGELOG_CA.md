@@ -7,6 +7,14 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.6.0]
+
+### Canviat
+
+- **Previsualització d'escut d'armes a les cultures (pestanya Cultures)**: el bloc de Coat-of-Arms ja no renderitza cap previsualització de l'escut (ni viewport 3D ni imatge); ara mostra únicament el text GFX (`coa_gfx = ...`). Les previsualitzacions 3D de `building_gfx`, `clothing_gfx` i `unit_gfx` romanen sense canvis.
+
+---
+
 ## [1.5.9]
 
 ### Afegit

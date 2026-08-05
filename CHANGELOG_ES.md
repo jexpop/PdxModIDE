@@ -7,6 +7,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.6.0]
+
+### Cambiado
+
+- **Preview de escudo de armas en las culturas (pestaña Culturas)**: el bloque de Coat-of-Arms ya no renderiza ninguna vista previa del escudo (ni viewport 3D ni imagen); ahora muestra únicamente el texto GFX (`coa_gfx = ...`). Las vista previas 3D de `building_gfx`, `clothing_gfx` y `unit_gfx` permanecen sin cambios.
+
+---
+
 ## [1.5.9]
 
 ### Añadido

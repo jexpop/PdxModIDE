@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.0]
+
+### Changed
+
+- **Culture Coat-of-Arms preview (Cultures tab)**: the Coat-of-Arms block no longer renders a shield preview (neither 3D viewport nor image); it now shows only the GFX text (`coa_gfx = ...`). The 3D previews for `building_gfx`, `clothing_gfx` and `unit_gfx` remain unchanged.
+
+---
+
 ## [1.5.9]
 
 ### Added

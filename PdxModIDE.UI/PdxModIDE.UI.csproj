@@ -54,6 +54,7 @@
     <ProjectReference Include="..\PdxModIDE.Data\PdxModIDE.Data.csproj" />
     <ProjectReference Include="..\PdxModIDE.Validation\PdxModIDE.Validation.csproj" />
     <ProjectReference Include="..\PdxModIDE.Rendering\PdxModIDE.Rendering.csproj" />
+    <ProjectReference Include="..\PdxModIDE.ModelEngine\PdxModIDE.ModelEngine.csproj" />
   </ItemGroup>
 
 </Project>

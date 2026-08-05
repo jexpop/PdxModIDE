@@ -282,7 +282,7 @@
                     </Expander>
                     <Label Content="{DynamicResource CulturesTab_NameList}" FontWeight="Bold" />
                     <TextBlock x:Name="DetailNameListValue" Margin="15,0,0,5" />
-                    <Expander x:Name="DetailNameListExpander" Margin="15,0,0,5"
+<Expander x:Name="DetailNameListExpander" Margin="15,0,0,5"
                               Header="{DynamicResource CulturesTab_NameListParameters}"
                               Visibility="Collapsed">
                         <ItemsControl x:Name="NameListParametersList" Margin="0,4,0,4">
@@ -298,19 +298,19 @@
                                                                 <StackPanel>
                                                                     <TextBlock Text="{Binding Description}" Foreground="Gray"
                                                                                FontStyle="Italic" TextWrapping="Wrap" Margin="4,2,4,0">
-                                                                        <TextBlock.Style>
-                                                                            <Style TargetType="TextBlock">
-                                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                                                <Style.Triggers>
-                                                                                    <DataTrigger Binding="{Binding HasDescription}" Value="True">
-                                                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                                                    </DataTrigger>
-                                                                                </Style.Triggers>
-                                                                            </Style>
-                                                                        </TextBlock.Style>
-                                                                    </TextBlock>
-                                                                    <TextBlock Text="{Binding Content}" FontFamily="Consolas"
-                                                                               TextWrapping="Wrap" Margin="4"/>
+                                                                         <TextBlock.Style>
+                                                                             <Style TargetType="TextBlock">
+                                                                                 <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                 <Style.Triggers>
+                                                                                     <DataTrigger Binding="{Binding HasDescription}" Value="True">
+                                                                                         <Setter Property="Visibility" Value="Visible"/>
+                                                                                     </DataTrigger>
+                                                                                 </Style.Triggers>
+                                                                             </Style>
+                                                                         </TextBlock.Style>
+                                                                     </TextBlock>
+                                                                     <TextBlock Text="{Binding Content}" FontFamily="Consolas"
+                                                                                TextWrapping="Wrap" Margin="4"/>
                                                                 </StackPanel>
                                                             </Expander>
                                                         </DataTemplate>
@@ -322,6 +322,49 @@
                                 </GroupStyle>
                             </ItemsControl.GroupStyle>
                         </ItemsControl>
+                    </Expander>
+
+                    <Label Content="{DynamicResource CulturesTab_Gfx}" FontWeight="Bold" />
+                    <Expander x:Name="DetailGfxExpander" Margin="15,0,0,5"
+                              Header="{DynamicResource CulturesTab_GfxParameters}"
+                              Visibility="Collapsed">
+                        <StackPanel>
+                            <TextBlock x:Name="DetailGfxInfo" Margin="15,0,0,5"
+                                       Text="{DynamicResource CulturesTab_GfxInfo}"
+                                       TextWrapping="Wrap" Foreground="Gray"/>
+                            <Label Content="{DynamicResource CulturesTab_CoaGfx}" FontWeight="Bold" />
+                            <TextBlock x:Name="DetailCoaGfxValue" Margin="15,0,0,5" />
+                            <Border x:Name="CoaGfxViewportBorder" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                    CornerRadius="2" Margin="15,5,0,5" Height="220" Visibility="Collapsed">
+                                <Viewport3D x:Name="CoaGfxViewport3D"/>
+                            </Border>
+                            <Label Content="{DynamicResource CulturesTab_BuildingGfx}" FontWeight="Bold" />
+                            <TextBlock x:Name="DetailBuildingGfxValue" Margin="15,0,0,5" />
+                            <Border x:Name="BuildingGfxViewportBorder" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                    CornerRadius="2" Margin="15,5,0,5" Height="220" Visibility="Collapsed">
+                                <Viewport3D x:Name="BuildingGfxViewport3D"/>
+                            </Border>
+                            <Label Content="{DynamicResource CulturesTab_ClothingGfx}" FontWeight="Bold" />
+                            <TextBlock x:Name="DetailClothingGfxValue" Margin="15,0,0,5" />
+                            <Border x:Name="ClothingGfxViewportBorder" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                    CornerRadius="2" Margin="15,5,0,5" Height="220" Visibility="Collapsed">
+                                <Viewport3D x:Name="ClothingGfxViewport3D"/>
+                            </Border>
+                            <Label Content="{DynamicResource CulturesTab_UnitGfx}" FontWeight="Bold" />
+                            <TextBlock x:Name="DetailUnitGfxValue" Margin="15,0,0,5" />
+                            <Border x:Name="UnitGfxViewportBorder" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                    CornerRadius="2" Margin="15,5,0,5" Height="220" Visibility="Collapsed">
+                                <Viewport3D x:Name="UnitGfxViewport3D"/>
+                            </Border>
+                            <Label Content="{DynamicResource CulturesTab_HouseCoaFrame}" FontWeight="Bold" />
+                            <TextBlock x:Name="DetailHouseCoaFrameValue" Margin="15,0,0,5" />
+                            <Label Content="{DynamicResource CulturesTab_DynastyCoaFrame}" FontWeight="Bold" />
+                            <TextBlock x:Name="DetailDynastyCoaFrameValue" Margin="15,0,0,5" />
+                            <Label Content="{DynamicResource CulturesTab_HouseCoaMaskOffset}" FontWeight="Bold" />
+                            <TextBlock x:Name="DetailHouseCoaMaskOffsetValue" Margin="15,0,0,5" />
+                            <Label Content="{DynamicResource CulturesTab_HouseCoaMaskScale}" FontWeight="Bold" />
+                            <TextBlock x:Name="DetailHouseCoaMaskScaleValue" Margin="15,0,0,5" />
+                        </StackPanel>
                     </Expander>
                 </StackPanel>
             </GroupBox>

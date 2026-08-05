@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.5.9 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.0 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -461,4 +461,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-01 | Project: PdxModIDE | Version: 1.5.8 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-05 | Project: PdxModIDE | Version: 1.6.0 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

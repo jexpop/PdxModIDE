@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.5.9</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.0</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -196,6 +196,17 @@
     <system:String x:Key="CulturesTab_TraditionsParameters">Tradicions de la cultura</system:String>
     <system:String x:Key="CulturesTab_NameList">Llista de noms:</system:String>
     <system:String x:Key="CulturesTab_NameListParameters">Contingut de la llista de noms</system:String>
+    <system:String x:Key="CulturesTab_Gfx">Gràfics (GFX):</system:String>
+    <system:String x:Key="CulturesTab_GfxParameters">Paràmetres de gràfics</system:String>
+    <system:String x:Key="CulturesTab_GfxInfo">Aquestes claus defineixen els models 3D i els estils visuals de la cultura.</system:String>
+    <system:String x:Key="CulturesTab_CoaGfx">Escuts d'armes (coa_gfx):</system:String>
+    <system:String x:Key="CulturesTab_BuildingGfx">Edificis (building_gfx):</system:String>
+    <system:String x:Key="CulturesTab_ClothingGfx">Vestimenta (clothing_gfx):</system:String>
+    <system:String x:Key="CulturesTab_UnitGfx">Unitats (unit_gfx):</system:String>
+    <system:String x:Key="CulturesTab_HouseCoaFrame">Marc d'escut de casa (house_coa_frame):</system:String>
+    <system:String x:Key="CulturesTab_DynastyCoaFrame">Marc d'escut de dinastia (dynasty_coa_frame):</system:String>
+    <system:String x:Key="CulturesTab_HouseCoaMaskOffset">Desplaçament de màscara (house_coa_mask_offset):</system:String>
+    <system:String x:Key="CulturesTab_HouseCoaMaskScale">Escala de màscara (house_coa_mask_scale):</system:String>
     <system:String x:Key="NameListCategory_Options">Opcions</system:String>
     <system:String x:Key="NameListCategory_NameLists">Llistes de noms</system:String>
     <system:String x:Key="NameListCategory_Chances">Probabilitats</system:String>
