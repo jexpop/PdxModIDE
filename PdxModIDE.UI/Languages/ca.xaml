@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.0</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.1</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -201,6 +201,8 @@
     <system:String x:Key="CulturesTab_GfxInfo">Aquestes claus defineixen els models 3D i els estils visuals de la cultura.</system:String>
     <system:String x:Key="CulturesTab_CoaGfx">Escuts d'armes (coa_gfx):</system:String>
     <system:String x:Key="CulturesTab_BuildingGfx">Edificis (building_gfx):</system:String>
+    <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Meshes d'edifici resolts:</system:String>
+    <system:String x:Key="CulturesTab_BuildingGfxHint">Feu doble clic en un model per veure'l engrandit.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfx">Vestimenta (clothing_gfx):</system:String>
     <system:String x:Key="CulturesTab_UnitGfx">Unitats (unit_gfx):</system:String>
     <system:String x:Key="CulturesTab_HouseCoaFrame">Marc d'escut de casa (house_coa_frame):</system:String>

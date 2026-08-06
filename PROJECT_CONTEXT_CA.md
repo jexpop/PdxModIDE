@@ -17,7 +17,8 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.6.0 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). Solution: `PdxModIDE.sln` (9 projectes).
+**Versió actual**: 1.6.1 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
+Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
 
@@ -282,6 +283,8 @@ Fitxers a `data/` (crea directori si no existeix). `JsonSerializerOptions: Write
 - `LogsTab`: Filtres log (no implementat completament).
 - `SettingsTab`: Tema, paths defaults.
 
+- **Grid de GFX d'edificis (pestanya Cultures)**: `RenderBuildingGrid` resol les claus `building_gfx` de cada cultura en els seus fitxers `.mesh` (via `GetBuildingDb` + `ResolveBuildingMeshes` + `GetMeshFileIndex`) i els renderitza en un `WrapPanel` (`BuildingGfxGrid`), on cada cel·la és un `Viewport3D` construït per `BuildMeshCellViewport`. Cada submalla es texturitza independentment: omet els shaders `Collision*`, resol la textura difusa de l'atlas (UV0) i, quan el `.asset` associat declara una textura `_unique` (`texture = { file = "..._unique.dds" index = 5 }`), usa UV1 + la textura única. Per reproduir el shader `standard_atlas` del joc (`Diffuse.rgb *= Unique`), l'altas difús és la base i el color mitjà de la única s'aplica com a color del `DiffuseMaterial` (factor de barreja del 70%). Les textures es decodifiquen amb `DdsDecoder.Decode` (caché a `_textureDecodeCache`/`_textureBitmapCache`), que ara suporta BC1–BC5 i BC7 (els 8 modes) a més de formats DX10 (DDS_HEADER_DXT10); `LoadTexture` converteix els píxels RGBA del decoder a BGRA per a `BitmapSource.Create` (evita l'intercanvi R/B que feia veure els edificis blavos).
+
 **Temes**: `ResourceDictionary` swap a `MainWindow.ApplyTheme(theme)`. Fitxers a `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internacionalització (`PdxModIDE.UI`)
@@ -461,4 +464,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-08-05 | Projecte: PdxModIDE | Versió: 1.6.0 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generat: 2026-08-06 | Projecte: PdxModIDE | Versió: 1.6.1 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

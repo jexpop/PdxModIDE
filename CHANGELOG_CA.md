@@ -7,6 +7,22 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.6.1]
+
+### Afegit
+
+- **Decodificació completa BC7/DX10 al grid d'edificis (pestanya Cultures)**: `DdsDecoder` ara decodifica les textures DX10 (DXGI) dels edificis de CK3, incloent-hi els 8 modes de BC7 (formats 98/99), a més de BC4 (74) i BC5 (76). BC6H (95/96) es detecta i llança `NotSupportedException`. Abans aquestes textures es decodificaven com a gris pla. Això fa que les textures `_unique.dds` dels edificis (tgp/asiàtics) mostrin el seu color real.
+
+### Canviat
+
+- **Grid d'edificis texturitzat per malla (pestanya Cultures)**: el grid ara renderitza cada submalla amb el seu difús + UV + la `_unique` opcional resolta des del `.asset` (`texture = { file = "..._gridunique.dds" index = 5 }`), mostrant l'única amb UV1 i provant l'atlas difús quan no hi ha segon set de UV. Les submalles de col·llisió s'ometen.
+
+- **Corregit el bug de canals que feia veure blavosos els edificis**: `DdsDecoder` guarda els rec en ordre RGBA, però el `BitmapSource` de WPF usa `PixelFormats.Bgra32`. `LoadTexture` ara converteix RGBA→BGRA abans de crear el bitmap, de manera que les textures `_UNIC` vermelles (teulades, etc.) es renderitzen en vermell i no en blau.
+
+- **Blend atlas + matís de color (opció 2)**: cada submalla d'edifici ara fa servir el difús de l'atlas (UV1) com a text gru base de detall i aplica el color mitjà de la seva textura `_UNIC` a través del `DiffuseMaterial`, replicant el shader `standard_atlas` del joc (`Diffuse.rgb *= Unique`), amb un factor de barreja del 70% per mantenir visible el detall.
+
+---
+
 ## [1.6.0]
 
 ### Canviat

@@ -340,9 +340,13 @@
                             </Border>
                             <Label Content="{DynamicResource CulturesTab_BuildingGfx}" FontWeight="Bold" />
                             <TextBlock x:Name="DetailBuildingGfxValue" Margin="15,0,0,5" />
-                            <Border x:Name="BuildingGfxViewportBorder" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
-                                    CornerRadius="2" Margin="15,5,0,5" Height="220" Visibility="Collapsed">
-                                <Viewport3D x:Name="BuildingGfxViewport3D"/>
+                            <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_BuildingGfxHint}"
+                                       TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
+                            <Border x:Name="BuildingGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                    CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
+                                    <WrapPanel x:Name="BuildingGfxGrid" />
+                                </ScrollViewer>
                             </Border>
                             <Label Content="{DynamicResource CulturesTab_ClothingGfx}" FontWeight="Bold" />
                             <TextBlock x:Name="DetailClothingGfxValue" Margin="15,0,0,5" />

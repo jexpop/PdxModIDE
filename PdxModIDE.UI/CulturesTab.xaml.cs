@@ -4,9 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using PdxModIDE.Core.Games;
@@ -237,6 +240,23 @@ namespace PdxModIDE.UI
 
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, PdxModIDE.ModelEngine.BuildingAssetDatabase> _buildingDbCache = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, Dictionary<string, string>> _meshFileIndexCache = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, Dictionary<string, string>> _textureFileIndexCache = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, PdxModIDE.ModelEngine.PdxModel> _modelCache = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, List<string>> _assetUniqueTextureCache = new(StringComparer.OrdinalIgnoreCase);
+
+        private static PdxModIDE.ModelEngine.BuildingAssetDatabase? GetBuildingDb(string gameRoot)
+        {
+            if (string.IsNullOrEmpty(gameRoot)) return null;
+            lock (_buildingDbCache)
+            {
+                if (_buildingDbCache.TryGetValue(gameRoot, out var db)) return db;
+                db = PdxModIDE.ModelEngine.BuildingAssetDatabase.Load(gameRoot);
+                _buildingDbCache[gameRoot] = db;
+                return db;
+            }
+        }
 
         private static void LogGfx(string msg)
         {
@@ -1937,6 +1957,459 @@ namespace PdxModIDE.UI
             }
         }
 
+        private static List<string> ResolveBuildingMeshes(string gameRoot, List<string> keys)
+        {
+            var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var result = new List<string>();
+            if (string.IsNullOrEmpty(gameRoot) || keys.Count == 0) return result;
+            var db = GetBuildingDb(gameRoot);
+            if (db == null) return result;
+            foreach (var k in keys)
+            {
+                foreach (var m in db.ResolveMeshes(k))
+                    if (set.Add(m))
+                        result.Add(m);
+            }
+            result.Sort(StringComparer.OrdinalIgnoreCase);
+            return result;
+        }
+
+        private static Dictionary<string, string> GetMeshFileIndex(string gameRoot)
+        {
+            if (string.IsNullOrEmpty(gameRoot)) return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            lock (_meshFileIndexCache)
+            {
+                if (_meshFileIndexCache.TryGetValue(gameRoot, out var idx)) return idx;
+                idx = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                string dir = Path.Combine(gameRoot, "gfx", "models");
+                if (Directory.Exists(dir))
+                {
+                    foreach (var f in Directory.EnumerateFiles(dir, "*.mesh", SearchOption.AllDirectories))
+                        idx[Path.GetFileNameWithoutExtension(f)] = f;
+                }
+                _meshFileIndexCache[gameRoot] = idx;
+                return idx;
+            }
+        }
+
+        private static PdxModIDE.ModelEngine.PdxModel? GetParsedModel(string meshPath)
+        {
+            if (string.IsNullOrEmpty(meshPath)) return null;
+            lock (_modelCache)
+            {
+                if (_modelCache.TryGetValue(meshPath, out var cached)) return cached;
+            }
+            try
+            {
+                var model = PdxModIDE.ModelEngine.PdxMeshParser.ParseMeshFile(meshPath);
+                lock (_modelCache) _modelCache[meshPath] = model;
+                return model;
+            }
+            catch (Exception ex)
+            {
+                LogGfx($"meshes parse '{meshPath}': {ex.Message}");
+                return null;
+            }
+        }
+
+        private static Dictionary<string, string> GetTextureFileIndex(string gameRoot)
+        {
+            if (string.IsNullOrEmpty(gameRoot)) return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            lock (_textureFileIndexCache)
+            {
+                if (_textureFileIndexCache.TryGetValue(gameRoot, out var idx)) return idx;
+                idx = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                string dir = Path.Combine(gameRoot, "gfx", "models");
+                if (Directory.Exists(dir))
+                {
+                    foreach (var f in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
+                    {
+                        string ext = Path.GetExtension(f);
+                        if (ext.Equals(".dds", StringComparison.OrdinalIgnoreCase) || ext.Equals(".tga", StringComparison.OrdinalIgnoreCase))
+                            idx[Path.GetFileName(f)] = f;
+                    }
+                }
+                _textureFileIndexCache[gameRoot] = idx;
+                return idx;
+            }
+        }
+
+        private static List<string> GetAssetUniqueTextures(string gameRoot, string meshPath)
+        {
+            string key = meshPath;
+            lock (_assetUniqueTextureCache)
+            {
+                if (_assetUniqueTextureCache.TryGetValue(key, out var cached)) return cached;
+            }
+
+            var result = new List<string>();
+            try
+            {
+                string assetPath = Path.ChangeExtension(meshPath, ".asset");
+                if (File.Exists(assetPath))
+                {
+                    string text = File.ReadAllText(assetPath);
+                    var matches = System.Text.RegularExpressions.Regex.Matches(text, @"texture\s*=\s*\{\s*file\s*=\s*""([^""]+)""");
+                    foreach (System.Text.RegularExpressions.Match match in matches)
+                    {
+                        if (match.Groups.Count < 2) continue;
+                        string? resolved = FindTextureFile(gameRoot, meshPath, match.Groups[1].Value);
+                        if (resolved != null) result.Add(resolved);
+                    }
+                }
+            }
+            catch { }
+
+            lock (_assetUniqueTextureCache) _assetUniqueTextureCache[key] = result;
+            return result;
+        }
+
+        private static string? FindTextureFile(string gameRoot, string meshPath, string textureName)
+        {
+            if (string.IsNullOrEmpty(textureName)) return null;
+            string? meshDir = Path.GetDirectoryName(meshPath);
+            var texIndex = GetTextureFileIndex(gameRoot);
+            string? resolved = meshDir != null ? Path.Combine(meshDir, textureName) : null;
+            if (resolved == null || !File.Exists(resolved))
+                resolved = texIndex.TryGetValue(Path.GetFileName(textureName), out var f) ? f : null;
+            return resolved;
+        }
+
+        private static string? FindBuildingMeshFile(string gameRoot, string meshName)
+        {
+            string name = meshName.Trim();
+            if (string.IsNullOrEmpty(name)) return null;
+            string baseName = Path.GetFileNameWithoutExtension(Path.GetFileName(name.Replace("\\", "/")));
+            if (baseName.EndsWith("_mesh", StringComparison.Ordinal))
+                baseName = baseName.Substring(0, baseName.Length - 5);
+            var idx = GetMeshFileIndex(gameRoot);
+            return idx.TryGetValue(baseName, out var p) ? p : null;
+        }
+
+        private async void RenderBuildingGrid(string gameRoot, CultureInfo culture)
+        {
+            if (BuildingGfxGrid == null) return;
+            BuildingGfxGrid.Children.Clear();
+            BuildingGfxGridHost.Visibility = Visibility.Collapsed;
+
+            var names = ResolveBuildingMeshes(gameRoot, culture.BuildingGfx);
+            if (names.Count == 0) return;
+
+            var items = new List<KeyValuePair<string, string>>();
+            foreach (var name in names)
+            {
+                string? meshPath = FindBuildingMeshFile(gameRoot, name);
+                if (meshPath == null) { LogGfx($"building no mesh file for '{name}'"); continue; }
+                items.Add(new KeyValuePair<string, string>(name, meshPath));
+            }
+            if (items.Count == 0) return;
+
+            var grid = BuildingGfxGrid;
+            var host = BuildingGfxGridHost;
+            _buildingLoadCts?.Cancel();
+            var cts = _buildingLoadCts = new CancellationTokenSource();
+            var token = cts.Token;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            try
+            {
+                await Task.Run(() =>
+                {
+                    Parallel.ForEach(items, item =>
+                    {
+                        if (token.IsCancellationRequested) return;
+                        try
+                        {
+                            var model = GetParsedModel(item.Value);
+                            if (model != null)
+                            {
+                                foreach (var mesh in model.Meshes)
+                                    FindDiffuseFile(gameRoot, item.Value, mesh.DiffuseTexture);
+                            }
+                        }
+                        catch { }
+                    });
+                }, token);
+
+                if (token.IsCancellationRequested || _buildingLoadCts != cts) return;
+
+                int total = items.Count;
+                for (int i = 0; i < total; i++)
+                {
+                    if (token.IsCancellationRequested || grid != BuildingGfxGrid) return;
+                    string name = items[i].Key, meshPath = items[i].Value;
+                    var vp = BuildMeshCellViewport(gameRoot, meshPath);
+                    if (vp == null) continue;
+                    if (token.IsCancellationRequested || grid != BuildingGfxGrid) return;
+                    grid.Children.Add(BuildMeshCell(name, meshPath, vp, gameRoot));
+                }
+
+                if (grid.Children.Count > 0)
+                    host.Visibility = Visibility.Visible;
+                LogGfx($"building grid {total} celdas en {sw.ElapsedMilliseconds} ms");
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                LogGfx($"building grid error: {ex.Message}");
+            }
+        }
+
+        private CancellationTokenSource? _buildingLoadCts;
+
+        private System.Windows.Controls.Border BuildMeshCell(string name, string meshPath, Viewport3D vp, string gameRoot)
+        {
+            vp.Width = 146; vp.Height = 146; vp.Margin = new Thickness(6, 2, 6, 6);
+            var tb = new TextBlock
+            {
+                Text = name,
+                Margin = new Thickness(4, 4, 4, 2),
+                FontSize = 11,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = System.Windows.TextAlignment.Center,
+                MaxHeight = 34,
+                ToolTip = name,
+                Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xE8, 0xC9, 0x7E))
+            };
+            var sp = new StackPanel();
+            sp.Children.Add(tb);
+            sp.Children.Add(vp);
+
+            var cell = new System.Windows.Controls.Border
+            {
+                Width = 166,
+                Height = 198,
+                Margin = new Thickness(4),
+                CornerRadius = new CornerRadius(2),
+                BorderBrush = (System.Windows.Media.Brush)(System.Windows.Application.Current?.TryFindResource("ControlBorder")
+                    ?? System.Windows.Media.Brushes.Gray),
+                BorderThickness = new Thickness(1),
+                Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 32, 36))
+            };
+            cell.Child = sp;
+            cell.Tag = meshPath;
+            cell.MouseLeftButtonDown += Cell_MouseLeftButtonDown;
+            return cell;
+        }
+
+        private void Cell_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount != 2) return;
+            if (sender is System.Windows.Controls.Border cell && cell.Tag is string meshPath)
+            {
+                string gameRoot = _viewModel?.CurrentProfile?.GameRoot ?? "";
+                OpenMeshPreview(meshPath, gameRoot);
+            }
+        }
+
+        private void OpenMeshPreview(string meshPath, string gameRoot)
+        {
+            if (string.IsNullOrEmpty(meshPath) || string.IsNullOrEmpty(gameRoot)) return;
+            var vp = BuildMeshCellViewport(gameRoot, meshPath);
+            if (vp == null) return;
+            vp.Width = 520; vp.Height = 480; vp.Margin = new Thickness(16, 12, 16, 16);
+
+            string name = Path.GetFileNameWithoutExtension(meshPath);
+
+            var tb = new TextBlock
+            {
+                Text = name,
+                FontSize = 14,
+                FontWeight = FontWeights.Bold,
+                Margin = new Thickness(16, 12, 16, 0),
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xE8, 0xC9, 0x7E))
+            };
+            var sp = new StackPanel();
+            sp.Children.Add(tb);
+            sp.Children.Add(vp);
+
+            var winContainer = new System.Windows.Controls.Border
+            {
+                Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 32, 36)),
+                Child = sp
+            };
+
+            var winWindow = new Window
+            {
+                Title = name,
+                Width = 560,
+                Height = 600,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = Window.GetWindow(this),
+                WindowStyle = WindowStyle.ToolWindow,
+                ResizeMode = ResizeMode.NoResize,
+                Content = winContainer
+            };
+            winWindow.ShowDialog();
+        }
+
+        private static Viewport3D? BuildMeshCellViewport(string gameRoot, string meshPath)
+        {
+            var model = GetParsedModel(meshPath);
+            if (model == null) return null;
+
+            double minX = double.MaxValue, minY = double.MaxValue, minZ = double.MaxValue;
+            double maxX = double.MinValue, maxY = double.MinValue, maxZ = double.MinValue;
+            foreach (var m in model.Meshes)
+            {
+                if (IsCollisionShader(m.Shader)) continue;
+                if (m.Positions == null || m.Positions.Length % 3 != 0) continue;
+                for (int i = 0; i < m.Positions.Length; i += 3)
+                {
+                    if (m.Positions[i] < minX) minX = m.Positions[i]; if (m.Positions[i] > maxX) maxX = m.Positions[i];
+                    if (m.Positions[i + 1] < minY) minY = m.Positions[i + 1]; if (m.Positions[i + 1] > maxY) maxY = m.Positions[i + 1];
+                    if (m.Positions[i + 2] < minZ) minZ = m.Positions[i + 2]; if (m.Positions[i + 2] > maxZ) maxZ = m.Positions[i + 2];
+                }
+            }
+            if (double.IsInfinity(minX)) return null;
+
+            double size = Math.Max(maxX - minX, Math.Max(maxY - minY, maxZ - minZ));
+            if (size < 1e-6) size = 1;
+            double scale = 1.0 / size;
+            double cx = (minX + maxX) / 2, cy = (minY + maxY) / 2, cz = (minZ + maxZ) / 2;
+            double radius = 0;
+
+            var modelGroup = new Model3DGroup();
+            int validSubmeshes = 0;
+            foreach (var m in model.Meshes)
+            {
+                if (IsCollisionShader(m.Shader)) continue;
+                if (m.Positions == null || m.Positions.Length % 3 != 0) continue;
+                if (m.Triangles == null || m.Triangles.Length == 0) continue;
+
+                var positions = new Point3DCollection();
+                int vertexCount = m.Positions.Length / 3;
+                for (int i = 0; i < m.Positions.Length; i += 3)
+                    positions.Add(new Point3D(m.Positions[i], m.Positions[i + 1], m.Positions[i + 2]));
+
+                var triangleIndices = new Int32Collection();
+                foreach (var t in m.Triangles)
+                {
+                    if (t < 0 || t >= vertexCount) continue;
+                    triangleIndices.Add(t);
+                }
+                if (triangleIndices.Count == 0) continue;
+
+                var textureCoordinates = new PointCollection();
+                var textureCoords2 = new PointCollection();
+                if (m.UVSets != null && m.UVSets.Count > 0 && m.UVSets[0] != null && m.UVSets[0].Length >= vertexCount * 2)
+                {
+                    var uv = m.UVSets[0];
+                    for (int i = 0; i < vertexCount; i++)
+                        textureCoordinates.Add(new System.Windows.Point(uv[i * 2], 1 - uv[i * 2 + 1]));
+                }
+                if (m.UVSets != null && m.UVSets.Count > 1 && m.UVSets[1] != null && m.UVSets[1].Length >= vertexCount * 2)
+                {
+                    var uv = m.UVSets[1];
+                    for (int i = 0; i < vertexCount; i++)
+                        textureCoords2.Add(new System.Windows.Point(uv[i * 2], 1 - uv[i * 2 + 1]));
+                }
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    var p = positions[i];
+                    positions[i] = new Point3D((p.X - cx) * scale, (p.Y - cy) * scale, (p.Z - cz) * scale);
+                    var q = positions[i];
+                    double l2 = q.X * q.X + q.Y * q.Y + q.Z * q.Z;
+                    if (l2 > radius) radius = l2;
+                }
+
+                var normalsArr = new Vector3D[positions.Count];
+                for (int i = 0; i + 2 < triangleIndices.Count; i += 3)
+                {
+                    int a = triangleIndices[i], b = triangleIndices[i + 1], c = triangleIndices[i + 2];
+                    var n = Vector3D.CrossProduct(positions[b] - positions[a], positions[c] - positions[a]);
+                    if (n.Length < 1e-12) continue;
+                    n.Normalize();
+                    normalsArr[a] += n; normalsArr[b] += n; normalsArr[c] += n;
+                }
+                var normalsColl = new Vector3DCollection();
+                foreach (var n in normalsArr)
+                {
+                    var nn = n;
+                    if (nn.LengthSquared > 1e-12) nn.Normalize();
+                    normalsColl.Add(nn);
+                }
+
+                var meshGeometry = new MeshGeometry3D
+                {
+                    Positions = positions,
+                    TriangleIndices = triangleIndices,
+                    Normals = normalsColl
+                };
+
+                var materialGroup = new MaterialGroup();
+                System.Windows.Media.Brush diffuseBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(175, 175, 180));
+                System.Windows.Media.Color diffuseTint = System.Windows.Media.Color.FromRgb(255, 255, 255);
+                var uniquePaths = GetAssetUniqueTextures(gameRoot, meshPath);
+                string? chosenDiffusePath = FindDiffuseFile(gameRoot, meshPath, m.DiffuseTexture);
+                bool useUnique = uniquePaths.Count > 0 && textureCoords2.Count == positions.Count;
+
+                if (useUnique)
+                {
+                    string? up = uniquePaths.FirstOrDefault(p => File.Exists(p));
+                    if (up != null)
+                    {
+                        var atlasTex = chosenDiffusePath != null && File.Exists(chosenDiffusePath) ? LoadTexture(chosenDiffusePath) : null;
+                        if (atlasTex != null) { atlasTex.Freeze(); diffuseBrush = new ImageBrush(atlasTex); }
+                        var tintRgb = AvgColorRgb(up);
+                        if (tintRgb != null)
+                            diffuseTint = System.Windows.Media.Color.FromRgb(
+                                (byte)System.Math.Min(255, tintRgb.Value.R + (255 - tintRgb.Value.R) * 70 / 100),
+                                (byte)System.Math.Min(255, tintRgb.Value.G + (255 - tintRgb.Value.G) * 70 / 100),
+                                (byte)System.Math.Min(255, tintRgb.Value.B + (255 - tintRgb.Value.B) * 70 / 100));
+                    }
+                }
+                else if (chosenDiffusePath != null && File.Exists(chosenDiffusePath))
+                {
+                    var tex = LoadTexture(chosenDiffusePath);
+                    if (tex != null) { tex.Freeze(); diffuseBrush = new ImageBrush(tex); }
+                }
+                materialGroup.Children.Add(new DiffuseMaterial(diffuseBrush) { Color = diffuseTint });
+                materialGroup.Children.Add(new SpecularMaterial(new SolidColorBrush(System.Windows.Media.Color.FromRgb(60, 60, 60)), 40));
+
+                var geom = new GeometryModel3D(meshGeometry, materialGroup) { BackMaterial = materialGroup };
+                if (useUnique)
+                {
+                    if (textureCoords2.Count == positions.Count)
+                        meshGeometry.TextureCoordinates = textureCoords2;
+                }
+                else
+                {
+                    if (textureCoordinates.Count == positions.Count)
+                        meshGeometry.TextureCoordinates = textureCoordinates;
+                }
+                modelGroup.Children.Add(geom);
+                validSubmeshes++;
+            }
+
+            if (validSubmeshes == 0) return null;
+
+            radius = Math.Sqrt(radius);
+            if (radius < 1e-4) radius = 0.5;
+
+            var group = new Model3DGroup();
+            group.Children.Add(new AmbientLight(System.Windows.Media.Color.FromRgb(205, 205, 205)));
+            group.Children.Add(new DirectionalLight(System.Windows.Media.Color.FromRgb(245, 245, 245), new Vector3D(0.35, -0.25, 1)));
+            group.Children.Add(new DirectionalLight(System.Windows.Media.Color.FromRgb(185, 200, 220), new Vector3D(-0.7, -0.2, -0.6)));
+            group.Children.Add(new DirectionalLight(System.Windows.Media.Color.FromRgb(150, 165, 185), new Vector3D(1, 0.55, 0.5)));
+            group.Children.Add(modelGroup);
+
+            double fovDeg = 48;
+            double half = fovDeg * 0.5 * Math.PI / 180.0;
+            double distance = radius / Math.Tan(half) * 1.06;
+            if (distance < 0.35) distance = 0.35;
+            var camera = new PerspectiveCamera(
+                new Point3D(0, 0, -distance), new Vector3D(0, 0, 1), new Vector3D(0, 1, 0), fovDeg)
+            { NearPlaneDistance = 0.02, FarPlaneDistance = distance * 40 };
+
+            var vp = new Viewport3D { Camera = camera };
+            vp.Children.Add(new ModelVisual3D { Content = group });
+            return vp;
+        }
+
         private void LoadGfxModel(CultureInfo culture)
         {
             ClearGfxViewport();
@@ -1944,9 +2417,9 @@ namespace PdxModIDE.UI
             if (string.IsNullOrEmpty(gameRoot) || !Directory.Exists(gameRoot))
                 return;
 
-            RenderCategory(gameRoot, culture.BuildingGfx, BuildingGfxViewport3D, BuildingGfxViewportBorder);
+            RenderBuildingGrid(gameRoot, culture);
             RenderCategory(gameRoot, culture.ClothingGfx, ClothingGfxViewport3D, ClothingGfxViewportBorder);
-RenderCategory(gameRoot, culture.UnitGfx, UnitGfxViewport3D, UnitGfxViewportBorder);
+            RenderCategory(gameRoot, culture.UnitGfx, UnitGfxViewport3D, UnitGfxViewportBorder);
         }
 
         private void RenderCategory(string gameRoot, List<string> keys, Viewport3D viewport, Border border)
@@ -1974,24 +2447,36 @@ RenderCategory(gameRoot, culture.UnitGfx, UnitGfxViewport3D, UnitGfxViewportBord
             }
         }
 
-        private static string? FindDiffuseFile(string gameRoot, string meshPath, List<PdxMesh> meshes)
+        private static bool IsCollisionShader(string? shader)
         {
-            string? meshDir = Path.GetDirectoryName(meshPath);
-            string modelsDir = Path.Combine(gameRoot, "gfx", "models");
-            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var m in meshes)
+            if (string.IsNullOrEmpty(shader)) return false;
+            return shader.StartsWith("Collision", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string GetFirstDiffuse(PdxModel model)
+        {
+            foreach (var m in model.Meshes)
             {
-                if (string.IsNullOrEmpty(m.DiffuseTexture) || !seen.Add(m.DiffuseTexture)) continue;
-                string? resolvedPath = meshDir != null ? Path.Combine(meshDir, m.DiffuseTexture) : null;
-                if (resolvedPath == null || !File.Exists(resolvedPath))
-                {
-                    resolvedPath = null;
-                    foreach (var f in Directory.EnumerateFiles(modelsDir, m.DiffuseTexture, SearchOption.AllDirectories))
-                    { resolvedPath = f; break; }
-                }
-                if (resolvedPath != null && IsGoodDiffuse(resolvedPath))
-                    return resolvedPath;
+                if (!string.IsNullOrEmpty(m.DiffuseTexture))
+                    return m.DiffuseTexture;
             }
+            return "";
+        }
+
+        private static string? FindDiffuseFile(string gameRoot, string meshPath, string diffuseTexture)
+        {            if (string.IsNullOrEmpty(diffuseTexture)) return null;
+            string? meshDir = Path.GetDirectoryName(meshPath);
+            var texIndex = GetTextureFileIndex(gameRoot);
+
+            string? resolvedPath = meshDir != null ? Path.Combine(meshDir, diffuseTexture) : null;
+            if (resolvedPath == null || !File.Exists(resolvedPath))
+            {
+                resolvedPath = null;
+                if (texIndex.TryGetValue(Path.GetFileName(diffuseTexture), out var f))
+                    resolvedPath = f;
+            }
+            if (resolvedPath != null && File.Exists(resolvedPath) && IsGoodDiffuse(resolvedPath))
+                return resolvedPath;
             return null;
         }
 
@@ -2023,6 +2508,35 @@ RenderCategory(gameRoot, culture.UnitGfx, UnitGfxViewport3D, UnitGfxViewportBord
                 return total > 0 && (double)dark / total < 0.90;
             }
             catch { return false; }
+        }
+
+        private static string AvgColor(string filePath)
+        {
+            try
+            {
+                var dds = GetDecoded(filePath);
+                if (dds == null || dds.Data == null || dds.Data.Length < 4) return "(decode-fail)";
+                long r = 0, g = 0, b = 0;
+                long n = 0;
+                for (int i = 0; i + 3 < dds.Data.Length; i += 4) { r += dds.Data[i]; g += dds.Data[i + 1]; b += dds.Data[i + 2]; n++; }
+                return n > 0 ? $"({r / n},{g / n},{b / n})" : "(empty)";
+            }
+            catch { return "(err)"; }
+        }
+
+        private static System.Windows.Media.Color? AvgColorRgb(string filePath)
+        {
+            try
+            {
+                var dds = GetDecoded(filePath);
+                if (dds == null || dds.Data == null || dds.Data.Length < 4) return null;
+                long r = 0, g = 0, b = 0;
+                long n = 0;
+                for (int i = 0; i + 3 < dds.Data.Length; i += 4) { r += dds.Data[i]; g += dds.Data[i + 1]; b += dds.Data[i + 2]; n++; }
+                if (n == 0) return null;
+                return System.Windows.Media.Color.FromRgb((byte)(r / n), (byte)(g / n), (byte)(b / n));
+            }
+            catch { return null; }
         }
 
         private static string? FindMeshFile(string gameRoot, string key)
@@ -2130,7 +2644,7 @@ RenderCategory(gameRoot, culture.UnitGfx, UnitGfxViewport3D, UnitGfxViewportBord
 
             var materialGroup = new MaterialGroup();
             System.Windows.Media.Brush diffuseBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(175, 175, 180));
-            string? diffusePath = !string.IsNullOrEmpty(resolved.DiffusePath) ? resolved.DiffusePath : FindDiffuseFile(gameRoot, resolved.MeshPath, model.Meshes);
+            string? diffusePath = !string.IsNullOrEmpty(resolved.DiffusePath) ? resolved.DiffusePath : FindDiffuseFile(gameRoot, resolved.MeshPath, GetFirstDiffuse(model));
             if (diffusePath != null && File.Exists(diffusePath))
             {
                 var texture = LoadTexture(diffusePath);
@@ -2171,11 +2685,15 @@ RenderCategory(gameRoot, culture.UnitGfx, UnitGfxViewport3D, UnitGfxViewportBord
 
         private void ClearGfxViewport()
         {
-            foreach (var vp in new[] { CoaGfxViewport3D, BuildingGfxViewport3D, ClothingGfxViewport3D, UnitGfxViewport3D })
+            _buildingLoadCts?.Cancel();
+            _buildingLoadCts = null;
+            if (BuildingGfxGrid != null) BuildingGfxGrid.Children.Clear();
+            if (BuildingGfxGridHost != null) BuildingGfxGridHost.Visibility = Visibility.Collapsed;
+            foreach (var vp in new[] { CoaGfxViewport3D, ClothingGfxViewport3D, UnitGfxViewport3D })
             {
                 if (vp != null) { vp.Children.Clear(); vp.Camera = null; }
             }
-            foreach (var b in new[] { CoaGfxViewportBorder, BuildingGfxViewportBorder, ClothingGfxViewportBorder, UnitGfxViewportBorder })
+            foreach (var b in new[] { CoaGfxViewportBorder, ClothingGfxViewportBorder, UnitGfxViewportBorder })
             {
                 if (b != null) b.Visibility = Visibility.Collapsed;
             }
@@ -2192,10 +2710,19 @@ RenderCategory(gameRoot, culture.UnitGfx, UnitGfxViewport3D, UnitGfxViewportBord
                 var dds = GetDecoded(filePath);
                 if (dds == null || dds.Data == null || dds.Data.Length == 0) return null;
                 int stride = dds.Width * 4;
+                byte[] src = dds.Data;
+                byte[] pixels = new byte[src.Length];
+                for (int i = 0; i + 3 < src.Length; i += 4)
+                {
+                    pixels[i] = src[i + 2];
+                    pixels[i + 1] = src[i + 1];
+                    pixels[i + 2] = src[i];
+                    pixels[i + 3] = src[i + 3];
+                }
                 var bmp = System.Windows.Media.Imaging.BitmapSource.Create(
                     dds.Width, dds.Height, 96, 96,
                     System.Windows.Media.PixelFormats.Bgra32,
-                    null, dds.Data, stride);
+                    null, pixels, stride);
                 bmp.Freeze();
                 lock (_textureBitmapCache) _textureBitmapCache[filePath] = bmp;
                 return bmp;

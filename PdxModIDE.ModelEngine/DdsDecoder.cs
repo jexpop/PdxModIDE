@@ -74,16 +74,18 @@ public static class DdsDecoder
         if (header.Magic != DDS_MAGIC)
             throw new InvalidDataException("Invalid DDS magic number");
 
+        int width = (int)header.Width;
+        int height = (int)header.Height;
+
         int headerSize = Marshal.SizeOf<DdsHeader>();
         int pixelDataOffset = headerSize;
 
         if ((header.PixelFormat.Flags & DDPF_FOURCC) != 0 && header.PixelFormat.FourCC == FOURCC_DX10)
         {
             pixelDataOffset += 20;
+            uint dxgiFormat = BitConverter.ToUInt32(data, headerSize);
+            return DecodeDx10(data, pixelDataOffset, width, height, dxgiFormat);
         }
-
-        int width = (int)header.Width;
-        int height = (int)header.Height;
 
         if ((header.PixelFormat.Flags & DDPF_FOURCC) != 0)
         {
@@ -344,6 +346,519 @@ public static class DdsDecoder
         return new DdsImage { Width = width, Height = height, Data = pixels, HasAlpha = (pf.Flags & DDPF_ALPHAPIXELS) != 0 };
     }
 
+    private static DdsImage DecodeDx10(byte[] data, int offset, int width, int height, uint dxgiFormat)
+    {
+        switch (dxgiFormat)
+        {
+            case 71: // BC1_UNORM
+                return DecodeDxt1(data, offset, width, height);
+            case 72: // BC2_UNORM
+                return DecodeDxt3(data, offset, width, height);
+            case 73: // BC3_UNORM
+                return DecodeDxt5(data, offset, width, height);
+            case 74: // BC4_UNORM
+                return DecodeBc4(data, offset, width, height);
+            case 76: // BC5_UNORM
+                return DecodeBc5(data, offset, width, height);
+            case 98: // BC7_UNORM
+            case 99: // BC7_UNORM_SRGB
+                return DecodeBc7(data, offset, width, height);
+            case 95: // BC6H_UF16
+            case 96: // BC6H_SF16
+                return DecodeBc6h(data, offset, width, height);
+            default:
+                throw new NotSupportedException($"Unsupported DX10 format: {dxgiFormat}");
+        }
+    }
+
+    private static DdsImage DecodeBc4(byte[] data, int offset, int width, int height)
+    {
+        int blockCountX = (width + 3) / 4;
+        int blockCountY = (height + 3) / 4;
+        byte[] pixels = new byte[width * height * 4];
+
+        for (int by = 0; by < blockCountY; by++)
+        {
+            for (int bx = 0; bx < blockCountX; bx++)
+            {
+                int blockOffset = offset + (by * blockCountX + bx) * 8;
+                if (blockOffset + 8 > data.Length) continue;
+
+                byte r0 = data[blockOffset];
+                byte r1 = data[blockOffset + 1];
+                ulong bits = 0;
+                for (int i = 0; i < 6; i++)
+                    bits |= (ulong)data[blockOffset + 2 + i] << (i * 8);
+
+                byte[] reds = new byte[8];
+                reds[0] = r0;
+                reds[1] = r1;
+                if (r0 > r1)
+                {
+                    for (int i = 1; i < 7; i++)
+                        reds[i + 1] = (byte)(((7 - i) * r0 + i * r1) / 7);
+                }
+                else
+                {
+                    for (int i = 1; i < 5; i++)
+                        reds[i + 1] = (byte)(((5 - i) * r0 + i * r1) / 5);
+                    reds[6] = 0;
+                    reds[7] = 255;
+                }
+
+                for (int y = 0; y < 4; y++)
+                {
+                    for (int x = 0; x < 4; x++)
+                    {
+                        int px = bx * 4 + x;
+                        int py = by * 4 + y;
+                        if (px >= width || py >= height) continue;
+                        int idx = (int)((bits >> (3 * (y * 4 + x))) & 7);
+                        byte v = reds[idx];
+                        int pi = (py * width + px) * 4;
+                        pixels[pi] = v; pixels[pi + 1] = v; pixels[pi + 2] = v; pixels[pi + 3] = 255;
+                    }
+                }
+            }
+        }
+
+        return new DdsImage { Width = width, Height = height, Data = pixels, HasAlpha = false };
+    }
+
+    private static DdsImage DecodeBc5(byte[] data, int offset, int width, int height)
+    {
+        int blockCountX = (width + 3) / 4;
+        int blockCountY = (height + 3) / 4;
+        byte[] pixels = new byte[width * height * 4];
+
+        for (int by = 0; by < blockCountY; by++)
+        {
+            for (int bx = 0; bx < blockCountX; bx++)
+            {
+                int blockOffset = offset + (by * blockCountX + bx) * 16;
+                if (blockOffset + 16 > data.Length) continue;
+
+                byte r0 = data[blockOffset];
+                byte r1 = data[blockOffset + 1];
+                ulong rb = 0;
+                for (int i = 0; i < 6; i++)
+                    rb |= (ulong)data[blockOffset + 2 + i] << (i * 8);
+                byte g0 = data[blockOffset + 8];
+                byte g1 = data[blockOffset + 9];
+                ulong gb = 0;
+                for (int i = 0; i < 6; i++)
+                    gb |= (ulong)data[blockOffset + 10 + i] << (i * 8);
+
+                byte[] reds = BuildBc4Lut(r0, r1);
+                byte[] greens = BuildBc4Lut(g0, g1);
+
+                for (int y = 0; y < 4; y++)
+                {
+                    for (int x = 0; x < 4; x++)
+                    {
+                        int px = bx * 4 + x;
+                        int py = by * 4 + y;
+                        if (px >= width || py >= height) continue;
+                        int ri = (int)((rb >> (3 * (y * 4 + x))) & 7);
+                        int gi = (int)((gb >> (3 * (y * 4 + x))) & 7);
+                        int pi = (py * width + px) * 4;
+                        pixels[pi] = reds[ri];
+                        pixels[pi + 1] = greens[gi];
+                        pixels[pi + 2] = 255;
+                        pixels[pi + 3] = 255;
+                    }
+                }
+            }
+        }
+
+        return new DdsImage { Width = width, Height = height, Data = pixels, HasAlpha = false };
+    }
+
+    private static byte[] BuildBc4Lut(byte v0, byte v1)
+    {
+        byte[] l = new byte[8];
+        l[0] = v0;
+        l[1] = v1;
+        if (v0 > v1)
+        {
+            for (int i = 1; i < 7; i++)
+                l[i + 1] = (byte)(((7 - i) * v0 + i * v1) / 7);
+        }
+        else
+        {
+            for (int i = 1; i < 5; i++)
+                l[i + 1] = (byte)(((5 - i) * v0 + i * v1) / 5);
+            l[6] = 0;
+            l[7] = 255;
+        }
+        return l;
+    }
+
+    private static DdsImage DecodeBc6h(byte[] data, int offset, int width, int height)
+        => throw new NotSupportedException("BC6H texture format is not supported for viewport rendering");
+
+        private static DdsImage DecodeBc7(byte[] data, int offset, int width, int height)
+    {
+        int blockCountX = (width + 3) / 4;
+        int blockCountY = (height + 3) / 4;
+        byte[] pixels = new byte[width * height * 4];
+
+        for (int by = 0; by < blockCountY; by++)
+        {
+            for (int bx = 0; bx < blockCountX; bx++)
+            {
+                int blockOffset = offset + (by * blockCountX + bx) * 16;
+                if (blockOffset + 16 > data.Length) continue;
+                DecodeBc7Block(data, blockOffset, bx, by, width, height, pixels);
+            }
+        }
+
+        return new DdsImage { Width = width, Height = height, Data = pixels, HasAlpha = false };
+    }
+
+    private static void DecodeBc7Block(byte[] data, int blockOffset, int bx, int by, int width, int height, byte[] pixels)
+    {
+        var bs = new Bc7BitStream(BitConverter.ToUInt64(data, blockOffset), BitConverter.ToUInt64(data, blockOffset + 8));
+
+        int mode;
+        for (mode = 0; mode < 8 && bs.ReadBit() == 0; mode++) { }
+
+        int[] blockPixels = new int[16]; // packed 0xAABBGGRR
+        if (mode >= 8)
+        {
+            for (int i = 0; i < 16; i++) blockPixels[i] = 0;
+        }
+        else
+        {
+            DecodeBc7Mode(bs, mode, blockPixels);
+        }
+
+        for (int y = 0; y < 4; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                int px = bx * 4 + x;
+                int py = by * 4 + y;
+                if (px >= width || py >= height) continue;
+                int p = blockPixels[y * 4 + x];
+                int pi = (py * width + px) * 4;
+                pixels[pi] = (byte)(p & 0xFF);
+                pixels[pi + 1] = (byte)((p >> 8) & 0xFF);
+                pixels[pi + 2] = (byte)((p >> 16) & 0xFF);
+                pixels[pi + 3] = (byte)((p >> 24) & 0xFF);
+            }
+        }
+    }
+
+    private static void DecodeBc7Mode(Bc7BitStream bs, int mode, int[] outPixels)
+    {
+        int j, k;
+        int numPartitions = 1;
+        int partition = 0;
+        int rotation = 0;
+        int indexSelectionBit = 0;
+
+        if (mode == 0 || mode == 1 || mode == 2 || mode == 3 || mode == 7)
+        {
+            numPartitions = (mode == 0 || mode == 2) ? 3 : 2;
+            partition = bs.ReadBits(mode == 0 ? 4 : 6);
+        }
+
+        int numEndpoints = numPartitions * 2;
+
+        if (mode == 4 || mode == 5)
+        {
+            rotation = bs.ReadBits(2);
+            if (mode == 4) indexSelectionBit = bs.ReadBit();
+        }
+
+        // Extract endpoints
+        int[,] endpoints = new int[6, 4];
+        for (j = 0; j < 3; j++)
+            for (int e = 0; e < numEndpoints; e++)
+                endpoints[e, j] = bs.ReadBits(Bc7ActualBitsCount0[mode]);
+        if (Bc7ActualBitsCount1[mode] > 0)
+            for (int e = 0; e < numEndpoints; e++)
+                endpoints[e, 3] = bs.ReadBits(Bc7ActualBitsCount1[mode]);
+
+        // P-bits
+        if (mode == 0 || mode == 1 || mode == 3 || mode == 6 || mode == 7)
+        {
+            for (int e = 0; e < numEndpoints; e++)
+                for (j = 0; j < 4; j++)
+                    endpoints[e, j] <<= 1;
+
+            if (mode == 1)
+            {
+                int i0 = bs.ReadBit();
+                int i1 = bs.ReadBit();
+                for (k = 0; k < 3; k++)
+                {
+                    endpoints[0, k] |= i0; endpoints[1, k] |= i0;
+                    endpoints[2, k] |= i1; endpoints[3, k] |= i1;
+                }
+            }
+            else if ((Bc7ModeHasPBits & (1 << mode)) != 0)
+            {
+                for (int e = 0; e < numEndpoints; e++)
+                {
+                    int pbit = bs.ReadBit();
+                    for (k = 0; k < 4; k++) endpoints[e, k] |= pbit;
+                }
+            }
+        }
+
+        for (int e = 0; e < numEndpoints; e++)
+        {
+            j = Bc7ActualBits[0][mode] + ((Bc7ModeHasPBits >> mode) & 1);
+            for (k = 0; k < 3; k++)
+            {
+                endpoints[e, k] = endpoints[e, k] << (8 - j);
+                endpoints[e, k] |= endpoints[e, k] >> j;
+            }
+            j = Bc7ActualBits[1][mode] + ((Bc7ModeHasPBits >> mode) & 1);
+            endpoints[e, 3] = endpoints[e, 3] << (8 - j);
+            endpoints[e, 3] |= endpoints[e, 3] >> j;
+        }
+
+        if (Bc7ActualBits[1][mode] == 0)
+            for (int e = 0; e < numEndpoints; e++)
+                endpoints[e, 3] = 0xFF;
+
+        int indexBits = (mode == 0 || mode == 1) ? 3 : (mode == 6 ? 4 : 2);
+        int indexBits2 = mode == 4 ? 3 : (mode == 5 ? 2 : 0);
+        int[] weights = indexBits == 2 ? AWeight2 : (indexBits == 3 ? AWeight3 : AWeight4);
+        int[] weights2 = indexBits2 == 2 ? AWeight2 : AWeight3;
+
+        int[,] indices = new int[4, 4];
+
+        // Pass #1: color indices
+        for (int i = 0; i < 4; i++)
+        {
+            for (int c = 0; c < 4; c++)
+            {
+                int partitionSet = numPartitions == 1
+                    ? ((i | c) == 0 ? 128 : 0)
+                    : (numPartitions == 2 ? Partition2Subset : Partition3Subset)[partition * 16 + i * 4 + c];
+
+                indexBits = (mode == 0 || mode == 1) ? 3 : (mode == 6 ? 4 : 2);
+                if ((partitionSet & 0x80) != 0) indexBits--;
+
+                indices[i, c] = bs.ReadBits(indexBits);
+            }
+        }
+
+        // Pass #2: alpha indices, interpolate, rotate
+        for (int i = 0; i < 4; i++)
+        {
+            for (int c = 0; c < 4; c++)
+            {
+                int partitionSet = numPartitions == 1
+                    ? 0
+                    : (numPartitions == 2 ? Partition2Subset : Partition3Subset)[partition * 16 + i * 4 + c] & 0x03;
+
+                int index = indices[i, c];
+                int r, g, b, a;
+
+                if (indexBits2 == 0)
+                {
+                    r = Interpolate(endpoints[partitionSet * 2, 0], endpoints[partitionSet * 2 + 1, 0], weights, index);
+                    g = Interpolate(endpoints[partitionSet * 2, 1], endpoints[partitionSet * 2 + 1, 1], weights, index);
+                    b = Interpolate(endpoints[partitionSet * 2, 2], endpoints[partitionSet * 2 + 1, 2], weights, index);
+                    a = Interpolate(endpoints[partitionSet * 2, 3], endpoints[partitionSet * 2 + 1, 3], weights, index);
+                }
+                else
+                {
+                    int index2 = bs.ReadBits((i | c) != 0 ? indexBits2 : indexBits2 - 1);
+                    if (indexSelectionBit == 0)
+                    {
+                        r = Interpolate(endpoints[partitionSet * 2, 0], endpoints[partitionSet * 2 + 1, 0], weights, index);
+                        g = Interpolate(endpoints[partitionSet * 2, 1], endpoints[partitionSet * 2 + 1, 1], weights, index);
+                        b = Interpolate(endpoints[partitionSet * 2, 2], endpoints[partitionSet * 2 + 1, 2], weights, index);
+                        a = Interpolate(endpoints[partitionSet * 2, 3], endpoints[partitionSet * 2 + 1, 3], weights2, index2);
+                    }
+                    else
+                    {
+                        r = Interpolate(endpoints[partitionSet * 2, 0], endpoints[partitionSet * 2 + 1, 0], weights2, index2);
+                        g = Interpolate(endpoints[partitionSet * 2, 1], endpoints[partitionSet * 2 + 1, 1], weights2, index2);
+                        b = Interpolate(endpoints[partitionSet * 2, 2], endpoints[partitionSet * 2 + 1, 2], weights2, index2);
+                        a = Interpolate(endpoints[partitionSet * 2, 3], endpoints[partitionSet * 2 + 1, 3], weights, index);
+                    }
+                }
+
+                switch (rotation)
+                {
+                    case 1: Swap(ref a, ref r); break;
+                    case 2: Swap(ref a, ref g); break;
+                    case 3: Swap(ref a, ref b); break;
+                }
+
+                outPixels[i * 4 + c] = (a << 24) | (b << 16) | (g << 8) | r;
+            }
+        }
+    }
+
+    private static int Interpolate(int a, int b, int[] weights, int index)
+        => (a * (64 - weights[index]) + b * weights[index] + 32) >> 6;
+
+    private static void Swap(ref int a, ref int b)
+    {
+        (a, b) = (b, a);
+    }
+
+    private static readonly int[][] Bc7ActualBits = new[]
+    {
+        new[] { 4, 6, 5, 7, 5, 7, 7, 5 },
+        new[] { 0, 0, 0, 0, 6, 8, 7, 5 }
+    };
+    private const int BC7_MODE_HAS_PBITS = 0b11001011;
+    private static readonly int[] Bc7ActualBitsCount0 = Bc7ActualBits[0];
+    private static readonly int[] Bc7ActualBitsCount1 = Bc7ActualBits[1];
+    private static int Bc7ModeHasPBits => BC7_MODE_HAS_PBITS;
+
+    private static readonly int[] AWeight2 = { 0, 21, 43, 64 };
+    private static readonly int[] AWeight3 = { 0, 9, 18, 27, 37, 46, 55, 64 };
+    private static readonly int[] AWeight4 = { 0, 4, 9, 13, 17, 21, 26, 30, 34, 38, 43, 47, 51, 55, 60, 64 };
+
+    // Partition tables: flat arrays, 64 partitions x 16 texels; MSB set on fix-up indices
+    private static readonly int[] Partition2Subset =
+    {
+        // 0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
+        128,  0,  1,  1,  0,  0,  1,  1,  0,  0,  1,  1,  0,  0,  1,129,
+        128,  0,  0,  1,  0,  0,  0,  1,  0,  0,  0,  1,  0,  0,  0,129,
+        128,  1,  1,  1,  0,  1,  1,  1,  0,  1,  1,  1,  0,  1,  1,129,
+        128,  0,  0,  1,  0,  0,  1,  1,  0,  0,  1,  1,  0,  1,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  1,  0,  0,  1,129,
+        128,  0,  1,  1,  0,  1,  1,  1,  0,  1,  1,  1,  1,  1,  1,129,
+        128,  0,  0,  1,  0,  0,  1,  1,  0,  1,  1,  1,  1,  1,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,  1,  0,  1,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  1,129,
+        128,  0,  1,  1,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  1,  0,  1,  1,  1,  1,  1,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  1,  1,129,
+        128,  0,  0,  1,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,129,
+        128,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,129,
+        128,  0,  0,  0,  1,  0,  0,  0,  1,  1,  1,  0,  1,  1,  1,129,
+        128,  1,129,  1,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,
+        128,  0,  0,  0,  0,  0,  0,  0,129,  0,  0,  0,  1,  1,  1,  0,
+        128,  1,129,  1,  0,  0,  1,  1,  0,  0,  0,  1,  0,  0,  0,  0,
+        128,  0,129,  1,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,
+        128,  0,  0,  0,  1,  0,  0,  0,129,  1,  0,  0,  1,  1,  1,  0,
+        128,  0,  0,  0,  0,  0,  0,  0,129,  0,  0,  0,  1,  1,  0,  0,
+        128,  1,  1,  1,  0,  0,  1,  1,  0,  0,  1,  1,  0,  0,  0,129,
+        128,  0,129,  1,  0,  0,  0,  1,  0,  0,  0,  1,  0,  0,  0,  0,
+        128,  0,  0,  0,  1,  0,  0,  0,129,  0,  0,  0,  1,  1,  0,  0,
+        128,  1,129,  0,  0,  1,  1,  0,  0,  1,  1,  0,  0,  1,  1,  0,
+        128,  0,129,  1,  0,  1,  1,  0,  0,  1,  1,  0,  1,  1,  0,  0,
+        128,  0,  0,  1,  0,  1,  1,  1,129,  1,  1,  0,  1,  0,  0,  0,
+        128,  0,  0,  0,  1,  1,  1,  1,129,  1,  1,  1,  0,  0,  0,  0,
+        128,  1,129,  1,  0,  0,  0,  1,  1,  0,  0,  0,  1,  1,  1,  0,
+        128,  0,129,  1,  1,  0,  0,  1,  1,  0,  0,  1,  1,  1,  0,  0,
+        128,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,129,
+        128,  0,  0,  0,  1,  1,  1,  1,  0,  0,  0,  0,  1,  1,  1,129,
+        128,  1,  0,  1,  1,  0,129,  0,  0,  1,  0,  1,  1,  0,  1,  0,
+        128,  0,  1,  1,  0,  0,  1,  1,129,  1,  0,  0,  1,  1,  0,  0,
+        128,  0,129,  1,  1,  1,  0,  0,  0,  0,  1,  1,  1,  1,  0,  0,
+        128,  1,  0,  1,  0,  1,  0,  1,129,  0,  1,  0,  1,  0,  1,  0,
+        128,  1,  1,  0,  1,  0,  0,  1,  0,  1,  1,  0,  1,  0,  0,129,
+        128,  1,  0,  1,  1,  0,  1,  0,  1,  0,  1,  0,  0,  1,  0,129,
+        128,  1,129,  1,  0,  0,  1,  1,  1,  1,  0,  0,  1,  1,  1,  0,
+        128,  0,  0,  1,  0,  0,  1,  1,129,  1,  0,  0,  1,  0,  0,  0,
+        128,  0,129,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  1,  0,  0,
+        128,  0,129,  1,  1,  0,  1,  1,  1,  1,  0,  1,  1,  1,  0,  0,
+        128,  1,129,  0,  1,  0,  0,  1,  1,  0,  0,  1,  0,  1,  1,  0,
+        128,  0,  1,  1,  1,  1,  0,  0,  1,  1,  0,  0,  0,  0,  1,129,
+        128,  1,  1,  0,  0,  1,  1,  0,  1,  0,  0,  1,  1,  0,  0,129,
+        128,  0,  0,  0,  0,  1,129,  0,  0,  1,  1,  0,  0,  0,  0,  0,
+        128,  1,  0,  0,  1,  1,129,  0,  0,  1,  0,  0,  0,  0,  0,  0,
+        128,  0,129,  0,  0,  1,  1,  1,  0,  0,  1,  0,  0,  0,  0,  0,
+        128,  0,  0,  0,  0,  0,129,  0,  0,  1,  1,  1,  0,  0,  1,  0,
+        128,  0,  0,  0,  0,  1,  0,  0,129,  1,  1,  0,  0,  1,  0,  0,
+        128,  1,  1,  0,  1,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,129,
+        128,  0,  1,  1,  0,  1,  1,  0,  1,  1,  0,  0,  1,  0,  0,129,
+        128,  1,129,  0,  0,  0,  1,  1,  1,  0,  0,  1,  1,  1,  0,  0,
+        128,  0,129,  1,  1,  0,  0,  1,  1,  1,  0,  0,  0,  1,  1,  0,
+        128,  1,  1,  0,  1,  1,  0,  0,  1,  1,  0,  0,  1,  0,  0,129,
+        128,  1,  1,  0,  0,  0,  1,  1,  0,  0,  1,  1,  1,  0,  0,129,
+        128,  1,  1,  1,  1,  1,  1,  0,  1,  0,  0,  0,  0,  0,  0,129,
+        128,  0,  0,  1,  1,  0,  0,  0,  1,  1,  1,  0,  0,  1,  1,129,
+        128,  0,  0,  0,  1,  1,  1,  1,  0,  0,  1,  1,  0,  0,  1,129,
+        128,  0,129,  1,  0,  0,  1,  1,  1,  1,  1,  1,  0,  0,  0,  0,
+        128,  0,129,  0,  0,  0,  1,  0,  1,  1,  1,  0,  1,  1,  1,  0,
+        128,  1,  0,  0,  0,  1,  0,  0,  0,  1,  1,  1,  0,  1,  1,129
+    };
+
+    private static readonly int[] Partition3Subset =
+    {
+        //  0   1   2   3   4   5   6   7    8   9   10  11  12  13  14  15
+        128,  0,  1,129,  0,  0,  1,  1,  0,  2,  2,  1,  2,  2,  2,130,
+        128,  0,  0,129,  0,  0,  1,  1,130,  2,  1,  1,  2,  2,  2,  1,
+        128,  0,  0,  0,  2,  0,  0,  1,130,  2,  1,  1,  2,  2,  1,129,
+        128,  2,  2,130,  0,  0,  2,  2,  0,  0,  1,  1,  0,  1,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  0,129,  1,  2,  2,  1,  1,  2,130,
+        128,  0,  1,129,  0,  0,  1,  1,  0,  0,  2,  2,  0,  0,  2,130,
+        128,  0,  2,130,  0,  0,  2,  2,  1,  1,  1,  1,  1,  1,  1,129,
+        128,  0,  1,  1,  0,  0,  1,  1,130,  2,  1,  1,  2,  2,  1,129,
+        128,  0,  0,  0,  0,  0,  0,  0,129,  1,  1,  1,  2,  2,  2,130,
+        128,  0,  0,  0,  1,  1,  1,  1,129,  1,  1,  1,  2,  2,  2,130,
+        128,  0,  0,  0,  1,  1,129,  1,  2,  2,  2,  2,  2,  2,  2,130,
+        128,  0,  1,  2,  0,  0,129,  2,  0,  0,  1,  2,  0,  0,  1,130,
+        128,  1,  1,  2,  0,  1,129,  2,  0,  1,  1,  2,  0,  1,  1,130,
+        128,  1,  2,  2,  0,129,  2,  2,  0,  1,  2,  2,  0,  1,  2,130,
+        128,  0,  1,129,  0,  1,  1,  2,  1,  1,  2,  2,  1,  2,  2,130,
+        128,  0,  1,129,  2,  0,  0,  1,130,  2,  0,  0,  2,  2,  2,  0,
+        128,  0,  0,129,  0,  0,  1,  1,  0,  1,  1,  2,  1,  1,  2,130,
+        128,  1,  1,129,  0,  0,  1,  1,130,  0,  0,  1,  2,  2,  0,  0,
+        128,  0,  0,  0,  1,  1,  2,  2,129,  1,  2,  2,  1,  1,  2,130,
+        128,  0,  2,130,  0,  0,  2,  2,  0,  0,  2,  2,  1,  1,  1,129,
+        128,  1,  1,129,  0,  1,  1,  1,  0,  2,  2,  2,  0,  2,  2,130,
+        128,  0,  0,129,  0,  0,  0,  1,130,  2,  2,  1,  2,  2,  2,  1,
+        128,  0,  0,  0,  0,  0,129,  1,  0,  1,  2,  2,  0,  1,  2,130,
+        128,  0,  0,  0,  1,  1,  0,  0,130,  2,129,  0,  2,  2,  1,  0,
+        128,  1,  2,130,  0,129,  2,  2,  0,  0,  1,  1,  0,  0,  0,  0,
+        128,  0,  1,  2,  0,  0,  1,  2,129,  1,  2,  2,  2,  2,  2,130,
+        128,  1,  1,  0,  1,  2,130,  1,129,  2,  2,  1,  0,  1,  1,  0,
+        128,  0,  0,  0,  0,  1,129,  0,  1,  2,130,  1,  1,  2,  2,  1,
+        128,  0,  2,  2,  1,  1,  0,  2,129,  1,  0,  2,  0,  0,  2,130,
+        128,  1,  1,  0,  0,129,  1,  0,  2,  0,  0,  2,  2,  2,  2,130,
+        128,  0,  1,  1,  0,  1,  2,  2,  0,  1,130,  2,  0,  0,  1,129,
+        128,  0,  0,  0,  2,  0,  0,  0,130,  2,  1,  1,  2,  2,  2,129,
+        128,  0,  0,  0,  0,  0,  0,  2,129,  1,  2,  2,  1,  2,  2,130,
+        128,  2,  2,130,  0,  0,  2,  2,  0,  0,  1,  2,  0,  0,  1,129,
+        128,  0,  1,129,  0,  0,  1,  2,  0,  0,  2,  2,  0,  2,  2,130,
+        128,  1,  2,  0,  0,129,  2,  0,  0,  1,130,  0,  0,  1,  2,  0,
+        128,  0,  0,  0,  1,  1,129,  1,  2,  2,130,  2,  0,  0,  0,  0,
+        128,  1,  2,  0,  1,  2,  0,  1,130,  0,129,  2,  0,  1,  2,  0,
+        128,  1,  2,  0,  2,  0,  1,  2,129,130,  0,  1,  0,  1,  2,  0,
+        128,  0,  1,  1,  2,  2,  0,  0,  1,  1,130,  2,  0,  0,  1,129,
+        128,  0,  1,  1,  1,  1,130,  2,  2,  2,  0,  0,  0,  0,  1,129,
+        128,  1,  0,129,  0,  1,  0,  1,  2,  2,  2,  2,  2,  2,  2,130,
+        128,  0,  0,  0,  0,  0,  0,  0,130,  1,  2,  1,  2,  1,  2,129,
+        128,  0,  2,  2,  1,129,  2,  2,  0,  0,  2,  2,  1,  1,  2,130,
+        128,  0,  2,130,  0,  0,  1,  1,  0,  0,  2,  2,  0,  0,  1,129,
+        128,  2,  2,  0,  1,  2,130,  1,  0,  2,  2,  0,  1,  2,  2,129,
+        128,  1,  0,  1,  2,  2,130,  2,  2,  2,  2,  2,  0,  1,  0,129,
+        128,  0,  0,  0,  2,  1,  2,  1,130,  1,  2,  1,  2,  1,  2,129,
+        128,  1,  0,129,  0,  1,  0,  1,  0,  1,  0,  1,  2,  2,  2,130,
+        128,  2,  2,130,  0,  1,  1,  1,  0,  2,  2,  2,  0,  1,  1,129,
+        128,  0,  0,  2,  1,129,  1,  2,  0,  0,  0,  2,  1,  1,  1,130,
+        128,  0,  0,  0,  2,129,  1,  2,  2,  1,  1,  2,  2,  1,  1,130,
+        128,  2,  2,  2,  0,129,  1,  1,  0,  1,  1,  1,  0,  2,  2,130,
+        128,  0,  0,  2,  1,  1,  1,  2,129,  1,  1,  2,  0,  0,  0,130,
+        128,  1,  1,  0,  0,129,  1,  0,  0,  1,  1,  0,  2,  2,  2,130,
+        128,  0,  0,  0,  0,  0,  0,  0,  2,  1,129,  2,  2,  1,  1,130,
+        128,  1,  1,  0,  0,129,  1,  0,  2,  2,  2,  2,  2,  2,  2,130,
+        128,  0,  2,  2,  0,  0,  1,  1,  0,  0,129,  1,  0,  0,  2,130,
+        128,  0,  2,  2,  1,  1,  2,  2,129,  1,  2,  2,  0,  0,  2,130,
+        128,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,129,  1,130,
+        128,  0,  0,130,  0,  0,  0,  1,  0,  0,  0,  2,  0,  0,  0,129,
+        128,  2,  2,  2,  1,  2,  2,  2,  0,  2,  2,  2,129,  2,  2,130,
+        128,  1,  0,129,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,130,
+        128,  1,  1,129,  2,  0,  1,  1,130,  2,  0,  1,  2,  2,  2,  0
+    };
+
     private static T ByteArrayToStructure<T>(byte[] bytes, int offset) where T : struct
     {
         int size = Marshal.SizeOf<T>();
@@ -357,6 +872,32 @@ public static class DdsDecoder
         {
             Marshal.FreeHGlobal(ptr);
         }
+    }
+}
+
+internal sealed class Bc7BitStream
+{
+    private ulong _low;
+    private ulong _high;
+
+    public Bc7BitStream(ulong low, ulong high)
+    {
+        _low = low;
+        _high = high;
+    }
+
+    public int ReadBit() => ReadBits(1);
+
+    public int ReadBits(int numBits)
+    {
+        int mask = (1 << numBits) - 1;
+        int bits = (int)(_low & (uint)mask);
+
+        _low >>= numBits;
+        _low |= (_high & (uint)mask) << (64 - numBits);
+        _high >>= numBits;
+
+        return bits;
     }
 }
 

@@ -17,7 +17,8 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.6.0 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 proyectos).
+**Versión actual**: 1.6.1 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). 
+Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
 
@@ -282,6 +283,8 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 - `CulturesTab`: Explorador de culturas con TreeView agrupado por herencia. Carga definiciones de `common/culture/cultures/*.txt` recursivamente (soporta subdirectorios como `mod/`). Parsea bloques Clausewitz (maneja `hsv { ... }`, comentarios, bloques anidados). Fusiona mod sobre base. Muestra nombres localizados desde archivos de localización CK3. Panel de selección ordenado Origen, Nombre, Color, Ethos, Herencia, que muestra el origen (Base/Mod), nombre, y color (RGB numérico + swatch visual; soporta modos `hsv`/`hsv360`/`rgb` y referencias `color = <nombre>` resueltas contra `common/named_colors/*.txt`). El ethos es desplegable y muestra sus parámetros (ej. `character_modifier`, `province_modifier`, `county_modifier`, `culture_modifier`, `parameters`, `ai_will_do`, `desc`) parseados desde `common/culture/pillars/*_ethos.txt`. La herencia también es desplegable y muestra sus parámetros (`is_shown`, `audio_parameter`, etc.) parseados desde `common/culture/pillars/*_heritage.txt`. El idioma también es desplegable y muestra sus parámetros (`is_shown`, `ai_will_do`, `color`, etc.) parseados desde `common/culture/pillars/*language.txt` y localizado vía `cultural_languages_l_*.yml`. La tradición marcial también es desplegable y muestra sus parámetros (`parameters`, `can_pick`, `ai_will_do`, etc.) parseados desde `common/culture/pillars/*martial_custom.txt` y localizada vía las claves `martial_custom_<name>_name` en `cultural_traditions_l_*.yml`. La designación del líder también es desplegable y muestra sus parámetros (`head_determination_type`, etc.) parseados desde `common/culture/pillars/*head_determination.txt` y localizada vía `head_determination_l_*.yml`. Las tradiciones también son desplegables, cada una muestra su nombre localizado (`tradition_<name>_name`), su descripción localizada (`tradition_<name>_desc`) y sus parámetros (`category`, `layers`, `can_pick`, `parameters`, `character_modifier`, `effects`, `cost`, etc.) parseados desde `common/culture/traditions/*.txt` (ruta desde `IGamePlugin.TraditionsRelativePath`). Todos los tipos de pillar se cargan con prioridad de los ficheros del mod sobre el juego; cada parámetro incluye una explicación localizada (claves `EthosParam_*_Desc` / `HeritageParam_*_Desc` / `LanguageParam_*_Desc` / `MartialCustomParam_*_Desc` / `HeadDeterminationParam_*_Desc` / `TraditionParam_*_Desc` en `CK3.*.xaml`). El panel de detalles está dentro de un `ScrollViewer` vertical; el panel de estadísticas está en la parte superior de la columna derecha y solo se muestra cuando no hay cultura seleccionada. Estadísticas.
 - `LogsTab`: Filtros log (no implementado completamente).
 
+- **Grid de GFX de edificios (pestaña Culturas)**: `RenderBuildingGrid` resuelve las claves `building_gfx` de cada cultura a sus ficheros `.mesh` (vía `GetBuildingDb` + `ResolveBuildingMeshes` + `GetMeshFileIndex`) y los renderiza en un `WrapPanel` (`BuildingGfxGrid`), siendo cada celda un `Viewport3D` construido por `BuildMeshCellViewport`. Cada sub-malla se texturiza de forma independiente: omite los shaders `Collision*`, resuelve la difusa del atlas (UV0) y, cuando el `.asset` asociado declara una textura `_unique` (`texture = { file = "..._unique.dds" index = 5 }`), usa UV1 + la textura única. Para reproducir el shader `standard_atlas` del juego (`Diffuse.rgb *= Unique`), el atlas difuso es la base y el color medio de la única se aplica como tinte del `DiffuseMaterial` (factor de mezcla 70%). Las texturas se decodifican con `DdsDecoder.Decode` (cache en `_textureDecodeCache`/`_textureBitmapCache`), que ahora soporta BC1–BC5 y BC7 (los 8 modos) además de formatos DX10 (DDS_HEADER_DXT10); `LoadTexture` convierte los píxeles RGBA del decoder a BGRA para `BitmapSource.Create` (evita el intercambio R/B que hacía ver azulados los edificios).
+
 **Temas**: `ResourceDictionary` swap en `MainWindow.ApplyTheme(theme)`. Archivos en `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internacionalización (`PdxModIDE.UI`)
@@ -459,4 +462,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-08-05 | Proyecto: PdxModIDE | Versión: 1.6.0 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generado: 2026-08-06 | Proyecto: PdxModIDE | Versión: 1.6.1 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

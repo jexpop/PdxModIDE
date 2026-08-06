@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.1]
+
+### Added
+
+- **Full BC7/DX10 texture decode in the building grid (Cultures tab)**: `DdsDecoder` now decodes the DirectX10 (DX10/`DDS_HEADER_DXT10`) textures found on CK3 building meshes: all 8 BC7 modes (dxgi formats 98/99), as well as BC4 (74) and BC5 (76). BC6H (95/96) is detected and rejected with `NotSupportedException`. Previously these textures decoded as flat gray. This makes the `_unique.dds` textures used across ep3/tgp buildings display their correct colors.
+
+### Changed
+
+- **Per-mesh textured building grid (Cultures tab)**: the building grid now renders each submesh with its own diffuse + UV set + optional `_unique` texture resolved from the companion `.asset` (`texture = { file = "..._unique.dds" index = 5 }`), sampling the unique through UV1 and falling back to the diffuse atlas when there is no second UV set. Collision submeshes are skipped.
+
+- **Fixed channel-order bug that made buildings appear blue**: pixel data from `DdsDecoder` is stored in RGBA order, but the WPF `BitmapSource` was built with `Bgra32`. `LoadTexture` now converts RGBA→BGRA before creating the bitmap, so red `_unique` textures (roofs, etc.) render red instead of blue.
+
+- **Atlas + unique color blend (option 2)**: building submeshes now use the diffuse atlas (UV1) as the base detail texture tinted by the average color of the building's `_unique` texture via the `DiffuseMaterial`, replicating the game's `standard_atlas` shader (`Diffuse.rgb *= Unique`), with a 70% mix factor so detail stays visible.
+
+---
+
 ## [1.6.0]
 
 ### Changed

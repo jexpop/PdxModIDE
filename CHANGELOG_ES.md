@@ -7,6 +7,22 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.6.1]
+
+### Añadido
+
+- **Decodificación completa BC7/DX10 en el grid de edificios (pestaña Culturas)**: `DdsDecoder` ahora decodifica las texturas DX10 (DXGI) de los edificios de CK3, incluyendo los 8 modos de BC7 (formatos 98/99), además de BC4 (74) y BC5 (76). BC6H (95/96) se detecta y lanza `NotSupportedException`. Antes estas texturas se decodificaban como gris plano. Esto hace que las texturas `_unique.dds` de los edificios (tgp/asiáticos) muestren su color real.
+
+### Cambiado
+
+- **Grid de edificios texturizado por malla (pestaña Culturas)**: el grid ahora renderiza cada sub-malla con su difusa + UV + la `_unique` opcional resuelta desde el `.asset` (`texture = { file = "..._unique.dds" index = 5 }`), muestrenando la única con UV1 y probando el atlas difuso cuando no hay segundo set de UV. Las sub-mallas de colisión se omiten.
+
+- **Corregido el bug de canales que hacía ver azulados los edificios**: `DdsDecoder` guarda los píxeles en orden RGBA, pero el `BitmapSource` de WPF usa `PixelFormats.Bgra32`. `LoadTexture` ahora convierte RGBA→BGRA antes de crear el bitmap, de modo que las texturas `_unique` rojas (techos, etc.) se renderizan en rojo y no en azul.
+
+- **Blend atlas + tinte de color (opción 2)**: cada sub-malla de edificio usa ahora la difusa del atlas (UV1) como textura base de detalle y aplica el color medio de su textura `_unique` a través del `DiffuseMaterial`, replicando el shader `standard_atlas` del juego (`Diffuse.rgb *= Unique`), con un factor de mezcla del 70% para mantener visible el detalle.
+
+---
+
 ## [1.6.0]
 
 ### Cambiado

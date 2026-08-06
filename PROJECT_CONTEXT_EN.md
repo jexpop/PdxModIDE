@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.6.0 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.1 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -282,6 +282,8 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
 - `LogsTab`: Log filters (not fully implemented).
 - `SettingsTab`: Theme, default paths.
 
+- **Building GFX grid (Cultures tab)**: `RenderBuildingGrid` resolves each culture's `building_gfx` keys to `.mesh` files (via `GetBuildingDb` + `ResolveBuildingMeshes` + `GetMeshFileIndex`) and renders them in a `WrapPanel` (`BuildingGfxGrid`), each cell a `Viewport3D` built by `BuildMeshCellViewport`. Each submesh is textured independently: it skips `Collision*` shaders, resolves the diffuse atlas (UV0) and, when the companion `.asset` declares a `_unique` texture (`texture = { file = "..._unique.dds" index = 5 }`), uses UV1 + the unique texture. To reproduce the game's `standard_atlas` shader (`Diffuse.rgb *= Unique`), the diffuse atlas is the base and the unique's average color is applied as a `DiffuseMaterial` tint (70% mix factor). Textures are decoded by `DdsDecoder.Decode` (cached in `_textureDecodeCache`/`_textureBitmapCache`), which now supports BC1–BC5 and BC7 (all 8 modes) plus DX10 (DDS_HEADER_DXT10) formats; `LoadTexture` converts the decoder's RGBA pixel data to BGRA for `BitmapSource.Create` (avoids the R/B swap that made buildings look blue).
+
 **Themes**: `ResourceDictionary` swap in `MainWindow.ApplyTheme(theme)`. Files in `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internationalization (`PdxModIDE.UI`)
@@ -461,4 +463,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-05 | Project: PdxModIDE | Version: 1.6.0 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-06 | Project: PdxModIDE | Version: 1.6.1 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
