@@ -3,14 +3,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <!--
-        Diccionario de idioma: EspaÃ±ol (es) â€” Textos GENERALES de la aplicaciÃ³n.
-        Los textos especÃ­ficos de cada juego (CK3, EU4, etc.) van en ficheros
+        Diccionario de idioma: Español (es) — Textos GENERALES de la aplicación.
+        Los textos específicos de cada juego (CK3, EU4, etc.) van en ficheros
         separados: {GameKey}.es.xaml (ej. CK3.es.xaml).
     -->
 
     <!-- GeneralSettingsWindow -->
     <system:String x:Key="Settings_Title">Ajustes generales</system:String>
-    <system:String x:Key="Settings_Subtitle">Estos ajustes afectan a toda la aplicaciÃ³n, no a un mod en concreto.</system:String>
+    <system:String x:Key="Settings_Subtitle">Estos ajustes afectan a toda la aplicación, no a un mod en concreto.</system:String>
     <system:String x:Key="Settings_ThemeSection">Tema visual</system:String>
     <system:String x:Key="Settings_LanguageSection">Idioma</system:String>
     <system:String x:Key="Settings_Theme_Light">Claro</system:String>
@@ -20,8 +20,8 @@
     <system:String x:Key="Settings_Theme_Contrast">Alto contraste</system:String>
     <system:String x:Key="Settings_Theme_VSCodeDark">VS Code (oscuro)</system:String>
     <system:String x:Key="Settings_Theme_VSCodeLight">VS Code (claro)</system:String>
-    <system:String x:Key="Settings_Language_Spanish">EspaÃ±ol</system:String>
-    <system:String x:Key="Settings_Language_Catalan">CatalÃ </system:String>
+    <system:String x:Key="Settings_Language_Spanish">Español</system:String>
+    <system:String x:Key="Settings_Language_Catalan">Català</system:String>
     <system:String x:Key="Settings_Language_English">English</system:String>
     <system:String x:Key="Settings_ApplyButton">Aplicar</system:String>
     <system:String x:Key="Settings_CloseButton">Cerrar</system:String>
@@ -29,61 +29,61 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.3</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.4</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
     <system:String x:Key="MainWindow_Tab_Cultures">Culturas</system:String>
     <system:String x:Key="MainWindow_Tab_Dates">Fechas</system:String>
-    <system:String x:Key="MainWindow_Tab_Modules">MÃ³dulos</system:String>
-    <system:String x:Key="MainWindow_Tab_Validation">ValidaciÃ³n</system:String>
+    <system:String x:Key="MainWindow_Tab_Modules">Módulos</system:String>
+    <system:String x:Key="MainWindow_Tab_Validation">Validación</system:String>
     <system:String x:Key="MainWindow_Tab_Logs">Logs</system:String>
 
     <!-- ProfileTab -->
     <system:String x:Key="ProfileTab_SelectProfile">Seleccionar perfil:</system:String>
     <system:String x:Key="ProfileTab_Routes">Rutas</system:String>
-    <system:String x:Key="ProfileTab_GameRoot">RaÃ­z del juego:</system:String>
-    <system:String x:Key="ProfileTab_ModRoot">RaÃ­z del mod:</system:String>
+    <system:String x:Key="ProfileTab_GameRoot">Raíz del juego:</system:String>
+    <system:String x:Key="ProfileTab_ModRoot">Raíz del mod:</system:String>
     <system:String x:Key="ProfileTab_BackupRoot">Carpeta de backups:</system:String>
     <system:String x:Key="ProfileTab_Browse">Seleccionar</system:String>
     <system:String x:Key="ProfileTab_SaveProfile">Guardar perfil</system:String>
     <system:String x:Key="ProfileTab_NewProfile">Crear perfil nuevo</system:String>
     <system:String x:Key="ProfileTab_RenameProfile">Renombrar perfil</system:String>
     <system:String x:Key="ProfileTab_DeleteProfile">Eliminar perfil</system:String>
-    <system:String x:Key="ProfileTab_DefaultModules">MÃ³dulos activados por defecto:</system:String>
+    <system:String x:Key="ProfileTab_DefaultModules">Módulos activados por defecto:</system:String>
 
     <!-- ModulesTab -->
     <system:String x:Key="ModulesTab_CurrentGame">Juego del perfil actual:</system:String>
-    <system:String x:Key="ModulesTab_InfoText">Selecciona los mÃ³dulos que se usarÃ¡n globalmente en la aplicaciÃ³n (Mapa, ValidaciÃ³n, etc.). La pestaÃ±a Fechas tiene su propia selecciÃ³n independiente.</system:String>
-    <system:String x:Key="ModulesTab_EditModule">Editar mÃ³dulo</system:String>
-    <system:String x:Key="ModulesTab_ModuleName">Nombre del mÃ³dulo:</system:String>
+    <system:String x:Key="ModulesTab_InfoText">Selecciona los módulos que se usarán globalmente en la aplicación (Mapa, Validación, etc.). La pestaña Fechas tiene su propia selección independiente.</system:String>
+    <system:String x:Key="ModulesTab_EditModule">Editar módulo</system:String>
+    <system:String x:Key="ModulesTab_ModuleName">Nombre del módulo:</system:String>
     <system:String x:Key="ModulesTab_RelativePath">Ruta relativa:</system:String>
     <system:String x:Key="ModulesTab_IgnoredExt">Extensiones ignoradas (coma):</system:String>
-    <system:String x:Key="ModulesTab_AddModule">AÃ±adir mÃ³dulo</system:String>
+    <system:String x:Key="ModulesTab_AddModule">Añadir módulo</system:String>
     <system:String x:Key="ModulesTab_SaveChanges">Guardar cambios</system:String>
-    <system:String x:Key="ModulesTab_DeleteModule">Eliminar mÃ³dulo</system:String>
+    <system:String x:Key="ModulesTab_DeleteModule">Eliminar módulo</system:String>
 
     <!-- DatesTab -->
-    <system:String x:Key="DatesTab_YearOffset">Offset de aÃ±o</system:String>
-    <system:String x:Key="DatesTab_InfoText">Activa o desactiva mÃ³dulos para procesar sus fechas. Esta selecciÃ³n solo afecta a esta pestaÃ±a.</system:String>
+    <system:String x:Key="DatesTab_YearOffset">Offset de año</system:String>
+    <system:String x:Key="DatesTab_InfoText">Activa o desactiva módulos para procesar sus fechas. Esta selección solo afecta a esta pestaña.</system:String>
     <system:String x:Key="DatesTab_EndDate">END_DATE</system:String>
     <system:String x:Key="DatesTab_EndDateLabel">Fecha final del juego (END_DATE):</system:String>
     <system:String x:Key="DatesTab_SaveEndDate">Guardar END_DATE en el mod</system:String>
-    <system:String x:Key="DatesTab_ModulesToProcess">MÃ³dulos a procesar</system:String>
+    <system:String x:Key="DatesTab_ModulesToProcess">Módulos a procesar</system:String>
     <system:String x:Key="DatesTab_Process">Procesar</system:String>
     <system:String x:Key="DatesTab_SourceMod">Origen: (mod)</system:String>
     <system:String x:Key="DatesTab_SourceGame">Origen: (juego)</system:String>
     <system:String x:Key="DatesTab_SourceNotFound">Origen: (no encontrado)</system:String>
 
     <!-- HistoryTab -->
-    <system:String x:Key="HistoryTab_Navigation">NavegaciÃ³n</system:String>
-    <system:String x:Key="HistoryTab_Navigation_Text">â€¢ Zoom: usa los botones + y - o la rueda del ratÃ³n
-â€¢ Pan: haz clic derecho y arrastra
-â€¢ Ajustar: pulsa el botÃ³n Ajustar para restablecer la vista</system:String>
-    <system:String x:Key="HistoryTab_Selection">SelecciÃ³n de provincia</system:String>
-    <system:String x:Key="HistoryTab_Selection_Text">Haz clic en una provincia para ver su informaciÃ³n detallada (ID, nombre, color, tipo y tÃ­tulos asociados).</system:String>
+    <system:String x:Key="HistoryTab_Navigation">Navegación</system:String>
+    <system:String x:Key="HistoryTab_Navigation_Text">• Zoom: usa los botones + y - o la rueda del ratón
+• Pan: haz clic derecho y arrastra
+• Ajustar: pulsa el botón Ajustar para restablecer la vista</system:String>
+    <system:String x:Key="HistoryTab_Selection">Selección de provincia</system:String>
+    <system:String x:Key="HistoryTab_Selection_Text">Haz clic en una provincia para ver su información detallada (ID, nombre, color, tipo y títulos asociados).</system:String>
     <system:String x:Key="HistoryTab_Layers">Capas</system:String>
-    <system:String x:Key="HistoryTab_Layers_Text">Activa las casillas "Base" y/o "Mod" para cargar datos histÃ³ricos de provincias, luego activa los modos de superposiciÃ³n: Titular, Condado, Ducado, Reino o Imperio.</system:String>
+    <system:String x:Key="HistoryTab_Layers_Text">Activa las casillas "Base" y/o "Mod" para cargar datos históricos de provincias, luego activa los modos de superposición: Titular, Condado, Ducado, Reino o Imperio.</system:String>
     <system:String x:Key="HistoryTab_Province">PROVINCIA</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
     <system:String x:Key="HistoryTab_IDLabel">ID:</system:String>
@@ -93,8 +93,8 @@
     <system:String x:Key="HistoryTab_ColorLabel">Color:</system:String>
     <system:String x:Key="HistoryTab_Type">Tipo: -</system:String>
     <system:String x:Key="HistoryTab_TypeLabel">Tipo:</system:String>
-    <system:String x:Key="HistoryTab_Title">TÃTULO</system:String>
-    <system:String x:Key="HistoryTab_BaronyLabel">BaronÃ­a:</system:String>
+    <system:String x:Key="HistoryTab_Title">TÍTULO</system:String>
+    <system:String x:Key="HistoryTab_BaronyLabel">Baronía:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Condado:</system:String>
     <system:String x:Key="HistoryTab_HolderLabel">Titular:</system:String>
     <system:String x:Key="HistoryTab_DuchyLabel">Ducado:</system:String>
@@ -103,9 +103,9 @@
     <system:String x:Key="HistoryTab_ZoomIn">Zoom +</system:String>
     <system:String x:Key="HistoryTab_ZoomOut">Zoom -</system:String>
     <system:String x:Key="HistoryTab_Fit">Ajustar</system:String>
-    <system:String x:Key="HistoryTab_Year">AÃ±o:</system:String>
+    <system:String x:Key="HistoryTab_Year">Año:</system:String>
     <system:String x:Key="HistoryTab_OffsetMod">Fecha Mod: -</system:String>
-    <system:String x:Key="HistoryTab_OffsetModTooltip">Fecha resultante en el mod (aÃ±o + offset del perfil)</system:String>
+    <system:String x:Key="HistoryTab_OffsetModTooltip">Fecha resultante en el mod (año + offset del perfil)</system:String>
     <system:String x:Key="HistoryTab_Base">Base</system:String>
     <system:String x:Key="HistoryTab_BaseTooltip">Mostrar datos del juego base</system:String>
     <system:String x:Key="HistoryTab_Mod">Mod</system:String>
@@ -126,8 +126,8 @@
     <system:String x:Key="HistoryTab_View_Cultural">Cultural</system:String>
     <system:String x:Key="HistoryTab_Ready">Listo</system:String>
     <system:String x:Key="HistoryTab_NoProfile">Sin perfil seleccionado</system:String>
-    <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil con GameRoot vÃ¡lido</system:String>
-    <system:String x:Key="HistoryTab_NoProvincesPng">No se encontrÃ³ provinces.png</system:String>
+    <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil con GameRoot válido</system:String>
+    <system:String x:Key="HistoryTab_NoProvincesPng">No se encontró provinces.png</system:String>
     <system:String x:Key="HistoryTab_RenderError">Error al cargar el renderizador</system:String>
     <system:String x:Key="HistoryTab_NoHolderData">Activa "Base" y/o "Mod" para ver datos de titulares</system:String>
     <system:String x:Key="HistoryTab_NoCountyData">Activa "Base" y/o "Mod" para ver datos de condados</system:String>
@@ -136,35 +136,35 @@
     <system:String x:Key="HistoryTab_NoEmpireData">Activa "Base" y/o "Mod" para ver datos de imperios</system:String>
     <system:String x:Key="HistoryTab_SplitCounty">Dividir condado</system:String>
     <system:String x:Key="HistoryTab_ModeView">Modo Vistas</system:String>
-    <system:String x:Key="HistoryTab_ModeEdit">Modo EdiciÃ³n</system:String>
-    <system:String x:Key="HistoryTab_ModeViewAction">Ir a Modo EdiciÃ³n</system:String>
+    <system:String x:Key="HistoryTab_ModeEdit">Modo Edición</system:String>
+    <system:String x:Key="HistoryTab_ModeViewAction">Ir a Modo Edición</system:String>
     <system:String x:Key="HistoryTab_ModeEditAction">Ir a Modo Vistas</system:String>
-    <system:String x:Key="HistoryTab_ModeViewTooltip">Ir a modo EdiciÃ³n</system:String>
+    <system:String x:Key="HistoryTab_ModeViewTooltip">Ir a modo Edición</system:String>
     <system:String x:Key="HistoryTab_ModeEditTooltip">Ir a modo Vistas</system:String>
 
     <!-- SplitCountyWindow -->
-    <system:String x:Key="SplitCounty_Title">Dividir condado â€” {0}</system:String>
+    <system:String x:Key="SplitCounty_Title">Dividir condado — {0}</system:String>
     <system:String x:Key="SplitCounty_CountyCol">Condado</system:String>
-    <system:String x:Key="SplitCounty_ParentCol">TÃ­tulo superior</system:String>
-    <system:String x:Key="SplitCounty_BaronyCol">BaronÃ­a</system:String>
+    <system:String x:Key="SplitCounty_ParentCol">Título superior</system:String>
+    <system:String x:Key="SplitCounty_BaronyCol">Baronía</system:String>
     <system:String x:Key="SplitCounty_Close">Cerrar</system:String>
-    <system:String x:Key="SplitCounty_NotFound">Condado {0} no encontrado en ningÃºn fichero landed_titles.</system:String>
+    <system:String x:Key="SplitCounty_NotFound">Condado {0} no encontrado en ningún fichero landed_titles.</system:String>
     <system:String x:Key="SplitCounty_Error">Error al buscar el condado: {0}</system:String>
     <system:String x:Key="SplitCounty_Execute">Ejecutar</system:String>
     <system:String x:Key="SplitCounty_TargetFolder">Carpeta destino:</system:String>
-    <system:String x:Key="SplitCounty_Browse">Examinarâ€¦</system:String>
-    <system:String x:Key="SplitCounty_BrowseTitle">Seleccionar carpeta destino para el nuevo archivo de tÃ­tulos</system:String>
+    <system:String x:Key="SplitCounty_Browse">Examinar…</system:String>
+    <system:String x:Key="SplitCounty_BrowseTitle">Seleccionar carpeta destino para el nuevo archivo de títulos</system:String>
     <system:String x:Key="SplitCounty_CountyExists">El condado {0} ya existe en landed_titles del mod.</system:String>
 
     <system:String x:Key="MapTerrain_Land">Tierra</system:String>
     <system:String x:Key="MapTerrain_Sea">Mar</system:String>
     <system:String x:Key="MapTerrain_Lake">Lago</system:String>
-    <system:String x:Key="MapTerrain_River">RÃ­o</system:String>
+    <system:String x:Key="MapTerrain_River">Río</system:String>
     <system:String x:Key="MapTerrain_Impassable">Impasable</system:String>
     <system:String x:Key="MapTerrain_Unknown">Desconocido</system:String>
     <system:String x:Key="HistoryTab_CultureLabel">Cultura:</system:String>
     <system:String x:Key="HistoryTab_CultureHeader">CULTURA</system:String>
-    <system:String x:Key="HistoryTab_FromCapital">Heredado de la baronÃ­a {0}</system:String>
+    <system:String x:Key="HistoryTab_FromCapital">Heredado de la baronía {0}</system:String>
     <system:String x:Key="HistoryTab_NoCultureData">Activa "Base" y/o "Mod" para ver datos de cultura</system:String>
 
     <!-- CulturesTab -->
@@ -172,36 +172,54 @@
     <system:String x:Key="CulturesTab_ShowSource">Mostrar origen</system:String>
     <system:String x:Key="CulturesTab_Details">Detalles de cultura</system:String>
     <system:String x:Key="CulturesTab_SelectPrompt">Selecciona una cultura para ver detalles</system:String>
-    <system:String x:Key="CulturesTab_Stats">EstadÃ­sticas</system:String>
+    <system:String x:Key="CulturesTab_Stats">Estadísticas</system:String>
     <system:String x:Key="CulturesTab_Groups">Grupos de herencia</system:String>
     <system:String x:Key="CulturesTab_ModGroups">Grupos con cambios del mod</system:String>
     <system:String x:Key="CulturesTab_ModCultures">Culturas modificadas por el mod</system:String>
     <system:String x:Key="CulturesTab_BaseCultures">Culturas del juego base</system:String>
     <system:String x:Key="CulturesTab_CultureName">Nombre:</system:String>
     <system:String x:Key="CulturesTab_Heritage">Herencia:</system:String>
-    <system:String x:Key="CulturesTab_HeritageParameters">ParÃ¡metros de la herencia</system:String>
+    <system:String x:Key="CulturesTab_HeritageParameters">Parámetros de la herencia</system:String>
     <system:String x:Key="CulturesTab_Language">Idioma:</system:String>
-    <system:String x:Key="CulturesTab_LanguageParameters">ParÃ¡metros del idioma</system:String>
+    <system:String x:Key="CulturesTab_LanguageParameters">Parámetros del idioma</system:String>
     <system:String x:Key="CulturesTab_Source">Origen:</system:String>
     <system:String x:Key="CulturesTab_Color">Color:</system:String>
     <system:String x:Key="CulturesTab_ColorName">Nombre del color:</system:String>
     <system:String x:Key="CulturesTab_ColorInternal">Color interno del motor del juego (no definido en los ficheros).</system:String>
     <system:String x:Key="CulturesTab_Ethos">Ethos:</system:String>
-    <system:String x:Key="CulturesTab_EthosParameters">ParÃ¡metros del ethos</system:String>
-    <system:String x:Key="CulturesTab_MartialCustom">TradiciÃ³n marcial:</system:String>
-    <system:String x:Key="CulturesTab_MartialCustomParameters">ParÃ¡metros de la tradiciÃ³n marcial</system:String>
-    <system:String x:Key="CulturesTab_HeadDetermination">DesignaciÃ³n del lÃ­der:</system:String>
-    <system:String x:Key="CulturesTab_HeadDeterminationParameters">ParÃ¡metros de la designaciÃ³n del lÃ­der</system:String>
+    <system:String x:Key="CulturesTab_EthosParameters">Parámetros del ethos</system:String>
+    <system:String x:Key="CulturesTab_MartialCustom">Tradición marcial:</system:String>
+    <system:String x:Key="CulturesTab_MartialCustomParameters">Parámetros de la tradición marcial</system:String>
+    <system:String x:Key="CulturesTab_HeadDetermination">Designación del líder:</system:String>
+    <system:String x:Key="CulturesTab_HeadDeterminationParameters">Parámetros de la designación del líder</system:String>
     <system:String x:Key="CulturesTab_Traditions">Tradiciones:</system:String>
     <system:String x:Key="CulturesTab_TraditionsParameters">Tradiciones de la cultura</system:String>
     <system:String x:Key="CulturesTab_NameList">Lista de nombres:</system:String>
     <system:String x:Key="CulturesTab_NameListParameters">Contenido de la lista de nombres</system:String>
-    <system:String x:Key="CulturesTab_Gfx">GrÃ¡ficos (GFX):</system:String>
-    <system:String x:Key="CulturesTab_GfxParameters">ParÃ¡metros de grÃ¡ficos</system:String>
+    <system:String x:Key="CulturesTab_Gfx">Gráficos (GFX):</system:String>
+    <system:String x:Key="CulturesTab_GfxParameters">Parámetros de gráficos</system:String>
     <system:String x:Key="CulturesTab_GfxInfo">Estas claves definen los modelos 3D y estilos visuales de la cultura.</system:String>
     <system:String x:Key="CulturesTab_CoaGfx">Escudos de armas (coa_gfx):</system:String>
     <system:String x:Key="CulturesTab_BuildingGfx">Edificios (building_gfx):</system:String>
     <system:String x:Key="CulturesTab_Loading">Cargando modelos…</system:String>
+    <system:String x:Key="CulturesTab_SubTabList">Listado de culturas</system:String>
+    <system:String x:Key="CulturesTab_LegendBase">• Juego base</system:String>
+    <system:String x:Key="CulturesTab_LegendMod">• Mod (no editable)</system:String>
+    <system:String x:Key="CulturesTab_LegendModNew">• Mod (nueva / editable)</system:String>
+    <system:String x:Key="CulturesTab_CtxCopy">Crear cultura copiando esta</system:String>
+    <system:String x:Key="CulturesTab_CtxEdit">Editar cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorHint">Editor de cultura (sin guardado todavía).</system:String>
+    <system:String x:Key="CulturesTab_EditorNewTitle">Nueva cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorEditTitle">Editar cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorName">Nombre</system:String>
+    <system:String x:Key="CulturesTab_EditorDetails">Detalles</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureId">Identificador</system:String>
+    <system:String x:Key="CulturesTab_EditorHeritage">Herencia</system:String>
+    <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
+    <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
+    <system:String x:Key="CulturesTab_EditorBuildingGfx">Edificios (building_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorClothingGfx">Ropa (clothing_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorUnitGfx">Unidades (unit_gfx)</system:String>
     <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Meshes de edificio resueltos:</system:String>
     <system:String x:Key="CulturesTab_BuildingGfxHint">Haz doble clic en un modelo para verlo en grande.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfxHint">Los mallas de ropa se muestran como miniaturas.</system:String>
@@ -209,78 +227,78 @@
     <system:String x:Key="CulturesTab_ClothingGfx">Vestimenta (clothing_gfx):</system:String>
     <system:String x:Key="CulturesTab_UnitGfx">Unidades (unit_gfx):</system:String>
     <system:String x:Key="CulturesTab_HouseCoaFrame">Marco de escudo de casa (house_coa_frame):</system:String>
-    <system:String x:Key="CulturesTab_DynastyCoaFrame">Marco de escudo de dinastÃ­a (dynasty_coa_frame):</system:String>
-    <system:String x:Key="CulturesTab_HouseCoaMaskOffset">Desplazamiento mÃ¡scara (house_coa_mask_offset):</system:String>
-    <system:String x:Key="CulturesTab_HouseCoaMaskScale">Escala mÃ¡scara (house_coa_mask_scale):</system:String>
+    <system:String x:Key="CulturesTab_DynastyCoaFrame">Marco de escudo de dinastía (dynasty_coa_frame):</system:String>
+    <system:String x:Key="CulturesTab_HouseCoaMaskOffset">Desplazamiento máscara (house_coa_mask_offset):</system:String>
+    <system:String x:Key="CulturesTab_HouseCoaMaskScale">Escala máscara (house_coa_mask_scale):</system:String>
     <system:String x:Key="NameListCategory_Options">Opciones</system:String>
     <system:String x:Key="NameListCategory_NameLists">Listas de nombres</system:String>
     <system:String x:Key="NameListCategory_Chances">Probabilidades</system:String>
     <system:String x:Key="NameListCategory_PrefixesSuffixes">Prefijos y sufijos</system:String>
     <system:String x:Key="NameListCategory_Other">Otros</system:String>
-    <system:String x:Key="NameListParam_dynasty_name_first_Desc">Mostrar el nombre de dinastÃ­a antes del nombre propio.</system:String>
-    <system:String x:Key="NameListParam_founder_named_dynasties_Desc">Usar el nombre del fundador al crear nuevas dinastÃ­as o ramas cadetes.</system:String>
+    <system:String x:Key="NameListParam_dynasty_name_first_Desc">Mostrar el nombre de dinastía antes del nombre propio.</system:String>
+    <system:String x:Key="NameListParam_founder_named_dynasties_Desc">Usar el nombre del fundador al crear nuevas dinastías o ramas cadetes.</system:String>
     <system:String x:Key="NameListParam_house_based_map_names_Desc">Permitir usar nombres de casa como nombres de reino en el mapa.</system:String>
     <system:String x:Key="NameListParam_suggest_family_names_Desc">Sugerir nombres de la familia.</system:String>
     <system:String x:Key="NameListParam_suggest_ancestor_names_Desc">Sugerir nombres de un ancestro.</system:String>
-    <system:String x:Key="NameListParam_always_use_patronym_Desc">Mostrar siempre patronÃ­micos en los nombres.</system:String>
+    <system:String x:Key="NameListParam_always_use_patronym_Desc">Mostrar siempre patronímicos en los nombres.</system:String>
     <system:String x:Key="NameListParam_male_names_Desc">Lista de nombres propios masculinos, opcionalmente con pesos.</system:String>
     <system:String x:Key="NameListParam_female_names_Desc">Lista de nombres propios femeninos, opcionalmente con pesos.</system:String>
-    <system:String x:Key="NameListParam_dynasty_names_Desc">Lista de nombres de dinastÃ­a (soporta entradas con prefijo + nombre base).</system:String>
-    <system:String x:Key="NameListParam_cadet_dynasty_names_Desc">Lista de nombres de dinastÃ­as cadetes (soporta entradas con prefijo + nombre base).</system:String>
+    <system:String x:Key="NameListParam_dynasty_names_Desc">Lista de nombres de dinastía (soporta entradas con prefijo + nombre base).</system:String>
+    <system:String x:Key="NameListParam_cadet_dynasty_names_Desc">Lista de nombres de dinastías cadetes (soporta entradas con prefijo + nombre base).</system:String>
     <system:String x:Key="NameListParam_mercenary_names_Desc">Nombres y escudos usados por mercenarios de esta cultura.</system:String>
-    <system:String x:Key="NameListParam_dynasty_of_location_prefix_Desc">Prefijo al generar un nombre de dinastÃ­a basado en un tÃ­tulo.</system:String>
-    <system:String x:Key="NameListParam_bastard_dynasty_prefix_Desc">Prefijo usado para nombres de dinastÃ­as bastardas.</system:String>
+    <system:String x:Key="NameListParam_dynasty_of_location_prefix_Desc">Prefijo al generar un nombre de dinastía basado en un título.</system:String>
+    <system:String x:Key="NameListParam_bastard_dynasty_prefix_Desc">Prefijo usado para nombres de dinastías bastardas.</system:String>
     <system:String x:Key="NameListParam_pat_grf_name_chance_Desc">Probabilidad de que hijos varones hereden nombre del abuelo paterno.</system:String>
     <system:String x:Key="NameListParam_mat_grf_name_chance_Desc">Probabilidad de que hijos varones hereden nombre del abuelo materno.</system:String>
     <system:String x:Key="NameListParam_father_name_chance_Desc">Probabilidad de que hijos varones hereden nombre del padre.</system:String>
     <system:String x:Key="NameListParam_pat_grm_name_chance_Desc">Probabilidad de que hijas hereden nombre de la abuela paterna.</system:String>
     <system:String x:Key="NameListParam_mat_grm_name_chance_Desc">Probabilidad de que hijas hereden nombre de la abuela materna.</system:String>
     <system:String x:Key="NameListParam_mother_name_chance_Desc">Probabilidad de que hijas hereden nombre de la madre.</system:String>
-    <system:String x:Key="NameListParam_patronym_prefix_male_Desc">Prefijo patronÃ­mico tras el nombre del padre (masculino).</system:String>
-    <system:String x:Key="NameListParam_patronym_prefix_male_vowel_Desc">Prefijo patronÃ­mico tras el nombre del padre (variante vocal).</system:String>
-    <system:String x:Key="NameListParam_patronym_prefix_female_Desc">Prefijo patronÃ­mico tras el nombre de la madre (femenino).</system:String>
-    <system:String x:Key="NameListParam_patronym_prefix_female_vowel_Desc">Prefijo patronÃ­mico tras el nombre de la madre (variante vocal).</system:String>
-    <system:String x:Key="NameListParam_patronym_suffix_male_Desc">Sufijo patronÃ­mico tras el nombre del padre.</system:String>
-    <system:String x:Key="NameListParam_patronym_suffix_female_Desc">Sufijo patronÃ­mico tras el nombre de la madre.</system:String>
-    <system:String x:Key="NameListParam_grammar_transform_Desc">Regla de transformaciÃ³n gramatical aplicada a esta lista de nombres.</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_Desc">Prefijo patronímico tras el nombre del padre (masculino).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_vowel_Desc">Prefijo patronímico tras el nombre del padre (variante vocal).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_Desc">Prefijo patronímico tras el nombre de la madre (femenino).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_vowel_Desc">Prefijo patronímico tras el nombre de la madre (variante vocal).</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_male_Desc">Sufijo patronímico tras el nombre del padre.</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_female_Desc">Sufijo patronímico tras el nombre de la madre.</system:String>
+    <system:String x:Key="NameListParam_grammar_transform_Desc">Regla de transformación gramatical aplicada a esta lista de nombres.</system:String>
 
     <!-- ValidationTab -->
-    <system:String x:Key="ValidationTab_Modules">MÃ³dulos</system:String>
-    <system:String x:Key="ValidationTab_PerModule">Por mÃ³dulo</system:String>
-    <system:String x:Key="ValidationTab_ModuleToValidate">MÃ³dulo a validar:</system:String>
-    <system:String x:Key="ValidationTab_Comparison">ComparaciÃ³n:</system:String>
-    <system:String x:Key="ValidationTab_Compare_GameVsMod">Juego â†” Mod</system:String>
-    <system:String x:Key="ValidationTab_Compare_ModVsBackup">Mod â†” Backup</system:String>
-    <system:String x:Key="ValidationTab_Compare_GameVsBackup">Juego â†” Backup</system:String>
+    <system:String x:Key="ValidationTab_Modules">Módulos</system:String>
+    <system:String x:Key="ValidationTab_PerModule">Por módulo</system:String>
+    <system:String x:Key="ValidationTab_ModuleToValidate">Módulo a validar:</system:String>
+    <system:String x:Key="ValidationTab_Comparison">Comparación:</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsMod">Juego ↔ Mod</system:String>
+    <system:String x:Key="ValidationTab_Compare_ModVsBackup">Mod ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsBackup">Juego ↔ Backup</system:String>
     <system:String x:Key="ValidationTab_CompareFiles">Comparar ficheros</system:String>
-    <system:String x:Key="ValidationTab_AllModules">Todos los mÃ³dulos</system:String>
-    <system:String x:Key="ValidationTab_AllModulesDesc">ValidaciÃ³n total de mÃ³dulos</system:String>
-    <system:String x:Key="ValidationTab_ValidateAllModules">Validar todos los mÃ³dulos</system:String>
-    <system:String x:Key="ValidationTab_ModuleCol">MÃ³dulo</system:String>
-    <system:String x:Key="ValidationTab_ModVsBackupCol">MOD â†” Backup</system:String>
-    <system:String x:Key="ValidationTab_GameVsBackupCol">Juego â†” Backup</system:String>
-    <system:String x:Key="ValidationTab_ModuleDetails">Ver detalles del mÃ³dulo seleccionado</system:String>
+    <system:String x:Key="ValidationTab_AllModules">Todos los módulos</system:String>
+    <system:String x:Key="ValidationTab_AllModulesDesc">Validación total de módulos</system:String>
+    <system:String x:Key="ValidationTab_ValidateAllModules">Validar todos los módulos</system:String>
+    <system:String x:Key="ValidationTab_ModuleCol">Módulo</system:String>
+    <system:String x:Key="ValidationTab_ModVsBackupCol">MOD ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_GameVsBackupCol">Juego ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_ModuleDetails">Ver detalles del módulo seleccionado</system:String>
     <system:String x:Key="ValidationTab_Files">Archivos</system:String>
     <system:String x:Key="ValidationTab_PerFile">Por archivo</system:String>
     <system:String x:Key="ValidationTab_FileToValidate">Archivo a validar:</system:String>
-    <system:String x:Key="ValidationTab_AddFile">AÃ±adir archivoâ€¦</system:String>
+    <system:String x:Key="ValidationTab_AddFile">Añadir archivo…</system:String>
     <system:String x:Key="ValidationTab_ActivateFile">Activar archivo</system:String>
     <system:String x:Key="ValidationTab_DeactivateFile">Desactivar archivo</system:String>
-    <system:String x:Key="ValidationTab_PathException">ExcepciÃ³n de rutaâ€¦</system:String>
+    <system:String x:Key="ValidationTab_PathException">Excepción de ruta…</system:String>
     <system:String x:Key="ValidationTab_ValidateAgainst">Validar contra:</system:String>
     <system:String x:Key="ValidationTab_ValidateGame">Juego</system:String>
     <system:String x:Key="ValidationTab_ValidateMod">Mod</system:String>
     <system:String x:Key="ValidationTab_ValidateFile">Validar archivo</system:String>
     <system:String x:Key="ValidationTab_ViewDiff">Ver diff</system:String>
     <system:String x:Key="ValidationTab_AllFiles">Todos los archivos</system:String>
-    <system:String x:Key="ValidationTab_AllFilesDesc">ValidaciÃ³n total de archivos</system:String>
+    <system:String x:Key="ValidationTab_AllFilesDesc">Validación total de archivos</system:String>
     <system:String x:Key="ValidationTab_ValidateAllFiles">Validar todos los archivos</system:String>
     <system:String x:Key="ValidationTab_FileCol">Archivo</system:String>
     <system:String x:Key="ValidationTab_FileDiff">Ver diff del archivo seleccionado</system:String>
     <system:String x:Key="ValidationTab_NoDifferences">Sin diferencias</system:String>
-    <system:String x:Key="ValidationTab_FindDateModules">Buscar mÃ³dulos con fecha no configuradosâ€¦</system:String>
-    <system:String x:Key="ValidationTab_FindDateModulesTitle">MÃ³dulos con fecha no configurados</system:String>
-    <system:String x:Key="ValidationTab_FindDateModulesHeader">Las siguientes carpetas en la raÃ­z del juego contienen archivos con fechas y no estÃ¡n configuradas como mÃ³dulos:</system:String>
+    <system:String x:Key="ValidationTab_FindDateModules">Buscar módulos con fecha no configurados…</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesTitle">Módulos con fecha no configurados</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesHeader">Las siguientes carpetas en la raíz del juego contienen archivos con fechas y no están configuradas como módulos:</system:String>
     <system:String x:Key="ValidationTab_FindDateModulesFiles">archivos con fechas</system:String>
     <system:String x:Key="ValidationTab_NoDateModulesFound">No se encontraron carpetas no configuradas con archivos de fecha.</system:String>
 
@@ -289,12 +307,12 @@
     <system:String x:Key="LogsTab_Reload">Recargar</system:String>
     <system:String x:Key="LogsTab_Filter">Filtrar:</system:String>
     <system:String x:Key="LogsTab_Apply">Aplicar</system:String>
-    <system:String x:Key="LogsTab_FilterConfig">ConfiguraciÃ³n de filtros</system:String>
-    <system:String x:Key="LogsTab_FilterDesc">Filtros de lÃ­neas a omitir en error.log</system:String>
+    <system:String x:Key="LogsTab_FilterConfig">Configuración de filtros</system:String>
+    <system:String x:Key="LogsTab_FilterDesc">Filtros de líneas a omitir en error.log</system:String>
     <system:String x:Key="LogsTab_NewFilter">Nuevo filtro:</system:String>
-    <system:String x:Key="LogsTab_AddFilter">AÃ±adir</system:String>
+    <system:String x:Key="LogsTab_AddFilter">Añadir</system:String>
     <system:String x:Key="LogsTab_DeleteFilter">Eliminar seleccionado</system:String>
-    <system:String x:Key="LogsTab_NoLog">No se encontrÃ³ error.log</system:String>
+    <system:String x:Key="LogsTab_NoLog">No se encontró error.log</system:String>
 
     <!-- InputDialog -->
     <system:String x:Key="InputDialog_Title">Input</system:String>
@@ -302,15 +320,15 @@
     <system:String x:Key="InputDialog_Cancel">Cancelar</system:String>
 
     <!-- DiffDialog -->
-    <system:String x:Key="DiffDialog_Title">Detalles â€” {0}</system:String>
+    <system:String x:Key="DiffDialog_Title">Detalles — {0}</system:String>
 
     <!-- DiffChoiceDialog -->
-    <system:String x:Key="DiffChoiceDialog_Title">Diff â€” {0}</system:String>
-    <system:String x:Key="DiffChoiceDialog_Prompt">Selecciona comparaciÃ³n:</system:String>
+    <system:String x:Key="DiffChoiceDialog_Title">Diff — {0}</system:String>
+    <system:String x:Key="DiffChoiceDialog_Prompt">Selecciona comparación:</system:String>
     <system:String x:Key="DiffChoiceDialog_NoDiff">No hay diff disponible</system:String>
 
     <!-- DiffViewDialog -->
-    <system:String x:Key="DiffViewDialog_Title">Diferencias â€” {0}</system:String>
+    <system:String x:Key="DiffViewDialog_Title">Diferencias — {0}</system:String>
 
     <!-- App.xaml.cs messages -->
     <system:String x:Key="App_UnhandledError">Error inesperado: {0}\n\nDetalles guardados en logs/crash.log</system:String>
@@ -322,8 +340,8 @@
     <system:String x:Key="Msg_NewProfilePrompt">Nombre del perfil:</system:String>
     <system:String x:Key="Msg_RenameProfileTitle">Renombrar Perfil</system:String>
     <system:String x:Key="Msg_RenameProfilePrompt">Nuevo nombre:</system:String>
-    <system:String x:Key="Msg_NameNotValid">El nombre ya existe o no es vÃ¡lido</system:String>
-    <system:String x:Key="Msg_ConfirmDelete">Â¿Eliminar el perfil '{0}'?</system:String>
+    <system:String x:Key="Msg_NameNotValid">El nombre ya existe o no es válido</system:String>
+    <system:String x:Key="Msg_ConfirmDelete">¿Eliminar el perfil '{0}'?</system:String>
     <system:String x:Key="Msg_ConfirmTitle">Confirmar</system:String>
     <system:String x:Key="Msg_ProcessComplete">Procesado completado</system:String>
     <system:String x:Key="Msg_ProcessOK">OK</system:String>
@@ -332,16 +350,16 @@
     <system:String x:Key="Msg_EndDateSaved">END_DATE guardado en el mod</system:String>
     <system:String x:Key="Msg_EndDateError">No se pudo guardar END_DATE</system:String>
     <system:String x:Key="Msg_EndDateOK">OK</system:String>
-    <system:String x:Key="Msg_InvalidDate">Fecha invÃ¡lida</system:String>
-    <system:String x:Key="Msg_BrowseGameRoot">Seleccionar carpeta raÃ­z del juego</system:String>
-    <system:String x:Key="Msg_BrowseModRoot">Seleccionar carpeta raÃ­z del mod</system:String>
+    <system:String x:Key="Msg_InvalidDate">Fecha inválida</system:String>
+    <system:String x:Key="Msg_BrowseGameRoot">Seleccionar carpeta raíz del juego</system:String>
+    <system:String x:Key="Msg_BrowseModRoot">Seleccionar carpeta raíz del mod</system:String>
     <system:String x:Key="Msg_BrowseBackupRoot">Seleccionar carpeta de backups</system:String>
     <system:String x:Key="Msg_BrowseFolder">Seleccionar carpeta</system:String>
-    <system:String x:Key="Msg_BrowseGameRootForProfile">Seleccionar carpeta raÃ­z del juego base (CK3, EU4, HOI4, etc.)</system:String>
-    <system:String x:Key="Msg_NewModuleTitle">Nuevo MÃ³dulo</system:String>
-    <system:String x:Key="Msg_NewModulePrompt">Nombre del mÃ³dulo:</system:String>
-    <system:String x:Key="Msg_NewModulePathTitle">Ruta del MÃ³dulo</system:String>
+    <system:String x:Key="Msg_BrowseGameRootForProfile">Seleccionar carpeta raíz del juego base (CK3, EU4, HOI4, etc.)</system:String>
+    <system:String x:Key="Msg_NewModuleTitle">Nuevo Módulo</system:String>
+    <system:String x:Key="Msg_NewModulePrompt">Nombre del módulo:</system:String>
+    <system:String x:Key="Msg_NewModulePathTitle">Ruta del Módulo</system:String>
     <system:String x:Key="Msg_NewModulePathPrompt">Ruta relativa:</system:String>
-    <system:String x:Key="Msg_DeleteModuleConfirm">Â¿Eliminar el mÃ³dulo '{0}'?</system:String>
+    <system:String x:Key="Msg_DeleteModuleConfirm">¿Eliminar el módulo '{0}'?</system:String>
 
 </ResourceDictionary>

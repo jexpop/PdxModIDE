@@ -1,9 +1,35 @@
-# Changelog - PdxModIDE
+﻿# Changelog - PdxModIDE
 
 Tots els canvis notables d'aquest projecte es documentaran en aquest fitxer.
 
 El format es basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.6.4]
+
+### Afegit
+
+- **Editor de cultures (pestanya Cultures, en memòria)**: la pestanya Cultures ara té dues subpestanyes: el llistat de cultures existent i una nova subpestanya d'editor (capçalera "Nova cultura" / "Edita: <nom>") amb camps per a id, herència, ethos, color i les etiquetes `_gfx` d'edificis/roba/unitats. Obrir-lo no escriu cap fitxer encara (només en memòria).
+
+- **Menú contextual de cultura**: en fer clic dret sobre una cultura es mostra un menú amb "Crea una cultura copiant aquesta" (disponible per a totes) i "Edita la cultura" (només es mostra quan la cultura seleccionada és editable). El clic dret ara selecciona primer la cultura.
+
+- **Llegenda de colors de cultures (pestanya Cultures)**: una llegenda sota les estadístiques mostra els tres colors d'origen usats al llistat: cultures base (negre), cultures de mod no editables (blau) i cultures noves/editables de mod (verd).
+
+### Canviat
+
+- **Colors d'origen al llistat de cultures**: els noms de les cultures ara es tenyeixen segons el seu origen: cultures base del joc en negre (igual que el seu grup), cultures de mod no editables en blau i cultures noves de mod (editables) en verd, coincidint amb la nova llegenda.
+
+- **Capçalera de la subpestanya d'editor inicialitzada**: la capçalera de la subpestanya d'editor es fixa a "Nova cultura" en carregar la pestanya, per tant és visible des de l'inici.
+
+### Corregit
+
+- **Els noms de les cultures es veien en negre**: la plantilla `ItemTemplate` del `TreeView` s'aplicava a tots els nivells, per tant el `DataTemplate` implícit per a `CultureInfo` (que enllaça el color d'origen) mai no s'usava. La plantilla dels fills ara està niuada dins del `HierarchicalDataTemplate` i el color d'origen s'aplica al nom de la cultura.
+
+- **"Edita la cultura" no feia res**: WPF no selecciona un `TreeViewItem` en fer clic dret, així que l'element seleccionat no era un `CultureInfo` i el controlador retornava abans. Un controlador `PreviewMouseRightButtonDown` ara selecciona l'element sota el ratolí, i el menú contextual es cancel·la quan no hi ha una cultura sota el cursor.
+
+- **Mojibake als fitxers d'idioma `es.xaml`/`ca.xaml`**: les cadenes estaven doble-codificades (UTF-8 interpretat com a Windows-1252 i recodificat), mostrant caràcters com `dinastÃ­a` en lloc de `dinastía`. Es van reparar les seqüències doble-codificades (accents i em-dash/cometes corbes) i es va normalitzar a un únic BOM UTF-8. `README.md` i els fitxers de documentació/`CHANGELOG` tenien la mateixa corrupció i també es van reparar.
 
 ---
 

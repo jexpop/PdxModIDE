@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.3</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.4</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -202,6 +202,24 @@
     <system:String x:Key="CulturesTab_CoaGfx">Coats of arms (coa_gfx):</system:String>
     <system:String x:Key="CulturesTab_BuildingGfx">Buildings (building_gfx):</system:String>
     <system:String x:Key="CulturesTab_Loading">Loading models…</system:String>
+    <system:String x:Key="CulturesTab_SubTabList">Culture list</system:String>
+    <system:String x:Key="CulturesTab_LegendBase">• Base game</system:String>
+    <system:String x:Key="CulturesTab_LegendMod">• Mod (not editable)</system:String>
+    <system:String x:Key="CulturesTab_LegendModNew">• Mod (new / editable)</system:String>
+    <system:String x:Key="CulturesTab_CtxCopy">Create culture by copying this one</system:String>
+    <system:String x:Key="CulturesTab_CtxEdit">Edit culture</system:String>
+    <system:String x:Key="CulturesTab_EditorHint">Culture editor (saving not implemented yet).</system:String>
+    <system:String x:Key="CulturesTab_EditorNewTitle">New culture</system:String>
+    <system:String x:Key="CulturesTab_EditorEditTitle">Edit culture</system:String>
+    <system:String x:Key="CulturesTab_EditorName">Name</system:String>
+    <system:String x:Key="CulturesTab_EditorDetails">Details</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureId">Identifier</system:String>
+    <system:String x:Key="CulturesTab_EditorHeritage">Heritage</system:String>
+    <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
+    <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
+    <system:String x:Key="CulturesTab_EditorBuildingGfx">Buildings (building_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorClothingGfx">Clothing (clothing_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorUnitGfx">Units (unit_gfx)</system:String>
     <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Resolved building meshes:</system:String>
     <system:String x:Key="CulturesTab_BuildingGfxHint">Double-click a model to view it enlarged.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfxHint">Clothing meshes previewed as thumbnails.</system:String>

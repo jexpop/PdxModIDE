@@ -1,9 +1,35 @@
-# Changelog - PdxModIDE
+﻿# Changelog - PdxModIDE
 
 Todos los cambios notables de este proyecto se documentarán en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.6.4]
+
+### Añadido
+
+- **Editor de culturas (pestaña Culturas, en memoria)**: la pestaña Culturas ahora tiene dos subpestañas: el listado de culturas existente y una nueva subpestaña de editor (cabecera "Nueva cultura" / "Editar: <nombre>") con campos para id, herencia, ethos, color y las etiquetas `_gfx` de edificios/ropa/unidades. Abrirlo no escribe ningún fichero todavía (solo en memoria).
+
+- **Menú contextual de cultura**: al hacer clic derecho sobre una cultura se muestra un menú con "Crear cultura copiando esta" (disponible para todas) y "Editar cultura" (solo se muestra cuando la cultura seleccionada es editable). El clic derecho ahora selecciona primero la cultura.
+
+- **Leyenda de colores de culturas (pestaña Culturas)**: una leyenda bajo las estadísticas muestra los tres colores de origen usados en el listado: culturas base (negro), culturas de mod no editables (azul) y culturas nuevas/editables de mod (verde).
+
+### Cambiado
+
+- **Colores de origen en el listado de culturas**: los nombres de las culturas ahora se colorean según su origen: culturas base del juego en negro (igual que su grupo), culturas de mod no editables en azul y culturas nuevas de mod (editables) en verde, coincidiendo con la nueva leyenda.
+
+- **Cabecera de la subpestaña de editor inicializada**: la cabecera de la subpestaña de editor se fija a "Nueva cultura" al cargar la pestaña, por lo que es visible desde el inicio.
+
+### Corregido
+
+- **Los nombres de las culturas se veían en negro**: la plantilla `ItemTemplate` del `TreeView` se aplicaba a todos los niveles, por lo que el `DataTemplate` implícito para `CultureInfo` (que enlaza el color de origen) nunca se usaba. La plantilla de los hijos ahora está anidada en el `HierarchicalDataTemplate` y el color de origen se aplica al nombre de la cultura.
+
+- **"Editar cultura" no hacía nada**: WPF no selecciona un `TreeViewItem` al hacer clic derecho, así que el elemento seleccionado no era un `CultureInfo` y el manejador retornaba antes. Un manejador `PreviewMouseRightButtonDown` ahora selecciona el elemento bajo el ratón, y el menú contextual se cancela cuando no hay una cultura bajo el cursor.
+
+- **Mojibake en los ficheros de idioma `es.xaml`/`ca.xaml`**: las cadenas estaban doble-codificadas (UTF-8 interpretado como Windows-1252 y recodificado), mostrando caracteres como `dinastÃ­a` en lugar de `dinastía`. Se repararon las secuencias doble-codificadas (acentos y em-dash/comillas curvas) y se normalizó a un único BOM UTF-8. `README.md` y los ficheros de documentación/`CHANGELOG` tenían la misma corrupción y también se repararon.
 
 ---
 

@@ -59,12 +59,15 @@ namespace PdxModIDE.UI
         public bool HasColor { get; set; }
         public string ColorDisplay { get; set; } = "";
         public string ColorReference { get; set; } = "";
+        public bool IsModNew { get; set; }
         public System.Windows.Media.Brush ColorBrush => HasColor
             ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(R, G, B))
             : System.Windows.Media.Brushes.Transparent;
         public System.Windows.Media.Brush SourceBrush => Source == "Mod"
-            ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 120, 212))
-            : new SolidColorBrush(System.Windows.Media.Color.FromRgb(150, 150, 150));
+            ? (IsModNew
+                ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 140, 0))
+                : new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 120, 212)))
+            : System.Windows.Media.Brushes.Black;
     }
 
     public class CultureGroup
@@ -287,6 +290,9 @@ namespace PdxModIDE.UI
         private void LoadCultures()
         {
             if (_viewModel?.CurrentProfile == null) return;
+
+            if (EditorTabHeaderText != null && string.IsNullOrEmpty(EditorTabHeaderText.Text))
+                EditorTabHeaderText.Text = Res("CulturesTab_EditorNewTitle");
 
             var gameRoot = _viewModel.CurrentProfile.GameRoot;
             var modRoot = _viewModel.CurrentProfile.ModRoot;
@@ -524,10 +530,94 @@ namespace PdxModIDE.UI
             int totalCultures = allByName.Count;
             int modCulturesCount = modCultures.Count;
 
-            StatsGroupsText.Text = $"{Res("CulturesTab_Groups")}: {totalGroups}";
+StatsGroupsText.Text = $"{Res("CulturesTab_Groups")}: {totalGroups}";
             StatsModGroupsText.Text = $"{Res("CulturesTab_ModGroups")}: {modGroupsCount}";
             StatsModCulturesText.Text = $"{Res("CulturesTab_ModCultures")}: {modCulturesCount}";
-            StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures - modCulturesCount}";
+StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures - modCulturesCount}";
+        }
+
+        private void CtxCopyCulture_Click(object sender, RoutedEventArgs e)
+        {
+            if (CultureTree.SelectedItem is not CultureInfo culture) return;
+            OpenEditor(culture, copyAsNew: true);
+        }
+
+        private void CultureTree_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var item = FindAncestor<System.Windows.Controls.TreeViewItem>(e.OriginalSource as DependencyObject);
+            if (item != null)
+            {
+                item.IsSelected = true;
+                item.Focus();
+            }
+        }
+
+        private void CultureTree_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if (CultureTree.SelectedItem is not CultureInfo culture)
+            {
+                e.Handled = true;
+                return;
+            }
+            if (CtxEditMenuItem != null)
+                CtxEditMenuItem.Visibility = culture.IsModNew
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+        }
+
+        private static T? FindAncestor<T>(DependencyObject? current) where T : DependencyObject
+        {
+            while (current != null && current is not T)
+                current = System.Windows.Media.VisualTreeHelper.GetParent(current);
+            return current as T;
+        }
+
+
+        private void CtxEditCulture_Click(object sender, RoutedEventArgs e)
+        {
+            if (CultureTree.SelectedItem is not CultureInfo culture) return;
+            if (!culture.IsModNew)
+            {
+                EditorStatusText.Text = string.IsNullOrEmpty(culture.Name)
+                    ? string.Empty
+                    : $"\"{culture.Name}\" not editable (only new mod cultures can be edited).";
+                return;
+            }
+            OpenEditor(culture, copyAsNew: false);
+        }
+
+        private void OpenEditor(CultureInfo culture, bool copyAsNew)
+        {
+            string editTarget = culture.DisplayName ?? culture.Name ?? "";
+            if (copyAsNew)
+            {
+                EditorTabHeaderText.Text = Res("CulturesTab_EditorNewTitle");
+                EditorModeText.Text = $"{Res("CulturesTab_EditorNewTitle")} ({editTarget})";
+            }
+            else
+            {
+                EditorTabHeaderText.Text = $"{Res("CulturesTab_EditorEditTitle")}: {editTarget}";
+                EditorModeText.Text = $"{Res("CulturesTab_EditorEditTitle")}: {editTarget}";
+            }
+
+            EditorCultureId.Text = culture.Name ?? "";
+            EditorHeritage.Text = culture.Heritage ?? "";
+            EditorEthos.Text = culture.Ethos ?? "";
+            EditorColor.Text = culture.HasColor
+                ? $"{culture.R}, {culture.G}, {culture.B}"
+                : (culture.ColorReference ?? "");
+            EditorBuildingGfx.Text = string.Join(", ", culture.BuildingGfx ?? new List<string>());
+            EditorClothingGfx.Text = string.Join(", ", culture.ClothingGfx ?? new List<string>());
+            EditorUnitGfx.Text = string.Join(", ", culture.UnitGfx ?? new List<string>());
+
+            EditorStatusText.Text = Res("CulturesTab_EditorHint");
+
+            if (CulturesSubTabs != null)
+            {
+                var editTab = EditorTabItem as System.Windows.Controls.TabItem;
+                if (editTab != null)
+                    CulturesSubTabs.SelectedItem = editTab;
+            }
         }
 
         private static Dictionary<string, string> LoadLocalization(string gameRoot, string modRoot, string appLang)
@@ -601,10 +691,27 @@ namespace PdxModIDE.UI
 
             foreach (var file in Directory.GetFiles(dir, "*.txt", SearchOption.AllDirectories))
             {
-                result.AddRange(ParseFile(file, source));
+                bool isModNew = source == "Mod" && IsFileInModSubfolder(file, dir);
+                result.AddRange(ParseFile(file, source, isModNew));
             }
 
             return result;
+        }
+
+        private static bool IsFileInModSubfolder(string filePath, string baseDir)
+        {
+            try
+            {
+                string full = Path.GetFullPath(filePath);
+                string baseFull = Path.GetFullPath(baseDir);
+                string rel = Path.GetRelativePath(baseFull, full);
+                var segments = rel.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                return segments.Length > 0 && string.Equals(segments[0], "mod", StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static Dictionary<string, EthosInfo> LoadEthosDefinitions(string gameRoot, string modRoot)
@@ -1297,7 +1404,7 @@ namespace PdxModIDE.UI
             return result;
         }
 
-        private static List<CultureInfo> ParseFile(string filePath, string source)
+        private static List<CultureInfo> ParseFile(string filePath, string source, bool isModNew = false)
         {
             var cultures = new List<CultureInfo>();
             var text = File.ReadAllText(filePath);
@@ -1323,7 +1430,8 @@ namespace PdxModIDE.UI
                 var culture = new CultureInfo
                 {
                     Name = cultureKey,
-                    Source = source
+                    Source = source,
+                    IsModNew = isModNew
                 };
 
                 string? nameAttr = ExtractAttribute(block, "name");
@@ -1732,11 +1840,6 @@ namespace PdxModIDE.UI
             string result = text.Substring(start, pos - start);
             if (pos < text.Length) pos++;
             return result;
-        }
-
-        private void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            LoadCultures();
         }
 
         private void CultureTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

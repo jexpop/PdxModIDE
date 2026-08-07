@@ -3,14 +3,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <!--
-        Diccionari d'idioma: CatalÃ  (ca) â€” Textos GENERALS de l'aplicaciÃ³.
-        Els textos especÃ­fics de cada joc (CK3, EU4, etc.) van en fitxers
+        Diccionari d'idioma: Català (ca) — Textos GENERALS de l'aplicació.
+        Els textos específics de cada joc (CK3, EU4, etc.) van en fitxers
         separats: {GameKey}.ca.xaml (ex. CK3.ca.xaml).
     -->
 
     <!-- GeneralSettingsWindow -->
-    <system:String x:Key="Settings_Title">ConfiguraciÃ³ general</system:String>
-    <system:String x:Key="Settings_Subtitle">Aquests ajustos afecten tota l'aplicaciÃ³, no un mod en concret.</system:String>
+    <system:String x:Key="Settings_Title">Configuració general</system:String>
+    <system:String x:Key="Settings_Subtitle">Aquests ajustos afecten tota l'aplicació, no un mod en concret.</system:String>
     <system:String x:Key="Settings_ThemeSection">Tema visual</system:String>
     <system:String x:Key="Settings_LanguageSection">Idioma</system:String>
     <system:String x:Key="Settings_Theme_Light">Clar</system:String>
@@ -20,8 +20,8 @@
     <system:String x:Key="Settings_Theme_Contrast">Alt contrast</system:String>
     <system:String x:Key="Settings_Theme_VSCodeDark">VS Code (fosc)</system:String>
     <system:String x:Key="Settings_Theme_VSCodeLight">VS Code (clar)</system:String>
-    <system:String x:Key="Settings_Language_Spanish">EspaÃ±ol</system:String>
-    <system:String x:Key="Settings_Language_Catalan">CatalÃ </system:String>
+    <system:String x:Key="Settings_Language_Spanish">Español</system:String>
+    <system:String x:Key="Settings_Language_Catalan">Català</system:String>
     <system:String x:Key="Settings_Language_English">English</system:String>
     <system:String x:Key="Settings_ApplyButton">Aplicar</system:String>
     <system:String x:Key="Settings_CloseButton">Tancar</system:String>
@@ -29,14 +29,14 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.3</system:String>
-    <system:String x:Key="MainWindow_Tooltip_GeneralSettings">ConfiguraciÃ³ general</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.4</system:String>
+    <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
     <system:String x:Key="MainWindow_Tab_Cultures">Cultures</system:String>
     <system:String x:Key="MainWindow_Tab_Dates">Dates</system:String>
-    <system:String x:Key="MainWindow_Tab_Modules">MÃ²duls</system:String>
-    <system:String x:Key="MainWindow_Tab_Validation">ValidaciÃ³</system:String>
+    <system:String x:Key="MainWindow_Tab_Modules">Mòduls</system:String>
+    <system:String x:Key="MainWindow_Tab_Validation">Validació</system:String>
     <system:String x:Key="MainWindow_Tab_Logs">Logs</system:String>
 
     <!-- ProfileTab -->
@@ -44,47 +44,47 @@
     <system:String x:Key="ProfileTab_Routes">Rutes</system:String>
     <system:String x:Key="ProfileTab_GameRoot">Arrel del joc:</system:String>
     <system:String x:Key="ProfileTab_ModRoot">Arrel del mod:</system:String>
-    <system:String x:Key="ProfileTab_BackupRoot">Carpeta de cÃ²pies de seguretat:</system:String>
+    <system:String x:Key="ProfileTab_BackupRoot">Carpeta de còpies de seguretat:</system:String>
     <system:String x:Key="ProfileTab_Browse">Seleccionar</system:String>
     <system:String x:Key="ProfileTab_SaveProfile">Guardar perfil</system:String>
     <system:String x:Key="ProfileTab_NewProfile">Crear perfil nou</system:String>
     <system:String x:Key="ProfileTab_RenameProfile">Renombrar perfil</system:String>
     <system:String x:Key="ProfileTab_DeleteProfile">Eliminar perfil</system:String>
-    <system:String x:Key="ProfileTab_DefaultModules">MÃ²duls activats per defecte:</system:String>
+    <system:String x:Key="ProfileTab_DefaultModules">Mòduls activats per defecte:</system:String>
 
     <!-- ModulesTab -->
     <system:String x:Key="ModulesTab_CurrentGame">Joc del perfil actual:</system:String>
-    <system:String x:Key="ModulesTab_InfoText">Selecciona els mÃ²duls que s'utilitzaran globalment a l'aplicaciÃ³ (Mapa, ValidaciÃ³, etc.). La pestanya Dates tÃ© la seva prÃ²pia selecciÃ³ independent.</system:String>
-    <system:String x:Key="ModulesTab_EditModule">Editar mÃ²dul</system:String>
-    <system:String x:Key="ModulesTab_ModuleName">Nom del mÃ²dul:</system:String>
+    <system:String x:Key="ModulesTab_InfoText">Selecciona els mòduls que s'utilitzaran globalment a l'aplicació (Mapa, Validació, etc.). La pestanya Dates té la seva pròpia selecció independent.</system:String>
+    <system:String x:Key="ModulesTab_EditModule">Editar mòdul</system:String>
+    <system:String x:Key="ModulesTab_ModuleName">Nom del mòdul:</system:String>
     <system:String x:Key="ModulesTab_RelativePath">Ruta relativa:</system:String>
     <system:String x:Key="ModulesTab_IgnoredExt">Extensions ignorades (coma):</system:String>
-    <system:String x:Key="ModulesTab_AddModule">Afegir mÃ²dul</system:String>
+    <system:String x:Key="ModulesTab_AddModule">Afegir mòdul</system:String>
     <system:String x:Key="ModulesTab_SaveChanges">Guardar canvis</system:String>
-    <system:String x:Key="ModulesTab_DeleteModule">Eliminar mÃ²dul</system:String>
+    <system:String x:Key="ModulesTab_DeleteModule">Eliminar mòdul</system:String>
 
     <!-- DatesTab -->
     <system:String x:Key="DatesTab_YearOffset">Offset d'any</system:String>
-    <system:String x:Key="DatesTab_InfoText">Activa o desactiva mÃ²duls per processar les seves dates. Aquesta selecciÃ³ nomÃ©s afecta aquesta pestanya.</system:String>
+    <system:String x:Key="DatesTab_InfoText">Activa o desactiva mòduls per processar les seves dates. Aquesta selecció només afecta aquesta pestanya.</system:String>
     <system:String x:Key="DatesTab_EndDate">END_DATE</system:String>
     <system:String x:Key="DatesTab_EndDateLabel">Data final del joc (END_DATE):</system:String>
     <system:String x:Key="DatesTab_SaveEndDate">Guardar END_DATE al mod</system:String>
-    <system:String x:Key="DatesTab_ModulesToProcess">MÃ²duls a processar</system:String>
+    <system:String x:Key="DatesTab_ModulesToProcess">Mòduls a processar</system:String>
     <system:String x:Key="DatesTab_Process">Processar</system:String>
     <system:String x:Key="DatesTab_SourceMod">Origen: (mod)</system:String>
     <system:String x:Key="DatesTab_SourceGame">Origen: (joc)</system:String>
     <system:String x:Key="DatesTab_SourceNotFound">Origen: (no trobat)</system:String>
 
     <!-- HistoryTab -->
-    <system:String x:Key="HistoryTab_Navigation">NavegaciÃ³</system:String>
-    <system:String x:Key="HistoryTab_Navigation_Text">â€¢ Zoom: utilitza els botons + i - o la roda del ratolÃ­
-â€¢ Pan: fes clic dret i arrossega
-â€¢ Ajustar: prem el botÃ³ Ajustar per restablir la vista</system:String>
-    <system:String x:Key="HistoryTab_Selection">SelecciÃ³ de provÃ­ncia</system:String>
-    <system:String x:Key="HistoryTab_Selection_Text">Fes clic en una provÃ­ncia per veure'n la informaciÃ³ detallada (ID, nom, color, tipus i tÃ­tols associats).</system:String>
+    <system:String x:Key="HistoryTab_Navigation">Navegació</system:String>
+    <system:String x:Key="HistoryTab_Navigation_Text">• Zoom: utilitza els botons + i - o la roda del ratolí
+• Pan: fes clic dret i arrossega
+• Ajustar: prem el botó Ajustar per restablir la vista</system:String>
+    <system:String x:Key="HistoryTab_Selection">Selecció de província</system:String>
+    <system:String x:Key="HistoryTab_Selection_Text">Fes clic en una província per veure'n la informació detallada (ID, nom, color, tipus i títols associats).</system:String>
     <system:String x:Key="HistoryTab_Layers">Capes</system:String>
-    <system:String x:Key="HistoryTab_Layers_Text">Activa les caselles "Base" i/o "Mod" per carregar dades histÃ²riques de provÃ­ncies, desprÃ©s activa els modes de superposiciÃ³: Titular, Comtat, Ducat, Regne o Imperi.</system:String>
-    <system:String x:Key="HistoryTab_Province">PROVÃNCIA</system:String>
+    <system:String x:Key="HistoryTab_Layers_Text">Activa les caselles "Base" i/o "Mod" per carregar dades històriques de províncies, després activa els modes de superposició: Titular, Comtat, Ducat, Regne o Imperi.</system:String>
+    <system:String x:Key="HistoryTab_Province">PROVÍNCIA</system:String>
     <system:String x:Key="HistoryTab_ID">ID: -</system:String>
     <system:String x:Key="HistoryTab_IDLabel">ID:</system:String>
     <system:String x:Key="HistoryTab_Name">Nom: -</system:String>
@@ -93,7 +93,7 @@
     <system:String x:Key="HistoryTab_ColorLabel">Color:</system:String>
     <system:String x:Key="HistoryTab_Type">Tipus: -</system:String>
     <system:String x:Key="HistoryTab_TypeLabel">Tipus:</system:String>
-    <system:String x:Key="HistoryTab_Title">TÃTOL</system:String>
+    <system:String x:Key="HistoryTab_Title">TÍTOL</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Baronia:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Comtat:</system:String>
     <system:String x:Key="HistoryTab_HolderLabel">Titular:</system:String>
@@ -126,7 +126,7 @@
     <system:String x:Key="HistoryTab_View_Cultural">Cultural</system:String>
     <system:String x:Key="HistoryTab_Ready">A punt</system:String>
     <system:String x:Key="HistoryTab_NoProfile">Sense perfil seleccionat</system:String>
-    <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil amb GameRoot vÃ lid</system:String>
+    <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil amb GameRoot vàlid</system:String>
     <system:String x:Key="HistoryTab_NoProvincesPng">No s'ha trobat provinces.png</system:String>
     <system:String x:Key="HistoryTab_RenderError">Error en carregar el renderitzador</system:String>
     <system:String x:Key="HistoryTab_NoHolderData">Activa "Base" i/o "Mod" per veure dades de titulars</system:String>
@@ -136,24 +136,24 @@
     <system:String x:Key="HistoryTab_NoEmpireData">Activa "Base" i/o "Mod" per veure dades d'imperis</system:String>
     <system:String x:Key="HistoryTab_SplitCounty">Dividir comtat</system:String>
     <system:String x:Key="HistoryTab_ModeView">Mode Vista</system:String>
-    <system:String x:Key="HistoryTab_ModeEdit">Mode EdiciÃ³</system:String>
-    <system:String x:Key="HistoryTab_ModeViewAction">Anar a mode EdiciÃ³</system:String>
+    <system:String x:Key="HistoryTab_ModeEdit">Mode Edició</system:String>
+    <system:String x:Key="HistoryTab_ModeViewAction">Anar a mode Edició</system:String>
     <system:String x:Key="HistoryTab_ModeEditAction">Anar a mode Vista</system:String>
-    <system:String x:Key="HistoryTab_ModeViewTooltip">Anar a mode EdiciÃ³</system:String>
+    <system:String x:Key="HistoryTab_ModeViewTooltip">Anar a mode Edició</system:String>
     <system:String x:Key="HistoryTab_ModeEditTooltip">Anar a mode Vista</system:String>
 
     <!-- SplitCountyWindow -->
-    <system:String x:Key="SplitCounty_Title">Dividir comtat â€” {0}</system:String>
+    <system:String x:Key="SplitCounty_Title">Dividir comtat — {0}</system:String>
     <system:String x:Key="SplitCounty_CountyCol">Comtat</system:String>
-    <system:String x:Key="SplitCounty_ParentCol">TÃ­tol superior</system:String>
+    <system:String x:Key="SplitCounty_ParentCol">Títol superior</system:String>
     <system:String x:Key="SplitCounty_BaronyCol">Baronia</system:String>
     <system:String x:Key="SplitCounty_Close">Tancar</system:String>
     <system:String x:Key="SplitCounty_NotFound">Comtat {0} no trobat a cap fitxer landed_titles.</system:String>
     <system:String x:Key="SplitCounty_Error">Error en cercar el comtat: {0}</system:String>
     <system:String x:Key="SplitCounty_Execute">Executar</system:String>
-    <system:String x:Key="SplitCounty_TargetFolder">Carpeta destÃ­:</system:String>
-    <system:String x:Key="SplitCounty_Browse">Explorarâ€¦</system:String>
-    <system:String x:Key="SplitCounty_BrowseTitle">Seleccionar carpeta destÃ­ per al nou fitxer de tÃ­tols</system:String>
+    <system:String x:Key="SplitCounty_TargetFolder">Carpeta destí:</system:String>
+    <system:String x:Key="SplitCounty_Browse">Explorar…</system:String>
+    <system:String x:Key="SplitCounty_BrowseTitle">Seleccionar carpeta destí per al nou fitxer de títols</system:String>
     <system:String x:Key="SplitCounty_CountyExists">El comtat {0} ja existeix a landed_titles del mod.</system:String>
 
     <system:String x:Key="MapTerrain_Land">Terra</system:String>
@@ -172,36 +172,54 @@
     <system:String x:Key="CulturesTab_ShowSource">Mostrar origen</system:String>
     <system:String x:Key="CulturesTab_Details">Detalls de cultura</system:String>
     <system:String x:Key="CulturesTab_SelectPrompt">Selecciona una cultura per veure detalls</system:String>
-    <system:String x:Key="CulturesTab_Stats">EstadÃ­stiques</system:String>
-    <system:String x:Key="CulturesTab_Groups">Grups d'herÃ¨ncia</system:String>
+    <system:String x:Key="CulturesTab_Stats">Estadístiques</system:String>
+    <system:String x:Key="CulturesTab_Groups">Grups d'herència</system:String>
     <system:String x:Key="CulturesTab_ModGroups">Grups amb canvis del mod</system:String>
     <system:String x:Key="CulturesTab_ModCultures">Cultures modificades pel mod</system:String>
     <system:String x:Key="CulturesTab_BaseCultures">Cultures del joc base</system:String>
     <system:String x:Key="CulturesTab_CultureName">Nom:</system:String>
-    <system:String x:Key="CulturesTab_Heritage">HerÃ¨ncia:</system:String>
-    <system:String x:Key="CulturesTab_HeritageParameters">ParÃ metres de la herÃ¨ncia</system:String>
+    <system:String x:Key="CulturesTab_Heritage">Herència:</system:String>
+    <system:String x:Key="CulturesTab_HeritageParameters">Paràmetres de la herència</system:String>
     <system:String x:Key="CulturesTab_Language">Idioma:</system:String>
-    <system:String x:Key="CulturesTab_LanguageParameters">ParÃ metres de l'idioma</system:String>
+    <system:String x:Key="CulturesTab_LanguageParameters">Paràmetres de l'idioma</system:String>
     <system:String x:Key="CulturesTab_Source">Origen:</system:String>
     <system:String x:Key="CulturesTab_Color">Color:</system:String>
     <system:String x:Key="CulturesTab_ColorName">Nom del color:</system:String>
     <system:String x:Key="CulturesTab_ColorInternal">Color intern del motor del joc (no definit als fitxers).</system:String>
     <system:String x:Key="CulturesTab_Ethos">Ethos:</system:String>
-    <system:String x:Key="CulturesTab_EthosParameters">ParÃ metres de l'ethos</system:String>
-    <system:String x:Key="CulturesTab_MartialCustom">TradiciÃ³ marcial:</system:String>
-    <system:String x:Key="CulturesTab_MartialCustomParameters">ParÃ metres de la tradiciÃ³ marcial</system:String>
-    <system:String x:Key="CulturesTab_HeadDetermination">DesignaciÃ³ del lÃ­der:</system:String>
-    <system:String x:Key="CulturesTab_HeadDeterminationParameters">ParÃ metres de la designaciÃ³ del lÃ­der</system:String>
+    <system:String x:Key="CulturesTab_EthosParameters">Paràmetres de l'ethos</system:String>
+    <system:String x:Key="CulturesTab_MartialCustom">Tradició marcial:</system:String>
+    <system:String x:Key="CulturesTab_MartialCustomParameters">Paràmetres de la tradició marcial</system:String>
+    <system:String x:Key="CulturesTab_HeadDetermination">Designació del líder:</system:String>
+    <system:String x:Key="CulturesTab_HeadDeterminationParameters">Paràmetres de la designació del líder</system:String>
     <system:String x:Key="CulturesTab_Traditions">Tradicions:</system:String>
     <system:String x:Key="CulturesTab_TraditionsParameters">Tradicions de la cultura</system:String>
     <system:String x:Key="CulturesTab_NameList">Llista de noms:</system:String>
     <system:String x:Key="CulturesTab_NameListParameters">Contingut de la llista de noms</system:String>
-    <system:String x:Key="CulturesTab_Gfx">GrÃ fics (GFX):</system:String>
-    <system:String x:Key="CulturesTab_GfxParameters">ParÃ metres de grÃ fics</system:String>
+    <system:String x:Key="CulturesTab_Gfx">Gràfics (GFX):</system:String>
+    <system:String x:Key="CulturesTab_GfxParameters">Paràmetres de gràfics</system:String>
     <system:String x:Key="CulturesTab_GfxInfo">Aquestes claus defineixen els models 3D i els estils visuals de la cultura.</system:String>
     <system:String x:Key="CulturesTab_CoaGfx">Escuts d'armes (coa_gfx):</system:String>
     <system:String x:Key="CulturesTab_BuildingGfx">Edificis (building_gfx):</system:String>
     <system:String x:Key="CulturesTab_Loading">Carregant models…</system:String>
+    <system:String x:Key="CulturesTab_SubTabList">Llistat de cultures</system:String>
+    <system:String x:Key="CulturesTab_LegendBase">• Joc base</system:String>
+    <system:String x:Key="CulturesTab_LegendMod">• Mod (no editable)</system:String>
+    <system:String x:Key="CulturesTab_LegendModNew">• Mod (nova / editable)</system:String>
+    <system:String x:Key="CulturesTab_CtxCopy">Crear cultura copiant aquesta</system:String>
+    <system:String x:Key="CulturesTab_CtxEdit">Editar cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorHint">Editor de cultura (sense desament encara).</system:String>
+    <system:String x:Key="CulturesTab_EditorNewTitle">Nova cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorEditTitle">Editar cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorName">Name</system:String>
+    <system:String x:Key="CulturesTab_EditorDetails">Detalls</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureId">Identificador</system:String>
+    <system:String x:Key="CulturesTab_EditorHeritage">Herència</system:String>
+    <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
+    <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
+    <system:String x:Key="CulturesTab_EditorBuildingGfx">Edificis (building_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorClothingGfx">Roba (clothing_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorUnitGfx">Unitats (unit_gfx)</system:String>
     <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Meshes d'edifici resolts:</system:String>
     <system:String x:Key="CulturesTab_BuildingGfxHint">Feu doble clic en un model per veure'l engrandit.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfxHint">Les malles de roba es mostren com a miniatures.</system:String>
@@ -210,8 +228,8 @@
     <system:String x:Key="CulturesTab_UnitGfx">Unitats (unit_gfx):</system:String>
     <system:String x:Key="CulturesTab_HouseCoaFrame">Marc d'escut de casa (house_coa_frame):</system:String>
     <system:String x:Key="CulturesTab_DynastyCoaFrame">Marc d'escut de dinastia (dynasty_coa_frame):</system:String>
-    <system:String x:Key="CulturesTab_HouseCoaMaskOffset">DesplaÃ§ament de mÃ scara (house_coa_mask_offset):</system:String>
-    <system:String x:Key="CulturesTab_HouseCoaMaskScale">Escala de mÃ scara (house_coa_mask_scale):</system:String>
+    <system:String x:Key="CulturesTab_HouseCoaMaskOffset">Desplaçament de màscara (house_coa_mask_offset):</system:String>
+    <system:String x:Key="CulturesTab_HouseCoaMaskScale">Escala de màscara (house_coa_mask_scale):</system:String>
     <system:String x:Key="NameListCategory_Options">Opcions</system:String>
     <system:String x:Key="NameListCategory_NameLists">Llistes de noms</system:String>
     <system:String x:Key="NameListCategory_Chances">Probabilitats</system:String>
@@ -220,15 +238,15 @@
     <system:String x:Key="NameListParam_dynasty_name_first_Desc">Mostra el nom de la dinastia abans del nom propi.</system:String>
     <system:String x:Key="NameListParam_founder_named_dynasties_Desc">Utilitzar el nom del fundador al crear noves dinasties o branques cadetes.</system:String>
     <system:String x:Key="NameListParam_house_based_map_names_Desc">Permetre usar noms de casa com a noms de regne al mapa.</system:String>
-    <system:String x:Key="NameListParam_suggest_family_names_Desc">Suggerir noms de la famÃ­lia.</system:String>
+    <system:String x:Key="NameListParam_suggest_family_names_Desc">Suggerir noms de la família.</system:String>
     <system:String x:Key="NameListParam_suggest_ancestor_names_Desc">Suggerir noms d'un avantpassat.</system:String>
-    <system:String x:Key="NameListParam_always_use_patronym_Desc">Mostrar sempre patronÃ­mics als noms.</system:String>
+    <system:String x:Key="NameListParam_always_use_patronym_Desc">Mostrar sempre patronímics als noms.</system:String>
     <system:String x:Key="NameListParam_male_names_Desc">Llista de noms propis masculins, opcionalment amb pesos.</system:String>
     <system:String x:Key="NameListParam_female_names_Desc">Llista de noms propis femenins, opcionalment amb pesos.</system:String>
     <system:String x:Key="NameListParam_dynasty_names_Desc">Llista de noms de dinastia (suporta entrades amb prefix + nom base).</system:String>
     <system:String x:Key="NameListParam_cadet_dynasty_names_Desc">Llista de noms de dinasties cadetes (suporta entrades amb prefix + nom base).</system:String>
     <system:String x:Key="NameListParam_mercenary_names_Desc">Noms i escuts utilitzats per mercenaris d'aquesta cultura.</system:String>
-    <system:String x:Key="NameListParam_dynasty_of_location_prefix_Desc">Prefix al generar un nom de dinastia basat en un tÃ­tol.</system:String>
+    <system:String x:Key="NameListParam_dynasty_of_location_prefix_Desc">Prefix al generar un nom de dinastia basat en un títol.</system:String>
     <system:String x:Key="NameListParam_bastard_dynasty_prefix_Desc">Prefix usat per a noms de dinasties bastardes.</system:String>
     <system:String x:Key="NameListParam_pat_grf_name_chance_Desc">Probabilitat que fills varons heretin el nom de l'avi pater.</system:String>
     <system:String x:Key="NameListParam_mat_grf_name_chance_Desc">Probabilitat que fills varons heretin el nom de l'avi mater.</system:String>
@@ -236,51 +254,51 @@
     <system:String x:Key="NameListParam_pat_grm_name_chance_Desc">Probabilitat que filles heretin el nom de l'avia paterna.</system:String>
     <system:String x:Key="NameListParam_mat_grm_name_chance_Desc">Probabilitat que filles heretin el nom de l'avia materna.</system:String>
     <system:String x:Key="NameListParam_mother_name_chance_Desc">Probabilitat que filles heretin el nom de la mare.</system:String>
-    <system:String x:Key="NameListParam_patronym_prefix_male_Desc">Prefix patronÃ­mic desprÃ©s del nom del pare (masculÃ­).</system:String>
-    <system:String x:Key="NameListParam_patronym_prefix_male_vowel_Desc">Prefix patronÃ­mic desprÃ©s del nom del pare (variant vocal).</system:String>
-    <system:String x:Key="NameListParam_patronym_prefix_female_Desc">Prefix patronÃ­mic desprÃ©s del nom de la mare (femenÃ­).</system:String>
-    <system:String x:Key="NameListParam_patronym_prefix_female_vowel_Desc">Prefix patronÃ­mic desprÃ©s del nom de la mare (variant vocal).</system:String>
-    <system:String x:Key="NameListParam_patronym_suffix_male_Desc">Sufix patronÃ­mic desprÃ©s del nom del pare.</system:String>
-    <system:String x:Key="NameListParam_patronym_suffix_female_Desc">Sufix patronÃ­mic desprÃ©s del nom de la mare.</system:String>
-    <system:String x:Key="NameListParam_grammar_transform_Desc">Regla de transformaciÃ³ gramatical aplicada a aquesta llista de noms.</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_Desc">Prefix patronímic després del nom del pare (masculí).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_male_vowel_Desc">Prefix patronímic després del nom del pare (variant vocal).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_Desc">Prefix patronímic després del nom de la mare (femení).</system:String>
+    <system:String x:Key="NameListParam_patronym_prefix_female_vowel_Desc">Prefix patronímic després del nom de la mare (variant vocal).</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_male_Desc">Sufix patronímic després del nom del pare.</system:String>
+    <system:String x:Key="NameListParam_patronym_suffix_female_Desc">Sufix patronímic després del nom de la mare.</system:String>
+    <system:String x:Key="NameListParam_grammar_transform_Desc">Regla de transformació gramatical aplicada a aquesta llista de noms.</system:String>
 
     <!-- ValidationTab -->
-    <system:String x:Key="ValidationTab_Modules">MÃ²duls</system:String>
-    <system:String x:Key="ValidationTab_PerModule">Per mÃ²dul</system:String>
-    <system:String x:Key="ValidationTab_ModuleToValidate">MÃ²dul a validar:</system:String>
-    <system:String x:Key="ValidationTab_Comparison">ComparaciÃ³:</system:String>
-    <system:String x:Key="ValidationTab_Compare_GameVsMod">Joc â†” Mod</system:String>
-    <system:String x:Key="ValidationTab_Compare_ModVsBackup">Mod â†” CÃ²pia</system:String>
-    <system:String x:Key="ValidationTab_Compare_GameVsBackup">Joc â†” CÃ²pia</system:String>
+    <system:String x:Key="ValidationTab_Modules">Mòduls</system:String>
+    <system:String x:Key="ValidationTab_PerModule">Per mòdul</system:String>
+    <system:String x:Key="ValidationTab_ModuleToValidate">Mòdul a validar:</system:String>
+    <system:String x:Key="ValidationTab_Comparison">Comparació:</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsMod">Joc ↔ Mod</system:String>
+    <system:String x:Key="ValidationTab_Compare_ModVsBackup">Mod ↔ Còpia</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsBackup">Joc ↔ Còpia</system:String>
     <system:String x:Key="ValidationTab_CompareFiles">Comparar fitxers</system:String>
-    <system:String x:Key="ValidationTab_AllModules">Tots els mÃ²duls</system:String>
-    <system:String x:Key="ValidationTab_AllModulesDesc">ValidaciÃ³ total de mÃ²duls</system:String>
-    <system:String x:Key="ValidationTab_ValidateAllModules">Validar tots els mÃ²duls</system:String>
-    <system:String x:Key="ValidationTab_ModuleCol">MÃ²dul</system:String>
-    <system:String x:Key="ValidationTab_ModVsBackupCol">Mod â†” CÃ²pia</system:String>
-    <system:String x:Key="ValidationTab_GameVsBackupCol">Joc â†” CÃ²pia</system:String>
-    <system:String x:Key="ValidationTab_ModuleDetails">Veure detalls del mÃ²dul seleccionat</system:String>
+    <system:String x:Key="ValidationTab_AllModules">Tots els mòduls</system:String>
+    <system:String x:Key="ValidationTab_AllModulesDesc">Validació total de mòduls</system:String>
+    <system:String x:Key="ValidationTab_ValidateAllModules">Validar tots els mòduls</system:String>
+    <system:String x:Key="ValidationTab_ModuleCol">Mòdul</system:String>
+    <system:String x:Key="ValidationTab_ModVsBackupCol">Mod ↔ Còpia</system:String>
+    <system:String x:Key="ValidationTab_GameVsBackupCol">Joc ↔ Còpia</system:String>
+    <system:String x:Key="ValidationTab_ModuleDetails">Veure detalls del mòdul seleccionat</system:String>
     <system:String x:Key="ValidationTab_Files">Fitxers</system:String>
     <system:String x:Key="ValidationTab_PerFile">Per fitxer</system:String>
     <system:String x:Key="ValidationTab_FileToValidate">Fitxer a validar:</system:String>
-    <system:String x:Key="ValidationTab_AddFile">Afegir fitxerâ€¦</system:String>
+    <system:String x:Key="ValidationTab_AddFile">Afegir fitxer…</system:String>
     <system:String x:Key="ValidationTab_ActivateFile">Activar fitxer</system:String>
     <system:String x:Key="ValidationTab_DeactivateFile">Desactivar fitxer</system:String>
-    <system:String x:Key="ValidationTab_PathException">ExcepciÃ³ de rutaâ€¦</system:String>
+    <system:String x:Key="ValidationTab_PathException">Excepció de ruta…</system:String>
     <system:String x:Key="ValidationTab_ValidateAgainst">Validar contra:</system:String>
     <system:String x:Key="ValidationTab_ValidateGame">Joc</system:String>
     <system:String x:Key="ValidationTab_ValidateMod">Mod</system:String>
     <system:String x:Key="ValidationTab_ValidateFile">Validar fitxer</system:String>
     <system:String x:Key="ValidationTab_ViewDiff">Veure diff</system:String>
     <system:String x:Key="ValidationTab_AllFiles">Tots els fitxers</system:String>
-    <system:String x:Key="ValidationTab_AllFilesDesc">ValidaciÃ³ total de fitxers</system:String>
+    <system:String x:Key="ValidationTab_AllFilesDesc">Validació total de fitxers</system:String>
     <system:String x:Key="ValidationTab_ValidateAllFiles">Validar tots els fitxers</system:String>
     <system:String x:Key="ValidationTab_FileCol">Fitxer</system:String>
     <system:String x:Key="ValidationTab_FileDiff">Veure diff del fitxer seleccionat</system:String>
-    <system:String x:Key="ValidationTab_NoDifferences">Sense diferÃ¨ncies</system:String>
-    <system:String x:Key="ValidationTab_FindDateModules">Cercar mÃ²duls amb data no configuratsâ€¦</system:String>
-    <system:String x:Key="ValidationTab_FindDateModulesTitle">MÃ²duls amb data no configurats</system:String>
-    <system:String x:Key="ValidationTab_FindDateModulesHeader">Les segÃ¼ents carpetes a l'arrel del joc contenen fitxers amb dates i no estan configurades com a mÃ²duls:</system:String>
+    <system:String x:Key="ValidationTab_NoDifferences">Sense diferències</system:String>
+    <system:String x:Key="ValidationTab_FindDateModules">Cercar mòduls amb data no configurats…</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesTitle">Mòduls amb data no configurats</system:String>
+    <system:String x:Key="ValidationTab_FindDateModulesHeader">Les següents carpetes a l'arrel del joc contenen fitxers amb dates i no estan configurades com a mòduls:</system:String>
     <system:String x:Key="ValidationTab_FindDateModulesFiles">fitxers amb dates</system:String>
     <system:String x:Key="ValidationTab_NoDateModulesFound">No s'han trobat carpetes no configurades amb fitxers de data.</system:String>
 
@@ -289,8 +307,8 @@
     <system:String x:Key="LogsTab_Reload">Recarregar</system:String>
     <system:String x:Key="LogsTab_Filter">Filtrar:</system:String>
     <system:String x:Key="LogsTab_Apply">Aplicar</system:String>
-    <system:String x:Key="LogsTab_FilterConfig">ConfiguraciÃ³ de filtres</system:String>
-    <system:String x:Key="LogsTab_FilterDesc">LÃ­nies a ometre a error.log</system:String>
+    <system:String x:Key="LogsTab_FilterConfig">Configuració de filtres</system:String>
+    <system:String x:Key="LogsTab_FilterDesc">Línies a ometre a error.log</system:String>
     <system:String x:Key="LogsTab_NewFilter">Nou filtre:</system:String>
     <system:String x:Key="LogsTab_AddFilter">Afegir</system:String>
     <system:String x:Key="LogsTab_DeleteFilter">Eliminar seleccionat</system:String>
@@ -299,22 +317,22 @@
     <!-- InputDialog -->
     <system:String x:Key="InputDialog_Title">Entrada</system:String>
     <system:String x:Key="InputDialog_Accept">Acceptar</system:String>
-    <system:String x:Key="InputDialog_Cancel">CancelÂ·lar</system:String>
+    <system:String x:Key="InputDialog_Cancel">Cancel·lar</system:String>
 
     <!-- DiffDialog -->
-    <system:String x:Key="DiffDialog_Title">Detalls â€” {0}</system:String>
+    <system:String x:Key="DiffDialog_Title">Detalls — {0}</system:String>
 
     <!-- DiffChoiceDialog -->
-    <system:String x:Key="DiffChoiceDialog_Title">Diff â€” {0}</system:String>
-    <system:String x:Key="DiffChoiceDialog_Prompt">Selecciona comparaciÃ³:</system:String>
+    <system:String x:Key="DiffChoiceDialog_Title">Diff — {0}</system:String>
+    <system:String x:Key="DiffChoiceDialog_Prompt">Selecciona comparació:</system:String>
     <system:String x:Key="DiffChoiceDialog_NoDiff">No hi ha diff disponible</system:String>
 
     <!-- DiffViewDialog -->
-    <system:String x:Key="DiffViewDialog_Title">DiferÃ¨ncies â€” {0}</system:String>
+    <system:String x:Key="DiffViewDialog_Title">Diferències — {0}</system:String>
 
     <!-- App.xaml.cs messages -->
     <system:String x:Key="App_UnhandledError">Error inesperat: {0}\n\nDetalls guardats a logs/crash.log</system:String>
-    <system:String x:Key="App_UIError">Error a la interfÃ­cie: {0}\n\nDetalls guardats a logs/crash.log</system:String>
+    <system:String x:Key="App_UIError">Error a la interfície: {0}\n\nDetalls guardats a logs/crash.log</system:String>
     <system:String x:Key="App_ErrorTitle">Error</system:String>
 
     <!-- MainViewModel messages -->
@@ -322,7 +340,7 @@
     <system:String x:Key="Msg_NewProfilePrompt">Nom del perfil:</system:String>
     <system:String x:Key="Msg_RenameProfileTitle">Renombrar Perfil</system:String>
     <system:String x:Key="Msg_RenameProfilePrompt">Nou nom:</system:String>
-    <system:String x:Key="Msg_NameNotValid">El nom ja existeix o no Ã©s vÃ lid</system:String>
+    <system:String x:Key="Msg_NameNotValid">El nom ja existeix o no és vàlid</system:String>
     <system:String x:Key="Msg_ConfirmDelete">Eliminar el perfil '{0}'?</system:String>
     <system:String x:Key="Msg_ConfirmTitle">Confirmar</system:String>
     <system:String x:Key="Msg_ProcessComplete">Processament completat</system:String>
@@ -332,16 +350,16 @@
     <system:String x:Key="Msg_EndDateSaved">END_DATE guardat al mod</system:String>
     <system:String x:Key="Msg_EndDateError">No s'ha pogut guardar END_DATE</system:String>
     <system:String x:Key="Msg_EndDateOK">D'acord</system:String>
-    <system:String x:Key="Msg_InvalidDate">Data invÃ lida</system:String>
+    <system:String x:Key="Msg_InvalidDate">Data invàlida</system:String>
     <system:String x:Key="Msg_BrowseGameRoot">Seleccionar carpeta arrel del joc</system:String>
     <system:String x:Key="Msg_BrowseModRoot">Seleccionar carpeta arrel del mod</system:String>
-    <system:String x:Key="Msg_BrowseBackupRoot">Seleccionar carpeta de cÃ²pies de seguretat</system:String>
+    <system:String x:Key="Msg_BrowseBackupRoot">Seleccionar carpeta de còpies de seguretat</system:String>
     <system:String x:Key="Msg_BrowseFolder">Seleccionar carpeta</system:String>
     <system:String x:Key="Msg_BrowseGameRootForProfile">Seleccionar carpeta arrel del joc base (CK3, EU4, HOI4, etc.)</system:String>
-    <system:String x:Key="Msg_NewModuleTitle">Nou MÃ²dul</system:String>
-    <system:String x:Key="Msg_NewModulePrompt">Nom del mÃ²dul:</system:String>
-    <system:String x:Key="Msg_NewModulePathTitle">Ruta del MÃ²dul</system:String>
+    <system:String x:Key="Msg_NewModuleTitle">Nou Mòdul</system:String>
+    <system:String x:Key="Msg_NewModulePrompt">Nom del mòdul:</system:String>
+    <system:String x:Key="Msg_NewModulePathTitle">Ruta del Mòdul</system:String>
     <system:String x:Key="Msg_NewModulePathPrompt">Ruta relativa:</system:String>
-    <system:String x:Key="Msg_DeleteModuleConfirm">Eliminar el mÃ²dul '{0}'?</system:String>
+    <system:String x:Key="Msg_DeleteModuleConfirm">Eliminar el mòdul '{0}'?</system:String>
 
 </ResourceDictionary>

@@ -1,9 +1,35 @@
-# Changelog - PdxModIDE
+﻿# Changelog - PdxModIDE
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.6.4]
+
+### Added
+
+- **Culture editor (Cultures tab, in-memory)**: the Cultures tab now has two sub-tabs: the existing culture list and a new editor sub-tab (header "New culture" / "Edit: <name>") with fields for id, heritage, ethos, color and the building/clothing/unit `_gfx` tags. Opening it does not write any file yet (in-memory only).
+
+- **Culture context menu**: right-clicking a culture shows a context menu with "Create culture copying this one" (available for every culture) and "Edit culture" (only shown when the selected culture is editable). Right-clicking a culture now selects it first.
+
+- **Culture color legend (Cultures tab)**: a legend under the statistics shows the three source colors used in the list: base cultures (black), mod non-editable cultures (blue) and new/editable mod cultures (green).
+
+### Changed
+
+- **Culture list source colors**: culture names are now colored by their source: base game cultures in black (same as their group), mod cultures that are not editable in blue and new mod cultures (editable) in green, matching the new legend.
+
+- **Editor sub-tab title initialized**: the editor sub-tab header is set to "New culture" when the tab loads, so it is visible from the start.
+
+### Fixed
+
+- **Culture names showed in black**: the `TreeView` item template applied to all levels, so the implicit `DataTemplate` for `CultureInfo` (which binds the source color) was never used. The child template is now nested in the `HierarchicalDataTemplate` and the source color is applied to the culture name.
+
+- **"Edit culture" did nothing**: WPF does not select a `TreeViewItem` on right-click, so the selected item was not a `CultureInfo` and the handler returned early. A `PreviewMouseRightButtonDown` handler now selects the item under the mouse, and the context menu is cancelled when no culture is under the cursor.
+
+- **Language files `es.xaml`/`ca.xaml` mojibake**: strings were double-encoded (UTF-8 interpreted as Windows-1252 and re-encoded), showing characters like `dinastÃ­a` instead of `dinastía`. Repaired the double-encoded sequences (accents and em-dashes/curly quotes) and normalized to a single UTF-8 BOM. `README.md` and the documentation/`CHANGELOG` files had the same corruption and were repaired too.
 
 ---
 
