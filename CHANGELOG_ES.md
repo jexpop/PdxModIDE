@@ -7,6 +7,27 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.6.2]
+
+### Añadido
+
+- **Painter determinista de ropa (`PdxClothingPainter`) (pestaña Culturas)**: el grid de ropa ahora colorea cada prenda reconstruyendo offline el shader CK3 `portrait_attachment_pattern` (el `portrait.shader` binario no se distribuye a los usuarios). `Paint(gameRoot, assetPath, meshPath)` decodifica la difusa base, el `pattern_mask` de la entidad (RGBA), las 4 colormasks de la variante y la paleta de color de 16 columnas, muestreando cada canal activo de la máscara contra su propio colormask e indexando la fila 0 de la paleta (familia de tono determinista), ponderando el tinte y multiplicando la difusa base. La salida es BGRA.
+
+### Cambiado
+
+- **Muestreo de patrones con el UV-set 2 del mesh**: los patrones ahora se muestrean con el UV-set 2 del mesh (`u1`) en lugar del UV0 de la difusa. `PdxClothingPainter.BuildXyzMapping(meshPath, pw, ph)` rasteriza los triángulos del mesh en el espacio UV0 e interpola uv1 por texel de la difusa, con fallback al UV0 cuando no hay mesh o triángulo que cubra el texel. Esto hace que el patrón coloreado siga el diseño UV real de la prenda.
+
+- **Transformación del layout de colormask**: el UV del colormask de cada canal ahora se transforma con su `pattern_layout` referenciado (escala / rotación / desplazamiento) antes del muestreo (`LoadLayouts`, `ParseLayoutBlock`, `ApplyLayout`), replicando el comportamiento del juego "patrones muestreados con el UV-set 2 con scale/rotation/offset".
+
+- **El coloreado de la ropa también se aplica en el preview de doble clic**: el pintado calculado para el grid se reutiliza también en la ventana `MeshPreview` que se abre con doble clic, de modo que la prenda mantiene su patrón coloreado en todas partes.
+
+### Corregido
+
+- **Rutas de colormask resueltas contra la raíz del juego**: `ResolveTexture` ahora detecta rutas relativas `gfx\`/`game\` en el `.asset` del accesorio y las resuelve contra la raíz del juego en lugar de la carpeta del asset, de modo que el `pattern_mask` se carga de verdad y la prenda se tiñe (antes siempre salía en gris).
+- **UV de patrones fuera de rango manejados**: los índices de máscara y colormask se recortan para tolerar coordenadas de UV-set 2 fuera de [0,1), evitando `IndexOutOfRangeException`.
+
+---
+
 ## [1.6.1]
 
 ### Añadido

@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.6.1 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). 
+**Versión actual**: 1.6.2 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). 
 Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
@@ -285,6 +285,8 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 
 - **Grid de GFX de edificios (pestaña Culturas)**: `RenderBuildingGrid` resuelve las claves `building_gfx` de cada cultura a sus ficheros `.mesh` (vía `GetBuildingDb` + `ResolveBuildingMeshes` + `GetMeshFileIndex`) y los renderiza en un `WrapPanel` (`BuildingGfxGrid`), siendo cada celda un `Viewport3D` construido por `BuildMeshCellViewport`. Cada sub-malla se texturiza de forma independiente: omite los shaders `Collision*`, resuelve la difusa del atlas (UV0) y, cuando el `.asset` asociado declara una textura `_unique` (`texture = { file = "..._unique.dds" index = 5 }`), usa UV1 + la textura única. Para reproducir el shader `standard_atlas` del juego (`Diffuse.rgb *= Unique`), el atlas difuso es la base y el color medio de la única se aplica como tinte del `DiffuseMaterial` (factor de mezcla 70%). Las texturas se decodifican con `DdsDecoder.Decode` (cache en `_textureDecodeCache`/`_textureBitmapCache`), que ahora soporta BC1–BC5 y BC7 (los 8 modos) además de formatos DX10 (DDS_HEADER_DXT10); `LoadTexture` convierte los píxeles RGBA del decoder a BGRA para `BitmapSource.Create` (evita el intercambio R/B que hacía ver azulados los edificios).
 
+- **Grid de GFX de ropa + painter determinista de ropa (pestaña Culturas)**: `RenderClothingGrid` resuelve las claves `clothing_gfx` de cada cultura a sus ficheros `.mesh` mediante la cadena CK3 (grupo → `portrait_modifiers` → `genes` → accesorio → entidad → `.asset`) y los renderiza en un `WrapPanel` (`ClothingGfxGrid`), siendo cada celda un `Viewport3D` construido por `BuildMeshCellViewport`. `PdxClothingPainter.Paint(gameRoot, assetPath, meshPath)` reconstruye offline el color de la prenda del shader CK3 `portrait_attachment_pattern` (el `portrait.shader` binario no se distribuye a los usuarios): decodifica la difusa, el `pattern_mask` de la entidad (RGBA), las 4 colormasks de la variante y la paleta de color de 16 columnas, muestreando cada canal activo de la máscara contra su propio colormask e indexando la fila 0 de la paleta (determinista). Fidelidad: los patrones se muestrean con el **UV-set 2** del mesh (`u1`, rasterizado por texel de la difusa desde los triángulos del mesh en el espacio UV0 mediante `BuildXyzMapping`) en lugar del UV0, y el UV del colormask de cada canal se transforma con su `pattern_layout` (escala/rotación/desplazamiento) antes del muestreo. El pintado se reutiliza también en la ventana `MeshPreview` de doble clic para que la ropa muestre su patrón coloreado en todas partes. Los píxeles decodificados son BGRA.
+
 **Temas**: `ResourceDictionary` swap en `MainWindow.ApplyTheme(theme)`. Archivos en `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internacionalización (`PdxModIDE.UI`)
@@ -462,4 +464,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-08-06 | Proyecto: PdxModIDE | Versión: 1.6.1 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generado: 2026-08-07 | Proyecto: PdxModIDE | Versión: 1.6.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

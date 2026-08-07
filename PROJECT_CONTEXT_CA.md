@@ -17,7 +17,7 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.6.1 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
+**Versió actual**: 1.6.2 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
 Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
@@ -285,6 +285,8 @@ Fitxers a `data/` (crea directori si no existeix). `JsonSerializerOptions: Write
 
 - **Grid de GFX d'edificis (pestanya Cultures)**: `RenderBuildingGrid` resol les claus `building_gfx` de cada cultura en els seus fitxers `.mesh` (via `GetBuildingDb` + `ResolveBuildingMeshes` + `GetMeshFileIndex`) i els renderitza en un `WrapPanel` (`BuildingGfxGrid`), on cada cel·la és un `Viewport3D` construït per `BuildMeshCellViewport`. Cada submalla es texturitza independentment: omet els shaders `Collision*`, resol la textura difusa de l'atlas (UV0) i, quan el `.asset` associat declara una textura `_unique` (`texture = { file = "..._unique.dds" index = 5 }`), usa UV1 + la textura única. Per reproduir el shader `standard_atlas` del joc (`Diffuse.rgb *= Unique`), l'altas difús és la base i el color mitjà de la única s'aplica com a color del `DiffuseMaterial` (factor de barreja del 70%). Les textures es decodifiquen amb `DdsDecoder.Decode` (caché a `_textureDecodeCache`/`_textureBitmapCache`), que ara suporta BC1–BC5 i BC7 (els 8 modes) a més de formats DX10 (DDS_HEADER_DXT10); `LoadTexture` converteix els píxels RGBA del decoder a BGRA per a `BitmapSource.Create` (evita l'intercanvi R/B que feia veure els edificis blavos).
 
+- **Grid de GFX de roba + painter determinista de roba (pestanya Cultures)**: `RenderClothingGrid` resol les claus `clothing_gfx` de cada cultura als seus fitxers `.mesh` mitjançant la cadena CK3 (grup → `portrait_modifiers` → `genes` → accessori → entitat → `.asset`) i els renderitza en un `WrapPanel` (`ClothingGfxGrid`), on cada cel·la és un `Viewport3D` construït per `BuildMeshCellViewport`. `PdxClothingPainter.Paint(gameRoot, assetPath, meshPath)` reconstrueix offline el color de la peça del shader CK3 `portrait_attachment_pattern` (el `portrait.shader` binari no es distribueix als usuaris): decodifica la difusa, el `pattern_mask` de l'entitat (RGBA), els 4 colormasks de la variació i la paleta de color de 16 columnes, mostrejant cada canal actiu de la màscara contra el seu propi colormask i indexant la fila 0 de la paleta (determinista). Fidelitat: els patrons es mostregen amb el **UV-set 2** de la malla (`u1`, rasteritzat per texel de la difusa des dels triangles de la malla a l'espai UV0 mitjançant `BuildXyzMapping`) en lloc de l'UV0, i l'UV del colormask de cada canal es transforma amb el seu `pattern_layout` (escala/rotació/desplaçament) abans del mostreig. El pintat es reutilitza també a la finestra `MeshPreview` de doble clic perquè la roba mostri el seu patró acolorit a tot arreu. Els píxels decodificats són BGRA.
+
 **Temes**: `ResourceDictionary` swap a `MainWindow.ApplyTheme(theme)`. Fitxers a `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internacionalització (`PdxModIDE.UI`)
@@ -464,4 +466,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-08-06 | Projecte: PdxModIDE | Versió: 1.6.1 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generat: 2026-08-07 | Projecte: PdxModIDE | Versió: 1.6.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

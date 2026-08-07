@@ -7,6 +7,27 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.6.2]
+
+### Afegit
+
+- **Painter determinista de roba (`PdxClothingPainter`) (pestanya Cultures)**: el grid de roba ara acoloreix cada peça reconstruint offline el shader CK3 `portrait_attachment_pattern` (el `portrait.shader` binari no es distribueix als usuaris). `Paint(gameRoot, assetPath, meshPath)` decodifica la difusa base, el `pattern_mask` de l'entitat (RGBA), els 4 colormasks de la variació i la paleta de color de 16 columnes, mostrejant cada canal actiu de la màscara contra el seu propi colormask i indexant la fila 0 de la paleta (família de to determinista), ponderant el tint i multiplicant la difusa base. La sortida és BGRA.
+
+### Canviat
+
+- **Mostrejament de patrons amb l'UV-set 2 de la malla**: els patrons ara es mostrejen amb l'UV-set 2 de la malla (`u1`) en lloc de l'UV0 de la difusa. `PdxClothingPainter.BuildXyzMapping(meshPath, pw, ph)` rasteritza els triangles de la malla a l'espai UV0 i interpola uv1 per texel de la difusa, amb fallback a l'UV0 quan no hi ha malla o triangle que cobreixi el texel. Això fa que el patró acolorit segueixi el disseny UV real de la peça.
+
+- **Transformació del layout de colormask**: l'UV del colormask de cada canal ara es transforma amb el seu `pattern_layout` referenciat (minyan / rotació / desplaçament) abans del mostreig (`LoadLayouts`, `ParseLayoutBlock`, `ApplyLayout`), replicant el comportament del joc "patrons mostrejats amb l'UV-set 2 amb scale/rotation/offset".
+
+- **El colorit de la roba també s'aplica al preview de doble clic**: el pintat calculat per al grid es reutilitza també a la finestra `MeshPreview` que s'obre amb doble clic, de manera que la peça mantingui el seu patró acolorit tot arreu.
+
+### Corregit
+
+- **Rutes de colormask resoltes contra l'arrel del joc**: `ResolveTexture` ara detecta rutes relatives `gfx\`/`game\` a l'`.asset` de l'accessori i les resol contra l'arrel del joc en lloc de la carpeta de l'asset, de manera que el `pattern_mask` es carrega de veritat i la peça es tenyeix (abans sempre sortia en gris).
+- **UV de patrons fora de rang manejats**: els índexs de màscara i colormask es retallen per tolerar coordenades d'UV-set 2 fora de [0,1), evitant `IndexOutOfRangeException`.
+
+---
+
 ## [1.6.1]
 
 ### Afegit

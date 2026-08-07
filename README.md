@@ -1,4 +1,4 @@
-# PdxModIDE
+﻿# PdxModIDE
 
 ---
 
@@ -7,12 +7,12 @@
 **Desktop IDE for managing and processing Paradox Interactive game mods (CK3, EU4, HOI4, etc.)**
 WPF application (.NET 8) that automates copying game files to the mod directory, applies year offsets, and validates differences.
 
-**Current version:** 1.6.1
+**Current version:** 1.6.2
 
 ### Documentation
 
-- **[PROJECT_CONTEXT_EN.md](PROJECT_CONTEXT_EN.md)** — Full technical context: architecture, data model, key modules, conventions, technical debt, and quick references.
-- **[CHANGELOG_EN.md](CHANGELOG_EN.md)** — Version history and changes (Keep a Changelog format).
+- **[PROJECT_CONTEXT_EN.md](PROJECT_CONTEXT_EN.md)** â€” Full technical context: architecture, data model, key modules, conventions, technical debt, and quick references.
+- **[CHANGELOG_EN.md](CHANGELOG_EN.md)** â€” Version history and changes (Keep a Changelog format).
 
 ### Setup & Build
 
@@ -29,19 +29,19 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 
 **Requirements**: .NET 8 SDK, Windows 10/11, a Paradox game installed (CK3 by default).
 
-## Español
+## EspaÃ±ol
 
-**IDE de escritorio para la gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**
-Aplicación WPF (.NET 8) que automatiza el copiado de archivos del juego al mod, aplica offset de fechas y valida diferencias.
+**IDE de escritorio para la gestiÃ³n y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**
+AplicaciÃ³n WPF (.NET 8) que automatiza el copiado de archivos del juego al mod, aplica offset de fechas y valida diferencias.
 
-**Versión actual:** 1.6.1
+**VersiÃ³n actual:** 1.6.2
 
-### Documentación
+### DocumentaciÃ³n
 
-- **[PROJECT_CONTEXT_ES.md](PROJECT_CONTEXT_ES.md)** — Contexto técnico completo: arquitectura, modelo de datos, módulos clave, convenciones, deuda técnica y referencias rápidas.
-- **[CHANGELOG_ES.md](CHANGELOG_ES.md)** — Historial de versiones y cambios (formato Keep a Changelog).
+- **[PROJECT_CONTEXT_ES.md](PROJECT_CONTEXT_ES.md)** â€” Contexto tÃ©cnico completo: arquitectura, modelo de datos, mÃ³dulos clave, convenciones, deuda tÃ©cnica y referencias rÃ¡pidas.
+- **[CHANGELOG_ES.md](CHANGELOG_ES.md)** â€” Historial de versiones y cambios (formato Keep a Changelog).
 
-### Configuración y Build
+### ConfiguraciÃ³n y Build
 
 ```bash
 # Compilar (Debug)
@@ -58,19 +58,19 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 
 ---
 
-## Català
+## CatalÃ 
 
-**IDE d'escriptori per a la gestió i processament de mods de jocs Paradox Interactive (CK3, EU4, HOI4, etc.)**
-Aplicació WPF (.NET 8) que automatitza la còpia d'arxius del joc al mod, aplica offset d'anys i valida diferències.
+**IDE d'escriptori per a la gestiÃ³ i processament de mods de jocs Paradox Interactive (CK3, EU4, HOI4, etc.)**
+AplicaciÃ³ WPF (.NET 8) que automatitza la cÃ²pia d'arxius del joc al mod, aplica offset d'anys i valida diferÃ¨ncies.
 
-**Versió actual:** 1.6.1
+**VersiÃ³ actual:** 1.6.2
 
-### Documentació
+### DocumentaciÃ³
 
-- **[PROJECT_CONTEXT_CA.md](PROJECT_CONTEXT_CA.md)** — Context tècnic complet: arquitectura, model de dades, mòduls clau, convencions, deute tècnic i referències ràpides.
-- **[CHANGELOG_CA.md](CHANGELOG_CA.md)** — Historial de versions i canvis (format Keep a Changelog).
+- **[PROJECT_CONTEXT_CA.md](PROJECT_CONTEXT_CA.md)** â€” Context tÃ¨cnic complet: arquitectura, model de dades, mÃ²duls clau, convencions, deute tÃ¨cnic i referÃ¨ncies rÃ pides.
+- **[CHANGELOG_CA.md](CHANGELOG_CA.md)** â€” Historial de versions i canvis (format Keep a Changelog).
 
-### Configuració i Build
+### ConfiguraciÃ³ i Build
 
 ```bash
 # Compilar (Debug)
@@ -83,7 +83,7 @@ dotnet build PdxModIDE.sln --configuration Release
 dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 ```
 
-**Requisits**: .NET 8 SDK, Windows 10/11, un joc Paradox instal·lat (CK3 per defecte).
+**Requisits**: .NET 8 SDK, Windows 10/11, un joc Paradox instalÂ·lat (CK3 per defecte).
 
 ---
 

@@ -350,15 +350,23 @@
                             </Border>
                             <Label Content="{DynamicResource CulturesTab_ClothingGfx}" FontWeight="Bold" />
                             <TextBlock x:Name="DetailClothingGfxValue" Margin="15,0,0,5" />
-                            <Border x:Name="ClothingGfxViewportBorder" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
-                                    CornerRadius="2" Margin="15,5,0,5" Height="220" Visibility="Collapsed">
-                                <Viewport3D x:Name="ClothingGfxViewport3D"/>
+                            <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_ClothingGfxHint}"
+                                       TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
+                            <Border x:Name="ClothingGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                    CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
+                                    <WrapPanel x:Name="ClothingGfxGrid" />
+                                </ScrollViewer>
                             </Border>
                             <Label Content="{DynamicResource CulturesTab_UnitGfx}" FontWeight="Bold" />
                             <TextBlock x:Name="DetailUnitGfxValue" Margin="15,0,0,5" />
-                            <Border x:Name="UnitGfxViewportBorder" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
-                                    CornerRadius="2" Margin="15,5,0,5" Height="220" Visibility="Collapsed">
-                                <Viewport3D x:Name="UnitGfxViewport3D"/>
+                            <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_UnitGfxHint}"
+                                       TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
+                            <Border x:Name="UnitGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                    CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
+                                    <WrapPanel x:Name="UnitGfxGrid" />
+                                </ScrollViewer>
                             </Border>
                             <Label Content="{DynamicResource CulturesTab_HouseCoaFrame}" FontWeight="Bold" />
                             <TextBlock x:Name="DetailHouseCoaFrameValue" Margin="15,0,0,5" />

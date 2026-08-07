@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.2]
+
+### Added
+
+- **Deterministic clothing painter (`PdxClothingPainter`) (Cultures tab)**: the clothing grid now colors each garment by reconstructing the CK3 `portrait_attachment_pattern` shader offline (the binary `portrait.shader` is not shipped to users). `Paint(gameRoot, assetPath, meshPath)` decodes the base diffuse, the entity `pattern_mask` (RGBA), the variation's 4 colormasks and the 16-wide colour palette, sampling each active mask channel against its own colormask and indexing palette row 0 (deterministic hue family), weighting the tint and multiplying the base diffuse. Output is BGRA.
+
+### Changed
+
+- **Mesh UV-set-2 pattern sampling**: patterns are now sampled using the mesh's UV-set 2 (`u1`) instead of the diffuse UV0. `PdxClothingPainter.BuildXyzMapping(meshPath, pw, ph)` rasterizes the mesh triangles in UV0 space and interpolates uv1 per diffuse texel, falling back to UV0 when no mesh or triangle covers the texel. This makes the colored pattern follow the garment's real UV layout.
+
+- **Colormask layout transform**: each channel's colormask UV is now transformed by its referenced `pattern_layout` (scale / rotation / offset) before sampling (`LoadLayouts`, `ParseLayoutBlock`, `ApplyLayout`), matching the game's "patterns are sampled using UV-set 2 with scale/rotation/offset" behaviour.
+
+- **Clothing painter color reused in double-click preview**: the painted texture computed for the grid is also applied to the `MeshPreview` window opened on double-click, so the garment keeps its colored pattern everywhere.
+
+### Fixed
+
+- **Colormask paths resolved against the game root**: `ResolveTexture` now detects `gfx\`/`game\` relative paths in the accessory `.asset` and resolves them against the game root instead of the asset's folder, so the `pattern_mask` actually loads and the garment gets tinted (previously it was always gray).
+- **Out-of-range pattern UVs handled**: mask and colormask indices are clamped to tolerate UV-set-2 coordinates outside [0,1), avoiding `IndexOutOfRangeException`.
+
+---
+
 ## [1.6.1]
 
 ### Added

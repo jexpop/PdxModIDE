@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.6.1 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.2 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -284,6 +284,8 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
 
 - **Building GFX grid (Cultures tab)**: `RenderBuildingGrid` resolves each culture's `building_gfx` keys to `.mesh` files (via `GetBuildingDb` + `ResolveBuildingMeshes` + `GetMeshFileIndex`) and renders them in a `WrapPanel` (`BuildingGfxGrid`), each cell a `Viewport3D` built by `BuildMeshCellViewport`. Each submesh is textured independently: it skips `Collision*` shaders, resolves the diffuse atlas (UV0) and, when the companion `.asset` declares a `_unique` texture (`texture = { file = "..._unique.dds" index = 5 }`), uses UV1 + the unique texture. To reproduce the game's `standard_atlas` shader (`Diffuse.rgb *= Unique`), the diffuse atlas is the base and the unique's average color is applied as a `DiffuseMaterial` tint (70% mix factor). Textures are decoded by `DdsDecoder.Decode` (cached in `_textureDecodeCache`/`_textureBitmapCache`), which now supports BC1–BC5 and BC7 (all 8 modes) plus DX10 (DDS_HEADER_DXT10) formats; `LoadTexture` converts the decoder's RGBA pixel data to BGRA for `BitmapSource.Create` (avoids the R/B swap that made buildings look blue).
 
+- **Clothing grid + deterministic clothing painter (Cultures tab)**: `RenderClothingGrid` resolves each culture's `clothing_gfx` keys to `.mesh` files through the CK3 chain (group → `portrait_modifiers` → `genes` → accessory → entity → `.asset`) and renders each in a `WrapPanel` (`ClothingGfxGrid`), each cell a `Viewport3D` built by `BuildMeshCellViewport`. `PdxClothingPainter.Paint(gameRoot, assetPath, meshPath)` reconstructs the CK3 `portrait_attachment_pattern` garment color offline (the binary `portrait.shader` is not shipped to users): it decodes the base diffuse, the entity `pattern_mask` (RGBA), the variation's 4 colormasks and the 16-wide colour palette, sampling each active mask channel against its own colormask and indexing the palette row 0 (deterministic). Fidelity features: patterns are sampled with the mesh **UV-set 2** (`u1`, rasterized per diffuse texel from the mesh triangles in UV0 space via `BuildXyzMapping`) instead of UV0, and each channel's colormask UV is transformed by its `pattern_layout` (scale/rotation/offset) before sampling. The painted texture is also reused in the double-click `MeshPreview` window so clothing shows its colored pattern everywhere. Decoded pixel data is BGRA.
+
 **Themes**: `ResourceDictionary` swap in `MainWindow.ApplyTheme(theme)`. Files in `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internationalization (`PdxModIDE.UI`)
@@ -463,4 +465,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-06 | Project: PdxModIDE | Version: 1.6.1 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-07 | Project: PdxModIDE | Version: 1.6.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
