@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.2</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.3</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -201,6 +201,7 @@
     <system:String x:Key="CulturesTab_GfxInfo">Estas claves definen los modelos 3D y estilos visuales de la cultura.</system:String>
     <system:String x:Key="CulturesTab_CoaGfx">Escudos de armas (coa_gfx):</system:String>
     <system:String x:Key="CulturesTab_BuildingGfx">Edificios (building_gfx):</system:String>
+    <system:String x:Key="CulturesTab_Loading">Cargando modelos…</system:String>
     <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Meshes de edificio resueltos:</system:String>
     <system:String x:Key="CulturesTab_BuildingGfxHint">Haz doble clic en un modelo para verlo en grande.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfxHint">Los mallas de ropa se muestran como miniaturas.</system:String>

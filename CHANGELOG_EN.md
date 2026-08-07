@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.3]
+
+### Added
+
+- **Unit mesh grid resolved by the real CK3 chain (Cultures tab)**: `PdxUnitResolver` now resolves the `unit_gfx` tags of a culture through `common/graphical_unit_types/*.txt` (expanding group tags), the `entity_links` blocks (`00_{army,fleet,siege,travel}_entity_links.txt`, with `type`, `graphical_cultures`, `quality` and `entity`) and the unit `.asset` (`pdxmesh` + `meshsettings`) to the `.mesh` and its diffuse texture. The units grid shows each resolved mesh (army/fleet/siege/travel) with its diffuse, following the exact game resolution instead of the previous folder-prefix fallback.
+
+- **`CulturesTab_Loading` localization key**: shared "Loading models…" message used by the three model sections.
+
+### Changed
+
+- **Model sections are independent and lazy-loaded**: the Building, Clothing and Unit grids now live each in its own `Expander`, collapsed by default, so models are not loaded when the tab opens or when switching cultures. Each section is resolved only the first time it is expanded; switching culture resets the sections, so re-expanding recalculates the current culture. A localized "Loading models…" indicator is shown while a section loads.
+
+### Fixed
+
+- **`unit_gfx` tags inside `graphical_cultures` blocks** are now parsed as block children (the entity links store them as bare tokens inside `{ }`), which previously yielded no unit meshes.
+- **`@tier*_quality` macros**: the `quality` field in the entity links references file-level macros (`@tier2_quality = 2`, `@tier3_quality = 4`); the resolver now collects them so tier/quality resolves instead of staying 0.
+
+---
+
 ## [1.6.2]
 
 ### Added

@@ -17,7 +17,7 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.6.2 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
+**Versió actual**: 1.6.3 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
 Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
@@ -287,6 +287,10 @@ Fitxers a `data/` (crea directori si no existeix). `JsonSerializerOptions: Write
 
 - **Grid de GFX de roba + painter determinista de roba (pestanya Cultures)**: `RenderClothingGrid` resol les claus `clothing_gfx` de cada cultura als seus fitxers `.mesh` mitjançant la cadena CK3 (grup → `portrait_modifiers` → `genes` → accessori → entitat → `.asset`) i els renderitza en un `WrapPanel` (`ClothingGfxGrid`), on cada cel·la és un `Viewport3D` construït per `BuildMeshCellViewport`. `PdxClothingPainter.Paint(gameRoot, assetPath, meshPath)` reconstrueix offline el color de la peça del shader CK3 `portrait_attachment_pattern` (el `portrait.shader` binari no es distribueix als usuaris): decodifica la difusa, el `pattern_mask` de l'entitat (RGBA), els 4 colormasks de la variació i la paleta de color de 16 columnes, mostrejant cada canal actiu de la màscara contra el seu propi colormask i indexant la fila 0 de la paleta (determinista). Fidelitat: els patrons es mostregen amb el **UV-set 2** de la malla (`u1`, rasteritzat per texel de la difusa des dels triangles de la malla a l'espai UV0 mitjançant `BuildXyzMapping`) en lloc de l'UV0, i l'UV del colormask de cada canal es transforma amb el seu `pattern_layout` (escala/rotació/desplaçament) abans del mostreig. El pintat es reutilitza també a la finestra `MeshPreview` de doble clic perquè la roba mostri el seu patró acolorit a tot arreu. Els píxels decodificats són BGRA.
 
+- **Grid de GFX d'unitats resolt per la cadena CK3 real (pestanya Cultures)**: `RenderUnitGrid` + `PdxUnitResolver` resolen les claus `unit_gfx` de cada cultura als seus fitxers `.mesh` mitjançant la cadena CK3: `common/graphical_unit_types/*.txt` (les etiquetes de grup s'expandeixen a les `unit_gfx` concretes), els blocs de `entity_links` (`00_{entity}_entity_links.txt`, amb `type`, `graphical_cultures`, `quality` i `entity`) i l'`.asset` d'unitat (`pdxmesh` + `meshsettings`) → `.mesh` + textura difusa. El grid renderitza cada malla resolta (army/fleet/siege/travel) en un `WrapPanel` (`UnitGfxGrid`), cada cel·la un `Viewport3D`. El camp `quality` resol les macros del fitxer (`@tier2_quality`, `@tier3_quality`). Si el resolver no troba cap malla, es fa servir el fallback per prefix de carpeta (`RenderGfxItemGrid`, kind "unit").
+
+- **Seccions de models autònomes (pestanya Cultures)**: els grids de Building, Clothing i Units viuen cadascun en el seu propi `Expander` (plegats per defecte), de manera que cap model no es carrega en obrir la pestanya. En canvi de cultura els flags de les seccions es reinicien. Es mostra un indicador localitzat "Carregant models…" (`CulturesTab_Loading`) mentre una secció resol.
+
 **Temes**: `ResourceDictionary` swap a `MainWindow.ApplyTheme(theme)`. Fitxers a `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internacionalització (`PdxModIDE.UI`)
@@ -466,4 +470,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-08-07 | Projecte: PdxModIDE | Versió: 1.6.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generat: 2026-08-07 | Projecte: PdxModIDE | Versió: 1.6.3 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

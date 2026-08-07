@@ -338,36 +338,58 @@
                                     CornerRadius="2" Margin="15,5,0,5" Height="220" Visibility="Collapsed">
                                 <Viewport3D x:Name="CoaGfxViewport3D"/>
                             </Border>
-                            <Label Content="{DynamicResource CulturesTab_BuildingGfx}" FontWeight="Bold" />
-                            <TextBlock x:Name="DetailBuildingGfxValue" Margin="15,0,0,5" />
-                            <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_BuildingGfxHint}"
-                                       TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
-                            <Border x:Name="BuildingGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
-                                    CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
-                                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
-                                    <WrapPanel x:Name="BuildingGfxGrid" />
-                                </ScrollViewer>
-                            </Border>
-                            <Label Content="{DynamicResource CulturesTab_ClothingGfx}" FontWeight="Bold" />
-                            <TextBlock x:Name="DetailClothingGfxValue" Margin="15,0,0,5" />
-                            <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_ClothingGfxHint}"
-                                       TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
-                            <Border x:Name="ClothingGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
-                                    CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
-                                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
-                                    <WrapPanel x:Name="ClothingGfxGrid" />
-                                </ScrollViewer>
-                            </Border>
-                            <Label Content="{DynamicResource CulturesTab_UnitGfx}" FontWeight="Bold" />
-                            <TextBlock x:Name="DetailUnitGfxValue" Margin="15,0,0,5" />
-                            <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_UnitGfxHint}"
-                                       TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
-                            <Border x:Name="UnitGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
-                                    CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
-                                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
-                                    <WrapPanel x:Name="UnitGfxGrid" />
-                                </ScrollViewer>
-                            </Border>
+                            <Expander x:Name="BuildingExpander" Margin="15,0,0,5" IsExpanded="False"
+                                      Header="{DynamicResource CulturesTab_BuildingGfx}"
+                                      Expanded="ModelExpander_Expanded" Collapsed="ModelExpander_Collapsed">
+                                <StackPanel>
+                                    <TextBlock x:Name="DetailBuildingGfxValue" Margin="15,4,0,5" />
+                                    <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_BuildingGfxHint}"
+                                               TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
+                                    <TextBlock x:Name="BuildingGfxLoading" Margin="15,6,0,6"
+                                               Text="{DynamicResource CulturesTab_Loading}"
+                                               Foreground="Gray" FontStyle="Italic" Visibility="Collapsed"/>
+                                    <Border x:Name="BuildingGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                            CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
+                                            <WrapPanel x:Name="BuildingGfxGrid" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </StackPanel>
+                            </Expander>
+                            <Expander x:Name="ClothingExp" Margin="15,0,0,5" IsExpanded="False"
+                                      Header="{DynamicResource CulturesTab_ClothingGfx}"
+                                      Expanded="ModelExpander_Expanded" Collapsed="ModelExpander_Collapsed">
+                                <StackPanel>
+                                    <TextBlock x:Name="DetailClothingGfxValue" Margin="15,4,0,5" />
+                                    <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_ClothingGfxHint}"
+                                               TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
+                                    <TextBlock x:Name="ClothingGfxLoading" Margin="15,0,0,5"
+                                               Text="{DynamicResource CulturesTab_Loading}" Foreground="Gray" FontStyle="Italic" Visibility="Collapsed"/>
+                                    <Border x:Name="ClothingGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                            CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
+                                            <WrapPanel x:Name="ClothingGfxGrid" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </StackPanel>
+                            </Expander>
+                            <Expander x:Name="UnitExp" Margin="15,0,0,5" IsExpanded="False"
+                                      Header="{DynamicResource CulturesTab_UnitGfx}"
+                                      Expanded="ModelExpander_Expanded" Collapsed="ModelExpander_Collapsed">
+                                <StackPanel>
+                                    <TextBlock x:Name="DetailUnitGfxValue" Margin="15,4,0,5" />
+                                    <TextBlock Margin="15,0,0,5" Text="{DynamicResource CulturesTab_UnitGfxHint}"
+                                               TextWrapping="Wrap" Foreground="Gray" FontSize="11"/>
+                                    <TextBlock x:Name="UnitGfxLoading" Margin="15,0,0,5"
+                                               Text="{DynamicResource CulturesTab_Loading}" Foreground="Gray" FontStyle="Italic" Visibility="Collapsed"/>
+                                    <Border x:Name="UnitGfxGridHost" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
+                                            CornerRadius="2" Margin="15,5,0,5" Padding="4" Visibility="Collapsed">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MaxHeight="360">
+                                            <WrapPanel x:Name="UnitGfxGrid" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </StackPanel>
+                            </Expander>
                             <Label Content="{DynamicResource CulturesTab_HouseCoaFrame}" FontWeight="Bold" />
                             <TextBlock x:Name="DetailHouseCoaFrameValue" Margin="15,0,0,5" />
                             <Label Content="{DynamicResource CulturesTab_DynastyCoaFrame}" FontWeight="Bold" />

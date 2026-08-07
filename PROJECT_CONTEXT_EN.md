@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.6.2 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.3 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -286,6 +286,10 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
 
 - **Clothing grid + deterministic clothing painter (Cultures tab)**: `RenderClothingGrid` resolves each culture's `clothing_gfx` keys to `.mesh` files through the CK3 chain (group → `portrait_modifiers` → `genes` → accessory → entity → `.asset`) and renders each in a `WrapPanel` (`ClothingGfxGrid`), each cell a `Viewport3D` built by `BuildMeshCellViewport`. `PdxClothingPainter.Paint(gameRoot, assetPath, meshPath)` reconstructs the CK3 `portrait_attachment_pattern` garment color offline (the binary `portrait.shader` is not shipped to users): it decodes the base diffuse, the entity `pattern_mask` (RGBA), the variation's 4 colormasks and the 16-wide colour palette, sampling each active mask channel against its own colormask and indexing the palette row 0 (deterministic). Fidelity features: patterns are sampled with the mesh **UV-set 2** (`u1`, rasterized per diffuse texel from the mesh triangles in UV0 space via `BuildXyzMapping`) instead of UV0, and each channel's colormask UV is transformed by its `pattern_layout` (scale/rotation/offset) before sampling. The painted texture is also reused in the double-click `MeshPreview` window so clothing shows its colored pattern everywhere. Decoded pixel data is BGRA.
 
+- **Unit GFX grid resolved by the real CK3 chain (Cultures tab)**: `RenderUnitGrid` + `PdxUnitResolver` resolve each culture's `unit_gfx` tags to `.mesh` files through the CK3 chain: `common/graphical_unit_types/*.txt` (group tags expanded to the concrete `unit_gfx` tags), the `entity_links` blocks (`00_{army,fleet,siege,travel}_entity_links.txt`, with `type`, `graphical_cultures`, `quality` and `entity`) and the unit `.asset` (`pdxmesh` + `meshsettings`) → `.mesh` + diffuse texture. The grid renders each resolved mesh (army/fleet/siege/travel) in a `WrapPanel` (`UnitGfxGrid`), each cell a `Viewport3D` built by `BuildMeshCellViewport`. The `quality` field resolves file-level macros (`@tier2_quality`, `@tier3_quality`). If the resolver finds no meshes it falls back to the previous folder-prefix grid (`RenderGfxItemGrid`, kind "unit").
+
+- **Lazy-loaded, independent model sections (Cultures tab)**: the Building, Clothing and Unit grids each live in their own `Expander` (collapsed by default), so no model is loaded when the tab opens or when switching cultures. Expanding a section for the first time triggers its render; switching culture resets the section flags, so re-expanding recalculates the current culture. A localized "Loading models…" indicator (`CulturesTab_Loading`) is shown while a section resolves.
+
 **Themes**: `ResourceDictionary` swap in `MainWindow.ApplyTheme(theme)`. Files in `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internationalization (`PdxModIDE.UI`)
@@ -465,4 +469,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-07 | Project: PdxModIDE | Version: 1.6.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-07 | Project: PdxModIDE | Version: 1.6.3 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

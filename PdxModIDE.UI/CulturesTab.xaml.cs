@@ -238,6 +238,7 @@ namespace PdxModIDE.UI
         private MainViewModel? _viewModel;
         private PdxAssetResolver? _gfxResolver;
         private PdxModIDE.ModelEngine.PdxClothingResolver? _clothingResolver;
+        private PdxModIDE.ModelEngine.PdxUnitResolver? _unitResolver;
 
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
@@ -298,6 +299,8 @@ namespace PdxModIDE.UI
                 LogGfx($"LoadCultures: gameRoot='{gameRoot}' resolver entities={_gfxResolver.EntityCount} meshes={_gfxResolver.MeshCount}");
                 try { _clothingResolver = new PdxModIDE.ModelEngine.PdxClothingResolver(gameRoot); }
                 catch { _clothingResolver = null; }
+                try { _unitResolver = new PdxModIDE.ModelEngine.PdxUnitResolver(gameRoot); }
+                catch { _unitResolver = null; }
             }
             catch (Exception ex)
             {
@@ -2094,9 +2097,15 @@ namespace PdxModIDE.UI
             if (BuildingGfxGrid == null) return;
             BuildingGfxGrid.Children.Clear();
             BuildingGfxGridHost.Visibility = Visibility.Collapsed;
+            if (BuildingGfxLoading != null) BuildingGfxLoading.Visibility = Visibility.Visible;
 
             var names = ResolveBuildingMeshes(gameRoot, culture.BuildingGfx);
-            if (names.Count == 0) return;
+            if (names.Count == 0)
+            {
+                if (BuildingGfxLoading != null) BuildingGfxLoading.Visibility = Visibility.Collapsed;
+                _buildingSectionLoaded = true;
+                return;
+            }
 
             var items = new List<KeyValuePair<string, string>>();
             foreach (var name in names)
@@ -2105,7 +2114,12 @@ namespace PdxModIDE.UI
                 if (meshPath == null) { LogGfx($"building no mesh file for '{name}'"); continue; }
                 items.Add(new KeyValuePair<string, string>(name, meshPath));
             }
-            if (items.Count == 0) return;
+            if (items.Count == 0)
+            {
+                if (BuildingGfxLoading != null) BuildingGfxLoading.Visibility = Visibility.Collapsed;
+                _buildingSectionLoaded = true;
+                return;
+            }
 
             var grid = BuildingGfxGrid;
             var host = BuildingGfxGridHost;
@@ -2149,16 +2163,24 @@ namespace PdxModIDE.UI
 
                 if (grid.Children.Count > 0)
                     host.Visibility = Visibility.Visible;
+                _buildingSectionLoaded = true;
+                if (BuildingGfxLoading != null) BuildingGfxLoading.Visibility = Visibility.Collapsed;
                 LogGfx($"building grid {total} celdas en {sw.ElapsedMilliseconds} ms");
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
             {
+                _buildingSectionLoaded = true;
+                if (BuildingGfxLoading != null) BuildingGfxLoading.Visibility = Visibility.Collapsed;
                 LogGfx($"building grid error: {ex.Message}");
             }
         }
 
         private CancellationTokenSource? _buildingLoadCts;
+        private CultureInfo? _gfxCulture;
+        private bool _buildingSectionLoaded;
+        private bool _clothingSectionLoaded;
+        private bool _unitSectionLoaded;
 
         private sealed class MeshPreviewData
         {
@@ -2432,24 +2454,129 @@ namespace PdxModIDE.UI
         {
             ClearGfxViewport();
             string gameRoot = _viewModel?.CurrentProfile?.GameRoot ?? "";
+            _gfxCulture = culture;
+            _buildingSectionLoaded = _clothingSectionLoaded = _unitSectionLoaded = false;
+            _buildingLoadCts?.Cancel();
+            _buildingLoadCts = null;
+
             if (string.IsNullOrEmpty(gameRoot) || !Directory.Exists(gameRoot))
                 return;
 
-            RenderBuildingGrid(gameRoot, culture);
-            RenderClothingGrid(gameRoot, culture);
-            RenderGfxItemGrid(gameRoot, culture.UnitGfx, UnitGfxGrid, UnitGfxGridHost, "unit");
+            HideSection(BuildingGfxGrid, BuildingGfxGridHost, BuildingGfxLoading);
+            HideSection(ClothingGfxGrid, ClothingGfxGridHost, ClothingGfxLoading);
+            HideSection(UnitGfxGrid, UnitGfxGridHost, UnitGfxLoading);
+        }
+
+        private void ModelExpander_Expanded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            string gameRoot = _viewModel?.CurrentProfile?.GameRoot ?? "";
+            if (string.IsNullOrEmpty(gameRoot) || !Directory.Exists(gameRoot)) return;
+            if (_gfxCulture == null) return;
+
+            if (sender == (object)BuildingExpander && !_buildingSectionLoaded)
+                RenderBuildingGrid(gameRoot, _gfxCulture);
+            else if (sender == (object)ClothingExp && !_clothingSectionLoaded)
+                RenderClothingGrid(gameRoot, _gfxCulture);
+            else if (sender == (object)UnitExp && !_unitSectionLoaded)
+                RenderUnitGrid(gameRoot, _gfxCulture);
+        }
+
+        private void ModelExpander_Collapsed(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender == (object)BuildingExpander)
+            {
+                _buildingLoadCts?.Cancel();
+                if (BuildingGfxLoading != null) BuildingGfxLoading.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private static void HideSection(WrapPanel grid, Border host, TextBlock loading)
+        {
+            if (grid != null) grid.Children.Clear();
+            if (host != null) host.Visibility = Visibility.Collapsed;
+            if (loading != null) loading.Visibility = Visibility.Collapsed;
+        }
+
+        private async void RenderUnitGrid(string gameRoot, CultureInfo culture)
+        {
+            if (UnitGfxGrid == null) return;
+            var host = UnitGfxGridHost;
+            UnitGfxGrid.Children.Clear();
+            if (host != null) host.Visibility = Visibility.Collapsed;
+            if (UnitGfxLoading != null) UnitGfxLoading.Visibility = Visibility.Visible;
+
+            if (_unitResolver == null)
+            {
+                if (UnitGfxLoading != null) UnitGfxLoading.Visibility = Visibility.Collapsed;
+                _unitSectionLoaded = true;
+                RenderGfxItemGrid(gameRoot, culture.UnitGfx, UnitGfxGrid, host, "unit");
+                return;
+            }
+
+            var resolvedMeshes = _unitResolver.ResolveUnits(culture.UnitGfx);
+            if (resolvedMeshes.Count == 0)
+            {
+                LogGfx("unit resolver: 0 meshes, fallback a prefijo");
+                if (UnitGfxLoading != null) UnitGfxLoading.Visibility = Visibility.Collapsed;
+                _unitSectionLoaded = true;
+                RenderGfxItemGrid(gameRoot, culture.UnitGfx, UnitGfxGrid, host, "unit");
+                return;
+            }
+
+            try
+            {
+                await Task.Run(() =>
+                {
+                    Parallel.ForEach(resolvedMeshes, r =>
+                    {
+                        var model = GetParsedModel(r.MeshPath);
+                        if (model != null)
+                        {
+                            foreach (var mesh in model.Meshes)
+                                FindDiffuseFile(gameRoot, r.MeshPath, mesh.DiffuseTexture);
+                        }
+                    });
+                });
+
+                foreach (var r in resolvedMeshes)
+                {
+                    var vp = BuildMeshCellViewport(gameRoot, r.MeshPath, r.DiffusePath, null);
+                    if (vp == null) continue;
+                    UnitGfxGrid.Children.Add(BuildMeshCell(r.Name, r.MeshPath, vp, gameRoot, r.AssetPath, null));
+                }
+
+                if (UnitGfxGrid.Children.Count > 0 && host != null)
+                    host.Visibility = Visibility.Visible;
+                _unitSectionLoaded = true;
+                if (UnitGfxLoading != null) UnitGfxLoading.Visibility = Visibility.Collapsed;
+                LogGfx($"unit resolver grid: {UnitGfxGrid.Children.Count} celdas de {resolvedMeshes.Count}");
+            }
+            catch (Exception ex)
+            {
+                _unitSectionLoaded = true;
+                if (UnitGfxLoading != null) UnitGfxLoading.Visibility = Visibility.Collapsed;
+                LogGfx($"unit grid error: {ex.Message}");
+            }
         }
 
         private async void RenderClothingGrid(string gameRoot, CultureInfo culture)
         {
-            if (ClothingGfxGrid == null || _clothingResolver == null) return;
+            if (ClothingGfxGrid == null || _clothingResolver == null)
+            {
+                if (ClothingGfxLoading != null) ClothingGfxLoading.Visibility = Visibility.Collapsed;
+                _clothingSectionLoaded = true;
+                return;
+            }
             ClothingGfxGrid.Children.Clear();
             ClothingGfxGridHost.Visibility = Visibility.Collapsed;
+            if (ClothingGfxLoading != null) ClothingGfxLoading.Visibility = Visibility.Visible;
 
             var resolvedMeshes = _clothingResolver.ResolveClothing(culture.ClothingGfx);
             if (resolvedMeshes.Count == 0)
             {
                 LogGfx("clothing resolver: 0 meshes, fallback a prefijo");
+                if (ClothingGfxLoading != null) ClothingGfxLoading.Visibility = Visibility.Collapsed;
+                _clothingSectionLoaded = true;
                 RenderGfxItemGrid(gameRoot, culture.ClothingGfx, ClothingGfxGrid, ClothingGfxGridHost, "clothing");
                 return;
             }
@@ -2496,10 +2623,14 @@ namespace PdxModIDE.UI
 
                 if (ClothingGfxGrid.Children.Count > 0)
                     ClothingGfxGridHost.Visibility = Visibility.Visible;
+                _clothingSectionLoaded = true;
+                if (ClothingGfxLoading != null) ClothingGfxLoading.Visibility = Visibility.Collapsed;
                 LogGfx($"clothing resolver grid: {ClothingGfxGrid.Children.Count} celdas de {resolvedMeshes.Count}");
             }
             catch (Exception ex)
             {
+                _clothingSectionLoaded = true;
+                if (ClothingGfxLoading != null) ClothingGfxLoading.Visibility = Visibility.Collapsed;
                 LogGfx($"clothing grid error: {ex.Message}");
             }
         }
@@ -2532,7 +2663,7 @@ namespace PdxModIDE.UI
             return result;
         }
 
-        private async void RenderGfxItemGrid(string gameRoot, List<string> keys, WrapPanel grid, Border host, string kind)
+        private async void RenderGfxItemGrid(string gameRoot, List<string> keys, WrapPanel grid, Border? host, string kind)
         {
             if (grid == null) return;
             grid.Children.Clear();

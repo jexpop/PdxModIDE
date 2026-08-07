@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.2</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.3</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -201,6 +201,7 @@
     <system:String x:Key="CulturesTab_GfxInfo">These keys define the 3D models and visual styles of the culture.</system:String>
     <system:String x:Key="CulturesTab_CoaGfx">Coats of arms (coa_gfx):</system:String>
     <system:String x:Key="CulturesTab_BuildingGfx">Buildings (building_gfx):</system:String>
+    <system:String x:Key="CulturesTab_Loading">Loading models…</system:String>
     <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Resolved building meshes:</system:String>
     <system:String x:Key="CulturesTab_BuildingGfxHint">Double-click a model to view it enlarged.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfxHint">Clothing meshes previewed as thumbnails.</system:String>

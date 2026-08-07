@@ -17,7 +17,7 @@
 - **Parallel / Task** (procesado módulos, validación, carga mapa)
 - **No DI container** (instanciación manual en `ProjectManager`)
 
-**Versión actual**: 1.6.2 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). 
+**Versión actual**: 1.6.3 (ver `CHANGELOG_ES.md`, `CHANGELOG_EN.md`, `CHANGELOG_CA.md`). 
 Solution: `PdxModIDE.sln` (9 proyectos).
 
 ---
@@ -287,6 +287,10 @@ Archivos en `data/` (crea directorio si no existe). `JsonSerializerOptions: Writ
 
 - **Grid de GFX de ropa + painter determinista de ropa (pestaña Culturas)**: `RenderClothingGrid` resuelve las claves `clothing_gfx` de cada cultura a sus ficheros `.mesh` mediante la cadena CK3 (grupo → `portrait_modifiers` → `genes` → accesorio → entidad → `.asset`) y los renderiza en un `WrapPanel` (`ClothingGfxGrid`), siendo cada celda un `Viewport3D` construido por `BuildMeshCellViewport`. `PdxClothingPainter.Paint(gameRoot, assetPath, meshPath)` reconstruye offline el color de la prenda del shader CK3 `portrait_attachment_pattern` (el `portrait.shader` binario no se distribuye a los usuarios): decodifica la difusa, el `pattern_mask` de la entidad (RGBA), las 4 colormasks de la variante y la paleta de color de 16 columnas, muestreando cada canal activo de la máscara contra su propio colormask e indexando la fila 0 de la paleta (determinista). Fidelidad: los patrones se muestrean con el **UV-set 2** del mesh (`u1`, rasterizado por texel de la difusa desde los triángulos del mesh en el espacio UV0 mediante `BuildXyzMapping`) en lugar del UV0, y el UV del colormask de cada canal se transforma con su `pattern_layout` (escala/rotación/desplazamiento) antes del muestreo. El pintado se reutiliza también en la ventana `MeshPreview` de doble clic para que la ropa muestre su patrón coloreado en todas partes. Los píxeles decodificados son BGRA.
 
+- **Grid de GFX de unidades resuelto por la cadena CK3 real (pestaña Culturas)**: `RenderUnitGrid` + `PdxUnitResolver` resuelven las claves `unit_gfx` de cada cultura a sus ficheros `.mesh` mediante la cadena CK3: `common/graphical_unit_types/*.txt` (las etiquetas de grupo se expanden a las `unit_gfx` concretas), los bloques de `entity_links` (`00_{army,fleet,siege,travel}_entity_links.txt`, con `type`, `graphical_cultures`, `quality` y `entity`) y el `.asset` de unidad (`pdxmesh` + `meshsettings`) → `.mesh` + textura difusa. El grid renderiza cada malla resuelta (army/fleet/siege/travel) en un `WrapPanel` (`UnitGfxGrid`), siendo cada celda un `Viewport3D` construido por `BuildMeshCellViewport`. El campo `quality` resuelve macros del archivo (`@tier2_quality`, `@tier3_quality`). Si el resolver no encuentra ninguna malla, se usa el fallback por prefijo de carpeta (`RenderGfxItemGrid`, kind "unit").
+
+- **Secciones de modelos autónomas (pestaña Culturas)**: los grids de Building, Clothing y Units viven cada uno en su propio `Expander` (plegados por defecto), de modo que no se carga ningún modelo al abrir la pestaña. Al cambiar de cultura los flags de las secciones se reinician. Se muestra un indicador localizado "Cargando modelos…" (`CulturesTab_Loading`) mientras una sección resuelve.
+
 **Temas**: `ResourceDictionary` swap en `MainWindow.ApplyTheme(theme)`. Archivos en `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internacionalización (`PdxModIDE.UI`)
@@ -464,4 +468,4 @@ Ninguna variable de entorno obligatoria. Toda configuración en `data/*.json`.
 
 ---
 
-*Generado: 2026-08-07 | Proyecto: PdxModIDE | Versión: 1.6.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generado: 2026-08-07 | Proyecto: PdxModIDE | Versión: 1.6.3 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

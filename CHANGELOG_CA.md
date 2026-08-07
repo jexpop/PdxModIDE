@@ -7,6 +7,25 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.6.3]
+
+### Afegit
+
+- **Grid de malles d'unitats resolt per la cadena CK3 real (pestanya Cultures)**: `PdxUnitResolver` ara resol les etiquetes `unit_gfx` d'una cultura a través de `common/graphical_unit_types/*.txt` (expandint les etiquetes de grup), els blocs de `entity_links` (`00_{army,fleet,siege,travel}_entity_links.txt`, amb `type`, `graphical_cultures`, `quality` i `entity`) i l'`.asset` d'unitat (`pdxmesh` + `meshsettings`) fins a l'`.mesh` i la seva textura difusa. El grid d'unitats mostra cada malla resolta (army/fleet/siege/travel) amb la seva difusa, seguint la resolució real del joc en lloc de l'antic fallback per prefix de carpeta.
+
+- **Clau de localització `CulturesTab_Loading`**: missatge compartit "Carregant models…" usat per les tres seccions de models.
+
+### Canviat
+
+- **Les seccions de models són independents i de càrrega diferida**: els grids de Building, Clothing i Unit ara viuen cadascun en el seu propi `Expander`, plegats per defecte, de manera que els models no es carreguen en obrir la pestanya ni en canviar de cultura. Cada secció es resol només la primera vegada que es desplega; en canviar de cultura les seccions es reinicien, per tant en tornar a desplegar es recalculen amb la cultura actual. Es mostra un indicador localitzat "Carregant models…" mentre una secció carrega.
+
+### Corregit
+
+- **Etiquetes `unit_gfx` dins dels blocs `graphical_cultures`**: ara es parsejen com a fills de bloc (els entity links les guarden com a tokens simples dins de `{ }`), cosa que abans no retornava cap malla d'unitat.
+- **Macros `@tier*_quality`**: el camp `quality` dels entity links referencia macros a nivell de fitxer (`@tier2_quality = 2`, `@tier3_quality = 4`); el resolvedor ara les recopila perquè el tier/quality es resolgui en lloc de quedar en 0.
+
+---
+
 ## [1.6.2]
 
 ### Afegit
