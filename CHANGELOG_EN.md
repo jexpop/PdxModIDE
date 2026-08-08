@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.5]
+
+### Added
+
+- **Ethnicities in the culture detail (Cultures tab)**: the detail panel now shows the culture's ethnicities (from `ethnicities = { <weight> = <ethnicity> ... }` at the end of the culture definition), each one on its own line in `name weight%` format (e.g. `caucasian_blond 25%`). The `weight` values are parsed as percentages as they appear in the game file. Ethnicity IDs have no localization in the game files, so they are shown as-is. The field is placed at the end of the detail panel, after the Graphics section.
+
+---
+
 ## [1.6.4]
 
 ### Added

@@ -7,6 +7,14 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.6.5]
+
+### Afegit
+
+- **Ètnies al detall de la cultura (pestanya Cultures)**: el panell de detall ara mostra les ètnies de la cultura (del bloc `ethnicities = { <pes> = <etnia> ... }` al final de la definició de cultura), cadascuna en la seva pròpia línia en format `nom pes%` (p. ex. `caucasian_blond 25%`). Els valors de pes es parsegen com a percentatges tal com apareixen al fitxer del joc. Els identificadors d'etnia no tenen localització als fitxers del joc, així que es mostren tal qual. El camp es col·loca al final del panell de detall, després de la secció de Gràfics.
+
+---
+
 ## [1.6.4]
 
 ### Afegit

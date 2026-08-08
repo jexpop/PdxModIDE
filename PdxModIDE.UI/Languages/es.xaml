@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.4</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.5</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -182,6 +182,7 @@
     <system:String x:Key="CulturesTab_HeritageParameters">Parámetros de la herencia</system:String>
     <system:String x:Key="CulturesTab_Language">Idioma:</system:String>
     <system:String x:Key="CulturesTab_LanguageParameters">Parámetros del idioma</system:String>
+    <system:String x:Key="CulturesTab_Ethnicities">Etnias:</system:String>
     <system:String x:Key="CulturesTab_Source">Origen:</system:String>
     <system:String x:Key="CulturesTab_Color">Color:</system:String>
     <system:String x:Key="CulturesTab_ColorName">Nombre del color:</system:String>

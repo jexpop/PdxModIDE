@@ -43,6 +43,7 @@ namespace PdxModIDE.UI
         public NameListInfo? NameListDefinition { get; set; }
         public List<string> TraditionKeys { get; set; } = new();
         public List<TraditionInfo> Traditions { get; set; } = new();
+        public List<Ethnicity> Ethnicities { get; set; } = new();
 
         public List<string> CoaGfx { get; set; } = new();
         public List<string> BuildingGfx { get; set; } = new();
@@ -224,6 +225,18 @@ namespace PdxModIDE.UI
         public string Description { get; set; } = "";
         public bool HasDescription => !string.IsNullOrEmpty(Description);
         public List<TraditionParameter> Parameters { get; set; } = new();
+    }
+
+    public class Ethnicity
+    {
+        public double Weight { get; set; }
+        public string Name { get; set; } = "";
+        public string DisplayName
+        {
+            get => !string.IsNullOrEmpty(_displayName) ? _displayName : Name;
+            set => _displayName = value;
+        }
+        private string? _displayName;
     }
 
     public class NamedColor
@@ -1404,6 +1417,71 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             return result;
         }
 
+        private static void ExtractEthnicitiesAttribute(string block, CultureInfo culture)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "ethnicities")
+                {
+                    if (block[pos] == '{')
+                    {
+                        string content = ReadBraceContent(block, ref pos);
+                        culture.Ethnicities = ParseEthnicityEntries(content);
+                    }
+                    return;
+                }
+
+                SkipValueAndFollowingBlock(block, ref pos);
+            }
+        }
+
+        private static List<Ethnicity> ParseEthnicityEntries(string content)
+        {
+            var result = new List<Ethnicity>();
+            int pos = 0;
+            while (pos < content.Length)
+            {
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos >= content.Length) break;
+
+                string weightToken = ReadKey(content, ref pos);
+                if (string.IsNullOrEmpty(weightToken)) break;
+
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos < content.Length && content[pos] == '=')
+                {
+                    pos++;
+                    SkipWhitespaceAndComments(content, ref pos);
+                    string name = ReadKey(content, ref pos);
+                    if (!string.IsNullOrWhiteSpace(name) &&
+                        double.TryParse(weightToken, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out var weight))
+                    {
+                        result.Add(new Ethnicity { Weight = weight, Name = name });
+                    }
+                }
+            }
+            return result;
+        }
+
         private static List<CultureInfo> ParseFile(string filePath, string source, bool isModNew = false)
         {
             var cultures = new List<CultureInfo>();
@@ -1463,6 +1541,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     culture.NameList = nameList;
 
                 culture.TraditionKeys = ExtractTraditionsAttribute(block);
+
+                ExtractEthnicitiesAttribute(block, culture);
 
                 ExtractGfxAttributes(block, culture);
 
@@ -1893,6 +1973,16 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     DetailLanguageExpander.Visibility = Visibility.Collapsed;
                 }
 
+                if (culture.Ethnicities.Count > 0)
+                {
+                    DetailEthnicitiesValue.Text = string.Join(Environment.NewLine,
+                        culture.Ethnicities.Select(e => $"{e.Name} {e.Weight}%"));
+                }
+                else
+                {
+                    DetailEthnicitiesValue.Text = "-";
+                }
+
                 if (culture.EthosDefinition != null)
                 {
                     DetailEthosValue.Text = culture.EthosDefinition.DisplayName;
@@ -2050,6 +2140,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 DetailLanguageValue.Text = "";
                 LanguageParametersList.ItemsSource = null;
                 DetailLanguageExpander.Visibility = Visibility.Collapsed;
+                DetailEthnicitiesValue.Text = "";
                 DetailMartialCustomValue.Text = "";
                 MartialCustomParametersList.ItemsSource = null;
                 DetailMartialCustomExpander.Visibility = Visibility.Collapsed;

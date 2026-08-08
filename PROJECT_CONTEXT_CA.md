@@ -17,7 +17,7 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.6.4 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
+**Versió actual**: 1.6.5 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
 Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
@@ -280,6 +280,7 @@ Fitxers a `data/` (crea directori si no existeix). `JsonSerializerOptions: Write
   Click província → panell informació mostra Baronia, Comtat, Ducat, Regne, Imperi, Holder, Liege segons mode.
   - **Nota tècnica**: l'overlay s'aplica per CPU (workaround del bug de `SKShader.CreateImage` com a child shader). `RenderToBitmap` renderitza terreny+vores via shader (mode=0), després itera píxels i aplica color de paleta segons LUT d'holder. Utilitza `InvalidateRender()` per invalidació de cache.
 - `CulturesTab`: Explorador de cultures amb TreeView agrupat per herència. Carrega definicions de `common/culture/cultures/*.txt` recursivament (suporta subdirectoris com `mod/`). Analitza blocs Clausewitz (gestiona `hsv { ... }`, comentaris, blocs niats). Fusiona mod sobre base. Mostra noms localitzats des d'arxius de localització CK3. Panell de selecció ordenat Origen, Nom, Color, Ethos, Herència, que mostra l'origen (Base/Mod), nom, i color (RGB numèric + swatch visual; suporta modes `hsv`/`hsv360`/`rgb` i referències `color = <nom>` resoltes contra `common/named_colors/*.txt`). L'ethos és desplegable i mostra els seus paràmetres (ex. `character_modifier`, `province_modifier`, `county_modifier`, `culture_modifier`, `parameters`, `ai_will_do`, `desc`) analitzats des de `common/culture/pillars/*_ethos.txt`. L'herència també és desplegable i mostra els seus paràmetres (`is_shown`, `audio_parameter`, etc.) analitzats des de `common/culture/pillars/*_heritage.txt`. L'idioma també és desplegable i mostra els seus paràmetres (`is_shown`, `ai_will_do`, `color`, etc.) analitzats des de `common/culture/pillars/*language.txt` i localitzat via `cultural_languages_l_*.yml`. La tradició marcial també és desplegable i mostra els seus paràmetres (`parameters`, `can_pick`, `ai_will_do`, etc.) analitzats des de `common/culture/pillars/*martial_custom.txt` i localitzada via les claus `martial_custom_<name>_name` a `cultural_traditions_l_*.yml`. La designació del líder també és desplegable i mostra els seus paràmetres (`head_determination_type`, etc.) analitzats des de `common/culture/pillars/*head_determination.txt` i localitzada via `head_determination_l_*.yml`. Les tradicions també són desplegables, cadascuna mostra el seu nom localitzat (`tradition_<name>_name`), la seva descripció localitzada (`tradition_<name>_desc`) i els seus paràmetres (`category`, `layers`, `can_pick`, `parameters`, `character_modifier`, `effects`, `cost`, etc.) analitzats des de `common/culture/traditions/*.txt` (ruta des de `IGamePlugin.TraditionsRelativePath`). Tots els tipus de pillar es carreguen amb prioritat dels fitxers del mod sobre el joc; cada paràmetre inclou una explicació localitzada (claus `EthosParam_*_Desc` / `HeritageParam_*_Desc` / `LanguageParam_*_Desc` / `MartialCustomParam_*_Desc` / `HeadDeterminationParam_*_Desc` / `TraditionParam_*_Desc` a `CK3.*.xaml`). El panell de detalls està dins d'un `ScrollViewer` vertical; el panell d'estadístiques és a la part superior de la columna dreta i només es mostra quan no hi ha cultura seleccionada. Estadístiques.
+- **Ètnies al detall de la cultura (pestanya Cultures)**: el panell de detall també mostra les ètnies de la cultura (del bloc `ethnicities = { <pes> = <etnia> ... }`, el darrer bloc de la definició de cultura), cadascuna en la seva pròpia línia com a `nom pes%` (p. ex. `caucasian_blond 25%`). `ExtractEthnicitiesAttribute`/`ParseEthnicityEntries` analitzen el bloc ponderat; els pesos es mostren com a percentatges tal com apareixen al fitxer del joc. Els identificadors d'etnia no tenen localització als fitxers del joc, així que es mostren tal qual. Col·locat al final del panell de detall, després de la secció de Gràfics.
 - `LogsTab`: Filtres log (no implementat completament).
 - `SettingsTab`: Tema, paths defaults.
 
@@ -470,4 +471,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-08-07 | Projecte: PdxModIDE | Versió: 1.6.4 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generat: 2026-08-08 | Projecte: PdxModIDE | Versió: 1.6.5 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

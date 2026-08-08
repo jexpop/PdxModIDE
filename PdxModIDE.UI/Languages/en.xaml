@@ -3,7 +3,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <!--
-        Language dictionary: English (en) â€” GENERAL application strings.
+        Language dictionary: English (en) — GENERAL application strings.
         Game-specific strings (CK3, EU4, etc.) go in separate files:
         {GameKey}.en.xaml (e.g. CK3.en.xaml).
     -->
@@ -20,8 +20,8 @@
     <system:String x:Key="Settings_Theme_Contrast">High contrast</system:String>
     <system:String x:Key="Settings_Theme_VSCodeDark">VS Code (dark)</system:String>
     <system:String x:Key="Settings_Theme_VSCodeLight">VS Code (light)</system:String>
-    <system:String x:Key="Settings_Language_Spanish">EspaÃ±ol</system:String>
-    <system:String x:Key="Settings_Language_Catalan">CatalÃ </system:String>
+    <system:String x:Key="Settings_Language_Spanish">Español</system:String>
+    <system:String x:Key="Settings_Language_Catalan">Català</system:String>
     <system:String x:Key="Settings_Language_English">English</system:String>
     <system:String x:Key="Settings_ApplyButton">Apply</system:String>
     <system:String x:Key="Settings_CloseButton">Close</system:String>
@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.4</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.5</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -77,9 +77,9 @@
 
     <!-- HistoryTab -->
     <system:String x:Key="HistoryTab_Navigation">Navigation</system:String>
-    <system:String x:Key="HistoryTab_Navigation_Text">â€¢ Zoom: use the + and - buttons or the mouse wheel
-â€¢ Pan: right-click and drag
-â€¢ Fit: click the Fit button to reset the view</system:String>
+    <system:String x:Key="HistoryTab_Navigation_Text">• Zoom: use the + and - buttons or the mouse wheel
+• Pan: right-click and drag
+• Fit: click the Fit button to reset the view</system:String>
     <system:String x:Key="HistoryTab_Selection">Province Selection</system:String>
     <system:String x:Key="HistoryTab_Selection_Text">Click on any province to view its detailed information (ID, name, color, type, and associated titles).</system:String>
     <system:String x:Key="HistoryTab_Layers">Layers</system:String>
@@ -143,7 +143,7 @@
     <system:String x:Key="HistoryTab_ModeEditTooltip">Go to View mode</system:String>
 
     <!-- SplitCountyWindow -->
-    <system:String x:Key="SplitCounty_Title">Split County â€” {0}</system:String>
+    <system:String x:Key="SplitCounty_Title">Split County — {0}</system:String>
     <system:String x:Key="SplitCounty_CountyCol">County</system:String>
     <system:String x:Key="SplitCounty_ParentCol">Higher Title</system:String>
     <system:String x:Key="SplitCounty_BaronyCol">Barony</system:String>
@@ -152,7 +152,7 @@
     <system:String x:Key="SplitCounty_Error">Error searching for county: {0}</system:String>
     <system:String x:Key="SplitCounty_Execute">Execute</system:String>
     <system:String x:Key="SplitCounty_TargetFolder">Target folder:</system:String>
-    <system:String x:Key="SplitCounty_Browse">Browseâ€¦</system:String>
+    <system:String x:Key="SplitCounty_Browse">Browse…</system:String>
     <system:String x:Key="SplitCounty_BrowseTitle">Select target folder for the new title file</system:String>
     <system:String x:Key="SplitCounty_CountyExists">County {0} already exists in mod's landed_titles.</system:String>
 
@@ -182,6 +182,7 @@
     <system:String x:Key="CulturesTab_HeritageParameters">Heritage parameters</system:String>
     <system:String x:Key="CulturesTab_Language">Language:</system:String>
     <system:String x:Key="CulturesTab_LanguageParameters">Language parameters</system:String>
+    <system:String x:Key="CulturesTab_Ethnicities">Ethnicities:</system:String>
     <system:String x:Key="CulturesTab_Source">Source:</system:String>
     <system:String x:Key="CulturesTab_Color">Color:</system:String>
     <system:String x:Key="CulturesTab_ColorName">Color name:</system:String>
@@ -267,24 +268,24 @@
     <system:String x:Key="ValidationTab_PerModule">Per module</system:String>
     <system:String x:Key="ValidationTab_ModuleToValidate">Module to validate:</system:String>
     <system:String x:Key="ValidationTab_Comparison">Comparison:</system:String>
-    <system:String x:Key="ValidationTab_Compare_GameVsMod">Game â†” Mod</system:String>
-    <system:String x:Key="ValidationTab_Compare_ModVsBackup">Mod â†” Backup</system:String>
-    <system:String x:Key="ValidationTab_Compare_GameVsBackup">Game â†” Backup</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsMod">Game ↔ Mod</system:String>
+    <system:String x:Key="ValidationTab_Compare_ModVsBackup">Mod ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_Compare_GameVsBackup">Game ↔ Backup</system:String>
     <system:String x:Key="ValidationTab_CompareFiles">Compare files</system:String>
     <system:String x:Key="ValidationTab_AllModules">All modules</system:String>
     <system:String x:Key="ValidationTab_AllModulesDesc">Full module validation</system:String>
     <system:String x:Key="ValidationTab_ValidateAllModules">Validate all modules</system:String>
     <system:String x:Key="ValidationTab_ModuleCol">Module</system:String>
-    <system:String x:Key="ValidationTab_ModVsBackupCol">Mod â†” Backup</system:String>
-    <system:String x:Key="ValidationTab_GameVsBackupCol">Game â†” Backup</system:String>
+    <system:String x:Key="ValidationTab_ModVsBackupCol">Mod ↔ Backup</system:String>
+    <system:String x:Key="ValidationTab_GameVsBackupCol">Game ↔ Backup</system:String>
     <system:String x:Key="ValidationTab_ModuleDetails">View details of selected module</system:String>
     <system:String x:Key="ValidationTab_Files">Files</system:String>
     <system:String x:Key="ValidationTab_PerFile">Per file</system:String>
     <system:String x:Key="ValidationTab_FileToValidate">File to validate:</system:String>
-    <system:String x:Key="ValidationTab_AddFile">Add fileâ€¦</system:String>
+    <system:String x:Key="ValidationTab_AddFile">Add file…</system:String>
     <system:String x:Key="ValidationTab_ActivateFile">Activate file</system:String>
     <system:String x:Key="ValidationTab_DeactivateFile">Deactivate file</system:String>
-    <system:String x:Key="ValidationTab_PathException">Path exceptionâ€¦</system:String>
+    <system:String x:Key="ValidationTab_PathException">Path exception…</system:String>
     <system:String x:Key="ValidationTab_ValidateAgainst">Validate against:</system:String>
     <system:String x:Key="ValidationTab_ValidateGame">Game</system:String>
     <system:String x:Key="ValidationTab_ValidateMod">Mod</system:String>
@@ -296,7 +297,7 @@
     <system:String x:Key="ValidationTab_FileCol">File</system:String>
     <system:String x:Key="ValidationTab_FileDiff">View diff of selected file</system:String>
     <system:String x:Key="ValidationTab_NoDifferences">No differences</system:String>
-    <system:String x:Key="ValidationTab_FindDateModules">Find unconfigured date modulesâ€¦</system:String>
+    <system:String x:Key="ValidationTab_FindDateModules">Find unconfigured date modules…</system:String>
     <system:String x:Key="ValidationTab_FindDateModulesTitle">Unconfigured date modules</system:String>
     <system:String x:Key="ValidationTab_FindDateModulesHeader">The following folders in the game root contain date files and are not configured as modules:</system:String>
     <system:String x:Key="ValidationTab_FindDateModulesFiles">files with dates</system:String>
@@ -320,15 +321,15 @@
     <system:String x:Key="InputDialog_Cancel">Cancel</system:String>
 
     <!-- DiffDialog -->
-    <system:String x:Key="DiffDialog_Title">Details â€” {0}</system:String>
+    <system:String x:Key="DiffDialog_Title">Details — {0}</system:String>
 
     <!-- DiffChoiceDialog -->
-    <system:String x:Key="DiffChoiceDialog_Title">Diff â€” {0}</system:String>
+    <system:String x:Key="DiffChoiceDialog_Title">Diff — {0}</system:String>
     <system:String x:Key="DiffChoiceDialog_Prompt">Select comparison:</system:String>
     <system:String x:Key="DiffChoiceDialog_NoDiff">No diff available</system:String>
 
     <!-- DiffViewDialog -->
-    <system:String x:Key="DiffViewDialog_Title">Differences â€” {0}</system:String>
+    <system:String x:Key="DiffViewDialog_Title">Differences — {0}</system:String>
 
     <!-- App.xaml.cs messages -->
     <system:String x:Key="App_UnhandledError">Unexpected error: {0}\n\nDetails saved to logs/crash.log</system:String>

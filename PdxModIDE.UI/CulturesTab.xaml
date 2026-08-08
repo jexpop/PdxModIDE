@@ -407,6 +407,9 @@
                             <TextBlock x:Name="DetailHouseCoaMaskScaleValue" Margin="15,0,0,5" />
                         </StackPanel>
                     </Expander>
+                    <Label Content="{DynamicResource CulturesTab_Ethnicities}" FontWeight="Bold" Margin="0,10,0,0" />
+                    <TextBlock x:Name="DetailEthnicitiesValue" Margin="15,0,0,5"
+                               TextWrapping="Wrap"/>
                 </StackPanel>
             </GroupBox>
 

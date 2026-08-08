@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.6.4 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.5 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -279,6 +279,7 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
   Click province → info panel shows Barony, County, Duchy, Kingdom, Empire, Holder, Liege according to mode.
   - **Technical note**: overlay is applied on CPU (workaround for `SKShader.CreateImage` bug as child shader). `RenderToBitmap` renders terrain+borders via shader (mode=0), then iterates pixels and applies palette color from the holder LUT. Uses `InvalidateRender()` for cache invalidation.
 - `CulturesTab`: Culture browser with TreeView grouped by heritage. Loads culture definitions from `common/culture/cultures/*.txt` recursively (supports subdirectories like `mod/` for mod-added cultures). Parses Clausewitz blocks (handles `hsv { ... }`, comments, nested blocks). Merges mod over base. Displays localized names from CK3 localization files (`cultures_l_*.yml`, `cultural_heritages_l_*.yml`). Selection panel ordered Source, Name, Color, Ethos, Heritage shows the culture source (Base/Mod), name, color (numeric RGB + visual swatch; supports `hsv`/`hsv360`/`rgb` modes and `color = <name>` references resolved against `common/named_colors/*.txt`). The ethos is expandable and shows its parameters (e.g. `character_modifier`, `province_modifier`, `county_modifier`, `culture_modifier`, `parameters`, `ai_will_do`, `desc`) parsed from `common/culture/pillars/*_ethos.txt`. The heritage is also expandable and shows its parameters (`is_shown`, `audio_parameter`, etc.) parsed from `common/culture/pillars/*_heritage.txt`. The language is also expandable and shows its parameters (`is_shown`, `ai_will_do`, `color`, etc.) parsed from `common/culture/pillars/*language.txt` and localized via `cultural_languages_l_*.yml`. The martial custom is also expandable and shows its parameters (`parameters`, `can_pick`, `ai_will_do`, etc.) parsed from `common/culture/pillars/*martial_custom.txt` and localized via `martial_custom_<name>_name` keys in `cultural_traditions_l_*.yml`. The head determination is also expandable and shows its parameters (`head_determination_type`, etc.) parsed from `common/culture/pillars/*head_determination.txt` and localized via `head_determination_l_*.yml`. The traditions are also expandable, each one showing its localized name (`tradition_<name>_name`), its localized description (`tradition_<name>_desc`) and its parameters (`category`, `layers`, `can_pick`, `parameters`, `character_modifier`, `effects`, `cost`, etc.) parsed from `common/culture/traditions/*.txt` (path from `IGamePlugin.TraditionsRelativePath`). All pillar types are loaded with mod files taking priority over the game; each parameter includes a localized explanation (`EthosParam_*_Desc` / `HeritageParam_*_Desc` / `LanguageParam_*_Desc` / `MartialCustomParam_*_Desc` / `HeadDeterminationParam_*_Desc` / `TraditionParam_*_Desc` keys in `CK3.*.xaml`). The detail panel is inside a vertical `ScrollViewer`; the statistics panel sits at the top of the right column and is only shown when no culture is selected. Statistics panel.
+- **Ethnicities in the culture detail (Cultures tab)**: the detail panel also shows the culture's ethnicities (from `ethnicities = { <weight> = <ethnicity> ... }`, the last block of the culture definition), each on its own line as `name weight%` (e.g. `caucasian_blond 25%`). `ExtractEthnicitiesAttribute`/`ParseEthnicityEntries` parse the weighted block; weights are shown as percentages as in the game file. Ethnicity IDs have no localization in the game files, so they are shown as-is. Placed at the end of the detail panel, after the Graphics section.
 - `LogsTab`: Log filters (not fully implemented).
 - `SettingsTab`: Theme, default paths.
 
@@ -469,4 +470,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-07 | Project: PdxModIDE | Version: 1.6.4 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-08 | Project: PdxModIDE | Version: 1.6.5 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

@@ -7,6 +7,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.6.5]
+
+### Añadido
+
+- **Etnias en el detalle de la cultura (pestaña Culturas)**: el panel de detalle ahora muestra las etnias de la cultura (del bloque `ethnicities = { <peso> = <etnia> ... }` al final de la definición de cultura), cada una en su propia línea en formato `nombre peso%` (p. ej. `caucasian_blond 25%`). Los valores de peso se parsean como porcentajes tal y como aparecen en el fichero del juego. Los identificadores de etnia no tienen localización en los ficheros del juego, así que se muestran tal cual. El campo se coloca al final del panel de detalle, después de la sección de Gráficos.
+
+---
+
 ## [1.6.4]
 
 ### Añadido
