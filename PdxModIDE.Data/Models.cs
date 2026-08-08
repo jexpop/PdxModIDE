@@ -34,6 +34,9 @@ namespace PdxModIDE.Data
 
         [JsonPropertyName("show_title_names")]
         public bool ShowTitleNames { get; set; } = true;
+
+        [JsonPropertyName("file_name_prefixes")]
+        public Dictionary<string, string> FileNamePrefixes { get; set; } = new();
     }
 
     public class Profile
@@ -48,6 +51,7 @@ namespace PdxModIDE.Data
         public List<string> DatesModules { get; set; } = new();
         public List<string> Files { get; set; } = new();
         public bool ShowTitleNames { get; set; } = true;
+        public Dictionary<string, string> FileNamePrefixes { get; set; } = new();
     }
 
     public class ModuleConfig

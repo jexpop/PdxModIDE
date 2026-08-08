@@ -7,6 +7,20 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.6.6]
+
+### Añadido
+
+- **Convenciones de nombres de archivo (pestaña Perfil)**: una nueva sección "Convenciones de nombres de archivo" permite establecer un prefijo personalizado para los archivos de cultura. Una vista previa muestra el nombre final (`<prefijo>[nombre de cultura].txt`). El prefijo se almacena por perfil y se guarda con el perfil.
+
+### Cambiado
+
+- **Las configuraciones del perfil ya no se guardan automáticamente**: las rutas del perfil (juego/mods/backups), el offset de año (pestaña Fechas) y la opción "Mostrar nombres de títulos" (pestaña Historia) ya no se guardan automáticamente. Todos los cambios se guardan ahora con el botón "Guardar perfil" de la pestaña Perfil.
+
+- **Cambios sin guardar resaltados en rojo**: los campos cuyo valor difiere del último perfil guardado se muestran en rojo (rutas del perfil, prefijo de archivos de cultura, offset de año y la casilla "Mostrar títulos") hasta que el perfil se guarda.
+
+---
+
 ## [1.6.5]
 
 ### Añadido

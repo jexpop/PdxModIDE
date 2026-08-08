@@ -45,6 +45,7 @@ namespace PdxModIDE.Domain
         public List<string> FileIds { get; set; } = new();
         public bool ShowTitleNames { get; set; } = true;
         public List<string> DatesModuleIds { get; set; } = new();
+        public Dictionary<string, string> FileNamePrefixes { get; set; } = new();
 
         public List<Module> SelectedModules { get; set; } = new();
         public List<GameFile> SelectedFiles { get; set; } = new();

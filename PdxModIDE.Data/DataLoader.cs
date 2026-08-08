@@ -67,6 +67,7 @@ namespace PdxModIDE.Data
                     p.Modules ??= new List<string>();
                     p.DatesModules ??= new List<string>();
                     p.Files ??= new List<string>();
+                    p.FileNamePrefixes ??= new Dictionary<string, string>();
                 }
 
                 return profiles.ConvertAll(p => new Profile
@@ -80,7 +81,8 @@ namespace PdxModIDE.Data
                     Modules = p.Modules,
                     DatesModules = p.DatesModules,
                     Files = p.Files,
-                    ShowTitleNames = p.ShowTitleNames
+                    ShowTitleNames = p.ShowTitleNames,
+                    FileNamePrefixes = p.FileNamePrefixes
                 });
             }
             catch (JsonException)
@@ -103,7 +105,8 @@ namespace PdxModIDE.Data
                 Modules = p.Modules,
                 DatesModules = p.DatesModules,
                 Files = p.Files,
-                ShowTitleNames = p.ShowTitleNames
+                ShowTitleNames = p.ShowTitleNames,
+                FileNamePrefixes = p.FileNamePrefixes
             });
             string json = JsonSerializer.Serialize(dtos, JsonOptions);
             FileOperations.WriteTextFile("data/profiles.json", json);

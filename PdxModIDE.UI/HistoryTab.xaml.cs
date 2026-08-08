@@ -1182,8 +1182,7 @@ namespace PdxModIDE.UI
         {
             if (ViewModel?.CurrentProfile != null)
             {
-                ViewModel.CurrentProfile.ShowTitleNames = ShowNamesCheck.IsChecked == true;
-                ViewModel.ProjectService.UpdateProfile(ViewModel.CurrentProfile);
+                ViewModel.ShowTitleNames = ShowNamesCheck.IsChecked == true;
             }
         }
 

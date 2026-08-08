@@ -17,7 +17,7 @@
 - **Parallel / Task** (processat mòduls, validació, càrrega mapa)
 - **No DI container** (instanciació manual a `ProjectManager`)
 
-**Versió actual**: 1.6.5 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
+**Versió actual**: 1.6.6 (veure `CHANGELOG_CA.md`, `CHANGELOG_ES.md`, `CHANGELOG_EN.md`). 
 Solution: `PdxModIDE.sln` (9 projectes).
 
 ---
@@ -96,7 +96,7 @@ MainViewModel.ProcessModulesCommand
 |-------|-----------------|-------|
 | `Module` | `Name`, `Path`, `IgnoreExtensions (IReadOnlyList<string>)` | Immutable (ctor only) |
 | `GameFile` | `Name`, `Path`, `MapTo?` | `MapTo` permet mapejar path joc → path mod diferent |
-| `Profile` | `Id (Guid)`, `Name`, `Game`, `GameRoot`, `ModRoot`, `BackupRoot`, `YearOffset`, `ModuleIds[]`, `FileIds[]`, `SelectedModules`, `SelectedFiles` | `Selected*` es resolen a `EditingSession` |
+| `Profile` | `Id (Guid)`, `Name`, `Game`, `GameRoot`, `ModRoot`, `BackupRoot`, `YearOffset`, `ModuleIds[]`, `FileIds[]`, `SelectedModules`, `SelectedFiles`, `FileNamePrefixes` | `Selected*` es resolen a `EditingSession`; `FileNamePrefixes` desa prefixos de nom per fitxer (p. ex. `culture`) |
 | `EditingSession` | `CurrentProfile`, `ModulesByGame`, `FilesByGame`, `AllModulesByName`, `AllFilesByName` | Construïda a `ProjectManager.BuildSession`; resol referències `ModuleIds`→`Module` |
 
 ### 4.2 Configs de Persistència (`PdxModIDE.Data`)
@@ -471,4 +471,4 @@ Cap variable d'entorn obligatòria. Tota configuració a `data/*.json`.
 
 ---
 
-*Generat: 2026-08-08 | Projecte: PdxModIDE | Versió: 1.6.5 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generat: 2026-08-08 | Projecte: PdxModIDE | Versió: 1.6.6 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

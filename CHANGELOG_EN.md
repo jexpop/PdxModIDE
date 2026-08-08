@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.6]
+
+### Added
+
+- **File naming conventions (Profile tab)**: a new "File naming conventions" section lets you set a custom prefix for the files generated for culture files. A preview shows the final name (`<prefix>[culture name].txt`). The prefix is stored per profile and persisted with the profile.
+
+### Changed
+
+- **Profile settings no longer auto-save**: the profile paths (game/mod/backup roots), the year offset (Dates tab) and the "Show titles names" option (History tab) are no longer saved automatically. All changes are now saved with the "Save profile" button in the Profile tab.
+
+- **Unsaved changes highlighted in red**: fields whose value differs from the last saved profile are shown in red (profile routes, culture file prefix, year offset and the "Show titles" checkbox) until the profile is saved.
+
+---
+
 ## [1.6.5]
 
 ### Added

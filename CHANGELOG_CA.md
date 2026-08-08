@@ -7,6 +7,20 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.6.6]
+
+### Afegit
+
+- **Convencions de noms d'arxiu (pestanya Perfil)**: una nova secció "Convencions de noms d'arxiu" permet establir un prefix personalitzat per als arxius generats per als arxius de cultura. Una previsualització mostra el nom final (`<prefix>[nom de la cultura].txt`). El prefix s'emmagatzema per perfil i es desa amb el perfil.
+
+### Canviat
+
+- **La configuració del perfil ja no es desa automàticament**: les rutes del perfil (joc/mods/còpies), l'offset d'any (pestanya Dates) i l'opció "Mostrar noms de títols" (pestanya Història) ja no es desen automàticament. Tots els canvis es desen ara amb el botó "Guardar perfil" de la pestanya Perfil.
+
+- **Canvis sense desar ressaltats en vermell**: els camps el valor dels quals difereix de l'últim perfil desat es mostren en vermell (rutes del perfil, prefix d'arxius de cultura, offset d'any i la casella "Mostrar títols") fins que el perfil es desa.
+
+---
+
 ## [1.6.5]
 
 ### Afegit

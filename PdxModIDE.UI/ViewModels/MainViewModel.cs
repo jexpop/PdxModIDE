@@ -19,6 +19,14 @@ namespace PdxModIDE.UI.ViewModels
         private string _theme = "light";
         private string _language = "en";
 
+        // Saved-state snapshot used for "unsaved changes" highlighting.
+        private string _savedGameRoot = "";
+        private string _savedModRoot = "";
+        private string _savedBackupRoot = "";
+        private int _savedYearOffset;
+        private bool _savedShowTitleNames;
+        private string _savedCulturePrefix = "";
+
         public IProjectService ProjectService => _projectService;
 
         public MainViewModel(IProjectService projectService)
@@ -61,12 +69,35 @@ namespace PdxModIDE.UI.ViewModels
                 {
                     if (value != null)
                         _projectService.SelectProfile(value.Name);
+                    UpdateSavedProfileSnapshot();
                     OnPropertyChanged(nameof(CanProcess));
                     OnPropertyChanged(nameof(ShowTitleNames));
+                    OnPropertyChanged(nameof(GameRoot));
+                    OnPropertyChanged(nameof(ModRoot));
+                    OnPropertyChanged(nameof(BackupRoot));
+                    OnPropertyChanged(nameof(CultureFileNamePrefix));
+                    OnPropertyChanged(nameof(CultureFileNamePreview));
+                    OnPropertyChanged(nameof(GameRootModified));
+                    OnPropertyChanged(nameof(ModRootModified));
+                    OnPropertyChanged(nameof(BackupRootModified));
+                    OnPropertyChanged(nameof(CultureFileNamePrefixModified));
+                    OnPropertyChanged(nameof(YearOffsetModified));
+                    OnPropertyChanged(nameof(ShowTitleNamesModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
                     RefreshModules();
                     RefreshFiles();
                 }
             }
+        }
+
+        private void UpdateSavedProfileSnapshot()
+        {
+            _savedGameRoot = _currentProfile?.GameRoot ?? "";
+            _savedModRoot = _currentProfile?.ModRoot ?? "";
+            _savedBackupRoot = _currentProfile?.BackupRoot ?? "";
+            _savedYearOffset = _currentProfile?.YearOffset ?? 10000;
+            _savedShowTitleNames = _currentProfile?.ShowTitleNames ?? true;
+            _savedCulturePrefix = CultureFileNamePrefix;
         }
 
         public string Theme
@@ -81,6 +112,85 @@ namespace PdxModIDE.UI.ViewModels
             set => SetProperty(ref _language, value);
         }
 
+        public string GameRoot
+        {
+            get => _currentProfile?.GameRoot ?? "";
+            set
+            {
+                if (_currentProfile != null)
+                {
+                    _currentProfile.GameRoot = value ?? "";
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(GameRootModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
+                }
+            }
+        }
+
+        public string ModRoot
+        {
+            get => _currentProfile?.ModRoot ?? "";
+            set
+            {
+                if (_currentProfile != null)
+                {
+                    _currentProfile.ModRoot = value ?? "";
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(ModRootModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
+                }
+            }
+        }
+
+        public string BackupRoot
+        {
+            get => _currentProfile?.BackupRoot ?? "";
+            set
+            {
+                if (_currentProfile != null)
+                {
+                    _currentProfile.BackupRoot = value ?? "";
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(BackupRootModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
+                }
+            }
+        }
+
+        public string CultureFileNamePrefix
+        {
+            get
+            {
+                if (_currentProfile != null &&
+                    _currentProfile.FileNamePrefixes.TryGetValue("culture", out var p))
+                    return p ?? "";
+                return "";
+            }
+            set
+            {
+                if (_currentProfile != null)
+                {
+                    _currentProfile.FileNamePrefixes["culture"] = value ?? "";
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(CultureFileNamePreview));
+                    OnPropertyChanged(nameof(CultureFileNamePrefixModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
+                }
+            }
+        }
+
+        public string CultureFileNamePreview
+            => $"{CultureFileNamePrefix}{Res("ProfileTab_CultureFileNameSuffix")}";
+
+        public bool GameRootModified => _currentProfile != null && _currentProfile.GameRoot != _savedGameRoot;
+        public bool ModRootModified => _currentProfile != null && _currentProfile.ModRoot != _savedModRoot;
+        public bool BackupRootModified => _currentProfile != null && _currentProfile.BackupRoot != _savedBackupRoot;
+        public bool CultureFileNamePrefixModified => CultureFileNamePrefix != _savedCulturePrefix;
+        public bool YearOffsetModified => _currentProfile != null && _currentProfile.YearOffset != _savedYearOffset;
+        public bool ShowTitleNamesModified => _currentProfile != null && _currentProfile.ShowTitleNames != _savedShowTitleNames;
+        public bool HasUnsavedProfileChanges => GameRootModified || ModRootModified || BackupRootModified ||
+            CultureFileNamePrefixModified || YearOffsetModified || ShowTitleNamesModified;
+
         public int YearOffset
         {
             get => _currentProfile?.YearOffset ?? 10000;
@@ -90,7 +200,8 @@ namespace PdxModIDE.UI.ViewModels
                 {
                     _currentProfile.YearOffset = value;
                     OnPropertyChanged();
-                    _projectService.UpdateProfile(_currentProfile);
+                    OnPropertyChanged(nameof(YearOffsetModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
                 }
             }
         }
@@ -103,8 +214,9 @@ namespace PdxModIDE.UI.ViewModels
                 if (_currentProfile != null)
                 {
                     _currentProfile.ShowTitleNames = value;
-                    OnPropertyChanged();
-                    _projectService.UpdateProfile(_currentProfile);
+                    OnPropertyChanged(nameof(ShowTitleNames));
+                    OnPropertyChanged(nameof(ShowTitleNamesModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
                 }
             }
         }
@@ -154,12 +266,10 @@ namespace PdxModIDE.UI.ViewModels
                 string path = dialog.SelectedPath;
                 switch (propertyName)
                 {
-                    case "GameRoot": CurrentProfile.GameRoot = path; break;
-                    case "ModRoot": CurrentProfile.ModRoot = path; break;
-                    case "BackupRoot": CurrentProfile.BackupRoot = path; break;
+                    case "GameRoot": GameRoot = path; break;
+                    case "ModRoot": ModRoot = path; break;
+                    case "BackupRoot": BackupRoot = path; break;
                 }
-                OnPropertyChanged(nameof(CurrentProfile));
-                UpdateProfile();
             }
         }
 
@@ -415,6 +525,14 @@ namespace PdxModIDE.UI.ViewModels
                 }
 
                 _projectService.UpdateProfile(CurrentProfile);
+                UpdateSavedProfileSnapshot();
+                OnPropertyChanged(nameof(ShowTitleNamesModified));
+                OnPropertyChanged(nameof(GameRootModified));
+                OnPropertyChanged(nameof(ModRootModified));
+                OnPropertyChanged(nameof(BackupRootModified));
+                OnPropertyChanged(nameof(CultureFileNamePrefixModified));
+                OnPropertyChanged(nameof(YearOffsetModified));
+                OnPropertyChanged(nameof(HasUnsavedProfileChanges));
             }
         }
 

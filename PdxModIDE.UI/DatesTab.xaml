@@ -8,7 +8,22 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10">
             <GroupBox Header="{DynamicResource DatesTab_YearOffset}">
-                <TextBox Text="{Binding YearOffset, UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left"/>
+                <StackPanel>
+                    <TextBox Text="{Binding YearOffset, UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left"
+                             Tag="{Binding YearOffsetModified, Mode=OneWay}"
+                             ToolTip="{DynamicResource DatesTab_YearOffsetToolTip}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Foreground" Value="Black"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
             </GroupBox>
 
             <GroupBox Header="{DynamicResource DatesTab_EndDate}" Margin="0,10,0,0">

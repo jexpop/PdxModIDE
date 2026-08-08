@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.6.5 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.6 (see `CHANGELOG_EN.md`, `CHANGELOG_ES.md`, `CHANGELOG_CA.md`). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -95,7 +95,7 @@ MainViewModel.ProcessModulesCommand
 |-------|----------------|-------|
 | `Module` | `Name`, `Path`, `IgnoreExtensions (IReadOnlyList<string>)` | Immutable (ctor only) |
 | `GameFile` | `Name`, `Path`, `MapTo?` | `MapTo` allows mapping game path → different mod path |
-| `Profile` | `Id (Guid)`, `Name`, `Game`, `GameRoot`, `ModRoot`, `BackupRoot`, `YearOffset`, `ModuleIds[]`, `FileIds[]`, `SelectedModules`, `SelectedFiles` | `Selected*` resolved in `EditingSession` |
+| `Profile` | `Id (Guid)`, `Name`, `Game`, `GameRoot`, `ModRoot`, `BackupRoot`, `YearOffset`, `ModuleIds[]`, `FileIds[]`, `SelectedModules`, `SelectedFiles`, `FileNamePrefixes` | `Selected*` resolved in `EditingSession`; `FileNamePrefixes` stores per-file naming prefixes (e.g. `culture`) |
 | `EditingSession` | `CurrentProfile`, `ModulesByGame`, `FilesByGame`, `AllModulesByName`, `AllFilesByName` | Built in `ProjectManager.BuildSession`; resolves `ModuleIds`→`Module` references |
 
 ### 4.2 Persistence Configs (`PdxModIDE.Data`)
@@ -470,4 +470,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-08 | Project: PdxModIDE | Version: 1.6.5 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-08 | Project: PdxModIDE | Version: 1.6.6 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

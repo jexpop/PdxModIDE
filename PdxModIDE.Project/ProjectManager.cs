@@ -163,7 +163,8 @@ namespace PdxModIDE.Project
                 Modules = new List<string>(),
                 DatesModules = new List<string>(),
                 Files = new List<string>(),
-                ShowTitleNames = true
+                ShowTitleNames = true,
+                FileNamePrefixes = new Dictionary<string, string> { ["culture"] = "" }
             };
 
             _dataProfiles.Add(dataProfile);
@@ -885,7 +886,8 @@ namespace PdxModIDE.Project
                 ModuleIds = new List<string>(dp.Modules),
                 DatesModuleIds = new List<string>(dp.DatesModules),
                 FileIds = new List<string>(dp.Files),
-                ShowTitleNames = dp.ShowTitleNames
+                ShowTitleNames = dp.ShowTitleNames,
+                FileNamePrefixes = new Dictionary<string, string>(dp.FileNamePrefixes) { ["culture"] = dp.FileNamePrefixes.TryGetValue("culture", out var c) ? c : "" }
             };
         }
 
@@ -901,6 +903,7 @@ namespace PdxModIDE.Project
             data.DatesModules = new List<string>(domain.DatesModuleIds);
             data.Files = new List<string>(domain.FileIds);
             data.ShowTitleNames = domain.ShowTitleNames;
+            data.FileNamePrefixes = new Dictionary<string, string>(domain.FileNamePrefixes);
         }
 
         private EditingSession? BuildSession(Domain.Profile? profile)

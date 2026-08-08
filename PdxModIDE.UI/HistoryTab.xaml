@@ -101,7 +101,20 @@
                               Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="{DynamicResource HistoryTab_EmpireModeTooltip}"/>
                 </StackPanel>
                 <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
-                          Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"/>
+                          Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"
+                          Tag="{Binding ShowTitleNamesModified, Mode=OneWay}"
+                          ToolTip="{DynamicResource ProfileTab_ToolTipSaveAllChanges}">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox">
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                                    <Setter Property="Foreground" Value="Red"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
                 <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeViewAction}" Width="140" Height="26"
                         Margin="10,0,0,0" Click="ModeToggleButton_Click"
                         ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>
