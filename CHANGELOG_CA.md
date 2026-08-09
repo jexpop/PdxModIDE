@@ -7,6 +7,18 @@ i aquest projecte s'adhereix a [Semantic Versioning](https://semver.org/spec/v2.
 
 ---
 
+## [1.6.7]
+
+### Afegit
+
+- **Desament de l'editor de cultura (pestanya Cultures)**: l'editor de cultura ara pot escriure fitxers de cultura. Les cultures noves/copiades es desen com a `<prefix><id>.txt` (fent servir el prefix de nomenclatura del perfil) dins de `common\culture\cultures\mod` o qualsevol subcarpeta triada amb un selector de directoris (limitat a aquesta carpeta). En editar una cultura del mod s'escriu de nou al seu fitxer original. Les cultures noves només es desen si el fitxer de destinació no existeix; un botó "Netejar camps" (mode nova/còpia) restableix el formulari. Després de desar, l'arbre de cultures es refresca perquè la cultura nova/editada aparegui a la llista.
+
+### Canviat
+
+- `CultureInfo` ara desa el fitxer d'origen (`SourceFile`) i la clau parsejada (`RawKey`) perquè l'edició pugui localitzar i sobreescriure el fitxer original.
+
+---
+
 ## [1.6.6]
 
 ### Afegit

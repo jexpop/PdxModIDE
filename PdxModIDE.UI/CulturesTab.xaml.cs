@@ -28,6 +28,8 @@ namespace PdxModIDE.UI
         }
         private string? _displayName;
         public string Source { get; set; } = "Base";
+        public string SourceFile { get; set; } = "";
+        public string RawKey { get; set; } = "";
         public string Heritage { get; set; } = "";
         public string HeritageDisplayName { get; set; } = "";
         public HeritageInfo? HeritageDefinition { get; set; }
@@ -256,6 +258,10 @@ namespace PdxModIDE.UI
         private PdxModIDE.ModelEngine.PdxClothingResolver? _clothingResolver;
         private PdxModIDE.ModelEngine.PdxUnitResolver? _unitResolver;
 
+        private CultureInfo? _editorCulture;
+        private bool _editorIsNew;
+        private string _editorTargetFolder = "";
+
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.BuildingAssetDatabase> _buildingDbCache = new(StringComparer.OrdinalIgnoreCase);
@@ -305,7 +311,16 @@ namespace PdxModIDE.UI
             if (_viewModel?.CurrentProfile == null) return;
 
             if (EditorTabHeaderText != null && string.IsNullOrEmpty(EditorTabHeaderText.Text))
+            {
                 EditorTabHeaderText.Text = Res("CulturesTab_EditorNewTitle");
+                _editorIsNew = true;
+                _editorCulture = null;
+                var modRootForEditor = _viewModel.CurrentProfile.ModRoot;
+                _editorTargetFolder = string.IsNullOrEmpty(modRootForEditor)
+                    ? ""
+                    : Path.Combine(modRootForEditor, "common", "culture", "cultures", "mod");
+                UpdateEditorModeUi();
+            }
 
             var gameRoot = _viewModel.CurrentProfile.GameRoot;
             var modRoot = _viewModel.CurrentProfile.ModRoot;
@@ -623,6 +638,16 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             EditorClothingGfx.Text = string.Join(", ", culture.ClothingGfx ?? new List<string>());
             EditorUnitGfx.Text = string.Join(", ", culture.UnitGfx ?? new List<string>());
 
+            _editorCulture = culture;
+            _editorIsNew = copyAsNew;
+
+            var modRoot = _viewModel?.CurrentProfile?.ModRoot;
+            _editorTargetFolder = string.IsNullOrEmpty(modRoot)
+                ? ""
+                : Path.Combine(modRoot, "common", "culture", "cultures", "mod");
+
+            UpdateEditorModeUi();
+
             EditorStatusText.Text = Res("CulturesTab_EditorHint");
 
             if (CulturesSubTabs != null)
@@ -631,6 +656,274 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 if (editTab != null)
                     CulturesSubTabs.SelectedItem = editTab;
             }
+        }
+
+        private void UpdateEditorModeUi()
+        {
+            if (EditorSaveButton != null)
+                EditorSaveButton.Visibility = Visibility.Visible;
+            if (EditorClearButton != null)
+                EditorClearButton.Visibility = _editorIsNew ? Visibility.Visible : Visibility.Collapsed;
+            if (EditorTargetRow != null)
+                EditorTargetRow.Visibility = _editorIsNew ? Visibility.Visible : Visibility.Collapsed;
+            if (EditorTargetFolderText != null)
+            {
+                EditorTargetFolderText.Text = string.IsNullOrEmpty(_editorTargetFolder)
+                    ? Res("CulturesTab_EditorNoTarget")
+                    : _editorTargetFolder;
+            }
+        }
+
+        private void EditorBrowseFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.CurrentProfile == null) return;
+
+            var modRoot = _viewModel.CurrentProfile.ModRoot;
+            var baseFolder = string.IsNullOrEmpty(modRoot)
+                ? ""
+                : Path.Combine(modRoot, "common", "culture", "cultures", "mod");
+
+            using var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            dialog.Description = Res("CulturesTab_EditorSelectFolder");
+            dialog.UseDescriptionForTitle = true;
+
+            if (Directory.Exists(baseFolder))
+                dialog.InitialDirectory = baseFolder;
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string chosen = dialog.SelectedPath;
+                if (!string.IsNullOrEmpty(baseFolder) && IsPathInside(chosen, baseFolder))
+                {
+                    _editorTargetFolder = chosen;
+                }
+                else
+                {
+                    EditorStatusText.Text = Res("CulturesTab_EditorFolderInvalid");
+                    _editorTargetFolder = baseFolder;
+                }
+                UpdateEditorModeUi();
+            }
+        }
+
+        private void EditorClear_Click(object sender, RoutedEventArgs e)
+        {
+            EditorCultureId.Text = "";
+            EditorHeritage.Text = "";
+            EditorEthos.Text = "";
+            EditorColor.Text = "";
+            EditorBuildingGfx.Text = "";
+            EditorClothingGfx.Text = "";
+            EditorUnitGfx.Text = "";
+            _editorCulture = null;
+            EditorStatusText.Text = Res("CulturesTab_EditorHint");
+        }
+
+        private void EditorSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.CurrentProfile == null) return;
+
+            string cultureId = EditorCultureId.Text?.Trim() ?? "";
+            if (string.IsNullOrEmpty(cultureId))
+            {
+                EditorStatusText.Text = Res("CulturesTab_EditorNeedId");
+                return;
+            }
+
+            string block = BuildCultureBlock(cultureId);
+
+            if (_editorCulture == null || _editorIsNew)
+            {
+                SaveAsNewCulture(cultureId, block);
+            }
+            else
+            {
+                SaveExistingCulture(block);
+            }
+        }
+
+        private void SaveAsNewCulture(string cultureId, string block)
+        {
+            var profile = _viewModel?.CurrentProfile;
+            if (profile == null) return;
+
+            var modRoot = profile.ModRoot;
+            if (string.IsNullOrEmpty(modRoot))
+            {
+                EditorStatusText.Text = Res("CulturesTab_EditorNoModRoot");
+                return;
+            }
+
+            if (!Directory.Exists(_editorTargetFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(_editorTargetFolder);
+                }
+                catch
+                {
+                    EditorStatusText.Text = Res("CulturesTab_EditorFolderInvalid");
+                    return;
+                }
+            }
+
+            string prefix = profile.FileNamePrefixes.TryGetValue("culture", out var p) ? p ?? "" : "";
+            string baseName = SanitizeFileName(cultureId);
+            string fileName = $"{prefix}{baseName}.txt";
+            string fullPath = Path.Combine(_editorTargetFolder, fileName);
+
+            if (File.Exists(fullPath))
+            {
+                EditorStatusText.Text = string.Format(Res("CulturesTab_EditorFileExists"), fileName);
+                return;
+            }
+
+            try
+            {
+                File.WriteAllText(fullPath, block, new System.Text.UTF8Encoding(true));
+                EditorStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), fileName);
+                RefreshCultureTree();
+            }
+            catch (Exception ex)
+            {
+                EditorStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
+            }
+        }
+
+        private void RefreshCultureTree()
+        {
+            if (CultureTree == null) return;
+            CultureTree.ItemsSource = null;
+            LoadCultures();
+        }
+
+        private void SaveExistingCulture(string block)
+        {
+            if (_editorCulture == null || string.IsNullOrEmpty(_editorCulture.SourceFile))
+            {
+                EditorStatusText.Text = Res("CulturesTab_EditorNoSourceFile");
+                return;
+            }
+
+            string filePath = _editorCulture.SourceFile;
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                EditorStatusText.Text = Res("CulturesTab_EditorNoSourceFile");
+                return;
+            }
+
+            try
+            {
+                ReplaceCultureInFile(filePath, _editorCulture.RawKey, block);
+                EditorStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), Path.GetFileName(filePath));
+                RefreshCultureTree();
+            }
+            catch (Exception ex)
+            {
+                EditorStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
+            }
+        }
+
+        private string BuildCultureBlock(string cultureId)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"{cultureId} = {{");
+
+            string color = EditorColor.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(color))
+            {
+                var parts = color.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (parts.Length == 3 &&
+                    byte.TryParse(parts[0], out byte r) &&
+                    byte.TryParse(parts[1], out byte g) &&
+                    byte.TryParse(parts[2], out byte b))
+                {
+                    sb.AppendLine($"\tcolor = rgb {{ {r} {g} {b} }}");
+                }
+                else if (parts.Length == 1)
+                {
+                    sb.AppendLine($"\tcolor = {parts[0]}");
+                }
+            }
+
+            string heritage = EditorHeritage.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(heritage))
+                sb.AppendLine($"\theritage = {heritage}");
+
+            string ethos = EditorEthos.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(ethos))
+                sb.AppendLine($"\tethos = {ethos}");
+
+            string building = EditorBuildingGfx.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(building))
+                sb.AppendLine($"\tbuilding_gfx = {{ {SplitList(building)} }}");
+
+            string clothing = EditorClothingGfx.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(clothing))
+                sb.AppendLine($"\tclothing_gfx = {{ {SplitList(clothing)} }}");
+
+            string unit = EditorUnitGfx.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(unit))
+                sb.AppendLine($"\tunit_gfx = {{ {SplitList(unit)} }}");
+
+            sb.AppendLine("}");
+            sb.AppendLine();
+            return sb.ToString();
+        }
+
+        private static string SplitList(string value)
+            => string.Join(" ", value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+
+        private static string SanitizeFileName(string name)
+        {
+            foreach (var c in System.IO.Path.GetInvalidFileNameChars())
+                name = name.Replace(c, '_');
+            return name;
+        }
+
+        private static bool IsPathInside(string path, string baseDir)
+        {
+            try
+            {
+                string full = Path.GetFullPath(path);
+                string baseFull = Path.GetFullPath(baseDir);
+                return full.Equals(baseFull, StringComparison.OrdinalIgnoreCase) ||
+                       full.StartsWith(baseFull.TrimEnd('\\', '/') + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static void ReplaceCultureInFile(string filePath, string cultureName, string newBlock)
+        {
+            string text = File.ReadAllText(filePath);
+            string marker = $"{cultureName} = {{";
+            int idx = text.IndexOf(marker, StringComparison.Ordinal);
+            if (idx < 0)
+                throw new InvalidOperationException("Culture block not found");
+
+            int blockStart = idx + marker.Length;
+            int bracket = text.IndexOf('{', blockStart - 1);
+            int depth = 0;
+            int pos = bracket;
+            int end = -1;
+            while (pos < text.Length)
+            {
+                char ch = text[pos];
+                if (ch == '{') depth++;
+                else if (ch == '}') { depth--; if (depth == 0) { end = pos; break; } }
+                pos++;
+            }
+            if (end < 0)
+                throw new InvalidOperationException("Culture block not found");
+
+            var trimmedBlock = newBlock.TrimEnd();
+            string newText = text.Substring(0, idx)
+                + trimmedBlock
+                + text.Substring(end + 1);
+            File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
         }
 
         private static Dictionary<string, string> LoadLocalization(string gameRoot, string modRoot, string appLang)
@@ -1508,8 +1801,10 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 var culture = new CultureInfo
                 {
                     Name = cultureKey,
+                    RawKey = cultureKey,
                     Source = source,
-                    IsModNew = isModNew
+                    IsModNew = isModNew,
+                    SourceFile = filePath
                 };
 
                 string? nameAttr = ExtractAttribute(block, "name");

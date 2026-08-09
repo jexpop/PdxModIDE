@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.7]
+
+### Added
+
+- **Culture editor save (Cultures tab)**: the culture editor can now write culture files. New/copied cultures are saved as `<prefix><id>.txt` (using the profile file-naming prefix) inside `common\culture\cultures\mod` or any subfolder chosen with a folder selector (restricted to that folder). Editing a mod culture writes back to its original file. New cultures are only saved when the target file does not exist; a "Clear fields" button (new/copied mode) resets the form. After saving, the culture tree is refreshed so the new/edited culture appears in the list.
+
+### Changed
+
+- `CultureInfo` now tracks the source file (`SourceFile`) and the parsed key (`RawKey`) so editing can locate and rewrite the original file.
+
+---
+
 ## [1.6.6]
 
 ### Added

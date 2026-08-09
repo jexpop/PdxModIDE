@@ -7,6 +7,18 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ---
 
+## [1.6.7]
+
+### Añadido
+
+- **Guardado del editor de cultura (pestaña Culturas)**: el editor de cultura ahora puede escribir archivos de cultura. Las culturas nuevas/copiadas se guardan como `<prefijo><id>.txt` (usando el prefijo de nomenclatura del perfil) dentro de `common\culture\cultures\mod` o cualquier subcarpeta elegida con un selector de directorios (limitado a esa carpeta). Al editar una cultura del mod se escribe de nuevo en su archivo original. Las culturas nuevas solo se guardan si el archivo de destino no existe; un botón "Limpiar campos" (modo nueva/copia) restablece el formulario. Tras guardar, el árbol de culturas se refresca para que la cultura nueva/editada aparezca en la lista.
+
+### Cambiado
+
+- `CultureInfo` ahora guarda el archivo de origen (`SourceFile`) y la clave parseada (`RawKey`) para que la edición pueda localizar y sobrescribir el archivo original.
+
+---
+
 ## [1.6.6]
 
 ### Añadido
