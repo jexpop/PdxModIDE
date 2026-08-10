@@ -2,17 +2,23 @@
 
 ---
 
-## English
-
 **Desktop IDE for managing and processing Paradox Interactive game mods (CK3, EU4, HOI4, etc.)**
 WPF application (.NET 8) that automates copying game files to the mod directory, applies year offsets, and validates differences.
 
-**Current version:** 1.6.7
+**Current version:** 1.6.8
 
 ### Documentation
 
-- **[PROJECT_CONTEXT_EN.md](PROJECT_CONTEXT_EN.md)** — Full technical context: architecture, data model, key modules, conventions, technical debt, and quick references.
-- **[CHANGELOG_EN.md](CHANGELOG_EN.md)** — Version history and changes (Keep a Changelog format).
+- **[PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)** — Full technical context: architecture, data model, key modules, conventions, technical debt, and quick references.
+- **Changelog** — Version history and changes (Keep a Changelog format), one file per minor version:
+  - [1.6.x](Changelog/Changelog_v1_6_x.md)
+  - [1.5.x](Changelog/Changelog_v1_5_x.md)
+  - [1.4.x](Changelog/Changelog_v1_4_x.md)
+  - [1.3.x](Changelog/Changelog_v1_3_x.md)
+  - [1.2.x](Changelog/Changelog_v1_2_x.md)
+  - [1.1.x](Changelog/Changelog_v1_1_x.md)
+  - [1.0.x](Changelog/Changelog_v1_0_x.md)
+  - [Template](Changelog/Changelog_template.md)
 
 ### Setup & Build
 
@@ -28,62 +34,6 @@ dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
 ```
 
 **Requirements**: .NET 8 SDK, Windows 10/11, a Paradox game installed (CK3 by default).
-
-## Español
-
-**IDE de escritorio para la gestión y procesamiento de mods de juegos Paradox Interactive (CK3, EU4, HOI4, etc.)**
-Aplicación WPF (.NET 8) que automatiza el copiado de archivos del juego al mod, aplica offset de fechas y valida diferencias.
-
-**Versión actual:** 1.6.7
-
-### Documentación
-
-- **[PROJECT_CONTEXT_ES.md](PROJECT_CONTEXT_ES.md)** — Contexto técnico completo: arquitectura, modelo de datos, módulos clave, convenciones, deuda técnica y referencias rápidas.
-- **[CHANGELOG_ES.md](CHANGELOG_ES.md)** — Historial de versiones y cambios (formato Keep a Changelog).
-
-### Configuración y Build
-
-```bash
-# Compilar (Debug)
-dotnet build PdxModIDE.sln --configuration Debug
-
-# Compilar (Release)
-dotnet build PdxModIDE.sln --configuration Release
-
-# Ejecutar
-dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
-```
-
-**Requisitos**: .NET 8 SDK, Windows 10/11, un juego Paradox instalado (CK3 por defecto).
-
----
-
-## Català
-
-**IDE d'escriptori per a la gestió i processament de mods de jocs Paradox Interactive (CK3, EU4, HOI4, etc.)**
-Aplicació WPF (.NET 8) que automatitza la còpia d'arxius del joc al mod, aplica offset d'anys i valida diferències.
-
-**Versió actual:** 1.6.7
-
-### Documentació
-
-- **[PROJECT_CONTEXT_CA.md](PROJECT_CONTEXT_CA.md)** — Context tècnic complet: arquitectura, model de dades, mòduls clau, convencions, deute tècnic i referències ràpides.
-- **[CHANGELOG_CA.md](CHANGELOG_CA.md)** — Historial de versions i canvis (format Keep a Changelog).
-
-### Configuració i Build
-
-```bash
-# Compilar (Debug)
-dotnet build PdxModIDE.sln --configuration Debug
-
-# Compilar (Release)
-dotnet build PdxModIDE.sln --configuration Release
-
-# Executar
-dotnet run --project PdxModIDE.UI/PdxModIDE.UI.csproj
-```
-
-**Requisits**: .NET 8 SDK, Windows 10/11, un joc Paradox instal·lat (CK3 per defecte).
 
 ---
 

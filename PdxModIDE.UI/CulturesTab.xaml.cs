@@ -261,6 +261,8 @@ namespace PdxModIDE.UI
         private CultureInfo? _editorCulture;
         private bool _editorIsNew;
         private string _editorTargetFolder = "";
+        private bool _editorFileNameManual;
+        private readonly Dictionary<string, string> _cultureFileIndex = new(StringComparer.OrdinalIgnoreCase);
 
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
@@ -349,6 +351,13 @@ namespace PdxModIDE.UI
 
             var modCultures = LoadCulturesFromDirectory(modRoot, culturePath, "Mod");
             var baseCultures = LoadCulturesFromDirectory(gameRoot, culturePath, "Base");
+
+            _cultureFileIndex.Clear();
+            foreach (var c in modCultures)
+            {
+                if (!string.IsNullOrEmpty(c.SourceFile) && !_cultureFileIndex.ContainsKey(c.RawKey))
+                    _cultureFileIndex[c.RawKey] = c.SourceFile;
+            }
 
             var allByName = new Dictionary<string, CultureInfo>(StringComparer.OrdinalIgnoreCase);
             foreach (var c in baseCultures)
@@ -640,6 +649,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
             _editorCulture = culture;
             _editorIsNew = copyAsNew;
+            _editorFileNameManual = false;
 
             var modRoot = _viewModel?.CurrentProfile?.ModRoot;
             _editorTargetFolder = string.IsNullOrEmpty(modRoot)
@@ -672,6 +682,19 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     ? Res("CulturesTab_EditorNoTarget")
                     : _editorTargetFolder;
             }
+            if (EditorCultureId != null)
+                EditorCultureId.IsReadOnly = !_editorIsNew;
+            if (!_editorFileNameManual)
+                UpdateDefaultEditorFileName();
+        }
+
+        private void UpdateDefaultEditorFileName()
+        {
+            if (EditorFileName == null) return;
+            string id = EditorCultureId?.Text?.Trim() ?? "";
+            string prefix = _viewModel?.CurrentProfile?.FileNamePrefixes.TryGetValue("culture", out var p) == true ? (p ?? "") : "";
+            string baseName = SanitizeFileName(string.IsNullOrEmpty(id) ? "culture" : id);
+            EditorFileName.Text = $"{prefix}{baseName}.txt";
         }
 
         private void EditorBrowseFolder_Click(object sender, RoutedEventArgs e)
@@ -716,7 +739,20 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             EditorClothingGfx.Text = "";
             EditorUnitGfx.Text = "";
             _editorCulture = null;
+            _editorFileNameManual = false;
+            UpdateEditorModeUi();
             EditorStatusText.Text = Res("CulturesTab_EditorHint");
+        }
+
+        private void EditorCultureId_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (!_editorFileNameManual)
+                UpdateDefaultEditorFileName();
+        }
+
+        private void EditorFileName_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            _editorFileNameManual = true;
         }
 
         private void EditorSave_Click(object sender, RoutedEventArgs e)
@@ -767,27 +803,153 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 }
             }
 
-            string prefix = profile.FileNamePrefixes.TryGetValue("culture", out var p) ? p ?? "" : "";
-            string baseName = SanitizeFileName(cultureId);
-            string fileName = $"{prefix}{baseName}.txt";
-            string fullPath = Path.Combine(_editorTargetFolder, fileName);
-
-            if (File.Exists(fullPath))
+            if (CultureExistsInMod(modRoot, cultureId, out string? existingFile))
             {
-                EditorStatusText.Text = string.Format(Res("CulturesTab_EditorFileExists"), fileName);
+                EditorStatusText.Text = string.Format(Res("CulturesTab_EditorCultureExists"), cultureId);
                 return;
             }
 
+            string prefix = profile.FileNamePrefixes.TryGetValue("culture", out var p) ? p ?? "" : "";
+            string defaultName = $"{prefix}{SanitizeFileName(cultureId)}.txt";
+            string enteredName = EditorFileName?.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(enteredName) && !enteredName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                EditorStatusText.Text = Res("CulturesTab_EditorFileNameInvalid");
+                return;
+            }
+            string fileName = string.IsNullOrEmpty(enteredName) ? defaultName : enteredName;
+            fileName = SanitizeFileName(fileName);
+            if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                fileName += ".txt";
+
+            string fullPath = Path.Combine(_editorTargetFolder, fileName);
+
             try
             {
-                File.WriteAllText(fullPath, block, new System.Text.UTF8Encoding(true));
-                EditorStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), fileName);
+                if (File.Exists(fullPath))
+                {
+                    InsertCultureIntoFileAlphabetically(fullPath, cultureId, block);
+                    EditorStatusText.Text = string.Format(Res("CulturesTab_EditorAddedToFile"), fileName);
+                }
+                else
+                {
+                    File.WriteAllText(fullPath, block, new System.Text.UTF8Encoding(true));
+                    EditorStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), fileName);
+                }
                 RefreshCultureTree();
             }
             catch (Exception ex)
             {
                 EditorStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
             }
+        }
+
+        private static bool CultureExistsInMod(string modRoot, string cultureId, out string? filePath)
+        {
+            filePath = null;
+            string folder = Path.Combine(modRoot, "common", "culture", "cultures", "mod");
+            if (!Directory.Exists(folder)) return false;
+
+            foreach (var file in Directory.EnumerateFiles(folder, "*.txt", SearchOption.AllDirectories))
+            {
+                if (CultureBlockExistsInFile(file, cultureId))
+                {
+                    filePath = file;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool CultureBlockExistsInFile(string filePath, string cultureId)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                if (string.Equals(key, cultureId, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                pos++;
+                ReadBlock(text, ref pos);
+            }
+            return false;
+        }
+
+        private static void InsertCultureIntoFileAlphabetically(string filePath, string cultureId, string block)
+        {
+            var text = File.ReadAllText(filePath);
+            var cultureIds = new List<string>();
+            var positions = new List<int>();
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+                cultureIds.Add(key);
+                positions.Add(keyStart);
+            }
+
+            int insertIndex = 0;
+            while (insertIndex < cultureIds.Count &&
+                   string.Compare(cultureIds[insertIndex], cultureId, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                insertIndex++;
+            }
+
+            var blockText = block.TrimEnd('\n', '\r');
+            string newText;
+            if (insertIndex >= cultureIds.Count)
+            {
+                if (text.Length > 0 && !text.EndsWith("\n", StringComparison.Ordinal))
+                    text += Environment.NewLine;
+                newText = text + blockText + Environment.NewLine;
+            }
+            else
+            {
+                int at = positions[insertIndex];
+                string prefix = text.Substring(0, at);
+                string suffix = text.Substring(at);
+                newText = prefix + blockText + Environment.NewLine + suffix;
+            }
+
+            File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
         }
 
         private void RefreshCultureTree()
@@ -799,13 +961,29 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
         private void SaveExistingCulture(string block)
         {
-            if (_editorCulture == null || string.IsNullOrEmpty(_editorCulture.SourceFile))
+            var profile = _viewModel?.CurrentProfile;
+            var editorCulture = _editorCulture;
+            if (editorCulture == null || profile == null)
             {
                 EditorStatusText.Text = Res("CulturesTab_EditorNoSourceFile");
                 return;
             }
 
-            string filePath = _editorCulture.SourceFile;
+            string rawKey = editorCulture.RawKey;
+            string filePath = "";
+            if (_cultureFileIndex.TryGetValue(rawKey, out var indexed))
+            {
+                filePath = indexed;
+            }
+            else if (CultureExistsInMod(profile.ModRoot, rawKey, out var found))
+            {
+                filePath = found ?? "";
+            }
+            else
+            {
+                filePath = editorCulture.SourceFile ?? "";
+            }
+
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
             {
                 EditorStatusText.Text = Res("CulturesTab_EditorNoSourceFile");
@@ -814,7 +992,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
             try
             {
-                ReplaceCultureInFile(filePath, _editorCulture.RawKey, block);
+                ReplaceCultureInFile(filePath, rawKey, block);
                 EditorStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), Path.GetFileName(filePath));
                 RefreshCultureTree();
             }

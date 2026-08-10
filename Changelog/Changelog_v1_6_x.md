@@ -1,0 +1,99 @@
+﻿# Changelog - PdxModIDE
+
+All notable changes for the 1.6.x series of this project are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.6.8]
+
+### Added
+
+- **Editable output file name in the culture editor (Cultures tab)**: when saving a new/copied culture, the target file name is now editable (defaults to `<prefix><id>.txt`). The name must end in `.txt`, otherwise a localized validation error is shown. The folder selector is restricted to `common\culture\cultures\mod` and its subfolders.
+
+### Changed
+
+- **Culture existence checked by content**: saving a new/copied culture now checks whether a culture with the same id already exists by reading the content of the culture files inside `common\culture\cultures\mod` (and subfolders), instead of relying on the file name. If the culture already exists in a file, the new block is inserted alphabetically in that file; otherwise a new file is created with the chosen name.
+- **Culture id locked in edit mode**: when editing an existing culture, the id field is read-only so a culture cannot be renamed; save writes back to the culture's original file.
+- **`CultureInfo` lookup generalized**: the raw key of a culture is now resolved through a file index first and a content scan as fallback, so editing locates the correct source file.
+
+---
+
+## [1.6.7]
+### Added
+- **Culture editor save (Cultures tab)**: the culture editor can now write culture files. New/copied cultures are saved as `<prefix><id>.txt` (using the profile file-naming prefix) inside `common\culture\cultures\mod` or any subfolder chosen with a folder selector (restricted to that folder). Editing a mod culture writes back to its original file. New cultures are only saved when the target file does not exist; a "Clear fields" button (new/copied mode) resets the form. After saving, the culture tree is refreshed so the new/edited culture appears in the list.
+### Changed
+- `CultureInfo` now tracks the source file (`SourceFile`) and the parsed key (`RawKey`) so editing can locate and rewrite the original file.
+
+---
+
+## [1.6.6]
+### Added
+- **File naming conventions (Profile tab)**: a new "File naming conventions" section lets you set a custom prefix for the files generated for culture files. A preview shows the final name (`<prefix>[culture name].txt`). The prefix is stored per profile and persisted with the profile.
+### Changed
+- **Profile settings no longer auto-save**: the profile paths (game/mod/backup roots), the year offset (Dates tab) and the "Show titles names" option (History tab) are no longer saved automatically. All changes are now saved with the "Save profile" button in the Profile tab.
+- **Unsaved changes highlighted in red**: fields whose value differs from the last saved profile are shown in red (profile routes, culture file prefix, year offset and the "Show titles" checkbox) until the profile is saved.
+
+---
+
+## [1.6.5]
+### Added
+- **Ethnicities in the culture detail (Cultures tab)**: the detail panel now shows the culture's ethnicities (from `ethnicities = { <weight> = <ethnicity> ... }` at the end of the culture definition), each one on its own line in `name weight%` format (e.g. `caucasian_blond 25%`). The `weight` values are parsed as percentages as they appear in the game file. Ethnicity IDs have no localization in the game files, so they are shown as-is. The field is placed at the end of the detail panel, after the Graphics section.
+
+---
+
+## [1.6.4]
+### Added
+- **Culture editor (Cultures tab, in-memory)**: the Cultures tab now has two sub-tabs: the existing culture list and a new editor sub-tab (header "New culture" / "Edit: <name>") with fields for id, heritage, ethos, color and the building/clothing/unit `_gfx` tags. Opening it does not write any file yet (in-memory only).
+- **Culture context menu**: right-clicking a culture shows a context menu with "Create culture copying this one" (available for every culture) and "Edit culture" (only shown when the selected culture is editable). Right-clicking a culture now selects it first.
+- **Culture color legend (Cultures tab)**: a legend under the statistics shows the three source colors used in the list: base cultures (black), mod non-editable cultures (blue) and new/editable mod cultures (green).
+### Changed
+- **Culture list source colors**: culture names are now colored by their source: base game cultures in black (same as their group), mod cultures that are not editable in blue and new mod cultures (editable) in green, matching the new legend.
+- **Editor sub-tab title initialized**: the editor sub-tab header is set to "New culture" when the tab loads, so it is visible from the start.
+### Fixed
+- **Culture names showed in black**: the `TreeView` item template applied to all levels, so the implicit `DataTemplate` for `CultureInfo` (which binds the source color) was never used. The child template is now nested in the `HierarchicalDataTemplate` and the source color is applied to the culture name.
+- **"Edit culture" did nothing**: WPF does not select a `TreeViewItem` on right-click, so the selected item was not a `CultureInfo` and the handler returned early. A `PreviewMouseRightButtonDown` handler now selects the item under the mouse, and the context menu is cancelled when no culture is under the cursor.
+- **Language files `es.xaml`/`ca.xaml` mojibake**: strings were double-encoded (UTF-8 interpreted as Windows-1252 and re-encoded), showing characters like `dinastÃ­a` instead of `dinastía`. Repaired the double-encoded sequences (accents and em-dashes/curly quotes) and normalized to a single UTF-8 BOM. `README.md` and the documentation/`CHANGELOG` files had the same corruption and were repaired too.
+
+---
+
+## [1.6.3]
+### Added
+- **Unit mesh grid resolved by the real CK3 chain (Cultures tab)**: `PdxUnitResolver` now resolves the `unit_gfx` tags of a culture through `common/graphical_unit_types/*.txt` (expanding group tags), the `entity_links` blocks (`00_{army,fleet,siege,travel}_entity_links.txt`, with `type`, `graphical_cultures`, `quality` and `entity`) and the unit `.asset` (`pdxmesh` + `meshsettings`) to the `.mesh` and its diffuse texture. The units grid shows each resolved mesh (army/fleet/siege/travel) with its diffuse, following the exact game resolution instead of the previous folder-prefix fallback.
+- **`CulturesTab_Loading` localization key**: shared "Loading models…" message used by the three model sections.
+### Changed
+- **Model sections are independent and lazy-loaded**: the Building, Clothing and Unit grids now live each in its own `Expander`, collapsed by default, so models are not loaded when the tab opens or when switching cultures. Each section is resolved only the first time it is expanded; switching culture resets the sections, so re-expanding recalculates the current culture. A localized "Loading models…" indicator is shown while a section loads.
+### Fixed
+- **`unit_gfx` tags inside `graphical_cultures` blocks** are now parsed as block children (the entity links store them as bare tokens inside `{ }`), which previously yielded no unit meshes.
+- **`@tier*_quality` macros**: the `quality` field in the entity links references file-level macros (`@tier2_quality = 2`, `@tier3_quality = 4`); the resolver now collects them so tier/quality resolves instead of staying 0.
+
+---
+
+## [1.6.2]
+### Added
+- **Deterministic clothing painter (`PdxClothingPainter`) (Cultures tab)**: the clothing grid now colors each garment by reconstructing the CK3 `portrait_attachment_pattern` shader offline (the binary `portrait.shader` is not shipped to users). `Paint(gameRoot, assetPath, meshPath)` decodes the base diffuse, the entity `pattern_mask` (RGBA), the variation's 4 colormasks and the 16-wide colour palette, sampling each active mask channel against its own colormask and indexing palette row 0 (deterministic hue family), weighting the tint and multiplying the base diffuse. Output is BGRA.
+### Changed
+- **Mesh UV-set-2 pattern sampling**: patterns are now sampled using the mesh's UV-set 2 (`u1`) instead of the diffuse UV0. `PdxClothingPainter.BuildXyzMapping(meshPath, pw, ph)` rasterizes the mesh triangles in UV0 space and interpolates uv1 per diffuse texel, falling back to UV0 when no mesh or triangle covers the texel. This makes the colored pattern follow the garment's real UV layout.
+- **Colormask layout transform**: each channel's colormask UV is now transformed by its referenced `pattern_layout` (scale / rotation / offset) before sampling (`LoadLayouts`, `ParseLayoutBlock`, `ApplyLayout`), matching the game's "patterns are sampled using UV-set 2 with scale/rotation/offset" behaviour.
+- **Clothing painter color reused in double-click preview**: the painted texture computed for the grid is also applied to the `MeshPreview` window opened on double-click, so the garment keeps its colored pattern everywhere.
+### Fixed
+- **Colormask paths resolved against the game root**: `ResolveTexture` now detects `gfx\`/`game\` relative paths in the accessory `.asset` and resolves them against the game root instead of the asset's folder, so the `pattern_mask` actually loads and the garment gets tinted (previously it was always gray).
+- **Out-of-range pattern UVs handled**: mask and colormask indices are clamped to tolerate UV-set-2 coordinates outside [0,1), avoiding `IndexOutOfRangeException`.
+
+---
+
+## [1.6.1]
+### Added
+- **Full BC7/DX10 texture decode in the building grid (Cultures tab)**: `DdsDecoder` now decodes the DirectX10 (DX10/`DDS_HEADER_DXT10`) textures found on CK3 building meshes: all 8 BC7 modes (dxgi formats 98/99), as well as BC4 (74) and BC5 (76). BC6H (95/96) is detected and rejected with `NotSupportedException`. Previously these textures decoded as flat gray. This makes the `_unique.dds` textures used across ep3/tgp buildings display their correct colors.
+### Changed
+- **Per-mesh textured building grid (Cultures tab)**: the building grid now renders each submesh with its own diffuse + UV set + optional `_unique` texture resolved from the companion `.asset` (`texture = { file = "..._unique.dds" index = 5 }`), sampling the unique through UV1 and falling back to the diffuse atlas when there is no second UV set. Collision submeshes are skipped.
+- **Fixed channel-order bug that made buildings appear blue**: pixel data from `DdsDecoder` is stored in RGBA order, but the WPF `BitmapSource` was built with `Bgra32`. `LoadTexture` now converts RGBA→BGRA before creating the bitmap, so red `_unique` textures (roofs, etc.) render red instead of blue.
+- **Atlas + unique color blend (option 2)**: building submeshes now use the diffuse atlas (UV1) as the base detail texture tinted by the average color of the building's `_unique` texture via the `DiffuseMaterial`, replicating the game's `standard_atlas` shader (`Diffuse.rgb *= Unique`), with a 70% mix factor so detail stays visible.
+
+---
+
+## [1.6.0]
+### Changed
+- **Culture Coat-of-Arms preview (Cultures tab)**: the Coat-of-Arms block no longer renders a shield preview (neither 3D viewport nor image); it now shows only the GFX text (`coa_gfx = ...`). The 3D previews for `building_gfx`, `clothing_gfx` and `unit_gfx` remain unchanged.

@@ -461,7 +461,7 @@
                 <GroupBox Header="{DynamicResource CulturesTab_EditorName}">
                     <StackPanel>
                         <Label Content="{DynamicResource CulturesTab_EditorCultureId}" FontWeight="Bold"/>
-                        <TextBox x:Name="EditorCultureId" Margin="15,0,0,4"/>
+                        <TextBox x:Name="EditorCultureId" Margin="15,0,0,4" TextChanged="EditorCultureId_TextChanged"/>
                         <Label Content="{DynamicResource CulturesTab_EditorHeritage}" FontWeight="Bold"/>
                         <TextBox x:Name="EditorHeritage" Margin="15,0,0,4"/>
                         <Label Content="{DynamicResource CulturesTab_EditorEthos}" FontWeight="Bold"/>
@@ -486,7 +486,12 @@
                             VerticalAlignment="Center">
                     <Button Content="{DynamicResource CulturesTab_EditorBrowseFolder}" Width="150"
                             Click="EditorBrowseFolder_Click" Margin="0,0,10,0"/>
-                    <TextBlock x:Name="EditorTargetFolderText" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="EditorTargetFolderText" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Center">
+                    <Label Content="{DynamicResource CulturesTab_EditorFileName}" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <TextBox x:Name="EditorFileName" Width="250" VerticalAlignment="Center"
+                             TextChanged="EditorFileName_TextChanged"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">

@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.7</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.8</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -215,7 +215,7 @@
     <system:String x:Key="CulturesTab_LegendModNew">• Mod (nova / editable)</system:String>
     <system:String x:Key="CulturesTab_CtxCopy">Crear cultura copiant aquesta</system:String>
     <system:String x:Key="CulturesTab_CtxEdit">Editar cultura</system:String>
-    <system:String x:Key="CulturesTab_EditorHint">Omple els camps i prem Desar. Les cultures noves s'escriuen en una carpeta dins de common\culture\cultures\mod fent servir el prefix de nomenclatura del perfil.</system:String>
+    <system:String x:Key="CulturesTab_EditorHint">Omple els camps i prem Desar. Les cultures noves s'escriuen en una carpeta dins de common\culture\cultures\mod (el nom del fitxer usa per defecte el prefix del perfil; pots canviar-lo). Si la cultura ja existeix al mod, es bloqueja. En mode edició l'identificador està bloquejat.</system:String>
     <system:String x:Key="CulturesTab_EditorNewTitle">Nova cultura</system:String>
     <system:String x:Key="CulturesTab_EditorEditTitle">Editar cultura</system:String>
     <system:String x:Key="CulturesTab_EditorName">Name</system:String>
@@ -239,6 +239,10 @@
     <system:String x:Key="CulturesTab_EditorSaved">Cultura desada com a {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSaveError">No s'ha pogut desar la cultura:</system:String>
     <system:String x:Key="CulturesTab_EditorNoSourceFile">No s'ha trobat el fitxer d'origen d'aquesta cultura.</system:String>
+    <system:String x:Key="CulturesTab_EditorFileName">Nom del fitxer:</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureExists">Ja existeix una cultura anomenada "{0}" al mod.</system:String>
+    <system:String x:Key="CulturesTab_EditorAddedToFile">Cultura afegida al fitxer existent {0}</system:String>
+    <system:String x:Key="CulturesTab_EditorFileNameInvalid">El nom del fitxer ha d'acabar en .txt</system:String>
     <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Meshes d'edifici resolts:</system:String>
     <system:String x:Key="CulturesTab_BuildingGfxHint">Feu doble clic en un model per veure'l engrandit.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfxHint">Les malles de roba es mostren com a miniatures.</system:String>

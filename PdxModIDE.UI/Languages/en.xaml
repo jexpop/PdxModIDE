@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.7</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.8</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -215,7 +215,7 @@
     <system:String x:Key="CulturesTab_LegendModNew">• Mod (new / editable)</system:String>
     <system:String x:Key="CulturesTab_CtxCopy">Create culture by copying this one</system:String>
     <system:String x:Key="CulturesTab_CtxEdit">Edit culture</system:String>
-    <system:String x:Key="CulturesTab_EditorHint">Fill in the fields and press Save. New cultures are written to a folder under common\culture\cultures\mod using the profile file-naming prefix.</system:String>
+    <system:String x:Key="CulturesTab_EditorHint">Fill in the fields and press Save. New cultures are written to a folder under common\culture\cultures\mod (file name defaults to the profile naming prefix; you can change it). If the culture already exists in the mod, it is blocked. In edit mode the identifier is locked.</system:String>
     <system:String x:Key="CulturesTab_EditorNewTitle">New culture</system:String>
     <system:String x:Key="CulturesTab_EditorEditTitle">Edit culture</system:String>
     <system:String x:Key="CulturesTab_EditorName">Name</system:String>
@@ -238,7 +238,11 @@
     <system:String x:Key="CulturesTab_EditorFileExists">A file with that name already exists: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSaved">Culture saved as {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSaveError">Could not save the culture:</system:String>
-    <system:String x:Key="CulturesTab_EditorNoSourceFile">The source file for this culture was not found.</system:String>
+    <system:String x:Key="CulturesTab_EditorNoSourceFile">No source file was found for this culture.</system:String>
+    <system:String x:Key="CulturesTab_EditorFileName">File name:</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureExists">A culture named "{0}" already exists in the mod.</system:String>
+    <system:String x:Key="CulturesTab_EditorAddedToFile">Culture added to the existing file {0}</system:String>
+    <system:String x:Key="CulturesTab_EditorFileNameInvalid">The file name must end with .txt</system:String>
     <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Resolved building meshes:</system:String>
     <system:String x:Key="CulturesTab_BuildingGfxHint">Double-click a model to view it enlarged.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfxHint">Clothing meshes previewed as thumbnails.</system:String>

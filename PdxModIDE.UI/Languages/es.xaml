@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.7</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.8</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -215,7 +215,7 @@
     <system:String x:Key="CulturesTab_LegendModNew">• Mod (nueva / editable)</system:String>
     <system:String x:Key="CulturesTab_CtxCopy">Crear cultura copiando esta</system:String>
     <system:String x:Key="CulturesTab_CtxEdit">Editar cultura</system:String>
-    <system:String x:Key="CulturesTab_EditorHint">Rellena los campos y pulsa Guardar. Las culturas nuevas se escriben en una carpeta dentro de common\culture\cultures\mod usando el prefijo de nomenclatura del perfil.</system:String>
+    <system:String x:Key="CulturesTab_EditorHint">Rellena los campos y pulsa Guardar. Las culturas nuevas se escriben en una carpeta dentro de common\culture\cultures\mod (el nombre del archivo usa por defecto el prefijo del perfil; puedes cambiarlo). Si la cultura ya existe en el mod, se bloquea. En modo edición el identificador está bloqueado.</system:String>
     <system:String x:Key="CulturesTab_EditorNewTitle">Nueva cultura</system:String>
     <system:String x:Key="CulturesTab_EditorEditTitle">Editar cultura</system:String>
     <system:String x:Key="CulturesTab_EditorName">Nombre</system:String>
@@ -239,6 +239,10 @@
     <system:String x:Key="CulturesTab_EditorSaved">Cultura guardada como {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSaveError">No se pudo guardar la cultura:</system:String>
     <system:String x:Key="CulturesTab_EditorNoSourceFile">No se ha encontrado el archivo de origen de esta cultura.</system:String>
+    <system:String x:Key="CulturesTab_EditorFileName">Nombre del archivo:</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureExists">Ya existe una cultura llamada "{0}" en el mod.</system:String>
+    <system:String x:Key="CulturesTab_EditorAddedToFile">Cultura añadida al archivo existente {0}</system:String>
+    <system:String x:Key="CulturesTab_EditorFileNameInvalid">El nombre del archivo debe terminar en .txt</system:String>
     <system:String x:Key="CulturesTab_BuildingResolvedMeshes">Meshes de edificio resueltos:</system:String>
     <system:String x:Key="CulturesTab_BuildingGfxHint">Haz doble clic en un modelo para verlo en grande.</system:String>
     <system:String x:Key="CulturesTab_ClothingGfxHint">Los mallas de ropa se muestran como miniaturas.</system:String>
