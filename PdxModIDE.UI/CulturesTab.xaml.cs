@@ -658,8 +658,6 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
             UpdateEditorModeUi();
 
-            EditorStatusText.Text = Res("CulturesTab_EditorHint");
-
             if (CulturesSubTabs != null)
             {
                 var editTab = EditorTabItem as System.Windows.Controls.TabItem;
@@ -682,10 +680,24 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     ? Res("CulturesTab_EditorNoTarget")
                     : _editorTargetFolder;
             }
+            if (EditorIdRow != null)
+                EditorIdRow.Visibility = _editorIsNew ? Visibility.Visible : Visibility.Collapsed;
+            if (EditorFileNameRow != null)
+                EditorFileNameRow.Visibility = _editorIsNew ? Visibility.Visible : Visibility.Collapsed;
             if (EditorCultureId != null)
                 EditorCultureId.IsReadOnly = !_editorIsNew;
             if (!_editorFileNameManual)
                 UpdateDefaultEditorFileName();
+            UpdateEditorHint();
+        }
+
+        private void UpdateEditorHint()
+        {
+            string hint = Res(_editorIsNew ? "CulturesTab_EditorHint" : "CulturesTab_EditorEditHint");
+            if (EditorHintText != null)
+                EditorHintText.Text = hint;
+            if (EditorStatusText != null)
+                EditorStatusText.Text = hint;
         }
 
         private void UpdateDefaultEditorFileName()
@@ -741,7 +753,6 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorCulture = null;
             _editorFileNameManual = false;
             UpdateEditorModeUi();
-            EditorStatusText.Text = Res("CulturesTab_EditorHint");
         }
 
         private void EditorCultureId_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

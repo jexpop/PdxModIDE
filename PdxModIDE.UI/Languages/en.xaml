@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.8</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.9</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -215,12 +215,12 @@
     <system:String x:Key="CulturesTab_LegendModNew">• Mod (new / editable)</system:String>
     <system:String x:Key="CulturesTab_CtxCopy">Create culture by copying this one</system:String>
     <system:String x:Key="CulturesTab_CtxEdit">Edit culture</system:String>
-    <system:String x:Key="CulturesTab_EditorHint">Fill in the fields and press Save. New cultures are written to a folder under common\culture\cultures\mod (file name defaults to the profile naming prefix; you can change it). If the culture already exists in the mod, it is blocked. In edit mode the identifier is locked.</system:String>
+    <system:String x:Key="CulturesTab_EditorHint">Fill in the fields and press Save. New cultures are written to a folder under common\culture\cultures\mod (file name defaults to the profile naming prefix; you can change it).</system:String>
+    <system:String x:Key="CulturesTab_EditorEditHint">Modify the fields and press Save. New cultures are written to a folder under common\culture\cultures\mod (file name defaults to the profile naming prefix; you can change it).</system:String>
     <system:String x:Key="CulturesTab_EditorNewTitle">New culture</system:String>
     <system:String x:Key="CulturesTab_EditorEditTitle">Edit culture</system:String>
-    <system:String x:Key="CulturesTab_EditorName">Name</system:String>
     <system:String x:Key="CulturesTab_EditorDetails">Details</system:String>
-    <system:String x:Key="CulturesTab_EditorCultureId">Identifier</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureId">Name</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Heritage</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>

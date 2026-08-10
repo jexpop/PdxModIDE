@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.9]
+
+### Changed
+
+- **Culture editor field labels and hints (Cultures tab)**: the main field is now labelled "Name" instead of "Identifier", and the editor hint no longer mentions that the culture is blocked when it already exists in the mod or that the identifier is locked in edit mode. In edit mode the hint reads "Modify the fields and press Save" instead of "Fill in the fields and press Save".
+- **Edit mode hides the identifier and file name**: when editing an existing culture, the identifier field and the target file name row are no longer shown (both are read-only in edit mode); they remain visible when creating a new culture. The "Name" field label group no longer has a group header (the box border is kept).
+
+### Removed
+
+- **Culture editor "Name" group header**: the `CulturesTab_EditorName` localization key was removed (the field label now is "Name", localized as `CulturesTab_EditorCultureId`).
+
+---
+
 ## [1.6.8]
 
 ### Added
