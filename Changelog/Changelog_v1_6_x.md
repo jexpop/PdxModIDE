@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.10]
+
+### Changed
+
+- **Culture editor form layout (Cultures tab)**: the main group now follows the order Name → Color → Ethos → Heritage → Language → Martial custom → Head determination, matching the CK3 culture definition structure.
+- **Culture name field**: the Name field is limited to 50 characters (`MaxLength`) and its input box is left-aligned with a reduced width.
+- **Color as a picker**: the color field is no longer a free-text box. A preview swatch plus a "Choose color…" button opens the Windows color dialog. New cultures default to white. When editing/copying, the source culture's color (RGB or named colour reference) is preselected and the reference is preserved if not changed.
+- **Ethos/Heritage in combo boxes**: Ethos and Heritage are now combo boxes listing the available definitions (localized display names, falling back to the definition key) including a "—" (none) option that is preselected for new cultures.
+- **Language, Martial custom and Head determination fields added**: three new combo boxes with the same behaviour (values loaded from the corresponding definition files).
+- **Color saved without the `rgb` keyword**: the color is written as `color = { r g b }` with normalized 0–1 values, matching the format used by the game files (the game never writes an explicit `rgb` keyword). Named colour references (`color = <name>`) are kept as-is when unchanged.
+
+### Added
+
+- **Unsaved changes highlighted in red**: when editing or copying a culture, fields whose value differs from the last saved state are shown in red (same pattern as the Profile tab) until the culture is saved.
+
+---
+
 ## [1.6.9]
 
 ### Changed

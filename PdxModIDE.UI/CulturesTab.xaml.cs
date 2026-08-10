@@ -264,6 +264,28 @@ namespace PdxModIDE.UI
         private bool _editorFileNameManual;
         private readonly Dictionary<string, string> _cultureFileIndex = new(StringComparer.OrdinalIgnoreCase);
 
+        private Dictionary<string, EthosInfo> _editorEthosDefs = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, HeritageInfo> _editorHeritageDefs = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, LanguageInfo> _editorLanguageDefs = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, MartialCustomInfo> _editorMartialCustomDefs = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, HeadDeterminationInfo> _editorHeadDeterminationDefs = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, NamedColor> _editorNamedColors = new(StringComparer.OrdinalIgnoreCase);
+
+        private bool _editorColorTouched;
+        private byte _editorColorR = 255;
+        private byte _editorColorG = 255;
+        private byte _editorColorB = 255;
+        private string _editorColorReferenceName = "";
+
+        private bool _editorHasSavedState;
+        private string _editorSavedCultureId = "";
+        private string _editorSavedEthos = "";
+        private string _editorSavedHeritage = "";
+        private string _editorSavedLanguage = "";
+        private string _editorSavedMartialCustom = "";
+        private string _editorSavedHeadDetermination = "";
+        private string _editorSavedColor = "";
+
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.BuildingAssetDatabase> _buildingDbCache = new(StringComparer.OrdinalIgnoreCase);
@@ -373,6 +395,16 @@ namespace PdxModIDE.UI
             var headDeterminationDefinitions = LoadHeadDeterminationDefinitions(gameRoot, modRoot);
             var nameListDefinitions = LoadNameListDefinitions(gameRoot, modRoot);
             var traditionDefinitions = LoadTraditionDefinitions(gameRoot, modRoot);
+
+            _editorNamedColors = namedColors;
+            _editorEthosDefs = ethosDefinitions;
+            _editorHeritageDefs = heritageDefinitions;
+            _editorLanguageDefs = languageDefinitions;
+            _editorMartialCustomDefs = martialCustomDefinitions;
+            _editorHeadDeterminationDefs = headDeterminationDefinitions;
+
+            if (_editorCulture == null && EditorEthos != null)
+                ResetEditorForNewCulture();
 
             foreach (var ethos in ethosDefinitions.Values)
             {
@@ -638,11 +670,39 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             }
 
             EditorCultureId.Text = culture.Name ?? "";
-            EditorHeritage.Text = culture.Heritage ?? "";
-            EditorEthos.Text = culture.Ethos ?? "";
-            EditorColor.Text = culture.HasColor
-                ? $"{culture.R}, {culture.G}, {culture.B}"
-                : (culture.ColorReference ?? "");
+            PopulateEditorCombo(EditorEthos, GetEthosOptions(), culture.Ethos ?? "");
+            PopulateEditorCombo(EditorHeritage, GetHeritageOptions(), culture.Heritage ?? "");
+            PopulateEditorCombo(EditorLanguage, GetLanguageOptions(), culture.Language ?? "");
+            PopulateEditorCombo(EditorMartialCustom, GetMartialCustomOptions(), culture.MartialCustom ?? "");
+            PopulateEditorCombo(EditorHeadDetermination, GetHeadDeterminationOptions(), culture.HeadDetermination ?? "");
+
+            _editorColorReferenceName = culture.ColorReference ?? "";
+            if (culture.HasColor)
+            {
+                _editorColorR = culture.R;
+                _editorColorG = culture.G;
+                _editorColorB = culture.B;
+                _editorColorTouched = false;
+            }
+            else if (!string.IsNullOrEmpty(_editorColorReferenceName)
+                     && _editorNamedColors.TryGetValue(_editorColorReferenceName, out var named)
+                     && named.HasColor)
+            {
+                _editorColorR = named.R;
+                _editorColorG = named.G;
+                _editorColorB = named.B;
+                _editorColorTouched = false;
+            }
+            else
+            {
+                _editorColorR = 255;
+                _editorColorG = 255;
+                _editorColorB = 255;
+                _editorColorTouched = !string.IsNullOrEmpty(_editorColorReferenceName);
+            }
+            if (EditorColorPreview != null)
+                EditorColorPreview.Background = new SolidColorBrush(GetEditorArgb(255, _editorColorR, _editorColorG, _editorColorB));
+
             EditorBuildingGfx.Text = string.Join(", ", culture.BuildingGfx ?? new List<string>());
             EditorClothingGfx.Text = string.Join(", ", culture.ClothingGfx ?? new List<string>());
             EditorUnitGfx.Text = string.Join(", ", culture.UnitGfx ?? new List<string>());
@@ -650,6 +710,9 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorCulture = culture;
             _editorIsNew = copyAsNew;
             _editorFileNameManual = false;
+
+            CaptureEditorSavedState();
+            UpdateEditorDirtyState();
 
             var modRoot = _viewModel?.CurrentProfile?.ModRoot;
             _editorTargetFolder = string.IsNullOrEmpty(modRoot)
@@ -743,15 +806,14 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
         private void EditorClear_Click(object sender, RoutedEventArgs e)
         {
-            EditorCultureId.Text = "";
-            EditorHeritage.Text = "";
-            EditorEthos.Text = "";
-            EditorColor.Text = "";
+            ResetEditorForNewCulture();
             EditorBuildingGfx.Text = "";
             EditorClothingGfx.Text = "";
             EditorUnitGfx.Text = "";
             _editorCulture = null;
             _editorFileNameManual = false;
+            EditorCultureId.Text = "";
+            _editorHasSavedState = false;
             UpdateEditorModeUi();
         }
 
@@ -759,6 +821,161 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
         {
             if (!_editorFileNameManual)
                 UpdateDefaultEditorFileName();
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorField_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorColor_Click(object sender, RoutedEventArgs e)
+        {
+            using var dialog = new System.Windows.Forms.ColorDialog();
+            dialog.FullOpen = true;
+            dialog.Color = System.Drawing.Color.FromArgb(_editorColorR, _editorColorG, _editorColorB);
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _editorColorR = dialog.Color.R;
+                _editorColorG = dialog.Color.G;
+                _editorColorB = dialog.Color.B;
+                _editorColorTouched = true;
+                _editorColorReferenceName = "";
+                if (EditorColorPreview != null)
+                    EditorColorPreview.Background = new SolidColorBrush(GetEditorArgb(255, _editorColorR, _editorColorG, _editorColorB));
+                UpdateEditorDirtyState();
+            }
+        }
+
+        private IEnumerable<(string Key, string Display)> GetEthosOptions()
+        {
+            foreach (var def in _editorEthosDefs.Values.OrderBy(d => d.DisplayName, StringComparer.OrdinalIgnoreCase))
+                yield return (def.Name, def.DisplayName);
+        }
+
+        private IEnumerable<(string Key, string Display)> GetHeritageOptions()
+        {
+            foreach (var def in _editorHeritageDefs.Values.OrderBy(d => d.DisplayName, StringComparer.OrdinalIgnoreCase))
+                yield return (def.Name, def.DisplayName);
+        }
+
+        private IEnumerable<(string Key, string Display)> GetLanguageOptions()
+        {
+            foreach (var def in _editorLanguageDefs.Values.OrderBy(d => d.DisplayName, StringComparer.OrdinalIgnoreCase))
+                yield return (def.Name, def.DisplayName);
+        }
+
+        private IEnumerable<(string Key, string Display)> GetMartialCustomOptions()
+        {
+            foreach (var def in _editorMartialCustomDefs.Values.OrderBy(d => d.DisplayName, StringComparer.OrdinalIgnoreCase))
+                yield return (def.Name, def.DisplayName);
+        }
+
+        private IEnumerable<(string Key, string Display)> GetHeadDeterminationOptions()
+        {
+            foreach (var def in _editorHeadDeterminationDefs.Values.OrderBy(d => d.DisplayName, StringComparer.OrdinalIgnoreCase))
+                yield return (def.Name, def.DisplayName);
+        }
+
+        private static void PopulateEditorCombo(System.Windows.Controls.ComboBox combo, IEnumerable<(string Key, string Display)> options, string currentValue)
+        {
+            if (combo == null) return;
+            combo.Items.Clear();
+            combo.Items.Add(new ComboBoxItem { Tag = "", Content = Res("CulturesTab_EditorNone") });
+            foreach (var (key, display) in options)
+                combo.Items.Add(new ComboBoxItem { Tag = key, Content = display });
+
+            string normalized = (currentValue ?? "").Trim();
+            foreach (ComboBoxItem item in combo.Items)
+            {
+                if (string.Equals((item.Tag as string) ?? "", normalized, StringComparison.OrdinalIgnoreCase))
+                {
+                    combo.SelectedItem = item;
+                    return;
+                }
+            }
+            combo.SelectedIndex = 0;
+        }
+
+        private static string GetSelectedOption(System.Windows.Controls.ComboBox combo)
+        {
+            if (combo?.SelectedItem is ComboBoxItem item)
+                return (item.Tag as string) ?? "";
+            return "";
+        }
+
+        private string GetEditorColorString()
+        {
+            if (_editorColorTouched || string.IsNullOrEmpty(_editorColorReferenceName))
+                return $"rgb {_editorColorR} {_editorColorG} {_editorColorB}";
+            return _editorColorReferenceName;
+        }
+
+        private static System.Windows.Media.Color GetEditorArgb(byte a, byte r, byte g, byte b)
+            => System.Windows.Media.Color.FromArgb(a, r, g, b);
+
+        private void ResetEditorForNewCulture()
+        {
+            if (EditorEthos != null) PopulateEditorCombo(EditorEthos, GetEthosOptions(), "");
+            if (EditorHeritage != null) PopulateEditorCombo(EditorHeritage, GetHeritageOptions(), "");
+            if (EditorLanguage != null) PopulateEditorCombo(EditorLanguage, GetLanguageOptions(), "");
+            if (EditorMartialCustom != null) PopulateEditorCombo(EditorMartialCustom, GetMartialCustomOptions(), "");
+            if (EditorHeadDetermination != null) PopulateEditorCombo(EditorHeadDetermination, GetHeadDeterminationOptions(), "");
+            _editorColorR = 255;
+            _editorColorG = 255;
+            _editorColorB = 255;
+            _editorColorTouched = false;
+            _editorColorReferenceName = "";
+            if (EditorColorPreview != null)
+                EditorColorPreview.Background = new SolidColorBrush(GetEditorArgb(255, 255, 255, 255));
+        }
+
+        private void CaptureEditorSavedState()
+        {
+            if (_editorCulture == null)
+            {
+                _editorHasSavedState = false;
+                return;
+            }
+            _editorHasSavedState = true;
+            _editorSavedCultureId = _editorCulture.Name ?? "";
+            _editorSavedEthos = _editorCulture.Ethos ?? "";
+            _editorSavedHeritage = _editorCulture.Heritage ?? "";
+            _editorSavedLanguage = _editorCulture.Language ?? "";
+            _editorSavedMartialCustom = _editorCulture.MartialCustom ?? "";
+            _editorSavedHeadDetermination = _editorCulture.HeadDetermination ?? "";
+            _editorSavedColor = GetEditorColorString();
+        }
+
+        private void MarkEditorAsSaved()
+        {
+            _editorHasSavedState = true;
+            _editorSavedCultureId = EditorCultureId?.Text?.Trim() ?? "";
+            _editorSavedEthos = GetSelectedOption(EditorEthos);
+            _editorSavedHeritage = GetSelectedOption(EditorHeritage);
+            _editorSavedLanguage = GetSelectedOption(EditorLanguage);
+            _editorSavedMartialCustom = GetSelectedOption(EditorMartialCustom);
+            _editorSavedHeadDetermination = GetSelectedOption(EditorHeadDetermination);
+            _editorSavedColor = GetEditorColorString();
+            UpdateEditorDirtyState();
+        }
+
+        private void UpdateEditorDirtyState()
+        {
+            if (!_editorHasSavedState) return;
+            SetLabelDirty(EditorIdLabel, (EditorCultureId?.Text?.Trim() ?? "") != _editorSavedCultureId);
+            SetLabelDirty(EditorEthosLabel, GetSelectedOption(EditorEthos) != _editorSavedEthos);
+            SetLabelDirty(EditorHeritageLabel, GetSelectedOption(EditorHeritage) != _editorSavedHeritage);
+            SetLabelDirty(EditorLanguageLabel, GetSelectedOption(EditorLanguage) != _editorSavedLanguage);
+            SetLabelDirty(EditorMartialCustomLabel, GetSelectedOption(EditorMartialCustom) != _editorSavedMartialCustom);
+            SetLabelDirty(EditorHeadDeterminationLabel, GetSelectedOption(EditorHeadDetermination) != _editorSavedHeadDetermination);
+            SetLabelDirty(EditorColorLabel, GetEditorColorString() != _editorSavedColor);
+        }
+
+        private static void SetLabelDirty(System.Windows.Controls.Label? label, bool dirty)
+        {
+            if (label != null)
+                label.Tag = dirty;
         }
 
         private void EditorFileName_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -848,6 +1065,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     EditorStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), fileName);
                 }
                 RefreshCultureTree();
+                MarkEditorAsSaved();
             }
             catch (Exception ex)
             {
@@ -1006,6 +1224,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 ReplaceCultureInFile(filePath, rawKey, block);
                 EditorStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), Path.GetFileName(filePath));
                 RefreshCultureTree();
+                MarkEditorAsSaved();
             }
             catch (Exception ex)
             {
@@ -1018,30 +1237,45 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             var sb = new System.Text.StringBuilder();
             sb.AppendLine($"{cultureId} = {{");
 
-            string color = EditorColor.Text?.Trim() ?? "";
+            string color = GetEditorColorString();
             if (!string.IsNullOrEmpty(color))
             {
-                var parts = color.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                if (parts.Length == 3 &&
-                    byte.TryParse(parts[0], out byte r) &&
-                    byte.TryParse(parts[1], out byte g) &&
-                    byte.TryParse(parts[2], out byte b))
+                if (color.StartsWith("rgb ", StringComparison.Ordinal))
                 {
-                    sb.AppendLine($"\tcolor = rgb {{ {r} {g} {b} }}");
+                    var parts = color.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    if (parts.Length == 4 &&
+                        byte.TryParse(parts[1], out byte r) &&
+                        byte.TryParse(parts[2], out byte g) &&
+                        byte.TryParse(parts[3], out byte b))
+                    {
+                        sb.AppendLine($"\tcolor = {{ {FormatNormalizedColor(r)} {FormatNormalizedColor(g)} {FormatNormalizedColor(b)} }}");
+                    }
                 }
-                else if (parts.Length == 1)
+                else
                 {
-                    sb.AppendLine($"\tcolor = {parts[0]}");
+                    sb.AppendLine($"\tcolor = {color}");
                 }
             }
 
-            string heritage = EditorHeritage.Text?.Trim() ?? "";
+            string heritage = GetSelectedOption(EditorHeritage);
             if (!string.IsNullOrEmpty(heritage))
                 sb.AppendLine($"\theritage = {heritage}");
 
-            string ethos = EditorEthos.Text?.Trim() ?? "";
+            string ethos = GetSelectedOption(EditorEthos);
             if (!string.IsNullOrEmpty(ethos))
                 sb.AppendLine($"\tethos = {ethos}");
+
+            string language = GetSelectedOption(EditorLanguage);
+            if (!string.IsNullOrEmpty(language))
+                sb.AppendLine($"\tlanguage = {language}");
+
+            string martialCustom = GetSelectedOption(EditorMartialCustom);
+            if (!string.IsNullOrEmpty(martialCustom))
+                sb.AppendLine($"\tmartial_custom = {martialCustom}");
+
+            string headDetermination = GetSelectedOption(EditorHeadDetermination);
+            if (!string.IsNullOrEmpty(headDetermination))
+                sb.AppendLine($"\thead_determination = {headDetermination}");
 
             string building = EditorBuildingGfx.Text?.Trim() ?? "";
             if (!string.IsNullOrEmpty(building))
@@ -2231,6 +2465,11 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
         private static string FormatColorNumber(float value)
         {
             return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        private static string FormatNormalizedColor(byte value)
+        {
+            return (value / 255f).ToString("0.0##", System.Globalization.CultureInfo.InvariantCulture);
         }
 
         private static (float R, float G, float B) HsvToRgb(float h, float s, float v)

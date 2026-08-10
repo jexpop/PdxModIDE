@@ -6,6 +6,22 @@
              xmlns:local="clr-namespace:PdxModIDE.UI"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <Style x:Key="ModifiedEditorLabel" TargetType="Label">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource StatusRed}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ModifiedEditorCombo" TargetType="ComboBox">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource StatusRed}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
     <TabControl x:Name="CulturesSubTabs">
         <TabItem x:Name="ListTabItem" Header="{DynamicResource CulturesTab_SubTabList}">
         <Grid Margin="10">
@@ -460,15 +476,24 @@
                 <GroupBox>
                     <StackPanel>
                         <StackPanel x:Name="EditorIdRow">
-                            <Label Content="{DynamicResource CulturesTab_EditorCultureId}" FontWeight="Bold"/>
-                            <TextBox x:Name="EditorCultureId" Margin="15,0,0,4" TextChanged="EditorCultureId_TextChanged"/>
+                            <Label x:Name="EditorIdLabel" Content="{DynamicResource CulturesTab_EditorCultureId}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                            <TextBox x:Name="EditorCultureId" Width="350" MaxLength="50" HorizontalAlignment="Left" Margin="15,0,0,4" TextChanged="EditorCultureId_TextChanged"/>
                         </StackPanel>
-                        <Label Content="{DynamicResource CulturesTab_EditorHeritage}" FontWeight="Bold"/>
-                        <TextBox x:Name="EditorHeritage" Margin="15,0,0,4"/>
-                        <Label Content="{DynamicResource CulturesTab_EditorEthos}" FontWeight="Bold"/>
-                        <TextBox x:Name="EditorEthos" Margin="15,0,0,4"/>
-                        <Label Content="{DynamicResource CulturesTab_EditorColor}" FontWeight="Bold"/>
-                        <TextBox x:Name="EditorColor" Margin="15,0,0,4"/>
+                        <Label x:Name="EditorColorLabel" Content="{DynamicResource CulturesTab_EditorColor}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <StackPanel Orientation="Horizontal" Margin="15,0,0,4">
+                            <Border x:Name="EditorColorPreview" Width="40" Height="24" Background="White" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" VerticalAlignment="Center"/>
+                            <Button x:Name="EditorColorButton" Content="{DynamicResource CulturesTab_EditorChooseColor}" Width="150" Margin="8,0,0,0" Click="EditorColor_Click"/>
+                        </StackPanel>
+                        <Label x:Name="EditorEthosLabel" Content="{DynamicResource CulturesTab_EditorEthos}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <ComboBox x:Name="EditorEthos" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
+                        <Label x:Name="EditorHeritageLabel" Content="{DynamicResource CulturesTab_EditorHeritage}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <ComboBox x:Name="EditorHeritage" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
+                        <Label x:Name="EditorLanguageLabel" Content="{DynamicResource CulturesTab_EditorLanguage}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <ComboBox x:Name="EditorLanguage" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
+                        <Label x:Name="EditorMartialCustomLabel" Content="{DynamicResource CulturesTab_EditorMartialCustom}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <ComboBox x:Name="EditorMartialCustom" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
+                        <Label x:Name="EditorHeadDeterminationLabel" Content="{DynamicResource CulturesTab_EditorHeadDetermination}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <ComboBox x:Name="EditorHeadDetermination" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
                     </StackPanel>
                 </GroupBox>
 
