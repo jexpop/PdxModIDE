@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.10</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.11</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -229,6 +229,9 @@
     <system:String x:Key="CulturesTab_EditorHeadDetermination">Determinació del cap</system:String>
     <system:String x:Key="CulturesTab_EditorChooseColor">Tria el color…</system:String>
     <system:String x:Key="CulturesTab_EditorNone">—</system:String>
+    <system:String x:Key="CulturesTab_EditorTraditions">Tradicions</system:String>
+    <system:String x:Key="CulturesTab_EditorTraditionsAvailable">Disponibles</system:String>
+    <system:String x:Key="CulturesTab_EditorTraditionsSelected">Afegides a aquesta cultura</system:String>
     <system:String x:Key="CulturesTab_EditorBuildingGfx">Edificis (building_gfx)</system:String>
     <system:String x:Key="CulturesTab_EditorClothingGfx">Roba (clothing_gfx)</system:String>
     <system:String x:Key="CulturesTab_EditorUnitGfx">Unitats (unit_gfx)</system:String>

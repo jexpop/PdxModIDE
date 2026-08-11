@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.11]
+
+### Added
+
+- **Traditions in the culture editor (Cultures tab)**: the editor now includes a "Traditions" section with two side-by-side lists: "Added to this culture" (left) and "Available" (right). The available list loads every tradition defined in `common/culture/traditions` (game + mod) ordered by display name, excluding those already added. Each row shows the tradition's display name and, when available, its localized description. Every row has its own button to move it between lists (`−` removes from the culture, `+` adds it); both lists scroll vertically with a reduced height. When editing or copying a culture, the source culture's traditions are preselected, and any change that is not saved is highlighted in red (same pattern as the rest of the editor fields).
+- **Traditions written to culture files**: saving writes the `traditions = { ... }` block (one tradition key per line) right after `head_determination`, matching the CK3 culture definition structure.
+
+### Changed
+
+- **Culture editor button direction**: the "Traditions" add/remove buttons moved from the gap between the columns into each row, and the middle button column was removed.
+
+---
+
 ## [1.6.10]
 
 ### Changed

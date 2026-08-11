@@ -494,6 +494,21 @@
                         <ComboBox x:Name="EditorMartialCustom" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
                         <Label x:Name="EditorHeadDeterminationLabel" Content="{DynamicResource CulturesTab_EditorHeadDetermination}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
                         <ComboBox x:Name="EditorHeadDetermination" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
+                        <Label x:Name="EditorTraditionsLabel" Content="{DynamicResource CulturesTab_EditorTraditions}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <Grid Margin="15,4,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <DockPanel Grid.Column="0">
+                                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource CulturesTab_EditorTraditionsSelected}" Foreground="Gray" Margin="0,0,0,2"/>
+                                <ListBox x:Name="EditorTraditionsSelected" SelectionMode="Single" Margin="0,0,6,0" MaxHeight="200"/>
+                            </DockPanel>
+                            <DockPanel Grid.Column="1">
+                                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource CulturesTab_EditorTraditionsAvailable}" Foreground="Gray" Margin="6,0,0,2"/>
+                                <ListBox x:Name="EditorTraditionsAvailable" SelectionMode="Single" Margin="6,0,0,0" MaxHeight="200"/>
+                            </DockPanel>
+                        </Grid>
                     </StackPanel>
                 </GroupBox>
 

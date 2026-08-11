@@ -270,6 +270,7 @@ namespace PdxModIDE.UI
         private Dictionary<string, MartialCustomInfo> _editorMartialCustomDefs = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, HeadDeterminationInfo> _editorHeadDeterminationDefs = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, NamedColor> _editorNamedColors = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, TraditionInfo> _editorTraditionDefs = new(StringComparer.OrdinalIgnoreCase);
 
         private bool _editorColorTouched;
         private byte _editorColorR = 255;
@@ -285,6 +286,7 @@ namespace PdxModIDE.UI
         private string _editorSavedMartialCustom = "";
         private string _editorSavedHeadDetermination = "";
         private string _editorSavedColor = "";
+        private List<string> _editorSavedTraditions = new();
 
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
@@ -402,6 +404,7 @@ namespace PdxModIDE.UI
             _editorLanguageDefs = languageDefinitions;
             _editorMartialCustomDefs = martialCustomDefinitions;
             _editorHeadDeterminationDefs = headDeterminationDefinitions;
+            _editorTraditionDefs = traditionDefinitions;
 
             if (_editorCulture == null && EditorEthos != null)
                 ResetEditorForNewCulture();
@@ -675,6 +678,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             PopulateEditorCombo(EditorLanguage, GetLanguageOptions(), culture.Language ?? "");
             PopulateEditorCombo(EditorMartialCustom, GetMartialCustomOptions(), culture.MartialCustom ?? "");
             PopulateEditorCombo(EditorHeadDetermination, GetHeadDeterminationOptions(), culture.HeadDetermination ?? "");
+            PopulateTraditionLists(culture.TraditionKeys ?? new List<string>());
 
             _editorColorReferenceName = culture.ColorReference ?? "";
             if (culture.HasColor)
@@ -904,6 +908,118 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             return "";
         }
 
+        private List<string> GetSelectedTraditions()
+        {
+            var result = new List<string>();
+            if (EditorTraditionsSelected == null) return result;
+            foreach (object obj in EditorTraditionsSelected.Items)
+                if (obj is System.Windows.Controls.ListBoxItem it && (it.Tag as string) is string k && !string.IsNullOrEmpty(k))
+                    result.Add(k);
+            return result;
+        }
+
+        private void PopulateTraditionLists(IEnumerable<string>? selectedKeys = null)
+        {
+            if (EditorTraditionsAvailable == null || EditorTraditionsSelected == null) return;
+            var selected = selectedKeys != null
+                ? new List<string>(selectedKeys)
+                : GetSelectedTraditions();
+
+            EditorTraditionsAvailable.Items.Clear();
+            EditorTraditionsSelected.Items.Clear();
+
+            foreach (var def in _editorTraditionDefs.Values
+                         .Where(d => !selected.Contains(d.Name))
+                         .OrderBy(d => d.DisplayName, StringComparer.CurrentCultureIgnoreCase))
+                EditorTraditionsAvailable.Items.Add(CreateTraditionListItem(def.Name, false));
+
+            foreach (var key in selected)
+                EditorTraditionsSelected.Items.Add(CreateTraditionListItem(key, true));
+        }
+
+        private System.Windows.Controls.ListBoxItem CreateTraditionListItem(string key, bool isSelected)
+        {
+            string display = key;
+            string? description = null;
+            if (_editorTraditionDefs.TryGetValue(key, out var def))
+            {
+                display = def.DisplayName;
+                description = string.IsNullOrEmpty(def.Description) ? null : def.Description;
+            }
+
+            var row = new System.Windows.Controls.StackPanel();
+            var header = new System.Windows.Controls.StackPanel
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal
+            };
+            var btn = new System.Windows.Controls.Button
+            {
+                Content = isSelected ? "−" : "+",
+                Tag = key,
+                Width = 26,
+                Height = 22,
+                Padding = new Thickness(0),
+                Margin = new Thickness(0, 0, 6, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+                FontWeight = FontWeights.Bold
+            };
+            btn.Click += isSelected ? EditorTraditionsRemove : EditorTraditionsAdd;
+            header.Children.Add(btn);
+            header.Children.Add(new System.Windows.Controls.TextBlock
+            {
+                Text = display,
+                TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            row.Children.Add(header);
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                row.Children.Add(new System.Windows.Controls.TextBlock
+                {
+                    Text = description,
+                    Foreground = System.Windows.Media.Brushes.Gray,
+                    FontSize = 11,
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(32, 2, 4, 0)
+                });
+            }
+
+            return new System.Windows.Controls.ListBoxItem { Tag = key, Content = row };
+        }
+
+        private static System.Windows.Controls.ListBoxItem? FindParentListBoxItem(DependencyObject? child)
+        {
+            while (child != null)
+            {
+                if (child is System.Windows.Controls.ListBoxItem item)
+                    return item;
+                child = VisualTreeHelper.GetParent(child);
+            }
+            return null;
+        }
+
+        private void EditorTraditionsAdd(object sender, RoutedEventArgs e)
+        {
+            if (FindParentListBoxItem(sender as DependencyObject) is not System.Windows.Controls.ListBoxItem item) return;
+            if (item.Tag is not string key) return;
+            var selected = GetSelectedTraditions();
+            if (selected.Contains(key)) return;
+            selected.Add(key);
+            PopulateTraditionLists(selected);
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorTraditionsRemove(object sender, RoutedEventArgs e)
+        {
+            if (FindParentListBoxItem(sender as DependencyObject) is not System.Windows.Controls.ListBoxItem item) return;
+            if (item.Tag is not string key) return;
+            var selected = GetSelectedTraditions();
+            selected.Remove(key);
+            PopulateTraditionLists(selected);
+            UpdateEditorDirtyState();
+        }
+
         private string GetEditorColorString()
         {
             if (_editorColorTouched || string.IsNullOrEmpty(_editorColorReferenceName))
@@ -921,6 +1037,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             if (EditorLanguage != null) PopulateEditorCombo(EditorLanguage, GetLanguageOptions(), "");
             if (EditorMartialCustom != null) PopulateEditorCombo(EditorMartialCustom, GetMartialCustomOptions(), "");
             if (EditorHeadDetermination != null) PopulateEditorCombo(EditorHeadDetermination, GetHeadDeterminationOptions(), "");
+            PopulateTraditionLists(null);
             _editorColorR = 255;
             _editorColorG = 255;
             _editorColorB = 255;
@@ -945,6 +1062,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedMartialCustom = _editorCulture.MartialCustom ?? "";
             _editorSavedHeadDetermination = _editorCulture.HeadDetermination ?? "";
             _editorSavedColor = GetEditorColorString();
+            _editorSavedTraditions = new List<string>(_editorCulture.TraditionKeys ?? new List<string>());
         }
 
         private void MarkEditorAsSaved()
@@ -957,6 +1075,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedMartialCustom = GetSelectedOption(EditorMartialCustom);
             _editorSavedHeadDetermination = GetSelectedOption(EditorHeadDetermination);
             _editorSavedColor = GetEditorColorString();
+            _editorSavedTraditions = GetSelectedTraditions();
             UpdateEditorDirtyState();
         }
 
@@ -970,7 +1089,12 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             SetLabelDirty(EditorMartialCustomLabel, GetSelectedOption(EditorMartialCustom) != _editorSavedMartialCustom);
             SetLabelDirty(EditorHeadDeterminationLabel, GetSelectedOption(EditorHeadDetermination) != _editorSavedHeadDetermination);
             SetLabelDirty(EditorColorLabel, GetEditorColorString() != _editorSavedColor);
+            SetLabelDirty(EditorTraditionsLabel, !TraditionListsEqual(GetSelectedTraditions(), _editorSavedTraditions));
         }
+
+        private static bool TraditionListsEqual(List<string> a, List<string> b)
+            => a.Count == b.Count && a.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                                    .SequenceEqual(b.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
 
         private static void SetLabelDirty(System.Windows.Controls.Label? label, bool dirty)
         {
@@ -1276,6 +1400,15 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             string headDetermination = GetSelectedOption(EditorHeadDetermination);
             if (!string.IsNullOrEmpty(headDetermination))
                 sb.AppendLine($"\thead_determination = {headDetermination}");
+
+            var traditions = GetSelectedTraditions();
+            if (traditions.Count > 0)
+            {
+                sb.AppendLine("\ttraditions = {");
+                foreach (var tradition in traditions)
+                    sb.AppendLine($"\t\t{tradition}");
+                sb.AppendLine("\t}");
+            }
 
             string building = EditorBuildingGfx.Text?.Trim() ?? "";
             if (!string.IsNullOrEmpty(building))
