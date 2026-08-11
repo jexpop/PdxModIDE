@@ -271,6 +271,12 @@ namespace PdxModIDE.UI
         private Dictionary<string, HeadDeterminationInfo> _editorHeadDeterminationDefs = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, NamedColor> _editorNamedColors = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, TraditionInfo> _editorTraditionDefs = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, NameListInfo> _editorNameListDefs = new(StringComparer.OrdinalIgnoreCase);
+
+        private Dictionary<string, List<string>> _editorGfxValues = new(StringComparer.OrdinalIgnoreCase);
+        private List<string> _editorHouseCoaFrames = new();
+        private Dictionary<string, (string Offset, string Scale)> _editorHouseCoaOffsetScale = new(StringComparer.OrdinalIgnoreCase);
+        private List<string> _editorEthnicityOptions = new();
 
         private bool _editorColorTouched;
         private byte _editorColorR = 255;
@@ -287,6 +293,13 @@ namespace PdxModIDE.UI
         private string _editorSavedHeadDetermination = "";
         private string _editorSavedColor = "";
         private List<string> _editorSavedTraditions = new();
+        private string _editorSavedNameList = "";
+        private List<string> _editorSavedBuildingGfx = new();
+        private List<string> _editorSavedClothingGfx = new();
+        private List<string> _editorSavedUnitGfx = new();
+        private List<string> _editorSavedCoaGfx = new();
+        private string _editorSavedHouseCoaFrame = "";
+        private List<Ethnicity> _editorSavedEthnicities = new();
 
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
@@ -405,6 +418,10 @@ namespace PdxModIDE.UI
             _editorMartialCustomDefs = martialCustomDefinitions;
             _editorHeadDeterminationDefs = headDeterminationDefinitions;
             _editorTraditionDefs = traditionDefinitions;
+            _editorNameListDefs = nameListDefinitions;
+            _editorGfxValues = BuildGfxValues(allByName.Values);
+            _editorEthnicityOptions = BuildEthnicityOptions(allByName.Values);
+            LoadHouseCoaMapping(baseCultures, modCultures);
 
             if (_editorCulture == null && EditorEthos != null)
                 ResetEditorForNewCulture();
@@ -679,6 +696,13 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             PopulateEditorCombo(EditorMartialCustom, GetMartialCustomOptions(), culture.MartialCustom ?? "");
             PopulateEditorCombo(EditorHeadDetermination, GetHeadDeterminationOptions(), culture.HeadDetermination ?? "");
             PopulateTraditionLists(culture.TraditionKeys ?? new List<string>());
+            PopulateEditorCombo(EditorNameList, GetNameListOptions(), culture.NameList ?? "");
+            PopulateGfxLists("coa", culture.CoaGfx ?? new List<string>());
+            PopulateGfxLists("building", culture.BuildingGfx ?? new List<string>());
+            PopulateGfxLists("clothing", culture.ClothingGfx ?? new List<string>());
+            PopulateGfxLists("unit", culture.UnitGfx ?? new List<string>());
+            PopulateHouseCoaFrame(culture.HouseCoaFrame ?? "");
+            PopulateEthnicityRows(culture.Ethnicities ?? new List<Ethnicity>());
 
             _editorColorReferenceName = culture.ColorReference ?? "";
             if (culture.HasColor)
@@ -706,10 +730,6 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             }
             if (EditorColorPreview != null)
                 EditorColorPreview.Background = new SolidColorBrush(GetEditorArgb(255, _editorColorR, _editorColorG, _editorColorB));
-
-            EditorBuildingGfx.Text = string.Join(", ", culture.BuildingGfx ?? new List<string>());
-            EditorClothingGfx.Text = string.Join(", ", culture.ClothingGfx ?? new List<string>());
-            EditorUnitGfx.Text = string.Join(", ", culture.UnitGfx ?? new List<string>());
 
             _editorCulture = culture;
             _editorIsNew = copyAsNew;
@@ -811,9 +831,6 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
         private void EditorClear_Click(object sender, RoutedEventArgs e)
         {
             ResetEditorForNewCulture();
-            EditorBuildingGfx.Text = "";
-            EditorClothingGfx.Text = "";
-            EditorUnitGfx.Text = "";
             _editorCulture = null;
             _editorFileNameManual = false;
             EditorCultureId.Text = "";
@@ -830,6 +847,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
         private void EditorField_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (ReferenceEquals(sender, EditorHouseCoaFrame))
+                UpdateHouseCoaMaskText();
             UpdateEditorDirtyState();
         }
 
@@ -878,6 +897,12 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
         private IEnumerable<(string Key, string Display)> GetHeadDeterminationOptions()
         {
             foreach (var def in _editorHeadDeterminationDefs.Values.OrderBy(d => d.DisplayName, StringComparer.OrdinalIgnoreCase))
+                yield return (def.Name, def.DisplayName);
+        }
+
+        private IEnumerable<(string Key, string Display)> GetNameListOptions()
+        {
+            foreach (var def in _editorNameListDefs.Values.OrderBy(d => d.DisplayName, StringComparer.OrdinalIgnoreCase))
                 yield return (def.Name, def.DisplayName);
         }
 
@@ -1020,6 +1045,309 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             UpdateEditorDirtyState();
         }
 
+        private (System.Windows.Controls.ListBox? selected, System.Windows.Controls.ListBox? available) GetGfxLists(string category)
+        {
+            return category switch
+            {
+                "coa" => (EditorCoaGfxSelected, EditorCoaGfxAvailable),
+                "building" => (EditorBuildingGfxSelected, EditorBuildingGfxAvailable),
+                "clothing" => (EditorClothingGfxSelected, EditorClothingGfxAvailable),
+                "unit" => (EditorUnitGfxSelected, EditorUnitGfxAvailable),
+                _ => (null, null)
+            };
+        }
+
+        private List<string> GetSelectedGfx(string category)
+        {
+            var result = new List<string>();
+            var (selected, _) = GetGfxLists(category);
+            if (selected == null) return result;
+            foreach (object obj in selected.Items)
+                if (obj is System.Windows.Controls.ListBoxItem it && (it.Tag as string) is string key && !string.IsNullOrEmpty(key))
+                    result.Add(key);
+            return result;
+        }
+
+        private void PopulateGfxLists(string category, IEnumerable<string> selectedKeys)
+        {
+            var (selected, available) = GetGfxLists(category);
+            if (selected == null || available == null) return;
+            var selectedList = new List<string>(selectedKeys);
+
+            available.Items.Clear();
+            selected.Items.Clear();
+            available.Tag = category;
+            selected.Tag = category;
+
+            if (_editorGfxValues.TryGetValue(category, out var allValues))
+            {
+                foreach (var value in allValues.Where(v => !selectedList.Contains(v)))
+                    available.Items.Add(CreateGfxListItem(value, category, false));
+            }
+
+            foreach (var value in selectedList)
+                selected.Items.Add(CreateGfxListItem(value, category, true));
+        }
+
+        private System.Windows.Controls.ListBoxItem CreateGfxListItem(string value, string category, bool isSelected)
+        {
+            var row = new System.Windows.Controls.StackPanel
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal
+            };
+
+            if (isSelected)
+            {
+                var removeBtn = MakeSquareButton("−", value, EditorGfxRemove);
+                var upBtn = MakeSquareButton("↑", value, EditorGfxMoveUp);
+                var downBtn = MakeSquareButton("↓", value, EditorGfxMoveDown);
+                row.Children.Add(removeBtn);
+                row.Children.Add(upBtn);
+                row.Children.Add(downBtn);
+            }
+            else
+            {
+                var addBtn = MakeSquareButton("+", value, EditorGfxAdd);
+                row.Children.Add(addBtn);
+            }
+
+            row.Children.Add(new System.Windows.Controls.TextBlock
+            {
+                Text = value,
+                TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+
+            return new System.Windows.Controls.ListBoxItem { Tag = value, Content = row };
+        }
+
+        private static System.Windows.Controls.Button MakeSquareButton(string content, string tag, RoutedEventHandler handler)
+        {
+            var btn = new System.Windows.Controls.Button
+            {
+                Content = content,
+                Tag = tag,
+                Width = 24,
+                Height = 22,
+                Padding = new Thickness(0),
+                Margin = new Thickness(0, 0, 3, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+                FontWeight = FontWeights.Bold,
+                FontSize = 12
+            };
+            btn.Click += handler;
+            return btn;
+        }
+
+        private void EditorGfxAdd(object sender, RoutedEventArgs e)
+        {
+            if (FindParentListBoxItem(sender as DependencyObject) is not System.Windows.Controls.ListBoxItem item) return;
+            if (item.Tag is not string value) return;
+            var category = GetGfxCategory(item);
+            if (string.IsNullOrEmpty(category)) return;
+            var selected = GetSelectedGfx(category);
+            if (selected.Contains(value)) return;
+            selected.Add(value);
+            PopulateGfxLists(category, selected);
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorGfxRemove(object sender, RoutedEventArgs e)
+        {
+            if (FindParentListBoxItem(sender as DependencyObject) is not System.Windows.Controls.ListBoxItem item) return;
+            if (item.Tag is not string value) return;
+            var category = GetGfxCategory(item);
+            if (string.IsNullOrEmpty(category)) return;
+            var selected = GetSelectedGfx(category);
+            selected.Remove(value);
+            PopulateGfxLists(category, selected);
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorGfxMoveUp(object sender, RoutedEventArgs e)
+        {
+            if (FindParentListBoxItem(sender as DependencyObject) is not System.Windows.Controls.ListBoxItem item) return;
+            if (item.Tag is not string value) return;
+            var category = GetGfxCategory(item);
+            if (string.IsNullOrEmpty(category)) return;
+            var selected = GetSelectedGfx(category);
+            int index = selected.IndexOf(value);
+            if (index <= 0) return;
+            (selected[index - 1], selected[index]) = (selected[index], selected[index - 1]);
+            PopulateGfxLists(category, selected);
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorGfxMoveDown(object sender, RoutedEventArgs e)
+        {
+            if (FindParentListBoxItem(sender as DependencyObject) is not System.Windows.Controls.ListBoxItem item) return;
+            if (item.Tag is not string value) return;
+            var category = GetGfxCategory(item);
+            if (string.IsNullOrEmpty(category)) return;
+            var selected = GetSelectedGfx(category);
+            int index = selected.IndexOf(value);
+            if (index < 0 || index >= selected.Count - 1) return;
+            (selected[index], selected[index + 1]) = (selected[index + 1], selected[index]);
+            PopulateGfxLists(category, selected);
+            UpdateEditorDirtyState();
+        }
+
+        private static string GetGfxCategory(System.Windows.Controls.ListBoxItem item)
+        {
+            var container = System.Windows.Controls.ItemsControl.ItemsControlFromItemContainer(item) as System.Windows.Controls.ListBox;
+            return container?.Tag as string ?? "";
+        }
+
+        private void PopulateHouseCoaFrame(string currentFrame)
+        {
+            if (EditorHouseCoaFrame == null) return;
+            EditorHouseCoaFrame.Items.Clear();
+            EditorHouseCoaFrame.Items.Add(new ComboBoxItem { Tag = "", Content = Res("CulturesTab_EditorNone") });
+            foreach (var frame in _editorHouseCoaFrames)
+                EditorHouseCoaFrame.Items.Add(new ComboBoxItem { Tag = frame, Content = frame });
+
+            string normalized = (currentFrame ?? "").Trim();
+            foreach (ComboBoxItem item in EditorHouseCoaFrame.Items)
+            {
+                if (string.Equals((item.Tag as string) ?? "", normalized, StringComparison.OrdinalIgnoreCase))
+                {
+                    EditorHouseCoaFrame.SelectedItem = item;
+                    return;
+                }
+            }
+            EditorHouseCoaFrame.SelectedIndex = 0;
+            UpdateHouseCoaMaskText();
+        }
+
+        private void UpdateHouseCoaMaskText()
+        {
+            if (EditorHouseCoaMaskText == null) return;
+            string frame = GetSelectedOption(EditorHouseCoaFrame);
+            if (!string.IsNullOrEmpty(frame) && _editorHouseCoaOffsetScale.TryGetValue(frame, out var map))
+                EditorHouseCoaMaskText.Text = $"offset: {{ {map.Offset} }}   scale: {{ {map.Scale} }}";
+            else
+                EditorHouseCoaMaskText.Text = "";
+        }
+
+        private void PopulateEthnicityRows(IEnumerable<Ethnicity> entries)
+        {
+            if (EditorEthnicitiesRows == null) return;
+            EditorEthnicitiesRows.Items.Clear();
+            foreach (var entry in entries ?? new List<Ethnicity>())
+                AddEthnicityRow(entry);
+        }
+
+        private void AddEthnicityRow(Ethnicity? entry)
+        {
+            if (EditorEthnicitiesRows == null) return;
+            var row = new System.Windows.Controls.StackPanel
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                Margin = new Thickness(0, 0, 0, 3)
+            };
+            var percentBox = new System.Windows.Controls.TextBox
+            {
+                Width = 70,
+                Text = entry == null ? "" : FormatPercent(entry.Weight),
+                Tag = "percent"
+            };
+            percentBox.TextChanged += EditorEthnicityPercent_TextChanged;
+            row.Children.Add(percentBox);
+            row.Children.Add(new System.Windows.Controls.TextBlock { Text = "  ", VerticalAlignment = VerticalAlignment.Center });
+            var nameCombo = new System.Windows.Controls.ComboBox
+            {
+                Width = 190,
+                IsEditable = false,
+                ItemsSource = _editorEthnicityOptions
+            };
+            if (entry != null)
+            {
+                foreach (var item in nameCombo.Items)
+                    if (string.Equals(item as string, entry.Name, StringComparison.OrdinalIgnoreCase))
+                    { nameCombo.SelectedItem = item; break; }
+                if (nameCombo.SelectedIndex < 0)
+                {
+                    if (!_editorEthnicityOptions.Contains(entry.Name))
+                        _editorEthnicityOptions.Add(entry.Name);
+                    nameCombo.SelectedItem = entry.Name;
+                }
+            }
+            nameCombo.SelectionChanged += EditorEthnicityPercent_SelectionChanged;
+            row.Children.Add(nameCombo);
+            row.Children.Add(CreateEthnicityRemoveButton(row));
+            EditorEthnicitiesRows.Items.Add(row);
+        }
+
+        private System.Windows.Controls.Button CreateEthnicityRemoveButton(System.Windows.Controls.StackPanel row)
+        {
+            var button = new System.Windows.Controls.Button
+            {
+                Content = "−",
+                Width = 22,
+                Height = 22,
+                Margin = new Thickness(4, 0, 0, 0),
+                Padding = new Thickness(0),
+                Tag = row
+            };
+            button.Click += (_, _) =>
+            {
+                (row.Parent as System.Windows.Controls.ItemsControl)?.Items.Remove(row);
+                UpdateEditorDirtyState();
+            };
+            return button;
+        }
+
+        private List<Ethnicity> GetEthnicityEntries()
+        {
+            var result = new List<Ethnicity>();
+            if (EditorEthnicitiesRows == null) return result;
+            foreach (object obj in EditorEthnicitiesRows.Items)
+            {
+                if (obj is not System.Windows.Controls.StackPanel row) continue;
+                var percentBox = row.Children.OfType<System.Windows.Controls.TextBox>().FirstOrDefault();
+                var nameCombo = row.Children.OfType<System.Windows.Controls.ComboBox>().FirstOrDefault();
+                if (percentBox == null || nameCombo == null) continue;
+                string percent = percentBox.Text?.Trim() ?? "";
+                string name = (nameCombo.SelectedItem as string)?.Trim() ?? "";
+                if (string.IsNullOrEmpty(percent) || string.IsNullOrEmpty(name)) continue;
+                if (!double.TryParse(percent, System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out double weight))
+                    continue;
+                result.Add(new Ethnicity { Weight = weight, Name = name });
+            }
+            return result;
+        }
+
+        private void EditorEthnicityPercent_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorEthnicityPercent_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorEthnicityAdd_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            AddEthnicityRow(null);
+            UpdateEditorDirtyState();
+        }
+
+        private static string FormatPercent(double weight)
+            => weight.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+
+        private static bool EthnicityListsEqual(List<Ethnicity> a, List<Ethnicity> b)
+        {
+            if (a.Count != b.Count) return false;
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!string.Equals(a[i].Name, b[i].Name, StringComparison.OrdinalIgnoreCase)) return false;
+                if (Math.Abs(a[i].Weight - b[i].Weight) > 0.000001) return false;
+            }
+            return true;
+        }
+
         private string GetEditorColorString()
         {
             if (_editorColorTouched || string.IsNullOrEmpty(_editorColorReferenceName))
@@ -1038,6 +1366,13 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             if (EditorMartialCustom != null) PopulateEditorCombo(EditorMartialCustom, GetMartialCustomOptions(), "");
             if (EditorHeadDetermination != null) PopulateEditorCombo(EditorHeadDetermination, GetHeadDeterminationOptions(), "");
             PopulateTraditionLists(null);
+            if (EditorNameList != null) PopulateEditorCombo(EditorNameList, GetNameListOptions(), "");
+            PopulateGfxLists("coa", new List<string>());
+            PopulateGfxLists("building", new List<string>());
+            PopulateGfxLists("clothing", new List<string>());
+            PopulateGfxLists("unit", new List<string>());
+            PopulateHouseCoaFrame("");
+            PopulateEthnicityRows(new List<Ethnicity>());
             _editorColorR = 255;
             _editorColorG = 255;
             _editorColorB = 255;
@@ -1063,6 +1398,13 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedHeadDetermination = _editorCulture.HeadDetermination ?? "";
             _editorSavedColor = GetEditorColorString();
             _editorSavedTraditions = new List<string>(_editorCulture.TraditionKeys ?? new List<string>());
+            _editorSavedNameList = _editorCulture.NameList ?? "";
+            _editorSavedBuildingGfx = new List<string>(_editorCulture.BuildingGfx ?? new List<string>());
+            _editorSavedClothingGfx = new List<string>(_editorCulture.ClothingGfx ?? new List<string>());
+            _editorSavedUnitGfx = new List<string>(_editorCulture.UnitGfx ?? new List<string>());
+            _editorSavedCoaGfx = new List<string>(_editorCulture.CoaGfx ?? new List<string>());
+            _editorSavedHouseCoaFrame = _editorCulture.HouseCoaFrame ?? "";
+            _editorSavedEthnicities = new List<Ethnicity>(_editorCulture.Ethnicities ?? new List<Ethnicity>());
         }
 
         private void MarkEditorAsSaved()
@@ -1076,6 +1418,13 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedHeadDetermination = GetSelectedOption(EditorHeadDetermination);
             _editorSavedColor = GetEditorColorString();
             _editorSavedTraditions = GetSelectedTraditions();
+            _editorSavedNameList = GetSelectedOption(EditorNameList);
+            _editorSavedBuildingGfx = GetSelectedGfx("building");
+            _editorSavedClothingGfx = GetSelectedGfx("clothing");
+            _editorSavedUnitGfx = GetSelectedGfx("unit");
+            _editorSavedCoaGfx = GetSelectedGfx("coa");
+            _editorSavedHouseCoaFrame = GetSelectedOption(EditorHouseCoaFrame);
+            _editorSavedEthnicities = GetEthnicityEntries();
             UpdateEditorDirtyState();
         }
 
@@ -1090,11 +1439,21 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             SetLabelDirty(EditorHeadDeterminationLabel, GetSelectedOption(EditorHeadDetermination) != _editorSavedHeadDetermination);
             SetLabelDirty(EditorColorLabel, GetEditorColorString() != _editorSavedColor);
             SetLabelDirty(EditorTraditionsLabel, !TraditionListsEqual(GetSelectedTraditions(), _editorSavedTraditions));
+            SetLabelDirty(EditorNameListLabel, GetSelectedOption(EditorNameList) != _editorSavedNameList);
+            SetLabelDirty(EditorBuildingGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("building"), _editorSavedBuildingGfx));
+            SetLabelDirty(EditorClothingGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("clothing"), _editorSavedClothingGfx));
+            SetLabelDirty(EditorUnitGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("unit"), _editorSavedUnitGfx));
+            SetLabelDirty(EditorCoaGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("coa"), _editorSavedCoaGfx));
+            SetLabelDirty(EditorHouseCoaLabel, GetSelectedOption(EditorHouseCoaFrame) != _editorSavedHouseCoaFrame);
+            SetLabelDirty(EditorEthnicitiesLabel, !EthnicityListsEqual(GetEthnicityEntries(), _editorSavedEthnicities));
         }
 
         private static bool TraditionListsEqual(List<string> a, List<string> b)
             => a.Count == b.Count && a.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
                                     .SequenceEqual(b.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
+
+        private static bool OrderedStringListsEqual(List<string> a, List<string> b)
+            => a.Count == b.Count && a.SequenceEqual(b, StringComparer.OrdinalIgnoreCase);
 
         private static void SetLabelDirty(System.Windows.Controls.Label? label, bool dirty)
         {
@@ -1115,6 +1474,14 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             if (string.IsNullOrEmpty(cultureId))
             {
                 EditorStatusText.Text = Res("CulturesTab_EditorNeedId");
+                return;
+            }
+
+            var ethnicityEntries = GetEthnicityEntries();
+            double totalWeight = ethnicityEntries.Sum(e => e.Weight);
+            if (ethnicityEntries.Count > 0 && Math.Abs(totalWeight - 100.0) > 0.5)
+            {
+                EditorStatusText.Text = string.Format(Res("CulturesTab_EditorEthnicitiesTotal"), FormatPercent(totalWeight));
                 return;
             }
 
@@ -1410,25 +1777,52 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 sb.AppendLine("\t}");
             }
 
-            string building = EditorBuildingGfx.Text?.Trim() ?? "";
-            if (!string.IsNullOrEmpty(building))
-                sb.AppendLine($"\tbuilding_gfx = {{ {SplitList(building)} }}");
+            string nameList = GetSelectedOption(EditorNameList);
+            if (!string.IsNullOrEmpty(nameList))
+                sb.AppendLine($"\tname_list = {nameList}");
 
-            string clothing = EditorClothingGfx.Text?.Trim() ?? "";
-            if (!string.IsNullOrEmpty(clothing))
-                sb.AppendLine($"\tclothing_gfx = {{ {SplitList(clothing)} }}");
+            var coaGfx = GetSelectedGfx("coa");
+            if (coaGfx.Count > 0)
+                sb.AppendLine($"\tcoa_gfx = {{ {string.Join(" ", coaGfx)} }}");
 
-            string unit = EditorUnitGfx.Text?.Trim() ?? "";
-            if (!string.IsNullOrEmpty(unit))
-                sb.AppendLine($"\tunit_gfx = {{ {SplitList(unit)} }}");
+            var buildingGfx = GetSelectedGfx("building");
+            if (buildingGfx.Count > 0)
+                sb.AppendLine($"\tbuilding_gfx = {{ {string.Join(" ", buildingGfx)} }}");
+
+            var clothingGfx = GetSelectedGfx("clothing");
+            if (clothingGfx.Count > 0)
+                sb.AppendLine($"\tclothing_gfx = {{ {string.Join(" ", clothingGfx)} }}");
+
+            var unitGfx = GetSelectedGfx("unit");
+            if (unitGfx.Count > 0)
+                sb.AppendLine($"\tunit_gfx = {{ {string.Join(" ", unitGfx)} }}");
+
+            string houseCoaFrame = GetSelectedOption(EditorHouseCoaFrame);
+            if (!string.IsNullOrEmpty(houseCoaFrame))
+            {
+                sb.AppendLine($"\thouse_coa_frame = {houseCoaFrame}");
+                if (_editorHouseCoaOffsetScale.TryGetValue(houseCoaFrame, out var houseCoaMap))
+                {
+                    if (!string.IsNullOrEmpty(houseCoaMap.Offset))
+                        sb.AppendLine($"\thouse_coa_mask_offset = {{ {houseCoaMap.Offset} }}");
+                    if (!string.IsNullOrEmpty(houseCoaMap.Scale))
+                        sb.AppendLine($"\thouse_coa_mask_scale = {{ {houseCoaMap.Scale} }}");
+                }
+            }
+
+            var ethnicities = GetEthnicityEntries();
+            if (ethnicities.Count > 0)
+            {
+                sb.AppendLine("\tethnicities = {");
+                foreach (var ethnicity in ethnicities)
+                    sb.AppendLine($"\t\t{FormatPercent(ethnicity.Weight)} = {ethnicity.Name}");
+                sb.AppendLine("\t}");
+            }
 
             sb.AppendLine("}");
             sb.AppendLine();
             return sb.ToString();
         }
-
-        private static string SplitList(string value)
-            => string.Join(" ", value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
 
         private static string SanitizeFileName(string name)
         {
@@ -2029,6 +2423,71 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     });
                 }
             }
+        }
+
+        private static Dictionary<string, List<string>> BuildGfxValues(IEnumerable<CultureInfo> cultures)
+        {
+            var categories = new[] { "coa", "building", "clothing", "unit" };
+            var sets = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var category in categories)
+                sets[category] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var culture in cultures)
+            {
+                if (culture == null) continue;
+                AddGfxSet(sets["coa"], culture.CoaGfx);
+                AddGfxSet(sets["building"], culture.BuildingGfx);
+                AddGfxSet(sets["clothing"], culture.ClothingGfx);
+                AddGfxSet(sets["unit"], culture.UnitGfx);
+            }
+
+            var result = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var category in categories)
+                result[category] = sets[category].OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToList();
+            return result;
+        }
+
+        private static List<string> BuildEthnicityOptions(IEnumerable<CultureInfo> cultures)
+        {
+            var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var culture in cultures)
+            {
+                if (culture == null) continue;
+                foreach (var ethnicity in culture.Ethnicities ?? new List<Ethnicity>())
+                    if (!string.IsNullOrWhiteSpace(ethnicity.Name))
+                        set.Add(ethnicity.Name.Trim());
+            }
+            return set.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static void AddGfxSet(HashSet<string> set, IEnumerable<string> values)
+        {
+            foreach (var value in values ?? Enumerable.Empty<string>())
+                if (!string.IsNullOrWhiteSpace(value))
+                    set.Add(value.Trim());
+        }
+
+        private void LoadHouseCoaMapping(List<CultureInfo> baseCultures, List<CultureInfo> modCultures)
+        {
+            var frames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var offsetByFrame = new Dictionary<string, (string Offset, string Scale)>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var culture in baseCultures.Concat(modCultures))
+            {
+                if (culture == null) continue;
+                var frame = culture.HouseCoaFrame?.Trim() ?? "";
+                if (string.IsNullOrEmpty(frame)) continue;
+                frames.Add(frame);
+
+                var off = culture.HouseCoaMaskOffset?.Trim() ?? "";
+                var scale = culture.HouseCoaMaskScale?.Trim() ?? "";
+                if (string.IsNullOrEmpty(off) || string.IsNullOrEmpty(scale)) continue;
+                if (!offsetByFrame.ContainsKey(frame))
+                    offsetByFrame[frame] = (off, scale);
+            }
+
+            _editorHouseCoaFrames = frames.OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
+            _editorHouseCoaOffsetScale = offsetByFrame;
         }
 
         private static Dictionary<string, NameListInfo> LoadNameListDefinitions(string gameRoot, string modRoot)

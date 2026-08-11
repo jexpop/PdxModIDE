@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.12]
+
+### Added
+
+- **Name list in the culture editor (Cultures tab)**: the editor now includes a "Name list" combo box right after the Traditions section. It lists every name list defined in `common/culture/name_lists` (game + mod), ordered by display name, and writes `name_list = <key>` matching the CK3 culture definition structure.
+- **Graphics tags in the culture editor**: four new sections — Coat of arms (`coa_gfx`), Building (`building_gfx`), Clothing (`clothing_gfx`) and Unit (`unit_gfx`) — each with two side-by-side lists: "Added to this culture" (left, preserving order) and "Available" (right). The available lists load the distinct values used by every culture in the game and mod, and each row has its own button to move it between lists and to reorder (`↑`/`↓`). Saving writes the tags in the CK3 field order with `coa_gfx` first.
+- **House coat-of-arms frame in the culture editor**: a "House coat-of-arms frame" combo box lists the available `house_coa_frame` values. When a frame is selected, the associated `house_coa_mask_offset` and `house_coa_mask_scale` (derived from the game's cultures) are shown read-only and written automatically; frames without a known mapping are saved with the frame only.
+- **Ethnicities in the culture editor**: an "Ethnicities" section with one editable row per ethnicity: a percentage box and a combo box of the known ethnicity names (loaded from every culture in the game and mod, including any custom value found in the edited culture). Rows can be added ("Add ethnicity") and removed (`−`). Saving writes `ethnicities = { <weight> = <name> }` and validates that the percentages add up to 100 (tolerance ±0.5); rows left blank are ignored.
+
+### Changed
+
+- **Editor combo boxes width**: the culture editor combo boxes are capped at half the panel width (`MaxWidth="500"`, left-aligned) so long lists do not stretch across the whole panel.
+- **Save button fixed**: the Save culture button text was not visible because the `CulturesTab_EditorSave` localization key was missing; it is now defined in all languages, and the button (and Clear fields) have a minimum height and vertical padding so they are no longer clipped at the bottom in edit mode.
+- **Color legend character fixed**: the `■` marker in the culture list color legend was corrupted (`â– `) by an encoding issue; the character was restored in `CulturesTab.xaml`.
+
+---
+
 ## [1.6.11]
 
 ### Added

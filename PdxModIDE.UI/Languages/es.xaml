@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Hecho</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.11</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.12</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -235,6 +235,14 @@
     <system:String x:Key="CulturesTab_EditorBuildingGfx">Edificios (building_gfx)</system:String>
     <system:String x:Key="CulturesTab_EditorClothingGfx">Ropa (clothing_gfx)</system:String>
     <system:String x:Key="CulturesTab_EditorUnitGfx">Unidades (unit_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorCoaGfx">Escudos de armas (coa_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorGfxSelected">Añadidos a esta cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorGfxAvailable">Disponibles</system:String>
+    <system:String x:Key="CulturesTab_EditorNameList">Lista de nombres</system:String>
+    <system:String x:Key="CulturesTab_EditorHouseCoaFrame">Marco de escudo de casa (house_coa_frame)</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicities">Etnias</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicityAdd">Añadir etnia</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicitiesTotal">Los porcentajes de etnias deben sumar 100 para poder guardar. Total actual: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSave">Guardar cultura</system:String>
     <system:String x:Key="CulturesTab_EditorClear">Limpiar campos</system:String>
     <system:String x:Key="CulturesTab_EditorBrowseFolder">Elegir carpeta…</system:String>

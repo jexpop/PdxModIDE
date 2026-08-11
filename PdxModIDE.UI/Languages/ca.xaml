@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.11</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.12</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -235,6 +235,14 @@
     <system:String x:Key="CulturesTab_EditorBuildingGfx">Edificis (building_gfx)</system:String>
     <system:String x:Key="CulturesTab_EditorClothingGfx">Roba (clothing_gfx)</system:String>
     <system:String x:Key="CulturesTab_EditorUnitGfx">Unitats (unit_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorCoaGfx">Escuts d'armes (coa_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorGfxSelected">Afegits a aquesta cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorGfxAvailable">Disponibles</system:String>
+    <system:String x:Key="CulturesTab_EditorNameList">Llista de noms</system:String>
+    <system:String x:Key="CulturesTab_EditorHouseCoaFrame">Marc d'escut de casa (house_coa_frame)</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicities">Ètnies</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicityAdd">Afegeix ètnia</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicitiesTotal">Els percentatges d'ètnies han de sumar 100 per poder desar. Total actual: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSave">Desar cultura</system:String>
     <system:String x:Key="CulturesTab_EditorClear">Netejar camps</system:String>
     <system:String x:Key="CulturesTab_EditorBrowseFolder">Tria carpeta…</system:String>

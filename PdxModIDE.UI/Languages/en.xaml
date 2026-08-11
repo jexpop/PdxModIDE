@@ -29,7 +29,7 @@
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.11</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.12</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -235,6 +235,14 @@
     <system:String x:Key="CulturesTab_EditorBuildingGfx">Buildings (building_gfx)</system:String>
     <system:String x:Key="CulturesTab_EditorClothingGfx">Clothing (clothing_gfx)</system:String>
     <system:String x:Key="CulturesTab_EditorUnitGfx">Units (unit_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorCoaGfx">Coats of arms (coa_gfx)</system:String>
+    <system:String x:Key="CulturesTab_EditorGfxSelected">Added to this culture</system:String>
+    <system:String x:Key="CulturesTab_EditorGfxAvailable">Available</system:String>
+    <system:String x:Key="CulturesTab_EditorNameList">Name list</system:String>
+    <system:String x:Key="CulturesTab_EditorHouseCoaFrame">House coat-of-arms frame (house_coa_frame)</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicities">Ethnicities</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicityAdd">Add ethnicity</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicitiesTotal">Ethnicity percentages must add up to 100 to save. Current total: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSave">Save culture</system:String>
     <system:String x:Key="CulturesTab_EditorClear">Clear fields</system:String>
     <system:String x:Key="CulturesTab_EditorBrowseFolder">Choose folder…</system:String>
