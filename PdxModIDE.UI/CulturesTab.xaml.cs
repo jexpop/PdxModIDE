@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using PdxModIDE.Core.Games;
 using PdxModIDE.ModelEngine;
+using PdxModIDE.UI.Translation;
 using PdxModIDE.UI.ViewModels;
 
 namespace PdxModIDE.UI
@@ -300,6 +304,26 @@ namespace PdxModIDE.UI
         private List<string> _editorSavedCoaGfx = new();
         private string _editorSavedHouseCoaFrame = "";
         private List<Ethnicity> _editorSavedEthnicities = new();
+        private string _editorSavedLocName = "";
+        private string _editorSavedLocPrefix = "";
+        private string _editorSavedLocCollective = "";
+
+        private readonly HashSet<string> _baseCultureRawKeys = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly HttpClient _translationHttp = new() { Timeout = TimeSpan.FromSeconds(30) };
+        private static Dictionary<string, string>? _editorLocalization;
+
+        private static readonly (string Folder, string Code)[] GameSupportedLanguages =
+        {
+            ("english", "en"),
+            ("french", "fr"),
+            ("german", "de"),
+            ("japanese", "ja"),
+            ("korean", "ko"),
+            ("polish", "pl"),
+            ("russian", "ru"),
+            ("simp_chinese", "zh-CN"),
+            ("spanish", "es")
+        };
 
         private static readonly Dictionary<string, PdxModIDE.ModelEngine.DdsImage?> _textureDecodeCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapSource> _textureBitmapCache = new(StringComparer.OrdinalIgnoreCase);
@@ -385,9 +409,17 @@ namespace PdxModIDE.UI
             var culturePath = plugin?.CulturesRelativePath ?? "common/culture/cultures";
 
             var localization = LoadLocalization(gameRoot, modRoot, appLang);
+            _editorLocalization = localization;
 
             var modCultures = LoadCulturesFromDirectory(modRoot, culturePath, "Mod");
             var baseCultures = LoadCulturesFromDirectory(gameRoot, culturePath, "Base");
+
+            _baseCultureRawKeys.Clear();
+            foreach (var c in baseCultures)
+            {
+                if (!string.IsNullOrEmpty(c.RawKey))
+                    _baseCultureRawKeys.Add(c.RawKey);
+            }
 
             _cultureFileIndex.Clear();
             foreach (var c in modCultures)
@@ -703,6 +735,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             PopulateGfxLists("unit", culture.UnitGfx ?? new List<string>());
             PopulateHouseCoaFrame(culture.HouseCoaFrame ?? "");
             PopulateEthnicityRows(culture.Ethnicities ?? new List<Ethnicity>());
+            PopulateEditorLocalizationFields(culture);
 
             _editorColorReferenceName = culture.ColorReference ?? "";
             if (culture.HasColor)
@@ -849,6 +882,11 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
         {
             if (ReferenceEquals(sender, EditorHouseCoaFrame))
                 UpdateHouseCoaMaskText();
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorLoc_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
             UpdateEditorDirtyState();
         }
 
@@ -1373,6 +1411,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             PopulateGfxLists("unit", new List<string>());
             PopulateHouseCoaFrame("");
             PopulateEthnicityRows(new List<Ethnicity>());
+            ClearEditorLocalizationFields();
             _editorColorR = 255;
             _editorColorG = 255;
             _editorColorB = 255;
@@ -1380,6 +1419,28 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorColorReferenceName = "";
             if (EditorColorPreview != null)
                 EditorColorPreview.Background = new SolidColorBrush(GetEditorArgb(255, 255, 255, 255));
+        }
+
+        private void ClearEditorLocalizationFields()
+        {
+            if (EditorLocName != null) EditorLocName.Text = "";
+            if (EditorLocPrefix != null) EditorLocPrefix.Text = "";
+            if (EditorLocCollective != null) EditorLocCollective.Text = "";
+        }
+
+        private void PopulateEditorLocalizationFields(CultureInfo culture)
+        {
+            if (EditorLocName == null || EditorLocPrefix == null || EditorLocCollective == null) return;
+            string rawKey = culture.RawKey ?? culture.Name ?? "";
+            EditorLocName.Text = LookupLocalizationValue(rawKey) ?? "";
+            EditorLocPrefix.Text = LookupLocalizationValue($"{rawKey}_prefix") ?? "";
+            EditorLocCollective.Text = LookupLocalizationValue($"{rawKey}_collective_noun") ?? "";
+        }
+
+        private static string? LookupLocalizationValue(string key)
+        {
+            if (string.IsNullOrEmpty(key) || _editorLocalization == null) return null;
+            return _editorLocalization.TryGetValue(key, out var value) ? value : null;
         }
 
         private void CaptureEditorSavedState()
@@ -1405,6 +1466,9 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedCoaGfx = new List<string>(_editorCulture.CoaGfx ?? new List<string>());
             _editorSavedHouseCoaFrame = _editorCulture.HouseCoaFrame ?? "";
             _editorSavedEthnicities = new List<Ethnicity>(_editorCulture.Ethnicities ?? new List<Ethnicity>());
+            _editorSavedLocName = EditorLocName?.Text?.Trim() ?? "";
+            _editorSavedLocPrefix = EditorLocPrefix?.Text?.Trim() ?? "";
+            _editorSavedLocCollective = EditorLocCollective?.Text?.Trim() ?? "";
         }
 
         private void MarkEditorAsSaved()
@@ -1425,6 +1489,9 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedCoaGfx = GetSelectedGfx("coa");
             _editorSavedHouseCoaFrame = GetSelectedOption(EditorHouseCoaFrame);
             _editorSavedEthnicities = GetEthnicityEntries();
+            _editorSavedLocName = EditorLocName?.Text?.Trim() ?? "";
+            _editorSavedLocPrefix = EditorLocPrefix?.Text?.Trim() ?? "";
+            _editorSavedLocCollective = EditorLocCollective?.Text?.Trim() ?? "";
             UpdateEditorDirtyState();
         }
 
@@ -1446,6 +1513,9 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             SetLabelDirty(EditorCoaGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("coa"), _editorSavedCoaGfx));
             SetLabelDirty(EditorHouseCoaLabel, GetSelectedOption(EditorHouseCoaFrame) != _editorSavedHouseCoaFrame);
             SetLabelDirty(EditorEthnicitiesLabel, !EthnicityListsEqual(GetEthnicityEntries(), _editorSavedEthnicities));
+            SetLabelDirty(EditorLocNameLabel, (EditorLocName?.Text?.Trim() ?? "") != _editorSavedLocName);
+            SetLabelDirty(EditorLocPrefixLabel, (EditorLocPrefix?.Text?.Trim() ?? "") != _editorSavedLocPrefix);
+            SetLabelDirty(EditorLocCollectiveLabel, (EditorLocCollective?.Text?.Trim() ?? "") != _editorSavedLocCollective);
         }
 
         private static bool TraditionListsEqual(List<string> a, List<string> b)
@@ -1489,15 +1559,218 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
             if (_editorCulture == null || _editorIsNew)
             {
-                SaveAsNewCulture(cultureId, block);
+                SaveAsNewCulture(cultureId, block, async (cid) => await SaveCultureLocalizationAsync(cid));
             }
             else
             {
-                SaveExistingCulture(block);
+                SaveExistingCulture(block, async (cid) => await SaveCultureLocalizationAsync(cid));
             }
         }
 
-        private void SaveAsNewCulture(string cultureId, string block)
+        private async Task SaveCultureLocalizationAsync(string cultureId)
+        {
+            var profile = _viewModel?.CurrentProfile;
+            if (profile == null) return;
+            string modRoot = profile.ModRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot)) return;
+
+            string name = EditorLocName?.Text?.Trim() ?? "";
+            string prefix = EditorLocPrefix?.Text?.Trim() ?? "";
+            string collective = EditorLocCollective?.Text?.Trim() ?? "";
+            if (name == "" && prefix == "" && collective == "") return;
+
+            EditorStatusText.Text = Res("CulturesTab_EditorLocTranslating");
+            SetEditorBusy(true);
+            try
+            {
+            string appLang = _viewModel?.Language ?? "en";
+            string? directFolder = appLang switch
+            {
+                "es" => "spanish",
+                "en" => "english",
+                _ => null
+            };
+
+            bool existsInBase = _baseCultureRawKeys.Contains(cultureId);
+            string baseLocPath = Path.Combine(modRoot, "localization");
+            if (existsInBase)
+                baseLocPath = Path.Combine(baseLocPath, "replace");
+
+            string srcCode = appLang.ToLowerInvariant() switch { "es" => "es", "en" => "en", _ => "ca" };
+
+            var providers = BuildEnabledProviders();
+            int saved = 0;
+            var errors = new List<string>();
+            var fallbackLangs = new List<string>();
+            foreach (var folder in GameSupportedLanguages)
+            {
+                string ck3Folder = folder.Folder;
+                string code = folder.Code;
+
+                string locName = name;
+                string locPrefix = prefix;
+                string locCollective = collective;
+
+                bool usedFallback = false;
+                if (ck3Folder != directFolder)
+                {
+                    var (trName, okName) = await TranslateWithFallbackAsync(name, srcCode, code, providers);
+                    var (trPrefix, okPrefix) = await TranslateWithFallbackAsync(prefix, srcCode, code, providers);
+                    var (trCollective, okCollective) = await TranslateWithFallbackAsync(collective, srcCode, code, providers);
+                    locName = string.IsNullOrEmpty(trName) ? name : trName;
+                    locPrefix = string.IsNullOrEmpty(trPrefix) ? prefix : trPrefix;
+                    locCollective = string.IsNullOrEmpty(trCollective) ? collective : trCollective;
+                    usedFallback = !(okName && okPrefix && okCollective);
+                }
+
+                string folderPath = Path.Combine(baseLocPath, ck3Folder);
+                try
+                {
+                    Directory.CreateDirectory(folderPath);
+                    string filePath = Path.Combine(folderPath, $"cultures_l_{ck3Folder}.yml");
+                    var entries = new List<(string Key, string Value)>();
+                    if (!string.IsNullOrEmpty(locName))
+                        entries.Add((cultureId, locName));
+                    if (!string.IsNullOrEmpty(locPrefix))
+                        entries.Add(($"{cultureId}_prefix", locPrefix));
+                    if (!string.IsNullOrEmpty(locCollective))
+                        entries.Add(($"{cultureId}_collective_noun", locCollective));
+                    UpsertLocalizationFile(filePath, $"l_{ck3Folder}:", entries);
+                    saved++;
+                    if (usedFallback)
+                        fallbackLangs.Add(ck3Folder);
+                }
+                catch
+                {
+                    errors.Add(ck3Folder);
+                }
+            }
+
+            if (errors.Count > 0)
+            {
+                EditorStatusText.Text = $"{string.Format(Res("CulturesTab_EditorLocSaved"), saved)} {Res("CulturesTab_EditorLocError")}: {string.Join(", ", errors)}";
+            }
+            else if (fallbackLangs.Count > 0)
+            {
+                EditorStatusText.Text = $"{string.Format(Res("CulturesTab_EditorLocSaved"), saved)} {string.Format(Res("CulturesTab_EditorLocFallback"), string.Join(", ", fallbackLangs))}";
+            }
+            else
+            {
+                EditorStatusText.Text = string.Format(Res("CulturesTab_EditorLocSaved"), saved);
+            }
+            }
+            finally
+            {
+                SetEditorBusy(false);
+            }
+        }
+
+        private void SetEditorBusy(bool busy)
+        {
+            EditorSaveButton.IsEnabled = !busy;
+            EditorClearButton.IsEnabled = !busy;
+            this.Cursor = busy ? System.Windows.Input.Cursors.Wait : System.Windows.Input.Cursors.Arrow;
+        }
+
+        private static async Task<(string? Text, bool Ok)> TranslateWithFallbackAsync(string text, string sourceCode, string targetCode, List<ITranslationProvider> providers)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return (text, true);
+            foreach (var provider in providers)
+            {
+                var (result, ok) = await provider.TranslateAsync(text, sourceCode, targetCode);
+                if (ok && !string.IsNullOrWhiteSpace(result))
+                    return (result, true);
+            }
+            return (text, false);
+        }
+
+        private List<ITranslationProvider> BuildEnabledProviders()
+        {
+            var enabled = _viewModel?.EnabledTranslationProviders ?? new List<string> { TranslationProviderConstants.MyMemory };
+            var urls = _viewModel?.TranslationProviderUrls ?? new Dictionary<string, string>();
+            var key = _viewModel?.DeeplApiKey;
+
+            var list = new List<ITranslationProvider>();
+            foreach (var id in enabled)
+            {
+                switch (id)
+                {
+                    case TranslationProviderConstants.MyMemory:
+                        list.Add(new MyMemoryProvider(_translationHttp));
+                        break;
+                    case TranslationProviderConstants.LibreTranslate:
+                        var ltUrl = urls.TryGetValue(TranslationProviderConstants.LibreTranslate, out var lu) && !string.IsNullOrWhiteSpace(lu)
+                            ? lu! : TranslationProviderConstants.DefaultLibreTranslateUrl;
+                        list.Add(new LibreTranslateProvider(_translationHttp, ltUrl));
+                        break;
+                    case TranslationProviderConstants.Lingva:
+                        var lvUrl = urls.TryGetValue(TranslationProviderConstants.Lingva, out var lv) && !string.IsNullOrWhiteSpace(lv)
+                            ? lv! : TranslationProviderConstants.DefaultLingvaUrl;
+                        list.Add(new LingvaProvider(_translationHttp, lvUrl));
+                        break;
+                    case TranslationProviderConstants.DeepL:
+                        if (!string.IsNullOrWhiteSpace(key))
+                            list.Add(new DeepLProvider(_translationHttp, key));
+                        break;
+                }
+            }
+
+            if (list.Count == 0)
+                list.Add(new MyMemoryProvider(_translationHttp));
+
+            var rng = new Random();
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                (list[i], list[j]) = (list[j], list[i]);
+            }
+            return list;
+        }
+
+        private static void UpsertLocalizationFile(string filePath, string header, List<(string Key, string Value)> entries)
+        {
+            var sb = new StringBuilder();
+            if (!File.Exists(filePath))
+            {
+                sb.AppendLine(header);
+                sb.AppendLine();
+                foreach (var e in entries)
+                    sb.AppendLine($"{e.Key}:0 \"{e.Value.Replace("\"", "\\\"")}\"");
+                File.WriteAllText(filePath, sb.ToString(), new UTF8Encoding(true));
+                return;
+            }
+
+            var lines = new List<string>(File.ReadAllLines(filePath));
+            var toInsert = new List<string>();
+            foreach (var e in entries)
+            {
+                bool found = false;
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string trimmed = lines[i].TrimStart();
+                    if (trimmed.StartsWith(e.Key + ":", StringComparison.Ordinal))
+                    {
+                        lines[i] = $"{e.Key}:0 \"{e.Value.Replace("\"", "\\\"")}\"";
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    toInsert.Add($"{e.Key}:0 \"{e.Value.Replace("\"", "\\\"")}\"");
+            }
+
+            if (toInsert.Count > 0)
+            {
+                int insertAt = 1;
+                if (insertAt < lines.Count && string.IsNullOrWhiteSpace(lines[insertAt]))
+                    insertAt++;
+                lines.InsertRange(insertAt, toInsert.Select(x => x));
+            }
+
+            File.WriteAllLines(filePath, lines, new UTF8Encoding(true));
+        }
+
+        private void SaveAsNewCulture(string cultureId, string block, Func<string, Task> afterSave)
         {
             var profile = _viewModel?.CurrentProfile;
             if (profile == null) return;
@@ -1557,6 +1830,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 }
                 RefreshCultureTree();
                 MarkEditorAsSaved();
+                _ = afterSave(cultureId);
             }
             catch (Exception ex)
             {
@@ -1679,7 +1953,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             LoadCultures();
         }
 
-        private void SaveExistingCulture(string block)
+        private void SaveExistingCulture(string block, Func<string, Task> afterSave)
         {
             var profile = _viewModel?.CurrentProfile;
             var editorCulture = _editorCulture;
@@ -1716,6 +1990,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 EditorStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), Path.GetFileName(filePath));
                 RefreshCultureTree();
                 MarkEditorAsSaved();
+                _ = afterSave(rawKey);
             }
             catch (Exception ex)
             {

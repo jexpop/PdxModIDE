@@ -18,6 +18,9 @@ namespace PdxModIDE.UI.ViewModels
         private Domain.Profile? _currentProfile;
         private string _theme = "light";
         private string _language = "en";
+        private List<string> _enabledTranslationProviders = new() { "mymemory" };
+        private string? _deeplApiKey;
+        private Dictionary<string, string> _translationProviderUrls = new();
 
         // Saved-state snapshot used for "unsaved changes" highlighting.
         private string _savedGameRoot = "";
@@ -110,6 +113,24 @@ namespace PdxModIDE.UI.ViewModels
         {
             get => _language;
             set => SetProperty(ref _language, value);
+        }
+
+        public List<string> EnabledTranslationProviders
+        {
+            get => _enabledTranslationProviders;
+            set => SetProperty(ref _enabledTranslationProviders, value ?? new List<string> { "mymemory" });
+        }
+
+        public string? DeeplApiKey
+        {
+            get => _deeplApiKey;
+            set => SetProperty(ref _deeplApiKey, value);
+        }
+
+        public Dictionary<string, string> TranslationProviderUrls
+        {
+            get => _translationProviderUrls;
+            set => SetProperty(ref _translationProviderUrls, value ?? new Dictionary<string, string>());
         }
 
         public string GameRoot
@@ -345,12 +366,18 @@ namespace PdxModIDE.UI.ViewModels
         {
             Theme = _projectService.Theme;
             Language = _projectService.Language;
+            EnabledTranslationProviders = _projectService.EnabledTranslationProviders;
+            DeeplApiKey = _projectService.DeeplApiKey;
+            TranslationProviderUrls = _projectService.TranslationProviderUrls;
         }
 
         public void SaveSettings()
         {
             _projectService.Theme = Theme;
             _projectService.Language = Language;
+            _projectService.EnabledTranslationProviders = EnabledTranslationProviders;
+            _projectService.DeeplApiKey = DeeplApiKey;
+            _projectService.TranslationProviderUrls = TranslationProviderUrls;
             _projectService.SaveSettings();
         }
 

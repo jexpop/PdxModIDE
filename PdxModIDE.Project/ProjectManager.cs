@@ -46,6 +46,24 @@ namespace PdxModIDE.Project
             set => _dataSettings.Language = value;
         }
 
+        public List<string> EnabledTranslationProviders
+        {
+            get => _dataSettings.TranslationProviders;
+            set => _dataSettings.TranslationProviders = value ?? new List<string> { "mymemory" };
+        }
+
+        public string? DeeplApiKey
+        {
+            get => _dataSettings.DeeplApiKey;
+            set => _dataSettings.DeeplApiKey = value;
+        }
+
+        public Dictionary<string, string> TranslationProviderUrls
+        {
+            get => _dataSettings.TranslationProviderUrls;
+            set => _dataSettings.TranslationProviderUrls = value ?? new Dictionary<string, string>();
+        }
+
         public ProjectManager()
         {
             _moduleProcessor = new ModuleProcessor(new ModuleRepository());

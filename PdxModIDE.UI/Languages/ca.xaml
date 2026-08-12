@@ -28,8 +28,21 @@
     <system:String x:Key="Settings_AppliedMessage">Ajustos aplicats correctament.</system:String>
     <system:String x:Key="Settings_AppliedTitle">Fet</system:String>
 
+    <system:String x:Key="Settings_TranslationSection">Traducció</system:String>
+    <system:String x:Key="Settings_TranslationHint">Trieu quins serveis de traducció s'usen en guardar una cultura. Si un falla, se'n prova un altre a l'atzar. MyMemory sempre està activat.</system:String>
+    <system:String x:Key="Settings_Provider_MyMemory">MyMemory (predeterminat, sense clau)</system:String>
+    <system:String x:Key="Settings_Provider_LibreTranslate">LibreTranslate (gratuït, sense clau)</system:String>
+    <system:String x:Key="Settings_Provider_Lingva">Lingva (gratuït, sense clau)</system:String>
+    <system:String x:Key="Settings_Provider_Deepl">DeepL (requereix clau API gratuïta)</system:String>
+    <system:String x:Key="Settings_Provider_Url">URL de la instància:</system:String>
+    <system:String x:Key="Settings_DeeplKey">Clau API:</system:String>
+    <system:String x:Key="Settings_Validate">Validar</system:String>
+    <system:String x:Key="Settings_DeeplValid">La clau és válida.</system:String>
+    <system:String x:Key="Settings_DeeplInvalid">La clau no és válida o el servei no és accessible.</system:String>
+    <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
+
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.12</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.13</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -220,7 +233,16 @@
     <system:String x:Key="CulturesTab_EditorNewTitle">Nova cultura</system:String>
     <system:String x:Key="CulturesTab_EditorEditTitle">Editar cultura</system:String>
     <system:String x:Key="CulturesTab_EditorDetails">Detalls</system:String>
-    <system:String x:Key="CulturesTab_EditorCultureId">Nom</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureId">Identificador</system:String>
+    <system:String x:Key="CulturesTab_EditorLocSection">Localització</system:String>
+    <system:String x:Key="CulturesTab_EditorLocHint">Aquests tres valors s'escriuen en l'idioma actual de l'aplicació i es tradueixen automàticament (mitjançant l'API gratuïta MyMemory) a la resta d'idiomes que el joc permet. Les cultures noves fan servir localization\{idioma}; les cultures que ja existeixen al joc base fan servir localization\replace\{idioma}.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocName">Nom cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorLocPrefix">Prefix cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorLocCollective">Substantiu col·lectiu</system:String>
+    <system:String x:Key="CulturesTab_EditorLocTranslating">Traduint i escrivint la localització…</system:String>
+    <system:String x:Key="CulturesTab_EditorLocSaved">Localització desada en {0} idiomes.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocError">Error de localització: {0}</system:String>
+    <system:String x:Key="CulturesTab_EditorLocFallback">La traducció va fallar a {0}; es va usar el nom escrit.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Herència</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>

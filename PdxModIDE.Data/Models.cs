@@ -79,6 +79,15 @@ namespace PdxModIDE.Data
 
         [JsonPropertyName("language")]
         public string Language { get; set; } = "en";
+
+        [JsonPropertyName("translationProviders")]
+        public List<string> TranslationProviders { get; set; } = new() { "mymemory" };
+
+        [JsonPropertyName("deeplApiKey")]
+        public string? DeeplApiKey { get; set; }
+
+        [JsonPropertyName("translationProviderUrls")]
+        public Dictionary<string, string> TranslationProviderUrls { get; set; } = new();
     }
 
     public class LogFilters

@@ -479,6 +479,17 @@
                             <Label x:Name="EditorIdLabel" Content="{DynamicResource CulturesTab_EditorCultureId}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
                             <TextBox x:Name="EditorCultureId" Width="350" MaxLength="50" HorizontalAlignment="Left" Margin="15,0,0,4" TextChanged="EditorCultureId_TextChanged"/>
                         </StackPanel>
+                        <GroupBox Header="{DynamicResource CulturesTab_EditorLocSection}" Margin="0,4,0,8">
+                            <StackPanel>
+                                <TextBlock x:Name="EditorLocHintText" Text="{DynamicResource CulturesTab_EditorLocHint}" Foreground="Gray" Margin="15,0,15,6" TextWrapping="Wrap"/>
+                                <Label x:Name="EditorLocNameLabel" Content="{DynamicResource CulturesTab_EditorLocName}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                                <TextBox x:Name="EditorLocName" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,6" TextChanged="EditorLoc_TextChanged"/>
+                                <Label x:Name="EditorLocPrefixLabel" Content="{DynamicResource CulturesTab_EditorLocPrefix}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                                <TextBox x:Name="EditorLocPrefix" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,6" TextChanged="EditorLoc_TextChanged"/>
+                                <Label x:Name="EditorLocCollectiveLabel" Content="{DynamicResource CulturesTab_EditorLocCollective}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                                <TextBox x:Name="EditorLocCollective" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,8" TextChanged="EditorLoc_TextChanged"/>
+                            </StackPanel>
+                        </GroupBox>
                         <Label x:Name="EditorColorLabel" Content="{DynamicResource CulturesTab_EditorColor}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
                         <StackPanel Orientation="Horizontal" Margin="15,0,0,4">
                             <Border x:Name="EditorColorPreview" Width="40" Height="24" Background="White" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" VerticalAlignment="Center"/>

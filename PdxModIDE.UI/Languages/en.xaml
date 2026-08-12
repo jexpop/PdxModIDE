@@ -28,8 +28,21 @@
     <system:String x:Key="Settings_AppliedMessage">Settings applied successfully.</system:String>
     <system:String x:Key="Settings_AppliedTitle">Done</system:String>
 
+    <system:String x:Key="Settings_TranslationSection">Translation</system:String>
+    <system:String x:Key="Settings_TranslationHint">Choose which translation services are used when saving a culture. If one fails, another is tried at random. MyMemory is always enabled.</system:String>
+    <system:String x:Key="Settings_Provider_MyMemory">MyMemory (default, no key)</system:String>
+    <system:String x:Key="Settings_Provider_LibreTranslate">LibreTranslate (free, no key)</system:String>
+    <system:String x:Key="Settings_Provider_Lingva">Lingva (free, no key)</system:String>
+    <system:String x:Key="Settings_Provider_Deepl">DeepL (free API key required)</system:String>
+    <system:String x:Key="Settings_Provider_Url">Instance URL:</system:String>
+    <system:String x:Key="Settings_DeeplKey">API key:</system:String>
+    <system:String x:Key="Settings_Validate">Validate</system:String>
+    <system:String x:Key="Settings_DeeplValid">The key is valid.</system:String>
+    <system:String x:Key="Settings_DeeplInvalid">The key is invalid or the service is unreachable.</system:String>
+    <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
+
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.12</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.13</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -220,7 +233,16 @@
     <system:String x:Key="CulturesTab_EditorNewTitle">New culture</system:String>
     <system:String x:Key="CulturesTab_EditorEditTitle">Edit culture</system:String>
     <system:String x:Key="CulturesTab_EditorDetails">Details</system:String>
-    <system:String x:Key="CulturesTab_EditorCultureId">Name</system:String>
+    <system:String x:Key="CulturesTab_EditorCultureId">Identifier</system:String>
+    <system:String x:Key="CulturesTab_EditorLocSection">Localization</system:String>
+    <system:String x:Key="CulturesTab_EditorLocHint">These three values are written in the current application language and automatically translated (via the free MyMemory API) to the rest of the languages the game supports. New cultures use localization\{lang}; cultures that already exist in the base game use localization\replace\{lang}.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocName">Culture name</system:String>
+    <system:String x:Key="CulturesTab_EditorLocPrefix">Culture prefix</system:String>
+    <system:String x:Key="CulturesTab_EditorLocCollective">Collective noun</system:String>
+    <system:String x:Key="CulturesTab_EditorLocTranslating">Translating and writing localization…</system:String>
+    <system:String x:Key="CulturesTab_EditorLocSaved">Localization saved in {0} languages.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocError">Localization error: {0}</system:String>
+    <system:String x:Key="CulturesTab_EditorLocFallback">Translation failed for {0}; the typed name was used instead.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Heritage</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>

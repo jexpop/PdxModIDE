@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         Title="{DynamicResource Settings_Title}"
-        Height="480" Width="420"
+        Height="600" Width="440"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
@@ -13,12 +13,11 @@
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
             <TextBlock Text="{DynamicResource Settings_Title}"
                        FontSize="18" FontWeight="Bold"
                        Foreground="{DynamicResource WindowForeground}"/>
@@ -27,52 +26,90 @@
                        Foreground="{DynamicResource DisabledForeground}"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Margin="0,0,0,15">
-            <TextBlock Text="{DynamicResource Settings_LanguageSection}"
-                       FontWeight="SemiBold" Margin="0,0,0,5"
-                       Foreground="{DynamicResource WindowForeground}"/>
-            <RadioButton x:Name="RadioLangEs" GroupName="Language" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Language_Spanish}"
-                         Foreground="{DynamicResource WindowForeground}"
-                         Checked="LanguageChanged"/>
-            <RadioButton x:Name="RadioLangCa" GroupName="Language" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Language_Catalan}"
-                         Foreground="{DynamicResource WindowForeground}"
-                         Checked="LanguageChanged"/>
-            <RadioButton x:Name="RadioLangEn" GroupName="Language" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Language_English}"
-                         Foreground="{DynamicResource WindowForeground}"
-                         Checked="LanguageChanged"/>
-        </StackPanel>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource Settings_LanguageSection}"
+                           FontWeight="SemiBold" Margin="0,0,0,5"
+                           Foreground="{DynamicResource WindowForeground}"/>
+                <RadioButton x:Name="RadioLangEs" GroupName="Language" Margin="0,0,0,3"
+                             Content="{DynamicResource Settings_Language_Spanish}"
+                             Foreground="{DynamicResource WindowForeground}"
+                             Checked="LanguageChanged"/>
+                <RadioButton x:Name="RadioLangCa" GroupName="Language" Margin="0,0,0,3"
+                             Content="{DynamicResource Settings_Language_Catalan}"
+                             Foreground="{DynamicResource WindowForeground}"
+                             Checked="LanguageChanged"/>
+                <RadioButton x:Name="RadioLangEn" GroupName="Language" Margin="0,0,0,3"
+                             Content="{DynamicResource Settings_Language_English}"
+                             Foreground="{DynamicResource WindowForeground}"
+                             Checked="LanguageChanged"/>
 
-        <StackPanel Grid.Row="2">
-            <TextBlock Text="{DynamicResource Settings_ThemeSection}"
-                       FontWeight="SemiBold" Margin="0,0,0,5"
-                       Foreground="{DynamicResource WindowForeground}"/>
-            <RadioButton x:Name="RadioLight" GroupName="Theme" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Theme_Light}"
-                         Foreground="{DynamicResource WindowForeground}"/>
-            <RadioButton x:Name="RadioDark" GroupName="Theme" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Theme_Dark}"
-                         Foreground="{DynamicResource WindowForeground}"/>
-            <RadioButton x:Name="RadioCk3" GroupName="Theme" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Theme_CK3}"
-                         Foreground="{DynamicResource WindowForeground}"/>
-            <RadioButton x:Name="RadioSepia" GroupName="Theme" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Theme_Sepia}"
-                         Foreground="{DynamicResource WindowForeground}"/>
-            <RadioButton x:Name="RadioContrast" GroupName="Theme" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Theme_Contrast}"
-                         Foreground="{DynamicResource WindowForeground}"/>
-            <RadioButton x:Name="RadioVscodeDark" GroupName="Theme" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Theme_VSCodeDark}"
-                         Foreground="{DynamicResource WindowForeground}"/>
-            <RadioButton x:Name="RadioVscodeLight" GroupName="Theme" Margin="0,0,0,3"
-                         Content="{DynamicResource Settings_Theme_VSCodeLight}"
-                         Foreground="{DynamicResource WindowForeground}"/>
-        </StackPanel>
+                <TextBlock Text="{DynamicResource Settings_ThemeSection}"
+                           FontWeight="SemiBold" Margin="15,15,0,5"
+                           Foreground="{DynamicResource WindowForeground}"/>
+                <RadioButton x:Name="RadioLight" GroupName="Theme" Margin="15,0,0,3"
+                             Content="{DynamicResource Settings_Theme_Light}"
+                             Foreground="{DynamicResource WindowForeground}"/>
+                <RadioButton x:Name="RadioDark" GroupName="Theme" Margin="15,0,0,3"
+                             Content="{DynamicResource Settings_Theme_Dark}"
+                             Foreground="{DynamicResource WindowForeground}"/>
+                <RadioButton x:Name="RadioCk3" GroupName="Theme" Margin="15,0,0,3"
+                             Content="{DynamicResource Settings_Theme_CK3}"
+                             Foreground="{DynamicResource WindowForeground}"/>
+                <RadioButton x:Name="RadioSepia" GroupName="Theme" Margin="15,0,0,3"
+                             Content="{DynamicResource Settings_Theme_Sepia}"
+                             Foreground="{DynamicResource WindowForeground}"/>
+                <RadioButton x:Name="RadioContrast" GroupName="Theme" Margin="15,0,0,3"
+                             Content="{DynamicResource Settings_Theme_Contrast}"
+                             Foreground="{DynamicResource WindowForeground}"/>
+                <RadioButton x:Name="RadioVscodeDark" GroupName="Theme" Margin="15,0,0,3"
+                             Content="{DynamicResource Settings_Theme_VSCodeDark}"
+                             Foreground="{DynamicResource WindowForeground}"/>
+                <RadioButton x:Name="RadioVscodeLight" GroupName="Theme" Margin="15,0,0,3"
+                             Content="{DynamicResource Settings_Theme_VSCodeLight}"
+                             Foreground="{DynamicResource WindowForeground}"/>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                <TextBlock Text="{DynamicResource Settings_TranslationSection}"
+                           FontWeight="SemiBold" Margin="0,15,0,5"
+                           Foreground="{DynamicResource WindowForeground}"/>
+                <TextBlock Text="{DynamicResource Settings_TranslationHint}"
+                           TextWrapping="Wrap" Margin="0,0,0,5"
+                           Foreground="{DynamicResource DisabledForeground}"/>
+
+                <CheckBox x:Name="ChkMyMemory" Content="{DynamicResource Settings_Provider_MyMemory}"
+                          IsEnabled="False" IsChecked="True" Margin="0,0,0,3"
+                          Foreground="{DynamicResource WindowForeground}"/>
+
+                <CheckBox x:Name="ChkLibreTranslate" Content="{DynamicResource Settings_Provider_LibreTranslate}"
+                          Margin="0,0,0,3" Foreground="{DynamicResource WindowForeground}"/>
+                <StackPanel Orientation="Horizontal" Margin="22,0,0,6">
+                    <TextBlock Text="{DynamicResource Settings_Provider_Url}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource WindowForeground}" Margin="0,0,5,0"/>
+                    <TextBox x:Name="TxtLibreUrl" Width="250" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <CheckBox x:Name="ChkLingva" Content="{DynamicResource Settings_Provider_Lingva}"
+                          Margin="0,0,0,3" Foreground="{DynamicResource WindowForeground}"/>
+                <StackPanel Orientation="Horizontal" Margin="22,0,0,6">
+                    <TextBlock Text="{DynamicResource Settings_Provider_Url}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource WindowForeground}" Margin="0,0,5,0"/>
+                    <TextBox x:Name="TxtLingvaUrl" Width="250" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <CheckBox x:Name="ChkDeepl" Content="{DynamicResource Settings_Provider_Deepl}"
+                          Margin="0,0,0,3" Foreground="{DynamicResource WindowForeground}"/>
+                <StackPanel Orientation="Horizontal" Margin="22,0,0,3">
+                    <TextBlock Text="{DynamicResource Settings_DeeplKey}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource WindowForeground}" Margin="0,0,5,0"/>
+                    <PasswordBox x:Name="TxtDeeplKey" Width="170" VerticalAlignment="Center"/>
+                    <Button x:Name="BtnValidateDeepl" Content="{DynamicResource Settings_Validate}"
+                            Margin="8,0,0,0" Padding="8,2" Click="BtnValidateDeepl_Click"/>
+                </StackPanel>
+                <TextBlock x:Name="TxtDeeplStatus" Foreground="Gray" Margin="22,0,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
             <Button x:Name="BtnApply" Content="{DynamicResource Settings_ApplyButton}"
                     Width="90" Margin="0,0,8,0" Click="BtnApply_Click"/>
             <Button x:Name="BtnClose" Content="{DynamicResource Settings_CloseButton}"
