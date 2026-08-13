@@ -1549,37 +1549,47 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
             var ethnicityEntries = GetEthnicityEntries();
             double totalWeight = ethnicityEntries.Sum(e => e.Weight);
-            if (ethnicityEntries.Count > 0 && Math.Abs(totalWeight - 100.0) > 0.5)
+            if (ethnicityEntries.Count > 0 && totalWeight > 100.0 + 0.001)
             {
                 EditorStatusText.Text = string.Format(Res("CulturesTab_EditorEthnicitiesTotal"), FormatPercent(totalWeight));
                 return;
             }
 
+            string heritage = GetSelectedOption(EditorHeritage);
+            if (string.IsNullOrEmpty(heritage))
+            {
+                EditorStatusText.Text = Res("CulturesTab_EditorNeedHeritage");
+                return;
+            }
+
+            string locName = EditorLocName?.Text?.Trim() ?? "";
+            string locPrefix = EditorLocPrefix?.Text?.Trim() ?? "";
+            string locCollective = EditorLocCollective?.Text?.Trim() ?? "";
+
             string block = BuildCultureBlock(cultureId);
 
             if (_editorCulture == null || _editorIsNew)
             {
-                SaveAsNewCulture(cultureId, block, async (cid) => await SaveCultureLocalizationAsync(cid));
+                SaveAsNewCulture(cultureId, block, (cid) => SaveCultureLocalizationAsync(cid, locName, locPrefix, locCollective));
             }
             else
             {
-                SaveExistingCulture(block, async (cid) => await SaveCultureLocalizationAsync(cid));
+                SaveExistingCulture(block, (cid) => SaveCultureLocalizationAsync(cid, locName, locPrefix, locCollective));
             }
         }
 
-        private async Task SaveCultureLocalizationAsync(string cultureId)
+        private async Task SaveCultureLocalizationAsync(string cultureId, string name, string prefix, string collective)
         {
             var profile = _viewModel?.CurrentProfile;
             if (profile == null) return;
             string modRoot = profile.ModRoot ?? "";
             if (string.IsNullOrEmpty(modRoot)) return;
 
-            string name = EditorLocName?.Text?.Trim() ?? "";
-            string prefix = EditorLocPrefix?.Text?.Trim() ?? "";
-            string collective = EditorLocCollective?.Text?.Trim() ?? "";
+            if (string.IsNullOrEmpty(name)) name = cultureId;
             if (name == "" && prefix == "" && collective == "") return;
 
-            EditorStatusText.Text = Res("CulturesTab_EditorLocTranslating");
+            bool autoTranslate = _viewModel?.AutoTranslate ?? true;
+            EditorStatusText.Text = autoTranslate ? Res("CulturesTab_EditorLocTranslating") : Res("CulturesTab_EditorLocWriting");
             SetEditorBusy(true);
             try
             {
@@ -1598,21 +1608,27 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
             string srcCode = appLang.ToLowerInvariant() switch { "es" => "es", "en" => "en", _ => "ca" };
 
-            var providers = BuildEnabledProviders();
+            var providers = autoTranslate ? BuildEnabledProviders() : new List<ITranslationProvider>();
+
+            List<(string Folder, string Code)> targets;
+            if (autoTranslate)
+                targets = GameSupportedLanguages.Select(f => (f.Folder, f.Code)).ToList();
+            else if (directFolder != null)
+                targets = new List<(string Folder, string Code)> { (directFolder, srcCode) };
+            else
+                targets = new List<(string Folder, string Code)>();
+
             int saved = 0;
             var errors = new List<string>();
             var fallbackLangs = new List<string>();
-            foreach (var folder in GameSupportedLanguages)
+            foreach (var (ck3Folder, code) in targets)
             {
-                string ck3Folder = folder.Folder;
-                string code = folder.Code;
-
                 string locName = name;
                 string locPrefix = prefix;
                 string locCollective = collective;
 
                 bool usedFallback = false;
-                if (ck3Folder != directFolder)
+                if (autoTranslate && ck3Folder != directFolder)
                 {
                     var (trName, okName) = await TranslateWithFallbackAsync(name, srcCode, code, providers);
                     var (trPrefix, okPrefix) = await TranslateWithFallbackAsync(prefix, srcCode, code, providers);
@@ -1653,6 +1669,10 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             else if (fallbackLangs.Count > 0)
             {
                 EditorStatusText.Text = $"{string.Format(Res("CulturesTab_EditorLocSaved"), saved)} {string.Format(Res("CulturesTab_EditorLocFallback"), string.Join(", ", fallbackLangs))}";
+            }
+            else if (saved == 0)
+            {
+                EditorStatusText.Text = Res("CulturesTab_EditorLocDisabled");
             }
             else
             {
@@ -1734,7 +1754,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             {
                 sb.AppendLine(header);
                 sb.AppendLine();
-                foreach (var e in entries)
+                foreach (var e in entries.OrderBy(e => e.Key, StringComparer.OrdinalIgnoreCase))
                     sb.AppendLine($"{e.Key}:0 \"{e.Value.Replace("\"", "\\\"")}\"");
                 File.WriteAllText(filePath, sb.ToString(), new UTF8Encoding(true));
                 return;
@@ -1767,8 +1787,43 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 lines.InsertRange(insertAt, toInsert.Select(x => x));
             }
 
-            File.WriteAllLines(filePath, lines, new UTF8Encoding(true));
+            var headLines = new List<string>();
+            var entryLines = new List<string>();
+            foreach (var line in lines)
+            {
+                if (IsLocalizationEntryLine(line))
+                    entryLines.Add(line);
+                else
+                    headLines.Add(line);
+            }
+            entryLines.Sort(CompareLocalizationEntries);
+
+            File.WriteAllLines(filePath, headLines.Concat(entryLines), new UTF8Encoding(true));
         }
+
+        private static bool IsLocalizationEntryLine(string line)
+        {
+            string t = line.Trim();
+            if (string.IsNullOrEmpty(t) || t.StartsWith("#")) return false;
+            int colon = t.IndexOf(':');
+            if (colon <= 0) return false;
+            int i = colon + 1;
+            while (i < t.Length && t[i] == ' ') i++;
+            if (i >= t.Length || !char.IsDigit(t[i])) return false;
+            while (i < t.Length && char.IsDigit(t[i])) i++;
+            while (i < t.Length && t[i] == ' ') i++;
+            return i < t.Length && t[i] == '"';
+        }
+
+        private static string GetLocalizationKey(string line)
+        {
+            string t = line.TrimStart();
+            int colon = t.IndexOf(':');
+            return colon > 0 ? t.Substring(0, colon) : t;
+        }
+
+        private static int CompareLocalizationEntries(string a, string b)
+            => string.Compare(GetLocalizationKey(a), GetLocalizationKey(b), StringComparison.OrdinalIgnoreCase);
 
         private void SaveAsNewCulture(string cultureId, string block, Func<string, Task> afterSave)
         {

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.13]
+
+### Added
+
+- **Automatic translation toggle (General settings → Translation)**: a new "Automatic translation" checkbox controls whether saving a culture translates its names into every CK3 language. When enabled (default), all CK3 language files are written — inside `localization/replace/` when the culture exists in the base game, otherwise under `localization/`. When disabled, only the app language is written (typed text, no translation) — in `localization/replace/` for base cultures, otherwise outside it — preparing the ground for a future manual translations section. Persisted through `Settings.AutoTranslate`.
+- **Culture localization written for new cultures (Cultures tab)**: saving a new culture now always writes at least the culture name to the localization files (defaulting to the culture id when the "Culture name" field is empty), so new cultures get localization entries. The localized prefix and collective noun are written from the typed fields; those values are captured when the Save button is pressed so the editor reload triggered after saving cannot clear them.
+
+### Changed
+
+- **Heritage is now mandatory**: the culture editor refuses to save without a selected heritage (new localized message `CulturesTab_EditorNeedHeritage`).
+- **Localization files sorted alphabetically**: `UpsertLocalizationFile` reorders the entries by key (case-insensitive) on every write, keeping the header line and comments at the top.
+- **Ethnicity percentage validation relaxed**: the sum of the culture's ethnicities no longer has to equal 100%; it only must not exceed 100% (the game accepts lower totals). The validation error message was updated accordingly.
+
+---
+
 ## [1.6.12]
 
 ### Added

@@ -19,6 +19,7 @@ namespace PdxModIDE.UI.ViewModels
         private string _theme = "light";
         private string _language = "en";
         private List<string> _enabledTranslationProviders = new() { "mymemory" };
+        private bool _autoTranslate = true;
         private string? _deeplApiKey;
         private Dictionary<string, string> _translationProviderUrls = new();
 
@@ -119,6 +120,12 @@ namespace PdxModIDE.UI.ViewModels
         {
             get => _enabledTranslationProviders;
             set => SetProperty(ref _enabledTranslationProviders, value ?? new List<string> { "mymemory" });
+        }
+
+        public bool AutoTranslate
+        {
+            get => _autoTranslate;
+            set => SetProperty(ref _autoTranslate, value);
         }
 
         public string? DeeplApiKey
@@ -367,6 +374,7 @@ namespace PdxModIDE.UI.ViewModels
             Theme = _projectService.Theme;
             Language = _projectService.Language;
             EnabledTranslationProviders = _projectService.EnabledTranslationProviders;
+            AutoTranslate = _projectService.AutoTranslate;
             DeeplApiKey = _projectService.DeeplApiKey;
             TranslationProviderUrls = _projectService.TranslationProviderUrls;
         }
@@ -376,6 +384,7 @@ namespace PdxModIDE.UI.ViewModels
             _projectService.Theme = Theme;
             _projectService.Language = Language;
             _projectService.EnabledTranslationProviders = EnabledTranslationProviders;
+            _projectService.AutoTranslate = AutoTranslate;
             _projectService.DeeplApiKey = DeeplApiKey;
             _projectService.TranslationProviderUrls = TranslationProviderUrls;
             _projectService.SaveSettings();

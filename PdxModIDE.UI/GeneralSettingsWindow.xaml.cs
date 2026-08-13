@@ -43,6 +43,8 @@ namespace PdxModIDE.UI
                 default: RadioLangEs.IsChecked = true; break;
             }
 
+            ChkAutoTranslate.IsChecked = _viewModel.AutoTranslate;
+
             var enabled = _viewModel.EnabledTranslationProviders ?? new List<string>();
             ChkLibreTranslate.IsChecked = enabled.Contains(TranslationProviderConstants.LibreTranslate);
             ChkLingva.IsChecked = enabled.Contains(TranslationProviderConstants.Lingva);
@@ -103,6 +105,8 @@ namespace PdxModIDE.UI
 
             _viewModel.Theme = theme;
             _viewModel.Language = language;
+
+            _viewModel.AutoTranslate = ChkAutoTranslate.IsChecked == true;
 
             _viewModel.EnabledTranslationProviders = GetEnabledProviders();
             _viewModel.TranslationProviderUrls = new Dictionary<string, string>

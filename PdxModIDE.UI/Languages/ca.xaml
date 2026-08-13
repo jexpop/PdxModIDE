@@ -30,6 +30,8 @@
 
     <system:String x:Key="Settings_TranslationSection">Traducció</system:String>
     <system:String x:Key="Settings_TranslationHint">Trieu quins serveis de traducció s'usen en guardar una cultura. Si un falla, se'n prova un altre a l'atzar. MyMemory sempre està activat.</system:String>
+    <system:String x:Key="Settings_AutoTranslate">Traducció automàtica</system:String>
+    <system:String x:Key="Settings_AutoTranslateHint">Quan està activada, en guardar una cultura es tradueixen els seus noms a tots els idiomes de CK3. Quan està desactivada, només s'escriu l'idioma de l'app.</system:String>
     <system:String x:Key="Settings_Provider_MyMemory">MyMemory (predeterminat, sense clau)</system:String>
     <system:String x:Key="Settings_Provider_LibreTranslate">LibreTranslate (gratuït, sense clau)</system:String>
     <system:String x:Key="Settings_Provider_Lingva">Lingva (gratuït, sense clau)</system:String>
@@ -243,6 +245,8 @@
     <system:String x:Key="CulturesTab_EditorLocSaved">Localització desada en {0} idiomes.</system:String>
     <system:String x:Key="CulturesTab_EditorLocError">Error de localització: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorLocFallback">La traducció va fallar a {0}; es va usar el nom escrit.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocWriting">Escrivint la localització…</system:String>
+    <system:String x:Key="CulturesTab_EditorLocDisabled">La traducció automàtica està desactivada; no s'ha escrit cap fitxer de localització.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Herència</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
@@ -264,7 +268,7 @@
     <system:String x:Key="CulturesTab_EditorHouseCoaFrame">Marc d'escut de casa (house_coa_frame)</system:String>
     <system:String x:Key="CulturesTab_EditorEthnicities">Ètnies</system:String>
     <system:String x:Key="CulturesTab_EditorEthnicityAdd">Afegeix ètnia</system:String>
-    <system:String x:Key="CulturesTab_EditorEthnicitiesTotal">Els percentatges d'ètnies han de sumar 100 per poder desar. Total actual: {0}</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicitiesTotal">Els percentatges d'ètnies no poden superar 100 per poder desar. Total actual: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSave">Desar cultura</system:String>
     <system:String x:Key="CulturesTab_EditorClear">Netejar camps</system:String>
     <system:String x:Key="CulturesTab_EditorBrowseFolder">Tria carpeta…</system:String>
@@ -272,6 +276,7 @@
     <system:String x:Key="CulturesTab_EditorNoTarget">No s'ha seleccionat cap carpeta de destinació</system:String>
     <system:String x:Key="CulturesTab_EditorFolderInvalid">La carpeta ha de ser dins de common\culture\cultures\mod</system:String>
     <system:String x:Key="CulturesTab_EditorNeedId">Indica primer un identificador de cultura.</system:String>
+    <system:String x:Key="CulturesTab_EditorNeedHeritage">Selecciona primer una herència.</system:String>
     <system:String x:Key="CulturesTab_EditorNoModRoot">L'arrel del mod no està configurada. Configura el perfil primer.</system:String>
     <system:String x:Key="CulturesTab_EditorFileExists">Ja existeix un fitxer amb aquest nom: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSaved">Cultura desada com a {0}</system:String>

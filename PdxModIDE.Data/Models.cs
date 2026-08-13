@@ -83,6 +83,9 @@ namespace PdxModIDE.Data
         [JsonPropertyName("translationProviders")]
         public List<string> TranslationProviders { get; set; } = new() { "mymemory" };
 
+        [JsonPropertyName("autoTranslate")]
+        public bool AutoTranslate { get; set; } = true;
+
         [JsonPropertyName("deeplApiKey")]
         public string? DeeplApiKey { get; set; }
 

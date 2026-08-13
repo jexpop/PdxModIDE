@@ -52,6 +52,12 @@ namespace PdxModIDE.Project
             set => _dataSettings.TranslationProviders = value ?? new List<string> { "mymemory" };
         }
 
+        public bool AutoTranslate
+        {
+            get => _dataSettings.AutoTranslate;
+            set => _dataSettings.AutoTranslate = value;
+        }
+
         public string? DeeplApiKey
         {
             get => _dataSettings.DeeplApiKey;

@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.6.12 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.13 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -291,7 +291,7 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
 
 - **Lazy-loaded, independent model sections (Cultures tab)**: the Building, Clothing and Unit grids each live in their own `Expander` (collapsed by default), so no model is loaded when the tab opens or when switching cultures. Expanding a section for the first time triggers its render; switching culture resets the section flags, so re-expanding recalculates the current culture. A localized "Loading models…" indicator (`CulturesTab_Loading`) is shown while a section resolves.
 
-- **Automatic culture localization on save (Cultures tab)**: saving a new or edited culture translates the Name, Adjective (`_prefix`) and Collective noun (`_collective_noun`) into every CK3-supported game language (`GameSupportedLanguages`: english, french, german, japanese, korean, polish, russian, simp_chinese, spanish) and writes them to the matching `cultures_l_<lang>.yml` files (under `localization/`, or `localization/replace/` when the culture exists in the base game). Translations go through the pluggable `ITranslationProvider` chain (`PdxModIDE.UI.Translation`); on failure the typed text is used as fallback. `SaveCultureLocalizationAsync` disables the Save/Clear buttons via `SetEditorBusy(true)` for the whole translation and re-enables them in a `finally`.
+- **Automatic culture localization on save (Cultures tab)**: saving a new or edited culture writes the Name, Adjective (`_prefix`) and Collective noun (`_collective_noun`) into the localization files. When `Settings.AutoTranslate` is enabled, they are translated into every CK3-supported game language (`GameSupportedLanguages`: english, french, german, japanese, korean, polish, russian, simp_chinese, spanish) and written to the matching `cultures_l_<lang>.yml` files (under `localization/`, or `localization/replace/` when the culture exists in the base game); when disabled, only the app language is written with the typed text. Translations go through the pluggable `ITranslationProvider` chain (`PdxModIDE.UI.Translation`); on failure the typed text is used as fallback. The localization values are captured in `EditorSave_Click` (so the editor reload after saving cannot clear them) and passed to `SaveCultureLocalizationAsync(cultureId, name, prefix, collective)`, which disables the Save/Clear buttons via `SetEditorBusy(true)` and re-enables them in a `finally`. `UpsertLocalizationFile` reorders entries alphabetically by key (case-insensitive) on every write, keeping the header/comments at the top.
 
 **Themes**: `ResourceDictionary` swap in `MainWindow.ApplyTheme(theme)`. Files in `Themes/*.xaml`.
 
@@ -301,7 +301,7 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
 
 - **Visual theme**: same 7 themes that previously lived in the removed "Options" tab (`SettingsTab`, removed in 1.2.0).
 - **Language**: new Spanish/English selector.
-- **Translation**: a "Translation" section (added in 1.6.12) configures the translation providers used when saving a culture's localization. It lists MyMemory (always on and locked), LibreTranslate and Lingva (free, no key, each with an editable instance URL), and DeepL (requires a free API key with a "Validate" button that calls the DeepL API to verify it). The selection is persisted through `Settings.TranslationProviders`, `Settings.DeeplApiKey` and `Settings.TranslationProviderUrls` (`IProjectService` → `ProjectManager` → `MainViewModel`). `CulturesTab.BuildEnabledProviders` reads these at save time, shuffles the enabled providers randomly and tries them in order (`TranslateWithFallbackAsync`), falling back to the typed name if all fail.
+- **Translation**: a "Translation" section (added in 1.6.12) configures the translation providers used when saving a culture's localization. It lists MyMemory (always on and locked), LibreTranslate and Lingva (free, no key, each with an editable instance URL), and DeepL (requires a free API key with a "Validate" button that calls the DeepL API to verify it). The selection is persisted through `Settings.TranslationProviders`, `Settings.DeeplApiKey` and `Settings.TranslationProviderUrls` (`IProjectService` → `ProjectManager` → `MainViewModel`). Since 1.6.13 it also includes an "Automatic translation" checkbox (`Settings.AutoTranslate`): when off, only the app language is written instead of translating to all CK3 languages. `CulturesTab.BuildEnabledProviders` reads these at save time, shuffles the enabled providers randomly and tries them in order (`TranslateWithFallbackAsync`), falling back to the typed name if all fail.
 
 **i18n mechanism**: XAML `ResourceDictionary`, same pattern as Themes. Folder `PdxModIDE.UI/Languages/` (`es.xaml`, `en.xaml`) with `system:String` keys (e.g. `Settings_Title`, `Settings_ThemeSection`). Consumed in XAML via `{DynamicResource Key}` to allow hot-switching without restart.
 
@@ -473,4 +473,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-12 | Project: PdxModIDE | Version: 1.6.12 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-13 | Project: PdxModIDE | Version: 1.6.13 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

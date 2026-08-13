@@ -30,6 +30,8 @@
 
     <system:String x:Key="Settings_TranslationSection">Translation</system:String>
     <system:String x:Key="Settings_TranslationHint">Choose which translation services are used when saving a culture. If one fails, another is tried at random. MyMemory is always enabled.</system:String>
+    <system:String x:Key="Settings_AutoTranslate">Automatic translation</system:String>
+    <system:String x:Key="Settings_AutoTranslateHint">When enabled, saving a culture translates its names into all CK3 languages. When disabled, only the app language is written.</system:String>
     <system:String x:Key="Settings_Provider_MyMemory">MyMemory (default, no key)</system:String>
     <system:String x:Key="Settings_Provider_LibreTranslate">LibreTranslate (free, no key)</system:String>
     <system:String x:Key="Settings_Provider_Lingva">Lingva (free, no key)</system:String>
@@ -243,6 +245,8 @@
     <system:String x:Key="CulturesTab_EditorLocSaved">Localization saved in {0} languages.</system:String>
     <system:String x:Key="CulturesTab_EditorLocError">Localization error: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorLocFallback">Translation failed for {0}; the typed name was used instead.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocWriting">Writing localization…</system:String>
+    <system:String x:Key="CulturesTab_EditorLocDisabled">Automatic translation is disabled; no localization file was written.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Heritage</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
@@ -264,7 +268,7 @@
     <system:String x:Key="CulturesTab_EditorHouseCoaFrame">House coat-of-arms frame (house_coa_frame)</system:String>
     <system:String x:Key="CulturesTab_EditorEthnicities">Ethnicities</system:String>
     <system:String x:Key="CulturesTab_EditorEthnicityAdd">Add ethnicity</system:String>
-    <system:String x:Key="CulturesTab_EditorEthnicitiesTotal">Ethnicity percentages must add up to 100 to save. Current total: {0}</system:String>
+    <system:String x:Key="CulturesTab_EditorEthnicitiesTotal">Ethnicity percentages cannot add up to more than 100 to save. Current total: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSave">Save culture</system:String>
     <system:String x:Key="CulturesTab_EditorClear">Clear fields</system:String>
     <system:String x:Key="CulturesTab_EditorBrowseFolder">Choose folder…</system:String>
@@ -272,6 +276,7 @@
     <system:String x:Key="CulturesTab_EditorNoTarget">No destination folder selected</system:String>
     <system:String x:Key="CulturesTab_EditorFolderInvalid">The folder must be inside common\culture\cultures\mod</system:String>
     <system:String x:Key="CulturesTab_EditorNeedId">Enter a culture identifier first.</system:String>
+    <system:String x:Key="CulturesTab_EditorNeedHeritage">Select a heritage first.</system:String>
     <system:String x:Key="CulturesTab_EditorNoModRoot">Mod root is not set. Configure the profile first.</system:String>
     <system:String x:Key="CulturesTab_EditorFileExists">A file with that name already exists: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorSaved">Culture saved as {0}</system:String>

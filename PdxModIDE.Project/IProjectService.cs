@@ -54,6 +54,7 @@ namespace PdxModIDE.Project
         string Theme { get; set; }
         string Language { get; set; }
         List<string> EnabledTranslationProviders { get; set; }
+        bool AutoTranslate { get; set; }
         string? DeeplApiKey { get; set; }
         Dictionary<string, string> TranslationProviderUrls { get; set; }
         void SaveSettings();

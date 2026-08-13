@@ -76,6 +76,12 @@
                            TextWrapping="Wrap" Margin="0,0,0,5"
                            Foreground="{DynamicResource DisabledForeground}"/>
 
+                <CheckBox x:Name="ChkAutoTranslate" Content="{DynamicResource Settings_AutoTranslate}"
+                          Margin="0,0,0,3" Foreground="{DynamicResource WindowForeground}"/>
+                <TextBlock Text="{DynamicResource Settings_AutoTranslateHint}"
+                           TextWrapping="Wrap" Margin="20,0,0,8"
+                           Foreground="{DynamicResource DisabledForeground}"/>
+
                 <CheckBox x:Name="ChkMyMemory" Content="{DynamicResource Settings_Provider_MyMemory}"
                           IsEnabled="False" IsChecked="True" Margin="0,0,0,3"
                           Foreground="{DynamicResource WindowForeground}"/>
