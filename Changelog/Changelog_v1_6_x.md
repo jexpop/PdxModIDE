@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.14]
+
+### Added
+
+- **Delete culture (Cultures tab)**: right-clicking a mod culture defined in `common/culture/cultures/mod` (or a subfolder) — the "green" ones — now offers a "Delete culture" option. A mandatory confirmation dialog shows the culture to delete (display name). Deleting removes the whole `cultureId = { ... }` block (with all its attributes) from the culture file in the mod; if the file ends up with no cultures left, the file itself is deleted. The mod localization entries for that culture (`cultureId`, `cultureId_prefix`, `cultureId_collective_noun`) are also removed from the mod's `cultures_l_<lang>.yml` files — under `localization/replace/` when the culture exists in the base game, otherwise under `localization/`. The base game is never modified. New localized status and confirmation messages were added in all languages.
+
+---
+
 ## [1.6.13]
 
 ### Added

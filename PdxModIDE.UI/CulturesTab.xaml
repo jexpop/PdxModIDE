@@ -46,6 +46,9 @@
                                   Click="CtxCopyCulture_Click"/>
                         <MenuItem x:Name="CtxEditMenuItem" Header="{DynamicResource CulturesTab_CtxEdit}"
                                   Click="CtxEditCulture_Click"/>
+                        <Separator/>
+                        <MenuItem x:Name="CtxDeleteMenuItem" Header="{DynamicResource CulturesTab_CtxDelete}"
+                                  Click="CtxDeleteCulture_Click"/>
                     </ContextMenu>
                 </TreeView.ContextMenu>
                 <TreeView.ItemTemplate>

@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.13</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.14</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -230,6 +230,15 @@
     <system:String x:Key="CulturesTab_LegendModNew">• Mod (nueva / editable)</system:String>
     <system:String x:Key="CulturesTab_CtxCopy">Crear cultura copiando esta</system:String>
     <system:String x:Key="CulturesTab_CtxEdit">Editar cultura</system:String>
+    <system:String x:Key="CulturesTab_CtxDelete">Eliminar cultura</system:String>
+    <system:String x:Key="CulturesTab_DeleteConfirmTitle">Confirmar borrado</system:String>
+    <system:String x:Key="CulturesTab_DeleteConfirm">¿Seguro que quieres eliminar la cultura "{0}"? Se eliminará su definición y su localización del mod. El juego base no se modifica nunca.</system:String>
+    <system:String x:Key="CulturesTab_DeleteNotAllowed">Esta cultura no se puede eliminar. Solo se pueden eliminar culturas definidas en la carpeta common\culture\cultures\mod del mod (o subcarpetas).</system:String>
+    <system:String x:Key="CulturesTab_DeleteFileNotFound">No se encontró el fichero de la cultura.</system:String>
+    <system:String x:Key="CulturesTab_DeleteBlockNotFound">No se encontró el bloque de la cultura en el fichero.</system:String>
+    <system:String x:Key="CulturesTab_DeleteSuccess">Cultura "{0}" eliminada.</system:String>
+    <system:String x:Key="CulturesTab_DeleteFileRemoved">Fichero de cultura vacío eliminado.</system:String>
+    <system:String x:Key="CulturesTab_DeleteError">Error al eliminar la cultura</system:String>
     <system:String x:Key="CulturesTab_EditorHint">Rellena los campos y pulsa Guardar. Las culturas nuevas se escriben en una carpeta dentro de common\culture\cultures\mod (el nombre del archivo usa por defecto el prefijo del perfil; puedes cambiarlo).</system:String>
     <system:String x:Key="CulturesTab_EditorEditHint">Modifica los campos y pulsa Guardar. Las culturas nuevas se escriben en una carpeta dentro de common\culture\cultures\mod (el nombre del archivo usa por defecto el prefijo del perfil; puedes cambiarlo).</system:String>
     <system:String x:Key="CulturesTab_EditorNewTitle">Nueva cultura</system:String>

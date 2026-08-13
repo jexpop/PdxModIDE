@@ -684,7 +684,14 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 CtxEditMenuItem.Visibility = culture.IsModNew
                     ? Visibility.Visible
                     : Visibility.Collapsed;
+            if (CtxDeleteMenuItem != null)
+                CtxDeleteMenuItem.Visibility = IsCultureDeletable(culture)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
         }
+
+        private static bool IsCultureDeletable(CultureInfo culture)
+            => culture.Source == "Mod" && culture.IsModNew && !string.IsNullOrEmpty(culture.SourceFile);
 
         private static T? FindAncestor<T>(DependencyObject? current) where T : DependencyObject
         {
@@ -705,6 +712,76 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 return;
             }
             OpenEditor(culture, copyAsNew: false);
+        }
+
+        private void CtxDeleteCulture_Click(object sender, RoutedEventArgs e)
+        {
+            if (CultureTree.SelectedItem is not CultureInfo culture) return;
+            if (!IsCultureDeletable(culture))
+            {
+                EditorStatusText.Text = Res("CulturesTab_DeleteNotAllowed");
+                return;
+            }
+
+            string cultureId = culture.RawKey ?? culture.Name ?? "";
+            string displayName = culture.DisplayName ?? culture.Name ?? cultureId;
+
+            var confirm = System.Windows.MessageBox.Show(
+                string.Format(Res("CulturesTab_DeleteConfirm"), displayName),
+                Res("CulturesTab_DeleteConfirmTitle"),
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning);
+            if (confirm != System.Windows.MessageBoxResult.Yes) return;
+
+            try
+            {
+                string filePath = culture.SourceFile ?? "";
+                if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                {
+                    EditorStatusText.Text = Res("CulturesTab_DeleteFileNotFound");
+                    return;
+                }
+
+                if (!DeleteCultureBlockFromFile(filePath, cultureId))
+                {
+                    EditorStatusText.Text = Res("CulturesTab_DeleteBlockNotFound");
+                    return;
+                }
+
+                bool fileDeleted = false;
+                if (CountCultureBlocks(filePath) == 0)
+                {
+                    File.Delete(filePath);
+                    fileDeleted = true;
+                }
+
+                var profile = _viewModel?.CurrentProfile;
+                if (profile != null && !string.IsNullOrEmpty(profile.ModRoot))
+                {
+                    bool existsInBase = _baseCultureRawKeys.Contains(cultureId);
+                    DeleteCultureLocalization(profile.ModRoot, cultureId, existsInBase);
+                }
+
+                if (_editorCulture != null &&
+                    string.Equals(_editorCulture.RawKey ?? "", cultureId, StringComparison.OrdinalIgnoreCase))
+                {
+                    ResetEditorForNewCulture();
+                    _editorCulture = null;
+                    _editorFileNameManual = false;
+                    if (EditorCultureId != null) EditorCultureId.Text = "";
+                    _editorHasSavedState = false;
+                    UpdateEditorModeUi();
+                }
+
+                RefreshCultureTree();
+
+                string removedNote = fileDeleted ? $" {Res("CulturesTab_DeleteFileRemoved")}" : "";
+                EditorStatusText.Text = string.Format(Res("CulturesTab_DeleteSuccess"), displayName) + removedNote;
+            }
+            catch (Exception ex)
+            {
+                EditorStatusText.Text = $"{Res("CulturesTab_DeleteError")}: {ex.Message}";
+            }
         }
 
         private void OpenEditor(CultureInfo culture, bool copyAsNew)
@@ -2204,6 +2281,113 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 + trimmedBlock
                 + text.Substring(end + 1);
             File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
+        }
+
+        private static bool DeleteCultureBlockFromFile(string filePath, string cultureId)
+        {
+            string text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+
+                if (string.Equals(key, cultureId, StringComparison.OrdinalIgnoreCase))
+                {
+                    int entryEnd = pos;
+                    string newText = text.Remove(keyStart, entryEnd - keyStart);
+                    File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static int CountCultureBlocks(string filePath)
+        {
+            string text = File.ReadAllText(filePath);
+            int pos = 0;
+            int count = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+                count++;
+            }
+            return count;
+        }
+
+        private static void DeleteCultureLocalization(string modRoot, string cultureId, bool existsInBase)
+        {
+            var keysToRemove = new[] { cultureId, $"{cultureId}_prefix", $"{cultureId}_collective_noun" };
+            string baseLocPath = Path.Combine(modRoot, "localization");
+            if (existsInBase)
+                baseLocPath = Path.Combine(baseLocPath, "replace");
+
+            if (!Directory.Exists(baseLocPath)) return;
+            foreach (var file in Directory.GetFiles(baseLocPath, "cultures_l_*.yml", SearchOption.AllDirectories))
+                RemoveLocalizationKeys(file, keysToRemove);
+        }
+
+        private static void RemoveLocalizationKeys(string filePath, string[] keys)
+        {
+            var lines = new List<string>(File.ReadAllLines(filePath));
+            bool changed = false;
+            lines.RemoveAll(line =>
+            {
+                string t = line.TrimStart();
+                foreach (var key in keys)
+                {
+                    if (t.StartsWith(key + ":", StringComparison.OrdinalIgnoreCase))
+                    {
+                        changed = true;
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            if (changed)
+                File.WriteAllLines(filePath, lines, new UTF8Encoding(true));
         }
 
         private static Dictionary<string, string> LoadLocalization(string gameRoot, string modRoot, string appLang)

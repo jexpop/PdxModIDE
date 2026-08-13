@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.13</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.14</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -230,6 +230,15 @@
     <system:String x:Key="CulturesTab_LegendModNew">• Mod (new / editable)</system:String>
     <system:String x:Key="CulturesTab_CtxCopy">Create culture by copying this one</system:String>
     <system:String x:Key="CulturesTab_CtxEdit">Edit culture</system:String>
+    <system:String x:Key="CulturesTab_CtxDelete">Delete culture</system:String>
+    <system:String x:Key="CulturesTab_DeleteConfirmTitle">Confirm deletion</system:String>
+    <system:String x:Key="CulturesTab_DeleteConfirm">Are you sure you want to delete the culture "{0}"? Its definition and its mod localization will be removed from the mod. The base game is never modified.</system:String>
+    <system:String x:Key="CulturesTab_DeleteNotAllowed">This culture cannot be deleted. Only cultures defined in the mod's common\culture\cultures\mod folder (or subfolders) can be deleted.</system:String>
+    <system:String x:Key="CulturesTab_DeleteFileNotFound">Culture file not found.</system:String>
+    <system:String x:Key="CulturesTab_DeleteBlockNotFound">Culture block not found in the file.</system:String>
+    <system:String x:Key="CulturesTab_DeleteSuccess">Culture "{0}" deleted.</system:String>
+    <system:String x:Key="CulturesTab_DeleteFileRemoved">Empty culture file removed.</system:String>
+    <system:String x:Key="CulturesTab_DeleteError">Error deleting culture</system:String>
     <system:String x:Key="CulturesTab_EditorHint">Fill in the fields and press Save. New cultures are written to a folder under common\culture\cultures\mod (file name defaults to the profile naming prefix; you can change it).</system:String>
     <system:String x:Key="CulturesTab_EditorEditHint">Modify the fields and press Save. New cultures are written to a folder under common\culture\cultures\mod (file name defaults to the profile naming prefix; you can change it).</system:String>
     <system:String x:Key="CulturesTab_EditorNewTitle">New culture</system:String>

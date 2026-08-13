@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.6.13 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.14 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -293,6 +293,8 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
 
 - **Automatic culture localization on save (Cultures tab)**: saving a new or edited culture writes the Name, Adjective (`_prefix`) and Collective noun (`_collective_noun`) into the localization files. When `Settings.AutoTranslate` is enabled, they are translated into every CK3-supported game language (`GameSupportedLanguages`: english, french, german, japanese, korean, polish, russian, simp_chinese, spanish) and written to the matching `cultures_l_<lang>.yml` files (under `localization/`, or `localization/replace/` when the culture exists in the base game); when disabled, only the app language is written with the typed text. Translations go through the pluggable `ITranslationProvider` chain (`PdxModIDE.UI.Translation`); on failure the typed text is used as fallback. The localization values are captured in `EditorSave_Click` (so the editor reload after saving cannot clear them) and passed to `SaveCultureLocalizationAsync(cultureId, name, prefix, collective)`, which disables the Save/Clear buttons via `SetEditorBusy(true)` and re-enables them in a `finally`. `UpsertLocalizationFile` reorders entries alphabetically by key (case-insensitive) on every write, keeping the header/comments at the top.
 
+- **Delete culture (Cultures tab)**: only cultures defined in `ModRoot/common/culture/cultures/mod` (or a subfolder) — the "green" ones (`Source == "Mod"` and `IsModNew`) — can be deleted. `IsCultureDeletable` gates the new "Delete culture" item in the tree `ContextMenu`; `CtxDeleteCulture_Click` requires a Yes/No confirmation showing the culture's display name, then `DeleteCultureBlockFromFile` removes the whole `RawKey = { ... }` block from `CultureInfo.SourceFile` (mod only). If `CountCultureBlocks` returns 0 the culture file itself is deleted. `DeleteCultureLocalization` strips `cultureId`, `cultureId_prefix` and `cultureId_collective_noun` from the mod's `cultures_l_<lang>.yml` files — under `localization/replace/` when the culture exists in the base game (`_baseCultureRawKeys`), otherwise under `localization/`; the localization file is left in place. The base game is never modified. The tree and the editor (when it was showing the deleted culture) are refreshed afterwards.
+
 **Themes**: `ResourceDictionary` swap in `MainWindow.ApplyTheme(theme)`. Files in `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internationalization (`PdxModIDE.UI`)
@@ -473,4 +475,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-13 | Project: PdxModIDE | Version: 1.6.13 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-13 | Project: PdxModIDE | Version: 1.6.14 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
