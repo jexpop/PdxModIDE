@@ -48,6 +48,8 @@ namespace PdxModIDE.UI
         public string NameList { get; set; } = "";
         public NameListInfo? NameListDefinition { get; set; }
         public string HistoryLocOverride { get; set; } = "";
+        public string Created { get; set; } = "";
+        public List<string> Parents { get; set; } = new();
         public List<string> TraditionKeys { get; set; } = new();
         public List<TraditionInfo> Traditions { get; set; } = new();
         public List<Ethnicity> Ethnicities { get; set; } = new();
@@ -282,6 +284,8 @@ namespace PdxModIDE.UI
         private List<string> _editorHouseCoaFrames = new();
         private Dictionary<string, (string Offset, string Scale)> _editorHouseCoaOffsetScale = new(StringComparer.OrdinalIgnoreCase);
         private List<string> _editorEthnicityOptions = new();
+        private List<string> _editorCultureOptions = new();
+        private Dictionary<string, string> _editorCultureDisplayNames = new(StringComparer.OrdinalIgnoreCase);
 
         private bool _editorColorTouched;
         private byte _editorColorR = 255;
@@ -310,9 +314,15 @@ namespace PdxModIDE.UI
         private string _editorSavedLocCollective = "";
         private string _editorSavedHistoryLocOverride = "";
         private string _editorSavedHistoryLocDescription = "";
+        private string _editorSavedCreated = "";
+        private List<string> _editorSavedParents = new();
 
         private readonly HashSet<string> _baseCultureRawKeys = new(StringComparer.OrdinalIgnoreCase);
         private static readonly HttpClient _translationHttp = new() { Timeout = TimeSpan.FromSeconds(30) };
+        private static readonly System.Text.RegularExpressions.Regex _createdDateRegex =
+            new(@"^-?\d+\.\d+\.\d+$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        private int GetCreatedOffset() => _viewModel?.CurrentProfile?.YearOffset ?? 0;
         private static Dictionary<string, string>? _editorLocalization;
 
         private static readonly (string Folder, string Code)[] GameSupportedLanguages =
@@ -456,6 +466,8 @@ namespace PdxModIDE.UI
             _editorNameListDefs = nameListDefinitions;
             _editorGfxValues = BuildGfxValues(allByName.Values);
             _editorEthnicityOptions = BuildEthnicityOptions(allByName.Values);
+            _editorCultureOptions = BuildCultureOptions(allByName.Values);
+            BuildCultureDisplayNames(allByName, localization);
             LoadHouseCoaMapping(baseCultures, modCultures);
 
             if (_editorCulture == null && EditorEthos != null)
@@ -972,6 +984,12 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             UpdateEditorDirtyState();
         }
 
+        private void EditorCreated_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            UpdateCreatedPreview();
+            UpdateEditorDirtyState();
+        }
+
         private void EditorColor_Click(object sender, RoutedEventArgs e)
         {
             using var dialog = new System.Windows.Forms.ColorDialog();
@@ -1162,6 +1180,83 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             var selected = GetSelectedTraditions();
             selected.Remove(key);
             PopulateTraditionLists(selected);
+            UpdateEditorDirtyState();
+        }
+
+        private List<string> GetSelectedParents()
+        {
+            var result = new List<string>();
+            if (EditorParentsSelected == null) return result;
+            foreach (object obj in EditorParentsSelected.Items)
+                if (obj is System.Windows.Controls.ListBoxItem it && (it.Tag as string) is string k && !string.IsNullOrEmpty(k))
+                    result.Add(k);
+            return result;
+        }
+
+        private void PopulateParentLists(IEnumerable<string>? selectedKeys = null)
+        {
+            if (EditorParentsAvailable == null || EditorParentsSelected == null) return;
+            var selected = selectedKeys != null
+                ? new List<string>(selectedKeys)
+                : GetSelectedParents();
+
+            EditorParentsAvailable.Items.Clear();
+            EditorParentsSelected.Items.Clear();
+
+            foreach (var key in _editorCultureOptions
+                         .Where(k => !selected.Contains(k)))
+                EditorParentsAvailable.Items.Add(CreateParentListItem(key, false));
+
+            foreach (var key in selected)
+                EditorParentsSelected.Items.Add(CreateParentListItem(key, true));
+        }
+
+        private System.Windows.Controls.ListBoxItem CreateParentListItem(string key, bool isSelected)
+        {
+            var row = new System.Windows.Controls.StackPanel
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal
+            };
+            var btn = new System.Windows.Controls.Button
+            {
+                Content = isSelected ? "−" : "+",
+                Tag = key,
+                Width = 26,
+                Height = 22,
+                Padding = new Thickness(0),
+                Margin = new Thickness(0, 0, 6, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+                FontWeight = FontWeights.Bold
+            };
+            btn.Click += isSelected ? EditorParentsRemove : EditorParentsAdd;
+            row.Children.Add(btn);
+            row.Children.Add(new System.Windows.Controls.TextBlock
+            {
+                Text = GetCultureDisplayName(key),
+                TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            return new System.Windows.Controls.ListBoxItem { Tag = key, Content = row };
+        }
+
+        private void EditorParentsAdd(object sender, RoutedEventArgs e)
+        {
+            if (FindParentListBoxItem(sender as DependencyObject) is not System.Windows.Controls.ListBoxItem item) return;
+            if (item.Tag is not string key) return;
+            var selected = GetSelectedParents();
+            if (selected.Contains(key)) return;
+            selected.Add(key);
+            PopulateParentLists(selected);
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorParentsRemove(object sender, RoutedEventArgs e)
+        {
+            if (FindParentListBoxItem(sender as DependencyObject) is not System.Windows.Controls.ListBoxItem item) return;
+            if (item.Tag is not string key) return;
+            var selected = GetSelectedParents();
+            selected.Remove(key);
+            PopulateParentLists(selected);
             UpdateEditorDirtyState();
         }
 
@@ -1510,6 +1605,9 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             if (EditorLocCollective != null) EditorLocCollective.Text = "";
             if (EditorHistoryLocOverride != null) EditorHistoryLocOverride.Text = "";
             if (EditorHistoryLocDescription != null) EditorHistoryLocDescription.Text = "";
+            if (EditorCreated != null) EditorCreated.Text = "";
+            if (EditorCreatedPreview != null) EditorCreatedPreview.Text = "";
+            PopulateParentLists(new List<string>());
         }
 
         private void PopulateEditorLocalizationFields(CultureInfo culture)
@@ -1525,6 +1623,15 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 EditorHistoryLocDescription.Text = string.IsNullOrEmpty(historyKey)
                     ? ""
                     : (LookupLocalizationValue(historyKey) ?? "");
+            if (EditorCreated != null)
+            {
+                var rawCreated = culture.Created ?? "";
+                EditorCreated.Text = string.IsNullOrEmpty(rawCreated)
+                    ? ""
+                    : (ShiftCreatedDate(rawCreated, -GetCreatedOffset()) ?? rawCreated);
+            }
+            UpdateCreatedPreview();
+            PopulateParentLists(culture.Parents ?? new List<string>());
         }
 
         private static string? LookupLocalizationValue(string key)
@@ -1561,6 +1668,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedLocCollective = EditorLocCollective?.Text?.Trim() ?? "";
             _editorSavedHistoryLocOverride = _editorCulture.HistoryLocOverride ?? "";
             _editorSavedHistoryLocDescription = EditorHistoryLocDescription?.Text?.Trim() ?? "";
+            _editorSavedCreated = _editorCulture.Created ?? "";
+            _editorSavedParents = new List<string>(_editorCulture.Parents ?? new List<string>());
         }
 
         private void MarkEditorAsSaved()
@@ -1586,6 +1695,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedLocCollective = EditorLocCollective?.Text?.Trim() ?? "";
             _editorSavedHistoryLocOverride = EditorHistoryLocOverride?.Text?.Trim() ?? "";
             _editorSavedHistoryLocDescription = EditorHistoryLocDescription?.Text?.Trim() ?? "";
+            _editorSavedCreated = GetEditorCreatedFileValue();
+            _editorSavedParents = GetSelectedParents();
             UpdateEditorDirtyState();
         }
 
@@ -1612,6 +1723,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             SetLabelDirty(EditorLocCollectiveLabel, (EditorLocCollective?.Text?.Trim() ?? "") != _editorSavedLocCollective);
             SetLabelDirty(EditorHistoryLocOverrideLabel, (EditorHistoryLocOverride?.Text?.Trim() ?? "") != _editorSavedHistoryLocOverride);
             SetLabelDirty(EditorHistoryLocDescriptionLabel, (EditorHistoryLocDescription?.Text?.Trim() ?? "") != _editorSavedHistoryLocDescription);
+            SetLabelDirty(EditorCreatedLabel, GetEditorCreatedFileValue() != _editorSavedCreated);
+            SetLabelDirty(EditorParentsLabel, !OrderedStringListsEqual(GetSelectedParents(), _editorSavedParents));
         }
 
         private static bool TraditionListsEqual(List<string> a, List<string> b)
@@ -1655,6 +1768,13 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             if (string.IsNullOrEmpty(heritage))
             {
                 EditorStatusText.Text = Res("CulturesTab_EditorNeedHeritage");
+                return;
+            }
+
+            string created = EditorCreated?.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(created) && !_createdDateRegex.IsMatch(created))
+            {
+                EditorStatusText.Text = Res("CulturesTab_EditorCreatedInvalid");
                 return;
             }
 
@@ -2192,6 +2312,17 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 {
                     sb.AppendLine($"\tcolor = {color}");
                 }
+            }
+
+            var parents = GetSelectedParents();
+            if (parents.Count > 0)
+                sb.AppendLine($"\tparents = {{ {string.Join(" ", parents)} }}");
+
+            string created = EditorCreated?.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(created))
+            {
+                string fileCreated = ShiftCreatedDate(created, GetCreatedOffset()) ?? created;
+                sb.AppendLine($"\tcreated = {fileCreated}");
             }
 
             string heritage = GetSelectedOption(EditorHeritage);
@@ -3028,6 +3159,82 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             return set.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
+        private static List<string> BuildCultureOptions(IEnumerable<CultureInfo> cultures)
+        {
+            var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var culture in cultures)
+            {
+                if (culture == null) continue;
+                if (!string.IsNullOrWhiteSpace(culture.Name))
+                    set.Add(culture.Name.Trim());
+            }
+            return set.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private void BuildCultureDisplayNames(Dictionary<string, CultureInfo> allByName, Dictionary<string, string> appLocalization)
+        {
+            Dictionary<string, string> englishLocalization;
+            try
+            {
+                var gameRoot = _viewModel?.CurrentProfile?.GameRoot ?? "";
+                var modRoot = _viewModel?.CurrentProfile?.ModRoot ?? "";
+                englishLocalization = LoadLocalization(gameRoot, modRoot, "en");
+            }
+            catch
+            {
+                englishLocalization = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            _editorCultureDisplayNames.Clear();
+            foreach (var key in allByName.Keys)
+            {
+                if (appLocalization.TryGetValue(key, out var appName))
+                    _editorCultureDisplayNames[key] = appName;
+                else if (englishLocalization.TryGetValue(key, out var enName))
+                    _editorCultureDisplayNames[key] = enName;
+                else
+                    _editorCultureDisplayNames[key] = key;
+            }
+        }
+
+        private string GetCultureDisplayName(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return key;
+            return _editorCultureDisplayNames.TryGetValue(key, out var displayName)
+                ? displayName
+                : key;
+        }
+
+        private static string? ShiftCreatedDate(string date, int offset)
+        {
+            var parts = date.Split('.');
+            if (parts.Length != 3) return null;
+            if (!int.TryParse(parts[0], out var year)) return null;
+            return $"{year + offset}.{parts[1]}.{parts[2]}";
+        }
+
+        private void UpdateCreatedPreview()
+        {
+            if (EditorCreatedPreview == null) return;
+            string calculated = EditorCreated?.Text?.Trim() ?? "";
+            if (string.IsNullOrEmpty(calculated))
+            {
+                EditorCreatedPreview.Text = "";
+                return;
+            }
+            var fileValue = ShiftCreatedDate(calculated, GetCreatedOffset());
+            EditorCreatedPreview.Text = fileValue == null
+                ? ""
+                : string.Format(Res("CulturesTab_EditorCreatedFilePreview"), fileValue);
+        }
+
+        private string GetEditorCreatedFileValue()
+        {
+            string calculated = EditorCreated?.Text?.Trim() ?? "";
+            if (string.IsNullOrEmpty(calculated)) return "";
+            return ShiftCreatedDate(calculated, GetCreatedOffset()) ?? calculated;
+        }
+
         private static void AddGfxSet(HashSet<string> set, IEnumerable<string> values)
         {
             foreach (var value in values ?? Enumerable.Empty<string>())
@@ -3293,6 +3500,44 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             return result;
         }
 
+        private static List<string> ExtractParentsAttribute(string block)
+        {
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (key == "parents")
+                {
+                    if (block[pos] == '{')
+                    {
+                        string content = ReadBraceContent(block, ref pos);
+                        return ExtractTraditionKeys(content);
+                    }
+                    return new List<string>();
+                }
+
+                SkipValueAndFollowingBlock(block, ref pos);
+            }
+
+            return new List<string>();
+        }
+
         private static void ExtractEthnicitiesAttribute(string block, CultureInfo culture)
         {
             int pos = 0;
@@ -3419,6 +3664,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     culture.NameList = nameList;
 
                 culture.HistoryLocOverride = ExtractAttribute(block, "history_loc_override") ?? "";
+                culture.Created = ExtractAttribute(block, "created") ?? "";
+                culture.Parents = ExtractParentsAttribute(block);
 
                 culture.TraditionKeys = ExtractTraditionsAttribute(block);
 
@@ -3976,6 +4223,25 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     DetailHistoryLocPanel.Visibility = Visibility.Collapsed;
                 }
 
+                bool hasLineage = !string.IsNullOrEmpty(culture.Created) || (culture.Parents?.Count ?? 0) > 0;
+                if (hasLineage)
+                {
+                    DetailCreatedValue.Text = string.IsNullOrEmpty(culture.Created)
+                        ? "-"
+                        : string.Format(Res("CulturesTab_DetailCreatedValue"),
+                            ShiftCreatedDate(culture.Created, -GetCreatedOffset()) ?? culture.Created,
+                            culture.Created);
+                    DetailParentsValue.Text = (culture.Parents?.Count ?? 0) == 0
+                        ? "-"
+                        : string.Format(Res("CulturesTab_DetailParentsValue"),
+                            string.Join(", ", (culture.Parents ?? new List<string>()).Select(p => GetCultureDisplayName(p))));
+                    DetailLineagePanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    DetailLineagePanel.Visibility = Visibility.Collapsed;
+                }
+
                 bool hasGfx = culture.CoaGfx.Count > 0 || culture.BuildingGfx.Count > 0 || 
                               culture.ClothingGfx.Count > 0 || culture.UnitGfx.Count > 0 ||
                               !string.IsNullOrEmpty(culture.HouseCoaFrame) || !string.IsNullOrEmpty(culture.DynastyCoaFrame) ||
@@ -4049,6 +4315,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 TraditionsList.ItemsSource = null;
                 DetailTraditionsExpander.Visibility = Visibility.Collapsed;
                 DetailHistoryLocPanel.Visibility = Visibility.Collapsed;
+                DetailLineagePanel.Visibility = Visibility.Collapsed;
                 DetailGfxExpander.Visibility = Visibility.Collapsed;
                 ClearGfxViewport();
             }

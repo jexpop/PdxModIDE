@@ -99,7 +99,7 @@ namespace PdxModIDE.UI.ViewModels
             _savedGameRoot = _currentProfile?.GameRoot ?? "";
             _savedModRoot = _currentProfile?.ModRoot ?? "";
             _savedBackupRoot = _currentProfile?.BackupRoot ?? "";
-            _savedYearOffset = _currentProfile?.YearOffset ?? 10000;
+            _savedYearOffset = _currentProfile?.YearOffset ?? 0;
             _savedShowTitleNames = _currentProfile?.ShowTitleNames ?? true;
             _savedCulturePrefix = CultureFileNamePrefix;
         }
@@ -221,7 +221,7 @@ namespace PdxModIDE.UI.ViewModels
 
         public int YearOffset
         {
-            get => _currentProfile?.YearOffset ?? 10000;
+            get => _currentProfile?.YearOffset ?? 0;
             set
             {
                 if (_currentProfile != null)

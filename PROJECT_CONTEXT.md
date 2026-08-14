@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.6.15 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.6.16 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -297,6 +297,10 @@ Files in `data/` (creates directory if it doesn't exist). `JsonSerializerOptions
 
 - **Delete culture (Cultures tab)**: only cultures defined in `ModRoot/common/culture/cultures/mod` (or a subfolder) — the "green" ones (`Source == "Mod"` and `IsModNew`) — can be deleted. `IsCultureDeletable` gates the new "Delete culture" item in the tree `ContextMenu`; `CtxDeleteCulture_Click` requires a Yes/No confirmation showing the culture's display name, then `DeleteCultureBlockFromFile` removes the whole `RawKey = { ... }` block from `CultureInfo.SourceFile` (mod only). If `CountCultureBlocks` returns 0 the culture file itself is deleted. `DeleteCultureLocalization` strips `cultureId`, `cultureId_prefix` and `cultureId_collective_noun` from the mod's `cultures_l_<lang>.yml` files — under `localization/replace/` when the culture exists in the base game (`_baseCultureRawKeys`), otherwise under `localization/`; the localization file is left in place. When the culture defines `history_loc_override`, `DeleteCultureHistoryLocalization` also strips that key from the mod's `culture_history_l_*.yml` files. The base game is never modified. The tree and the editor (when it was showing the deleted culture) are refreshed afterwards.
 
+- **Lineage `created` and `parents` (Cultures tab)**: `CultureInfo.Created` (string) and `CultureInfo.Parents` (`List<string>`) hold the optional `created` and `parents` attributes of a culture. `ExtractParentsAttribute` parses `parents = { ... }` (reusing `ExtractTraditionKeys`) and `ExtractAttribute("created")` the creation date. `BuildCultureBlock` writes them after `color` and before `heritage` in the same order as the game files (`parents` first, then `created`). The editor has a `created` text field and a two-list parent selector (selected/available, following the traditions pattern) whose available options come from `BuildCultureOptions` (all culture keys, game + mod, sorted). The `created` value is validated on save against `^-?\d+\.\d+\.\d+$` (a leading `-` is allowed for years before Christ); invalid input blocks the save with a localized error.
+- **Year offset per profile (`created`)**: the `created` field works with the **calculated (real) date**, while the files always store the **non-calculated value**. The offset is read per profile from `Profile.YearOffset` (`GetCreatedOffset()`), the same one the History tab uses (`Mod Date: {year + offset}`). `ShiftCreatedDate(date, offset)` shifts the year; `ParseFile` keeps the raw file value in `CultureInfo.Created`, the editor converts it to the calculated date (`-offset`) when loading, `BuildCultureBlock` converts it back (`+offset`) when writing, and `UpdateCreatedPreview` shows in real time the value that will be stored (`CulturesTab_EditorCreatedFilePreview`, format `({0})`). New profiles now default to `YearOffset = 0` (`DataProfile`, `Domain.Profile`, `ProjectManager.CreateProfile`); the default was previously hardcoded to `10000` — each profile/mod keeps its own offset independently (existing profiles keep their saved value).
+- **Lineage in the culture details (Cultures tab)**: cultures that define `created` and/or `parents` show a "Lineage" section in the Details panel: `DetailCreatedValue` displays `Creada: {calculated} ({file})` and `DetailParentsValue` lists the parent cultures. Culture names in the parents selector and in the details are shown **localized to the app language** (`_editorCultureDisplayNames`, built by `BuildCultureDisplayNames` from the app-language localization with an English fallback, then the raw key) via `GetCultureDisplayName`, instead of the raw English keys.
+
 **Themes**: `ResourceDictionary` swap in `MainWindow.ApplyTheme(theme)`. Files in `Themes/*.xaml`.
 
 ### 5.9 `GeneralSettingsWindow` + Internationalization (`PdxModIDE.UI`)
@@ -477,4 +481,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-14 | Project: PdxModIDE | Version: 1.6.15 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-08-14 | Project: PdxModIDE | Version: 1.6.16 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

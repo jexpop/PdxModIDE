@@ -21,7 +21,7 @@ namespace PdxModIDE.Data
         public string BackupRoot { get; set; } = "";
 
         [JsonPropertyName("year_offset")]
-        public int YearOffset { get; set; } = 10000;
+        public int YearOffset { get; set; } = 0;
 
         [JsonPropertyName("modules")]
         public List<string> Modules { get; set; } = new();
@@ -46,7 +46,7 @@ namespace PdxModIDE.Data
         public string GameRoot { get; set; } = "";
         public string ModRoot { get; set; } = "";
         public string BackupRoot { get; set; } = "";
-        public int YearOffset { get; set; } = 10000;
+        public int YearOffset { get; set; } = 0;
         public List<string> Modules { get; set; } = new();
         public List<string> DatesModules { get; set; } = new();
         public List<string> Files { get; set; } = new();

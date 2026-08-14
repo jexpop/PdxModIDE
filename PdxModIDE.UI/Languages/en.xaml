@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.15</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.16</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -263,6 +263,16 @@
     <system:String x:Key="CulturesTab_EditorHeritage">Heritage</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
+    <system:String x:Key="CulturesTab_EditorCreated">Created</system:String>
+    <system:String x:Key="CulturesTab_EditorCreatedHint">Real date (Year.Month.Day, e.g. 862.1.1; a leading "-" is allowed for years before Christ). The game offset is applied automatically to the value stored in the files. Cultures created after the game start date do not exist natively on the map.</system:String>
+    <system:String x:Key="CulturesTab_EditorCreatedInvalid">Invalid "created" value. Use the format Year.Month.Day (e.g. 862.1.1).</system:String>
+    <system:String x:Key="CulturesTab_EditorCreatedFilePreview">({0})</system:String>
+    <system:String x:Key="CulturesTab_EditorParents">Parent cultures</system:String>
+    <system:String x:Key="CulturesTab_EditorParentsAvailable">Available</system:String>
+    <system:String x:Key="CulturesTab_EditorParentsSelected">Added to this culture</system:String>
+    <system:String x:Key="CulturesTab_EditorLineage">Lineage</system:String>
+    <system:String x:Key="CulturesTab_DetailCreatedValue">Created: {0} ({1})</system:String>
+    <system:String x:Key="CulturesTab_DetailParentsValue">Parent cultures: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorLanguage">Language</system:String>
     <system:String x:Key="CulturesTab_EditorMartialCustom">Martial custom</system:String>
     <system:String x:Key="CulturesTab_EditorHeadDetermination">Head determination</system:String>

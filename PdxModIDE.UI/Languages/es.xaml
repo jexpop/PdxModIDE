@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.15</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.16</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -263,6 +263,16 @@
     <system:String x:Key="CulturesTab_EditorHeritage">Herencia</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
+    <system:String x:Key="CulturesTab_EditorCreated">Creada</system:String>
+    <system:String x:Key="CulturesTab_EditorCreatedHint">Fecha real (Año.Mes.Día, p. ej. 862.1.1; se permite un "-" inicial para años antes de Cristo). El offset del juego se aplica automáticamente al valor que se guarda en los ficheros. Las culturas creadas después de la fecha de inicio de la partida no existen de forma nativa en el mapa.</system:String>
+    <system:String x:Key="CulturesTab_EditorCreatedInvalid">Valor "created" no válido. Usa el formato Año.Mes.Día (p. ej. 862.1.1).</system:String>
+    <system:String x:Key="CulturesTab_EditorCreatedFilePreview">({0})</system:String>
+    <system:String x:Key="CulturesTab_EditorParents">Culturas madre</system:String>
+    <system:String x:Key="CulturesTab_EditorParentsAvailable">Disponibles</system:String>
+    <system:String x:Key="CulturesTab_EditorParentsSelected">Añadidas a esta cultura</system:String>
+    <system:String x:Key="CulturesTab_EditorLineage">Linaje</system:String>
+    <system:String x:Key="CulturesTab_DetailCreatedValue">Creada: {0} ({1})</system:String>
+    <system:String x:Key="CulturesTab_DetailParentsValue">Culturas madre: {0}</system:String>
     <system:String x:Key="CulturesTab_EditorLanguage">Idioma</system:String>
     <system:String x:Key="CulturesTab_EditorMartialCustom">Costumbre marcial</system:String>
     <system:String x:Key="CulturesTab_EditorHeadDetermination">Determinación de la cabeza</system:String>

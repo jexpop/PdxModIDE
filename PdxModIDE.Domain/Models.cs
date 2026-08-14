@@ -40,7 +40,7 @@ namespace PdxModIDE.Domain
         public string GameRoot { get; set; } = "";
         public string ModRoot { get; set; } = "";
         public string BackupRoot { get; set; } = "";
-        public int YearOffset { get; set; } = 10000;
+        public int YearOffset { get; set; } = 0;
         public List<string> ModuleIds { get; set; } = new();
         public List<string> FileIds { get; set; } = new();
         public bool ShowTitleNames { get; set; } = true;

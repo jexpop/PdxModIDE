@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.16]
+
+### Added
+
+- **Lineage: `created` and `parents` (Cultures tab)**: the editor supports the optional `created` (creation date) and `parents` (list of parent culture IDs) attributes of a culture. `parents` uses a two-list selector (selected/available) with all culture keys of the game + mod, and is written as `parents = { ... }`. `created` is a text field validated as `Year.Month.Day` (a leading `-` is allowed for years before Christ); invalid values block the save with a localized error. Both are written after `color` and before `heritage`, matching the game file order.
+- **Year offset per profile**: the `created` field works with the **calculated (real) date** while the files always store the **non-calculated value**. The offset comes from `Profile.YearOffset` (the same per-profile offset used by the History tab), applied automatically when loading, editing (a preview shows in real time the value that will be stored in the files) and saving. **New profiles now default to `YearOffset = 0`** (previously hardcoded `10000`), so every mod/profile keeps its own offset independently; existing profiles keep their saved value.
+- **Lineage in culture details (Cultures tab)**: cultures that define `created` and/or `parents` show a new "Lineage" section in the Details panel with the creation date (`{calculated} ({file})`) and the parent cultures.
+- **Localized culture names**: culture names in the parents selector and in the details are now shown in the **app language**, falling back to English and then to the raw key, instead of always showing the English identifier.
+
+---
+
 ## [1.6.15]
 
 ### Added

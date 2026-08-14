@@ -183,7 +183,7 @@ namespace PdxModIDE.Project
                 GameRoot = "",
                 ModRoot = "",
                 BackupRoot = "",
-                YearOffset = 10000,
+                YearOffset = 0,
                 Modules = new List<string>(),
                 DatesModules = new List<string>(),
                 Files = new List<string>(),

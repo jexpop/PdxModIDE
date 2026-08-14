@@ -356,6 +356,12 @@
                         <TextBlock x:Name="DetailHistoryDescriptionValue" Margin="15,0,0,5" TextWrapping="Wrap" Foreground="Gray"/>
                     </StackPanel>
 
+                    <StackPanel x:Name="DetailLineagePanel" Visibility="Collapsed">
+                        <Label Content="{DynamicResource CulturesTab_EditorLineage}" FontWeight="Bold" />
+                        <TextBlock x:Name="DetailCreatedValue" Margin="15,0,0,2" />
+                        <TextBlock x:Name="DetailParentsValue" Margin="15,0,0,5" TextWrapping="Wrap" Foreground="Gray"/>
+                    </StackPanel>
+
                     <Label Content="{DynamicResource CulturesTab_Gfx}" FontWeight="Bold" />
                     <Expander x:Name="DetailGfxExpander" Margin="15,0,0,5"
                               Header="{DynamicResource CulturesTab_GfxParameters}"
@@ -513,6 +519,25 @@
                             <Border x:Name="EditorColorPreview" Width="40" Height="24" Background="White" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" VerticalAlignment="Center"/>
                             <Button x:Name="EditorColorButton" Content="{DynamicResource CulturesTab_EditorChooseColor}" Width="150" Margin="8,0,0,0" Click="EditorColor_Click"/>
                         </StackPanel>
+                        <Label x:Name="EditorCreatedLabel" Content="{DynamicResource CulturesTab_EditorCreated}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <TextBox x:Name="EditorCreated" Width="150" MaxWidth="500" HorizontalAlignment="Left" Margin="15,0,15,4" TextChanged="EditorCreated_TextChanged"/>
+                        <TextBlock x:Name="EditorCreatedPreview" Foreground="Gray" Margin="15,0,15,2" TextWrapping="Wrap"/>
+                        <TextBlock Text="{DynamicResource CulturesTab_EditorCreatedHint}" Foreground="Gray" Margin="15,0,15,6" TextWrapping="Wrap"/>
+                        <Label x:Name="EditorParentsLabel" Content="{DynamicResource CulturesTab_EditorParents}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <Grid Margin="15,4,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <DockPanel Grid.Column="0">
+                                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource CulturesTab_EditorParentsSelected}" Foreground="Gray" Margin="0,0,0,2"/>
+                                <ListBox x:Name="EditorParentsSelected" SelectionMode="Single" Margin="0,0,6,0" MaxHeight="160"/>
+                            </DockPanel>
+                            <DockPanel Grid.Column="1">
+                                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource CulturesTab_EditorParentsAvailable}" Foreground="Gray" Margin="6,0,0,2"/>
+                                <ListBox x:Name="EditorParentsAvailable" SelectionMode="Single" Margin="6,0,0,0" MaxHeight="160"/>
+                            </DockPanel>
+                        </Grid>
                         <Label x:Name="EditorEthosLabel" Content="{DynamicResource CulturesTab_EditorEthos}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
                         <ComboBox x:Name="EditorEthos" MaxWidth="500" HorizontalAlignment="Left" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
                         <Label x:Name="EditorHeritageLabel" Content="{DynamicResource CulturesTab_EditorHeritage}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
