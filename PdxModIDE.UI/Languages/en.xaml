@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.14</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.15</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -246,10 +246,14 @@
     <system:String x:Key="CulturesTab_EditorDetails">Details</system:String>
     <system:String x:Key="CulturesTab_EditorCultureId">Identifier</system:String>
     <system:String x:Key="CulturesTab_EditorLocSection">Localization</system:String>
-    <system:String x:Key="CulturesTab_EditorLocHint">These three values are written in the current application language and automatically translated (via the free MyMemory API) to the rest of the languages the game supports. New cultures use localization\{lang}; cultures that already exist in the base game use localization\replace\{lang}.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocHint">These values are written in the current application language and automatically translated (via the free MyMemory API) to the rest of the languages the game supports. The history description is stored in culture_history_l_{lang}.yml. New cultures use localization\{lang}; cultures that already exist in the base game use localization\replace\{lang}.</system:String>
     <system:String x:Key="CulturesTab_EditorLocName">Culture name</system:String>
     <system:String x:Key="CulturesTab_EditorLocPrefix">Culture prefix</system:String>
     <system:String x:Key="CulturesTab_EditorLocCollective">Collective noun</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLoc">History loc override</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocDescription">Description</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocSection">History description</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocHint">Overrides the history text shown for this culture in game. The key is the reference stored in the culture file; the description is the actual text, saved to culture_history_l_{lang}.yml and translated to all supported languages.</system:String>
     <system:String x:Key="CulturesTab_EditorLocTranslating">Translating and writing localization…</system:String>
     <system:String x:Key="CulturesTab_EditorLocSaved">Localization saved in {0} languages.</system:String>
     <system:String x:Key="CulturesTab_EditorLocError">Localization error: {0}</system:String>

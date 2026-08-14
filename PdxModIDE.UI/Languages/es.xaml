@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.14</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.15</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -246,10 +246,14 @@
     <system:String x:Key="CulturesTab_EditorDetails">Detalles</system:String>
     <system:String x:Key="CulturesTab_EditorCultureId">Identificador</system:String>
     <system:String x:Key="CulturesTab_EditorLocSection">Localización</system:String>
-    <system:String x:Key="CulturesTab_EditorLocHint">Estos tres valores se escriben en el idioma actual de la aplicación y se traducen automáticamente (vía la API gratuita MyMemory) al resto de idiomas que el juego permite. Las culturas nuevas usan localization\{idioma}; las culturas que ya existen en el juego base usan localization\replace\{idioma}.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocHint">Estos valores se escriben en el idioma actual de la aplicación y se traducen automáticamente (vía la API gratuita MyMemory) al resto de idiomas que el juego permite. La descripción histórica se guarda en culture_history_l_{idioma}.yml. Las culturas nuevas usan localization\{idioma}; las culturas que ya existen en el juego base usan localization\replace\{idioma}.</system:String>
     <system:String x:Key="CulturesTab_EditorLocName">Nombre cultura</system:String>
     <system:String x:Key="CulturesTab_EditorLocPrefix">Prefijo cultura</system:String>
     <system:String x:Key="CulturesTab_EditorLocCollective">Sustantivo colectivo</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLoc">Anulación de localización histórica</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocDescription">Descripción</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocSection">Descripción histórica</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocHint">Sustituye el texto de historia que el juego muestra para esta cultura. La clave es la referencia guardada en el fichero de la cultura; la descripción es el texto real, que se guarda en culture_history_l_{idioma}.yml y se traduce a todos los idiomas soportados.</system:String>
     <system:String x:Key="CulturesTab_EditorLocTranslating">Traduciendo y escribiendo la localización…</system:String>
     <system:String x:Key="CulturesTab_EditorLocSaved">Localización guardada en {0} idiomas.</system:String>
     <system:String x:Key="CulturesTab_EditorLocError">Error de localización: {0}</system:String>

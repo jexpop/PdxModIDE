@@ -47,6 +47,7 @@ namespace PdxModIDE.UI
         public HeadDeterminationInfo? HeadDeterminationDefinition { get; set; }
         public string NameList { get; set; } = "";
         public NameListInfo? NameListDefinition { get; set; }
+        public string HistoryLocOverride { get; set; } = "";
         public List<string> TraditionKeys { get; set; } = new();
         public List<TraditionInfo> Traditions { get; set; } = new();
         public List<Ethnicity> Ethnicities { get; set; } = new();
@@ -307,6 +308,8 @@ namespace PdxModIDE.UI
         private string _editorSavedLocName = "";
         private string _editorSavedLocPrefix = "";
         private string _editorSavedLocCollective = "";
+        private string _editorSavedHistoryLocOverride = "";
+        private string _editorSavedHistoryLocDescription = "";
 
         private readonly HashSet<string> _baseCultureRawKeys = new(StringComparer.OrdinalIgnoreCase);
         private static readonly HttpClient _translationHttp = new() { Timeout = TimeSpan.FromSeconds(30) };
@@ -760,6 +763,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 {
                     bool existsInBase = _baseCultureRawKeys.Contains(cultureId);
                     DeleteCultureLocalization(profile.ModRoot, cultureId, existsInBase);
+                    if (!string.IsNullOrEmpty(culture.HistoryLocOverride))
+                        DeleteCultureHistoryLocalization(profile.ModRoot, culture.HistoryLocOverride, existsInBase);
                 }
 
                 if (_editorCulture != null &&
@@ -1503,6 +1508,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             if (EditorLocName != null) EditorLocName.Text = "";
             if (EditorLocPrefix != null) EditorLocPrefix.Text = "";
             if (EditorLocCollective != null) EditorLocCollective.Text = "";
+            if (EditorHistoryLocOverride != null) EditorHistoryLocOverride.Text = "";
+            if (EditorHistoryLocDescription != null) EditorHistoryLocDescription.Text = "";
         }
 
         private void PopulateEditorLocalizationFields(CultureInfo culture)
@@ -1512,6 +1519,12 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             EditorLocName.Text = LookupLocalizationValue(rawKey) ?? "";
             EditorLocPrefix.Text = LookupLocalizationValue($"{rawKey}_prefix") ?? "";
             EditorLocCollective.Text = LookupLocalizationValue($"{rawKey}_collective_noun") ?? "";
+            string historyKey = culture.HistoryLocOverride ?? "";
+            if (EditorHistoryLocOverride != null) EditorHistoryLocOverride.Text = historyKey;
+            if (EditorHistoryLocDescription != null)
+                EditorHistoryLocDescription.Text = string.IsNullOrEmpty(historyKey)
+                    ? ""
+                    : (LookupLocalizationValue(historyKey) ?? "");
         }
 
         private static string? LookupLocalizationValue(string key)
@@ -1546,6 +1559,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedLocName = EditorLocName?.Text?.Trim() ?? "";
             _editorSavedLocPrefix = EditorLocPrefix?.Text?.Trim() ?? "";
             _editorSavedLocCollective = EditorLocCollective?.Text?.Trim() ?? "";
+            _editorSavedHistoryLocOverride = _editorCulture.HistoryLocOverride ?? "";
+            _editorSavedHistoryLocDescription = EditorHistoryLocDescription?.Text?.Trim() ?? "";
         }
 
         private void MarkEditorAsSaved()
@@ -1569,6 +1584,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedLocName = EditorLocName?.Text?.Trim() ?? "";
             _editorSavedLocPrefix = EditorLocPrefix?.Text?.Trim() ?? "";
             _editorSavedLocCollective = EditorLocCollective?.Text?.Trim() ?? "";
+            _editorSavedHistoryLocOverride = EditorHistoryLocOverride?.Text?.Trim() ?? "";
+            _editorSavedHistoryLocDescription = EditorHistoryLocDescription?.Text?.Trim() ?? "";
             UpdateEditorDirtyState();
         }
 
@@ -1593,6 +1610,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             SetLabelDirty(EditorLocNameLabel, (EditorLocName?.Text?.Trim() ?? "") != _editorSavedLocName);
             SetLabelDirty(EditorLocPrefixLabel, (EditorLocPrefix?.Text?.Trim() ?? "") != _editorSavedLocPrefix);
             SetLabelDirty(EditorLocCollectiveLabel, (EditorLocCollective?.Text?.Trim() ?? "") != _editorSavedLocCollective);
+            SetLabelDirty(EditorHistoryLocOverrideLabel, (EditorHistoryLocOverride?.Text?.Trim() ?? "") != _editorSavedHistoryLocOverride);
+            SetLabelDirty(EditorHistoryLocDescriptionLabel, (EditorHistoryLocDescription?.Text?.Trim() ?? "") != _editorSavedHistoryLocDescription);
         }
 
         private static bool TraditionListsEqual(List<string> a, List<string> b)
@@ -1642,20 +1661,24 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             string locName = EditorLocName?.Text?.Trim() ?? "";
             string locPrefix = EditorLocPrefix?.Text?.Trim() ?? "";
             string locCollective = EditorLocCollective?.Text?.Trim() ?? "";
+            string locHistoryKey = EditorHistoryLocOverride?.Text?.Trim() ?? "";
+            string locHistoryDescription = EditorHistoryLocDescription?.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(locHistoryDescription) && string.IsNullOrEmpty(locHistoryKey))
+                locHistoryKey = $"{cultureId}_history_loc";
 
-            string block = BuildCultureBlock(cultureId);
+            string block = BuildCultureBlock(cultureId, locHistoryKey);
 
             if (_editorCulture == null || _editorIsNew)
             {
-                SaveAsNewCulture(cultureId, block, (cid) => SaveCultureLocalizationAsync(cid, locName, locPrefix, locCollective));
+                SaveAsNewCulture(cultureId, block, (cid) => SaveCultureLocalizationAsync(cid, locName, locPrefix, locCollective, locHistoryKey, locHistoryDescription));
             }
             else
             {
-                SaveExistingCulture(block, (cid) => SaveCultureLocalizationAsync(cid, locName, locPrefix, locCollective));
+                SaveExistingCulture(block, (cid) => SaveCultureLocalizationAsync(cid, locName, locPrefix, locCollective, locHistoryKey, locHistoryDescription));
             }
         }
 
-        private async Task SaveCultureLocalizationAsync(string cultureId, string name, string prefix, string collective)
+        private async Task SaveCultureLocalizationAsync(string cultureId, string name, string prefix, string collective, string historyKey, string historyDescription)
         {
             var profile = _viewModel?.CurrentProfile;
             if (profile == null) return;
@@ -1664,6 +1687,9 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
             if (string.IsNullOrEmpty(name)) name = cultureId;
             if (name == "" && prefix == "" && collective == "") return;
+
+            if (!string.IsNullOrEmpty(historyDescription) && string.IsNullOrEmpty(historyKey))
+                historyKey = $"{cultureId}_history_loc";
 
             bool autoTranslate = _viewModel?.AutoTranslate ?? true;
             EditorStatusText.Text = autoTranslate ? Res("CulturesTab_EditorLocTranslating") : Res("CulturesTab_EditorLocWriting");
@@ -1703,6 +1729,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 string locName = name;
                 string locPrefix = prefix;
                 string locCollective = collective;
+                string locHistoryKey = historyKey;
+                string locHistoryDescription = historyDescription;
 
                 bool usedFallback = false;
                 if (autoTranslate && ck3Folder != directFolder)
@@ -1710,10 +1738,12 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     var (trName, okName) = await TranslateWithFallbackAsync(name, srcCode, code, providers);
                     var (trPrefix, okPrefix) = await TranslateWithFallbackAsync(prefix, srcCode, code, providers);
                     var (trCollective, okCollective) = await TranslateWithFallbackAsync(collective, srcCode, code, providers);
+                    var (trHistory, okHistory) = await TranslateWithFallbackAsync(historyDescription, srcCode, code, providers);
                     locName = string.IsNullOrEmpty(trName) ? name : trName;
                     locPrefix = string.IsNullOrEmpty(trPrefix) ? prefix : trPrefix;
                     locCollective = string.IsNullOrEmpty(trCollective) ? collective : trCollective;
-                    usedFallback = !(okName && okPrefix && okCollective);
+                    locHistoryDescription = string.IsNullOrEmpty(trHistory) ? historyDescription : trHistory;
+                    usedFallback = !(okName && okPrefix && okCollective && okHistory);
                 }
 
                 string folderPath = Path.Combine(baseLocPath, ck3Folder);
@@ -1729,6 +1759,15 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     if (!string.IsNullOrEmpty(locCollective))
                         entries.Add(($"{cultureId}_collective_noun", locCollective));
                     UpsertLocalizationFile(filePath, $"l_{ck3Folder}:", entries);
+
+                    if (!string.IsNullOrEmpty(locHistoryKey) && !string.IsNullOrEmpty(locHistoryDescription))
+                    {
+                        string historyFilePath = Path.Combine(folderPath, "culture", $"culture_history_l_{ck3Folder}.yml");
+                        Directory.CreateDirectory(Path.Combine(folderPath, "culture"));
+                        UpsertLocalizationFile(historyFilePath, $"l_{ck3Folder}:",
+                            new List<(string Key, string Value)> { (locHistoryKey, locHistoryDescription) });
+                    }
+
                     saved++;
                     if (usedFallback)
                         fallbackLangs.Add(ck3Folder);
@@ -2130,7 +2169,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             }
         }
 
-        private string BuildCultureBlock(string cultureId)
+        private string BuildCultureBlock(string cultureId, string historyLocOverride)
         {
             var sb = new System.Text.StringBuilder();
             sb.AppendLine($"{cultureId} = {{");
@@ -2174,6 +2213,9 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             string headDetermination = GetSelectedOption(EditorHeadDetermination);
             if (!string.IsNullOrEmpty(headDetermination))
                 sb.AppendLine($"\thead_determination = {headDetermination}");
+
+            if (!string.IsNullOrEmpty(historyLocOverride))
+                sb.AppendLine($"\thistory_loc_override = {historyLocOverride}");
 
             var traditions = GetSelectedTraditions();
             if (traditions.Count > 0)
@@ -2368,6 +2410,17 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 RemoveLocalizationKeys(file, keysToRemove);
         }
 
+        private static void DeleteCultureHistoryLocalization(string modRoot, string historyKey, bool existsInBase)
+        {
+            string baseLocPath = Path.Combine(modRoot, "localization");
+            if (existsInBase)
+                baseLocPath = Path.Combine(baseLocPath, "replace");
+
+            if (!Directory.Exists(baseLocPath)) return;
+            foreach (var file in Directory.GetFiles(baseLocPath, "culture_history_l_*.yml", SearchOption.AllDirectories))
+                RemoveLocalizationKeys(file, new[] { historyKey });
+        }
+
         private static void RemoveLocalizationKeys(string filePath, string[] keys)
         {
             var lines = new List<string>(File.ReadAllLines(filePath));
@@ -2407,7 +2460,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 $"culture/traditions/cultural_traditions_l_{ck3Lang}.yml",
                 $"culture/traditions/cultural_languages_l_{ck3Lang}.yml",
                 $"culture/head_determination_l_{ck3Lang}.yml",
-                $"culture/culture_name_lists_l_{ck3Lang}.yml"
+                $"culture/culture_name_lists_l_{ck3Lang}.yml",
+                $"culture/culture_history_l_{ck3Lang}.yml"
             };
 
             foreach (var root in new[] { modRoot, gameRoot })
@@ -3364,6 +3418,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 if (nameList != null)
                     culture.NameList = nameList;
 
+                culture.HistoryLocOverride = ExtractAttribute(block, "history_loc_override") ?? "";
+
                 culture.TraditionKeys = ExtractTraditionsAttribute(block);
 
                 ExtractEthnicitiesAttribute(block, culture);
@@ -3909,6 +3965,17 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     DetailTraditionsExpander.Visibility = Visibility.Collapsed;
                 }
 
+                if (!string.IsNullOrEmpty(culture.HistoryLocOverride))
+                {
+                    DetailHistoryLocOverrideValue.Text = culture.HistoryLocOverride;
+                    DetailHistoryDescriptionValue.Text = LookupLocalizationValue(culture.HistoryLocOverride) ?? "-";
+                    DetailHistoryLocPanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    DetailHistoryLocPanel.Visibility = Visibility.Collapsed;
+                }
+
                 bool hasGfx = culture.CoaGfx.Count > 0 || culture.BuildingGfx.Count > 0 || 
                               culture.ClothingGfx.Count > 0 || culture.UnitGfx.Count > 0 ||
                               !string.IsNullOrEmpty(culture.HouseCoaFrame) || !string.IsNullOrEmpty(culture.DynastyCoaFrame) ||
@@ -3981,6 +4048,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 DetailNameListExpander.Visibility = Visibility.Collapsed;
                 TraditionsList.ItemsSource = null;
                 DetailTraditionsExpander.Visibility = Visibility.Collapsed;
+                DetailHistoryLocPanel.Visibility = Visibility.Collapsed;
                 DetailGfxExpander.Visibility = Visibility.Collapsed;
                 ClearGfxViewport();
             }

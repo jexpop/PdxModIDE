@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.14</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.15</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -246,10 +246,14 @@
     <system:String x:Key="CulturesTab_EditorDetails">Detalls</system:String>
     <system:String x:Key="CulturesTab_EditorCultureId">Identificador</system:String>
     <system:String x:Key="CulturesTab_EditorLocSection">Localització</system:String>
-    <system:String x:Key="CulturesTab_EditorLocHint">Aquests tres valors s'escriuen en l'idioma actual de l'aplicació i es tradueixen automàticament (mitjançant l'API gratuïta MyMemory) a la resta d'idiomes que el joc permet. Les cultures noves fan servir localization\{idioma}; les cultures que ja existeixen al joc base fan servir localization\replace\{idioma}.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocHint">Aquests valors s'escriuen en l'idioma actual de l'aplicació i es tradueixen automàticament (mitjançant l'API gratuïta MyMemory) a la resta d'idiomes que el joc permet. La descripció històrica es desa a culture_history_l_{idioma}.yml. Les cultures noves fan servir localization\{idioma}; les cultures que ja existeixen al joc base fan servir localization\replace\{idioma}.</system:String>
     <system:String x:Key="CulturesTab_EditorLocName">Nom cultura</system:String>
     <system:String x:Key="CulturesTab_EditorLocPrefix">Prefix cultura</system:String>
     <system:String x:Key="CulturesTab_EditorLocCollective">Substantiu col·lectiu</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLoc">Anul·lació de localització històrica</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocDescription">Descripció</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocSection">Descripció històrica</system:String>
+    <system:String x:Key="CulturesTab_EditorHistoryLocHint">Substitueix el text d'història que el joc mostra per a aquesta cultura. La clau és la referència desada al fitxer de la cultura; la descripció és el text real, que es desa a culture_history_l_{idioma}.yml i es tradueix a tots els idiomes suportats.</system:String>
     <system:String x:Key="CulturesTab_EditorLocTranslating">Traduint i escrivint la localització…</system:String>
     <system:String x:Key="CulturesTab_EditorLocSaved">Localització desada en {0} idiomes.</system:String>
     <system:String x:Key="CulturesTab_EditorLocError">Error de localització: {0}</system:String>

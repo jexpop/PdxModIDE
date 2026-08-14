@@ -348,7 +348,13 @@
                                 </GroupStyle>
                             </ItemsControl.GroupStyle>
                         </ItemsControl>
-                    </Expander>
+                                    </Expander>
+
+                    <StackPanel x:Name="DetailHistoryLocPanel" Visibility="Collapsed">
+                        <Label Content="{DynamicResource CulturesTab_EditorHistoryLocSection}" FontWeight="Bold" />
+                        <TextBlock x:Name="DetailHistoryLocOverrideValue" Margin="15,0,0,2" />
+                        <TextBlock x:Name="DetailHistoryDescriptionValue" Margin="15,0,0,5" TextWrapping="Wrap" Foreground="Gray"/>
+                    </StackPanel>
 
                     <Label Content="{DynamicResource CulturesTab_Gfx}" FontWeight="Bold" />
                     <Expander x:Name="DetailGfxExpander" Margin="15,0,0,5"
@@ -491,6 +497,15 @@
                                 <TextBox x:Name="EditorLocPrefix" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,6" TextChanged="EditorLoc_TextChanged"/>
                                 <Label x:Name="EditorLocCollectiveLabel" Content="{DynamicResource CulturesTab_EditorLocCollective}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
                                 <TextBox x:Name="EditorLocCollective" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,8" TextChanged="EditorLoc_TextChanged"/>
+                                <GroupBox Header="{DynamicResource CulturesTab_EditorHistoryLocSection}" Margin="0,0,0,8">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource CulturesTab_EditorHistoryLocHint}" Foreground="Gray" Margin="15,6,15,6" TextWrapping="Wrap"/>
+                                        <Label x:Name="EditorHistoryLocOverrideLabel" Content="{DynamicResource CulturesTab_EditorHistoryLoc}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                                        <TextBox x:Name="EditorHistoryLocOverride" Width="350" MaxWidth="500" HorizontalAlignment="Left" Margin="15,0,15,6" TextChanged="EditorLoc_TextChanged"/>
+                                        <Label x:Name="EditorHistoryLocDescriptionLabel" Content="{DynamicResource CulturesTab_EditorHistoryLocDescription}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                                        <TextBox x:Name="EditorHistoryLocDescription" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,8" TextChanged="EditorLoc_TextChanged"/>
+                                    </StackPanel>
+                                </GroupBox>
                             </StackPanel>
                         </GroupBox>
                         <Label x:Name="EditorColorLabel" Content="{DynamicResource CulturesTab_EditorColor}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>

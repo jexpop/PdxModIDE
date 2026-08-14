@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.15]
+
+### Added
+
+- **History loc override (Cultures tab)**: a "History description" section in the editor lets you set the optional `history_loc_override` attribute of a culture, which overrides the culture history text the game shows for it. It has two fields: the **key** (the reference written into the culture block as `history_loc_override = <key>`) and the **description** (the actual text). When the description is filled but the key is empty, the key is auto-generated as `<cultureId>_history_loc` and written into the culture block, so the reference is never lost. The description is written to `culture/culture_history_l_<lang>.yml` (under `localization/replace/` when the culture exists in the base game, otherwise under `localization/`) and translated to every supported language with the existing translation providers. Existing values load from the localization when editing a culture. The section includes a short localized explanation of both fields.
+- **History override in culture details**: cultures that define `history_loc_override` now show the key and its description in the Details panel.
+- **Delete culture extended**: deleting a culture also removes its `history_loc_override` localization key from the mod's `culture_history_l_*.yml` files (inside or outside `replace/` depending on the culture). The base game is never modified.
+
+### Changed
+
+- `history_loc_override` is written **before the `traditions` block** in the culture file (it was written after `name_list`).
+
+---
+
 ## [1.6.14]
 
 ### Added
