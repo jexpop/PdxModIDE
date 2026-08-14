@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.17]
+
+### Changed
+
+- **Delete culture extended (localization files)**: when deleting a culture removes its localization keys from the mod's `cultures_l_*.yml` / `culture_history_l_*.yml` files and a file is left without any remaining entry (only the `l_<lang>:` header, comments or blank lines), the file itself is now deleted instead of being left empty in place. Only the mod is affected; the base game is never modified.
+
+---
+
 ## [1.6.16]
 
 ### Added

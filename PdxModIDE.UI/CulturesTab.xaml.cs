@@ -2571,7 +2571,25 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             });
 
             if (changed)
-                File.WriteAllLines(filePath, lines, new UTF8Encoding(true));
+            {
+                if (!HasLocalizationEntries(lines))
+                    File.Delete(filePath);
+                else
+                    File.WriteAllLines(filePath, lines, new UTF8Encoding(true));
+            }
+        }
+
+        private static bool HasLocalizationEntries(IEnumerable<string> lines)
+        {
+            foreach (var line in lines)
+            {
+                string t = line.Trim();
+                if (string.IsNullOrEmpty(t)) continue;
+                if (t.StartsWith('#')) continue;
+                if (t.IndexOf(':') >= 0 && t.IndexOf('"') >= 0)
+                    return true;
+            }
+            return false;
         }
 
         private static Dictionary<string, string> LoadLocalization(string gameRoot, string modRoot, string appLang)
