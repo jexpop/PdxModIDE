@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.17</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.18</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -279,6 +279,11 @@
     <system:String x:Key="CulturesTab_EditorChooseColor">Choose color…</system:String>
     <system:String x:Key="CulturesTab_EditorNone">—</system:String>
     <system:String x:Key="CulturesTab_EditorTraditions">Traditions</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditions">DLC traditions</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditionHint">Conditional DLC traditions (dlc_tradition). The trait is only applied when the player owns the DLC; the required DLC is detected automatically and shown next to each DLC tradition in parentheses. Otherwise the fallback base-game tradition is used (optional).</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditionTrait">Trait (DLC)</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditionFallback">Fallback</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditionAdd">Add DLC tradition</system:String>
     <system:String x:Key="CulturesTab_EditorTraditionsAvailable">Available</system:String>
     <system:String x:Key="CulturesTab_EditorTraditionsSelected">Added to this culture</system:String>
     <system:String x:Key="CulturesTab_EditorBuildingGfx">Buildings (building_gfx)</system:String>

@@ -306,6 +306,10 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Expander>
+                    <StackPanel x:Name="DetailDlcTraditionsPanel" Visibility="Collapsed">
+                        <Label Content="{DynamicResource CulturesTab_EditorDlcTraditions}" FontWeight="Bold" />
+                        <ItemsControl x:Name="DlcTraditionsList" Margin="15,0,0,5"/>
+                    </StackPanel>
                     <Label Content="{DynamicResource CulturesTab_NameList}" FontWeight="Bold" />
                     <TextBlock x:Name="DetailNameListValue" Margin="15,0,0,5" />
 <Expander x:Name="DetailNameListExpander" Margin="15,0,0,5"
@@ -563,6 +567,13 @@
                                 <ListBox x:Name="EditorTraditionsAvailable" SelectionMode="Single" Margin="6,0,0,0" MaxHeight="200"/>
                             </DockPanel>
                         </Grid>
+                        <Label x:Name="EditorDlcTraditionsLabel" Content="{DynamicResource CulturesTab_EditorDlcTraditions}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <TextBlock Text="{DynamicResource CulturesTab_EditorDlcTraditionHint}" Foreground="Gray" Margin="15,0,15,4" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" Margin="15,0,0,3">
+                            <TextBlock Text="{DynamicResource CulturesTab_EditorDlcTraditionTrait}" FontWeight="Bold" Foreground="Gray"/>
+                        </StackPanel>
+                        <ItemsControl x:Name="EditorDlcTraditionsRows" Margin="15,4,0,4"/>
+                        <Button x:Name="EditorDlcTraditionAddButton" Content="{DynamicResource CulturesTab_EditorDlcTraditionAdd}" Margin="15,0,0,4" HorizontalAlignment="Left" Padding="12,3" Click="EditorDlcTraditionAdd_Click"/>
                         <Label x:Name="EditorNameListLabel" Content="{DynamicResource CulturesTab_EditorNameList}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
                         <ComboBox x:Name="EditorNameList" MaxWidth="500" HorizontalAlignment="Left" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
                     </StackPanel>

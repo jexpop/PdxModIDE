@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.18]
+
+### Added
+
+- **DLC traditions (`dlc_tradition`) in the culture editor (Cultures tab)**: a new "DLC traditions" section, independent from the base Traditions section. Each row has the **trait** combo (DLC-only traditions) and a **fallback** combo (base-game traditions, optional) on its own line below. The items of both combos show the tradition's localized name and, inside the combo, its description; DLC traditions also show the required DLC in parentheses (e.g. `Coastal Warriors (DLC the_northern_lords)`). Saving writes one `dlc_tradition = { trait = ... requires_dlc_flag = ... fallback = ... }` block per row after the `traditions` block.
+- **Automatic DLC detection**: `requires_dlc_flag` is no longer edited manually. It is derived automatically from the actual `dlc_tradition` usages in the loaded cultures (game + mod) and shown next to each DLC tradition; when a tradition is unknown, the value stored in the culture file is kept. DLC traditions are excluded from the base Traditions selector, and the `dlc_tradition` trait options are limited to DLC traditions (base traditions are only offered as fallback).
+- **DLC traditions in culture details**: cultures that define `dlc_tradition` blocks show them in the Details panel as `trait (flag) → fallback`.
+
+### Changed
+
+- **DLC tradition classification**: a tradition is considered DLC when its definition file is not a base-game `00_*.txt` file, when its definition carries `requires_dlc_flag`, or when its id uses a known DLC prefix (`tradition_fp*_`, `tradition_ep*_`, `tradition_ce*_`, `tradition_tgp_`, `tradition_mpo_`, ...).
+
+---
+
 ## [1.6.17]
 
 ### Changed

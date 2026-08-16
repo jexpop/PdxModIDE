@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.17</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.18</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -279,6 +279,11 @@
     <system:String x:Key="CulturesTab_EditorChooseColor">Elegir color…</system:String>
     <system:String x:Key="CulturesTab_EditorNone">—</system:String>
     <system:String x:Key="CulturesTab_EditorTraditions">Tradiciones</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditions">Tradiciones de DLC</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditionHint">Tradiciones condicionales de DLC (dlc_tradition). La tradición (trait) solo se aplica si el jugador posee el DLC; el DLC requerido se detecta automáticamente y se muestra junto a cada tradición de DLC entre paréntesis. En caso contrario se usa la tradición de reemplazo (fallback) del juego base (opcional).</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditionTrait">Tradición (DLC)</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditionFallback">Fallback</system:String>
+    <system:String x:Key="CulturesTab_EditorDlcTraditionAdd">Añadir tradición de DLC</system:String>
     <system:String x:Key="CulturesTab_EditorTraditionsAvailable">Disponibles</system:String>
     <system:String x:Key="CulturesTab_EditorTraditionsSelected">Añadidas a esta cultura</system:String>
     <system:String x:Key="CulturesTab_EditorBuildingGfx">Edificios (building_gfx)</system:String>

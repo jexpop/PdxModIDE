@@ -51,6 +51,7 @@ namespace PdxModIDE.UI
         public string Created { get; set; } = "";
         public List<string> Parents { get; set; } = new();
         public List<string> TraditionKeys { get; set; } = new();
+        public List<DlcTradition> DlcTraditions { get; set; } = new();
         public List<TraditionInfo> Traditions { get; set; } = new();
         public List<Ethnicity> Ethnicities { get; set; } = new();
 
@@ -233,7 +234,23 @@ namespace PdxModIDE.UI
         private string? _displayName;
         public string Description { get; set; } = "";
         public bool HasDescription => !string.IsNullOrEmpty(Description);
+        public string RequiresDlcFlag { get; set; } = "";
+        public bool IsDlc { get; set; }
         public List<TraditionParameter> Parameters { get; set; } = new();
+    }
+
+    public class DlcTradition
+    {
+        public string Trait { get; set; } = "";
+        public string RequiresDlcFlag { get; set; } = "";
+        public string Fallback { get; set; } = "";
+    }
+
+    internal class DlcTraditionRowUi
+    {
+        public System.Windows.Controls.ComboBox Trait = null!;
+        public System.Windows.Controls.ComboBox Fallback = null!;
+        public DlcTradition? Parsed;
     }
 
     public class Ethnicity
@@ -278,6 +295,9 @@ namespace PdxModIDE.UI
         private Dictionary<string, HeadDeterminationInfo> _editorHeadDeterminationDefs = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, NamedColor> _editorNamedColors = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, TraditionInfo> _editorTraditionDefs = new(StringComparer.OrdinalIgnoreCase);
+        private List<string> _editorTraditionOptions = new();
+        private List<string> _editorDlcTraditionOptions = new();
+        private Dictionary<string, string> _traditionDlcFlagMap = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, NameListInfo> _editorNameListDefs = new(StringComparer.OrdinalIgnoreCase);
 
         private Dictionary<string, List<string>> _editorGfxValues = new(StringComparer.OrdinalIgnoreCase);
@@ -302,6 +322,7 @@ namespace PdxModIDE.UI
         private string _editorSavedHeadDetermination = "";
         private string _editorSavedColor = "";
         private List<string> _editorSavedTraditions = new();
+        private List<DlcTradition> _editorSavedDlcTraditions = new();
         private string _editorSavedNameList = "";
         private List<string> _editorSavedBuildingGfx = new();
         private List<string> _editorSavedClothingGfx = new();
@@ -464,6 +485,26 @@ namespace PdxModIDE.UI
             _editorHeadDeterminationDefs = headDeterminationDefinitions;
             _editorTraditionDefs = traditionDefinitions;
             _editorNameListDefs = nameListDefinitions;
+            var dlcFlagMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var c in allByName.Values)
+            {
+                foreach (var d in c.DlcTraditions ?? new List<DlcTradition>())
+                {
+                    if (!string.IsNullOrEmpty(d.Trait) && !string.IsNullOrEmpty(d.RequiresDlcFlag))
+                        dlcFlagMap[d.Trait] = d.RequiresDlcFlag;
+                }
+            }
+            _traditionDlcFlagMap = dlcFlagMap;
+            BuildTraditionOptions();
+
+            foreach (var tradition in traditionDefinitions.Values)
+            {
+                if (localization.TryGetValue($"{tradition.Name}_name", out var tName))
+                    tradition.DisplayName = tName;
+                if (localization.TryGetValue($"{tradition.Name}_desc", out var tDesc))
+                    tradition.Description = tDesc;
+            }
+
             _editorGfxValues = BuildGfxValues(allByName.Values);
             _editorEthnicityOptions = BuildEthnicityOptions(allByName.Values);
             _editorCultureOptions = BuildCultureOptions(allByName.Values);
@@ -515,10 +556,6 @@ namespace PdxModIDE.UI
 
             foreach (var tradition in traditionDefinitions.Values)
             {
-                if (localization.TryGetValue($"{tradition.Name}_name", out var tName))
-                    tradition.DisplayName = tName;
-                if (localization.TryGetValue($"{tradition.Name}_desc", out var tDesc))
-                    tradition.Description = tDesc;
                 foreach (var parameter in tradition.Parameters)
                 {
                     parameter.Description = ResOptional($"TraditionParam_{parameter.Key}_Desc");
@@ -829,6 +866,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             PopulateGfxLists("unit", culture.UnitGfx ?? new List<string>());
             PopulateHouseCoaFrame(culture.HouseCoaFrame ?? "");
             PopulateEthnicityRows(culture.Ethnicities ?? new List<Ethnicity>());
+            PopulateDlcTraditionRows(culture.DlcTraditions ?? new List<DlcTradition>());
             PopulateEditorLocalizationFields(culture);
 
             _editorColorReferenceName = culture.ColorReference ?? "";
@@ -1091,9 +1129,9 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             EditorTraditionsAvailable.Items.Clear();
             EditorTraditionsSelected.Items.Clear();
 
-            foreach (var def in _editorTraditionDefs.Values
-                         .Where(d => !selected.Contains(d.Name))
-                         .OrderBy(d => d.DisplayName, StringComparer.CurrentCultureIgnoreCase))
+foreach (var def in _editorTraditionDefs.Values
+                     .Where(d => !IsDlcTradition(d) && !selected.Contains(d.Name))
+                     .OrderBy(d => d.DisplayName, StringComparer.CurrentCultureIgnoreCase))
                 EditorTraditionsAvailable.Items.Add(CreateTraditionListItem(def.Name, false));
 
             foreach (var key in selected)
@@ -1563,6 +1601,243 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             return true;
         }
 
+        private void PopulateDlcTraditionRows(IEnumerable<DlcTradition> entries)
+        {
+            if (EditorDlcTraditionsRows == null) return;
+            EditorDlcTraditionsRows.Items.Clear();
+            foreach (var entry in entries ?? new List<DlcTradition>())
+                AddDlcTraditionRow(entry);
+        }
+
+        private void AddDlcTraditionRow(DlcTradition? entry)
+        {
+            if (EditorDlcTraditionsRows == null) return;
+            var row = new System.Windows.Controls.StackPanel
+            {
+                Margin = new Thickness(0, 0, 0, 6)
+            };
+
+            var traitCombo = CreateEditableTraditionCombo(entry?.Trait ?? "", isDlc: true);
+            var fallbackCombo = CreateEditableTraditionCombo(entry?.Fallback ?? "", isDlc: false);
+            fallbackCombo.Width = 300;
+
+            row.Tag = new DlcTraditionRowUi
+            {
+                Trait = traitCombo,
+                Fallback = fallbackCombo,
+                Parsed = entry
+            };
+
+            traitCombo.SelectionChanged += EditorDlcTradition_SelectionChanged;
+            traitCombo.AddHandler(System.Windows.Controls.TextBox.TextChangedEvent,
+                new System.Windows.Controls.TextChangedEventHandler(EditorDlcTradition_TextChanged));
+
+            var line1 = new Grid();
+            line1.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            line1.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            traitCombo.SetValue(Grid.ColumnProperty, 0);
+            line1.Children.Add(traitCombo);
+            var removeButton = CreateDlcTraditionRemoveButton(row);
+            removeButton.Margin = new Thickness(8, 0, 0, 0);
+            removeButton.SetValue(Grid.ColumnProperty, 1);
+            line1.Children.Add(removeButton);
+            row.Children.Add(line1);
+
+            var line2 = new System.Windows.Controls.StackPanel
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                Margin = new Thickness(0, 3, 0, 0)
+            };
+            line2.Children.Add(new System.Windows.Controls.TextBlock
+            {
+                Text = Res("CulturesTab_EditorDlcTraditionFallback") + ":",
+                Foreground = System.Windows.Media.Brushes.Gray,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 6, 0)
+            });
+            fallbackCombo.SelectionChanged += EditorDlcTradition_SelectionChanged;
+            fallbackCombo.AddHandler(System.Windows.Controls.TextBox.TextChangedEvent,
+                new System.Windows.Controls.TextChangedEventHandler(EditorDlcTradition_TextChanged));
+            line2.Children.Add(fallbackCombo);
+            row.Children.Add(line2);
+
+            EditorDlcTraditionsRows.Items.Add(row);
+        }
+
+        private System.Windows.Controls.ComboBox CreateEditableTraditionCombo(string value, bool isDlc)
+        {
+            var options = isDlc ? _editorDlcTraditionOptions : _editorTraditionOptions;
+            var combo = new System.Windows.Controls.ComboBox
+            {
+                IsEditable = true,
+                IsTextSearchEnabled = false
+            };
+            foreach (var key in options)
+            {
+                var item = new System.Windows.Controls.ComboBoxItem { Tag = key };
+                string desc = _editorTraditionDefs.TryGetValue(key, out var def) ? (def.Description ?? "") : "";
+                if (isDlc)
+                {
+                    var content = new Grid();
+                    content.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                    content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    var nameText = new System.Windows.Controls.TextBlock
+                    {
+                        Text = GetTraditionDisplayName(key) + GetDlcFlagSuffix(key),
+                        MaxWidth = 210,
+                        TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    nameText.SetValue(Grid.ColumnProperty, 0);
+                    content.Children.Add(nameText);
+                    if (!string.IsNullOrEmpty(desc))
+                    {
+                        var descText = new System.Windows.Controls.TextBlock
+                        {
+                            Text = desc,
+                            Foreground = System.Windows.Media.Brushes.Gray,
+                            FontSize = 11,
+                            TextWrapping = TextWrapping.Wrap,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(8, 0, 0, 0)
+                        };
+                        descText.SetValue(Grid.ColumnProperty, 1);
+                        content.Children.Add(descText);
+                    }
+                    item.Content = content;
+                }
+                else
+                {
+                    var content = new System.Windows.Controls.StackPanel();
+                    content.Children.Add(new System.Windows.Controls.TextBlock { Text = GetTraditionDisplayName(key) });
+                    if (!string.IsNullOrEmpty(desc))
+                    {
+                        content.Children.Add(new System.Windows.Controls.TextBlock
+                        {
+                            Text = desc,
+                            Foreground = System.Windows.Media.Brushes.Gray,
+                            FontSize = 11,
+                            TextWrapping = TextWrapping.Wrap,
+                            MaxWidth = 280
+                        });
+                    }
+                    item.Content = content;
+                }
+                combo.Items.Add(item);
+                if (string.Equals(key, value, StringComparison.OrdinalIgnoreCase))
+                    combo.SelectedItem = item;
+            }
+            if (combo.SelectedItem == null && !string.IsNullOrEmpty(value))
+                combo.Text = GetTraditionDisplayName(value);
+            return combo;
+        }
+
+        private string GetDlcFlagSuffix(string key)
+        {
+            if (string.IsNullOrEmpty(key)
+                || !_traditionDlcFlagMap.TryGetValue(key, out var flag)
+                || string.IsNullOrEmpty(flag))
+                return "";
+            return $" (DLC {flag})";
+        }
+
+        private string GetTraditionDisplayName(string key)
+        {
+            if (_editorTraditionDefs.TryGetValue(key, out var def))
+                return def.DisplayName;
+            return key;
+        }
+
+        private System.Windows.Controls.Button CreateDlcTraditionRemoveButton(System.Windows.Controls.StackPanel row)
+        {
+            var button = new System.Windows.Controls.Button
+            {
+                Content = "−",
+                Width = 22,
+                Height = 22,
+                Margin = new Thickness(4, 0, 0, 0),
+                Padding = new Thickness(0),
+                Tag = row
+            };
+            button.Click += (_, _) =>
+            {
+                (row.Parent as System.Windows.Controls.ItemsControl)?.Items.Remove(row);
+                UpdateEditorDirtyState();
+            };
+            return button;
+        }
+
+        private List<DlcTradition> GetDlcTraditions()
+        {
+            var result = new List<DlcTradition>();
+            if (EditorDlcTraditionsRows == null) return result;
+            foreach (object obj in EditorDlcTraditionsRows.Items)
+            {
+                if (obj is not System.Windows.Controls.StackPanel row) continue;
+                if (row.Tag is not DlcTraditionRowUi ui) continue;
+                string trait = ReadDlcComboValue(ui.Trait);
+                string fallback = ReadDlcComboValue(ui.Fallback);
+                if (string.IsNullOrEmpty(trait)) continue;
+                string flag = GetDlcFlagForTrait(trait, ui.Parsed?.RequiresDlcFlag);
+                result.Add(new DlcTradition { Trait = trait, RequiresDlcFlag = flag, Fallback = fallback });
+            }
+            return result;
+        }
+
+        private string GetDlcFlagForTrait(string trait, string? parsedFallback)
+        {
+            if (!string.IsNullOrEmpty(trait)
+                && _traditionDlcFlagMap.TryGetValue(trait, out var flag)
+                && !string.IsNullOrEmpty(flag))
+                return flag;
+            return parsedFallback ?? "";
+        }
+
+        private static string ReadDlcComboValue(System.Windows.Controls.ComboBox combo)
+        {
+            if (combo.SelectedItem is System.Windows.Controls.ComboBoxItem item && item.Tag is string tag)
+                return tag;
+            return combo.Text?.Trim() ?? "";
+        }
+
+        private static bool DlcTraditionsEqual(List<DlcTradition> a, List<DlcTradition> b)
+        {
+            if (a.Count != b.Count) return false;
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!string.Equals(a[i].Trait, b[i].Trait, StringComparison.OrdinalIgnoreCase)) return false;
+                if (!string.Equals(a[i].RequiresDlcFlag, b[i].RequiresDlcFlag, StringComparison.OrdinalIgnoreCase)) return false;
+                if (!string.Equals(a[i].Fallback, b[i].Fallback, StringComparison.OrdinalIgnoreCase)) return false;
+            }
+            return true;
+        }
+
+        private string BuildDlcTraditionDetailText(DlcTradition d)
+        {
+            string s = GetTraditionDisplayName(d.Trait);
+            if (!string.IsNullOrEmpty(d.RequiresDlcFlag))
+                s += $" ({d.RequiresDlcFlag})";
+            if (!string.IsNullOrEmpty(d.Fallback))
+                s += $" → {GetTraditionDisplayName(d.Fallback)}";
+            return s;
+        }
+
+        private void EditorDlcTraditionAdd_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            AddDlcTraditionRow(null);
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorDlcTradition_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            UpdateEditorDirtyState();
+        }
+
+        private void EditorDlcTradition_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            UpdateEditorDirtyState();
+        }
+
         private string GetEditorColorString()
         {
             if (_editorColorTouched || string.IsNullOrEmpty(_editorColorReferenceName))
@@ -1588,6 +1863,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             PopulateGfxLists("unit", new List<string>());
             PopulateHouseCoaFrame("");
             PopulateEthnicityRows(new List<Ethnicity>());
+            PopulateDlcTraditionRows(new List<DlcTradition>());
             ClearEditorLocalizationFields();
             _editorColorR = 255;
             _editorColorG = 255;
@@ -1656,6 +1932,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedHeadDetermination = _editorCulture.HeadDetermination ?? "";
             _editorSavedColor = GetEditorColorString();
             _editorSavedTraditions = new List<string>(_editorCulture.TraditionKeys ?? new List<string>());
+            _editorSavedDlcTraditions = new List<DlcTradition>(_editorCulture.DlcTraditions ?? new List<DlcTradition>());
             _editorSavedNameList = _editorCulture.NameList ?? "";
             _editorSavedBuildingGfx = new List<string>(_editorCulture.BuildingGfx ?? new List<string>());
             _editorSavedClothingGfx = new List<string>(_editorCulture.ClothingGfx ?? new List<string>());
@@ -1683,6 +1960,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             _editorSavedHeadDetermination = GetSelectedOption(EditorHeadDetermination);
             _editorSavedColor = GetEditorColorString();
             _editorSavedTraditions = GetSelectedTraditions();
+            _editorSavedDlcTraditions = GetDlcTraditions();
             _editorSavedNameList = GetSelectedOption(EditorNameList);
             _editorSavedBuildingGfx = GetSelectedGfx("building");
             _editorSavedClothingGfx = GetSelectedGfx("clothing");
@@ -1711,6 +1989,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             SetLabelDirty(EditorHeadDeterminationLabel, GetSelectedOption(EditorHeadDetermination) != _editorSavedHeadDetermination);
             SetLabelDirty(EditorColorLabel, GetEditorColorString() != _editorSavedColor);
             SetLabelDirty(EditorTraditionsLabel, !TraditionListsEqual(GetSelectedTraditions(), _editorSavedTraditions));
+            SetLabelDirty(EditorDlcTraditionsLabel, !DlcTraditionsEqual(GetDlcTraditions(), _editorSavedDlcTraditions));
             SetLabelDirty(EditorNameListLabel, GetSelectedOption(EditorNameList) != _editorSavedNameList);
             SetLabelDirty(EditorBuildingGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("building"), _editorSavedBuildingGfx));
             SetLabelDirty(EditorClothingGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("clothing"), _editorSavedClothingGfx));
@@ -2354,6 +2633,18 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 sb.AppendLine("\ttraditions = {");
                 foreach (var tradition in traditions)
                     sb.AppendLine($"\t\t{tradition}");
+                sb.AppendLine("\t}");
+            }
+
+            foreach (var dlcTradition in GetDlcTraditions())
+            {
+                sb.AppendLine("\tdlc_tradition = {");
+                if (!string.IsNullOrEmpty(dlcTradition.Trait))
+                    sb.AppendLine($"\t\ttrait = {dlcTradition.Trait}");
+                if (!string.IsNullOrEmpty(dlcTradition.RequiresDlcFlag))
+                    sb.AppendLine($"\t\trequires_dlc_flag = {dlcTradition.RequiresDlcFlag}");
+                if (!string.IsNullOrEmpty(dlcTradition.Fallback))
+                    sb.AppendLine($"\t\tfallback = {dlcTradition.Fallback}");
                 sb.AppendLine("\t}");
             }
 
@@ -3215,6 +3506,43 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             }
         }
 
+        private void BuildTraditionOptions()
+        {
+            var baseList = new List<string>();
+            var dlcList = new List<string>();
+            foreach (var def in _editorTraditionDefs.Values)
+            {
+                if (IsDlcTradition(def))
+                    dlcList.Add(def.Name);
+                else
+                    baseList.Add(def.Name);
+            }
+            _editorTraditionOptions = baseList.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+            _editorDlcTraditionOptions = dlcList.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static readonly string[] _dlcTraditionCodes =
+        {
+            "fp1", "fp2", "fp3", "fp4",
+            "ep1", "ep2", "ep3", "ep4",
+            "ce1", "ce2",
+            "tgp", "mpo", "ach", "cote"
+        };
+
+        private static bool IsDlcTradition(TraditionInfo def)
+        {
+            if (def.IsDlc) return true;
+            if (!string.IsNullOrEmpty(def.RequiresDlcFlag)) return true;
+            string name = def.Name;
+            if (!name.StartsWith("tradition_", StringComparison.OrdinalIgnoreCase)) return false;
+            foreach (var code in _dlcTraditionCodes)
+            {
+                if (name.StartsWith("tradition_" + code + "_", StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
+        }
+
         private string GetCultureDisplayName(string key)
         {
             if (string.IsNullOrEmpty(key)) return key;
@@ -3398,6 +3726,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
         private static void ParseTraditionFile(string filePath, Dictionary<string, TraditionInfo> output)
         {
+            bool isDlcFile = !Path.GetFileName(filePath).StartsWith("00_", StringComparison.OrdinalIgnoreCase);
             var text = File.ReadAllText(filePath);
             int pos = 0;
 
@@ -3418,13 +3747,13 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 pos++;
 
                 string block = ReadBlock(text, ref pos);
-                var tradition = new TraditionInfo { Name = key };
-                ParseTraditionParameters(block, tradition.Parameters);
+                var tradition = new TraditionInfo { Name = key, IsDlc = isDlcFile };
+                ParseTraditionParameters(block, tradition.Parameters, tradition);
                 output[key] = tradition;
             }
         }
 
-        private static void ParseTraditionParameters(string block, List<TraditionParameter> parameters)
+        private static void ParseTraditionParameters(string block, List<TraditionParameter> parameters, TraditionInfo tradition)
         {
             int pos = 0;
             while (pos < block.Length)
@@ -3456,10 +3785,13 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                             break;
                         pos++;
                     }
+                    string scalarValue = block.Substring(start, pos - start);
+                    if (string.Equals(key, "requires_dlc_flag", StringComparison.OrdinalIgnoreCase))
+                        tradition.RequiresDlcFlag = scalarValue;
                     parameters.Add(new TraditionParameter
                     {
                         Key = key,
-                        Content = block.Substring(start, pos - start)
+                        Content = scalarValue
                     });
                 }
             }
@@ -3554,6 +3886,84 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             }
 
             return new List<string>();
+        }
+
+        private static List<DlcTradition> ExtractDlcTraditionsAttribute(string block)
+        {
+            var result = new List<DlcTradition>();
+            int pos = 0;
+            while (pos < block.Length)
+            {
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                string key = ReadKey(block, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length || block[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos >= block.Length) break;
+
+                if (string.Equals(key, "dlc_tradition", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (block[pos] == '{')
+                    {
+                        string content = ReadBraceContent(block, ref pos);
+                        var entry = ParseDlcTraditionEntry(content);
+                        if (entry != null) result.Add(entry);
+                    }
+                    else
+                    {
+                        SkipValueAndFollowingBlock(block, ref pos);
+                    }
+                }
+                else
+                {
+                    SkipValueAndFollowingBlock(block, ref pos);
+                }
+            }
+
+            return result;
+        }
+
+        private static DlcTradition? ParseDlcTraditionEntry(string content)
+        {
+            string trait = "", flag = "", fallback = "";
+            int pos = 0;
+            while (pos < content.Length)
+            {
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos >= content.Length) break;
+
+                string key = ReadKey(content, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos >= content.Length || content[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(content, ref pos);
+                    continue;
+                }
+                pos++;
+
+                SkipWhitespaceAndComments(content, ref pos);
+                if (pos >= content.Length) break;
+
+                string scalar = ReadKey(content, ref pos);
+                if (string.Equals(key, "trait", StringComparison.OrdinalIgnoreCase)) trait = scalar;
+                else if (string.Equals(key, "requires_dlc_flag", StringComparison.OrdinalIgnoreCase)) flag = scalar;
+                else if (string.Equals(key, "fallback", StringComparison.OrdinalIgnoreCase)) fallback = scalar;
+            }
+
+            if (string.IsNullOrEmpty(trait)) return null;
+            return new DlcTradition { Trait = trait, RequiresDlcFlag = flag, Fallback = fallback };
         }
 
         private static void ExtractEthnicitiesAttribute(string block, CultureInfo culture)
@@ -3686,6 +4096,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 culture.Parents = ExtractParentsAttribute(block);
 
                 culture.TraditionKeys = ExtractTraditionsAttribute(block);
+                culture.DlcTraditions = ExtractDlcTraditionsAttribute(block);
 
                 ExtractEthnicitiesAttribute(block, culture);
 
@@ -4230,6 +4641,17 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                     DetailTraditionsExpander.Visibility = Visibility.Collapsed;
                 }
 
+                if ((culture.DlcTraditions?.Count ?? 0) > 0)
+                {
+                    DlcTraditionsList.ItemsSource = (culture.DlcTraditions ?? new List<DlcTradition>()).Select(d => BuildDlcTraditionDetailText(d)).ToList();
+                    DetailDlcTraditionsPanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    DlcTraditionsList.ItemsSource = null;
+                    DetailDlcTraditionsPanel.Visibility = Visibility.Collapsed;
+                }
+
                 if (!string.IsNullOrEmpty(culture.HistoryLocOverride))
                 {
                     DetailHistoryLocOverrideValue.Text = culture.HistoryLocOverride;
@@ -4332,6 +4754,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 DetailNameListExpander.Visibility = Visibility.Collapsed;
                 TraditionsList.ItemsSource = null;
                 DetailTraditionsExpander.Visibility = Visibility.Collapsed;
+                DlcTraditionsList.ItemsSource = null;
+                DetailDlcTraditionsPanel.Visibility = Visibility.Collapsed;
                 DetailHistoryLocPanel.Visibility = Visibility.Collapsed;
                 DetailLineagePanel.Visibility = Visibility.Collapsed;
                 DetailGfxExpander.Visibility = Visibility.Collapsed;
