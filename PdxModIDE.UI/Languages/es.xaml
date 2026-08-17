@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.18</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.19</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -293,6 +293,9 @@
     <system:String x:Key="CulturesTab_EditorGfxSelected">Añadidos a esta cultura</system:String>
     <system:String x:Key="CulturesTab_EditorGfxAvailable">Disponibles</system:String>
     <system:String x:Key="CulturesTab_EditorNameList">Lista de nombres</system:String>
+    <system:String x:Key="CulturesTab_EditorNameOrderConvention">Convención de orden de nombre (name_order_convention)</system:String>
+    <system:String x:Key="CulturesTab_EditorNameOrderConventionHint">Define cómo se muestran los nombres de los personajes de esta cultura. Elige un preset nativo o "Formato personalizado" y escribe un formato con tokens como $DYNASTY$, $HOUSE$, $NAME$ y $TIER$.</system:String>
+    <system:String x:Key="CulturesTab_EditorNameOrderConventionCustom">Formato personalizado</system:String>
     <system:String x:Key="CulturesTab_EditorHouseCoaFrame">Marco de escudo de casa (house_coa_frame)</system:String>
     <system:String x:Key="CulturesTab_EditorEthnicities">Etnias</system:String>
     <system:String x:Key="CulturesTab_EditorEthnicityAdd">Añadir etnia</system:String>

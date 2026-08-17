@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.18</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.19</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -293,6 +293,9 @@
     <system:String x:Key="CulturesTab_EditorGfxSelected">Afegits a aquesta cultura</system:String>
     <system:String x:Key="CulturesTab_EditorGfxAvailable">Disponibles</system:String>
     <system:String x:Key="CulturesTab_EditorNameList">Llista de noms</system:String>
+    <system:String x:Key="CulturesTab_EditorNameOrderConvention">Convenció d'ordre de nom (name_order_convention)</system:String>
+    <system:String x:Key="CulturesTab_EditorNameOrderConventionHint">Defineix com es mostren els noms dels personatges d'aquesta cultura. Tria un preset natiu o "Format personalitzat" i escriu un format amb tokens com $DYNASTY$, $HOUSE$, $NAME$ i $TIER$.</system:String>
+    <system:String x:Key="CulturesTab_EditorNameOrderConventionCustom">Format personalitzat</system:String>
     <system:String x:Key="CulturesTab_EditorHouseCoaFrame">Marc d'escut de casa (house_coa_frame)</system:String>
     <system:String x:Key="CulturesTab_EditorEthnicities">Ètnies</system:String>
     <system:String x:Key="CulturesTab_EditorEthnicityAdd">Afegeix ètnia</system:String>

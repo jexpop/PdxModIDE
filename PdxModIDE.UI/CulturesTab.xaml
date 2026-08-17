@@ -366,6 +366,11 @@
                         <TextBlock x:Name="DetailParentsValue" Margin="15,0,0,5" TextWrapping="Wrap" Foreground="Gray"/>
                     </StackPanel>
 
+                    <StackPanel x:Name="DetailNameOrderConventionPanel" Visibility="Collapsed">
+                        <Label Content="{DynamicResource CulturesTab_EditorNameOrderConvention}" FontWeight="Bold" />
+                        <TextBlock x:Name="DetailNameOrderConventionValue" Margin="15,0,0,5" TextWrapping="Wrap"/>
+                    </StackPanel>
+
                     <Label Content="{DynamicResource CulturesTab_Gfx}" FontWeight="Bold" />
                     <Expander x:Name="DetailGfxExpander" Margin="15,0,0,5"
                               Header="{DynamicResource CulturesTab_GfxParameters}"
@@ -576,6 +581,10 @@
                         <Button x:Name="EditorDlcTraditionAddButton" Content="{DynamicResource CulturesTab_EditorDlcTraditionAdd}" Margin="15,0,0,4" HorizontalAlignment="Left" Padding="12,3" Click="EditorDlcTraditionAdd_Click"/>
                         <Label x:Name="EditorNameListLabel" Content="{DynamicResource CulturesTab_EditorNameList}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
                         <ComboBox x:Name="EditorNameList" MaxWidth="500" HorizontalAlignment="Left" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
+                        <Label x:Name="EditorNameOrderConventionLabel" Content="{DynamicResource CulturesTab_EditorNameOrderConvention}" FontWeight="Bold" Style="{StaticResource ModifiedEditorLabel}" Tag="False"/>
+                        <TextBlock Text="{DynamicResource CulturesTab_EditorNameOrderConventionHint}" Foreground="Gray" Margin="15,0,15,2" TextWrapping="Wrap"/>
+                        <ComboBox x:Name="EditorNameOrderConvention" MaxWidth="500" HorizontalAlignment="Left" Margin="15,0,0,4" SelectionChanged="EditorField_SelectionChanged"/>
+                        <TextBox x:Name="EditorNameOrderConventionCustom" MaxWidth="500" HorizontalAlignment="Left" Margin="15,0,0,4" Visibility="Collapsed" TextChanged="EditorNameOrderConventionCustom_TextChanged"/>
                     </StackPanel>
                 </GroupBox>
 

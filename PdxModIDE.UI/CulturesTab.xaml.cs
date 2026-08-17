@@ -63,6 +63,7 @@ namespace PdxModIDE.UI
         public string DynastyCoaFrame { get; set; } = "";
         public string HouseCoaMaskOffset { get; set; } = "";
         public string HouseCoaMaskScale { get; set; } = "";
+        public string NameOrderConvention { get; set; } = "";
 
         public byte R { get; set; }
         public byte G { get; set; }
@@ -324,6 +325,7 @@ namespace PdxModIDE.UI
         private List<string> _editorSavedTraditions = new();
         private List<DlcTradition> _editorSavedDlcTraditions = new();
         private string _editorSavedNameList = "";
+        private string _editorSavedNameOrderConvention = "";
         private List<string> _editorSavedBuildingGfx = new();
         private List<string> _editorSavedClothingGfx = new();
         private List<string> _editorSavedUnitGfx = new();
@@ -860,6 +862,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             PopulateEditorCombo(EditorHeadDetermination, GetHeadDeterminationOptions(), culture.HeadDetermination ?? "");
             PopulateTraditionLists(culture.TraditionKeys ?? new List<string>());
             PopulateEditorCombo(EditorNameList, GetNameListOptions(), culture.NameList ?? "");
+            PopulateNameOrderConvention(culture.NameOrderConvention ?? "");
             PopulateGfxLists("coa", culture.CoaGfx ?? new List<string>());
             PopulateGfxLists("building", culture.BuildingGfx ?? new List<string>());
             PopulateGfxLists("clothing", culture.ClothingGfx ?? new List<string>());
@@ -1014,6 +1017,8 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
         {
             if (ReferenceEquals(sender, EditorHouseCoaFrame))
                 UpdateHouseCoaMaskText();
+            if (ReferenceEquals(sender, EditorNameOrderConvention))
+                UpdateNameOrderConventionCustomVisibility();
             UpdateEditorDirtyState();
         }
 
@@ -1082,6 +1087,24 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
                 yield return (def.Name, def.DisplayName);
         }
 
+        private IEnumerable<(string Key, string Display)> GetNameOrderConventionOptions()
+        {
+            string[] presets = { "default", "dynasty_always_first", "dynasty_first", "japanese" };
+            foreach (var preset in presets)
+                yield return (preset, GetNameOrderConventionDisplay(preset));
+            yield return ("custom", Res("CulturesTab_EditorNameOrderConventionCustom"));
+        }
+
+        private string GetNameOrderConventionDisplay(string value)
+        {
+            if (!string.IsNullOrEmpty(value)
+                && _editorLocalization != null
+                && _editorLocalization.TryGetValue($"culture_aesthetics_naming_{value}", out var display)
+                && !string.IsNullOrWhiteSpace(display))
+                return display;
+            return value;
+        }
+
         private static void PopulateEditorCombo(System.Windows.Controls.ComboBox combo, IEnumerable<(string Key, string Display)> options, string currentValue)
         {
             if (combo == null) return;
@@ -1107,6 +1130,72 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             if (combo?.SelectedItem is ComboBoxItem item)
                 return (item.Tag as string) ?? "";
             return "";
+        }
+
+        private void PopulateNameOrderConvention(string currentValue)
+        {
+            if (EditorNameOrderConvention == null) return;
+            var options = GetNameOrderConventionOptions().ToList();
+            EditorNameOrderConvention.Items.Clear();
+            EditorNameOrderConvention.Items.Add(new ComboBoxItem { Tag = "", Content = Res("CulturesTab_EditorNone") });
+            foreach (var (key, display) in options)
+                EditorNameOrderConvention.Items.Add(new ComboBoxItem { Tag = key, Content = display });
+            if (EditorNameOrderConventionCustom != null)
+                EditorNameOrderConventionCustom.Text = "";
+
+            string normalized = (currentValue ?? "").Trim();
+            if (!string.IsNullOrEmpty(normalized))
+            {
+                var preset = options.FirstOrDefault(o => string.Equals(o.Key, normalized, StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrEmpty(preset.Key))
+                {
+                    foreach (ComboBoxItem item in EditorNameOrderConvention.Items)
+                        if (string.Equals((item.Tag as string) ?? "", preset.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            EditorNameOrderConvention.SelectedItem = item;
+                            UpdateNameOrderConventionCustomVisibility();
+                            return;
+                        }
+                }
+                else
+                {
+                    foreach (ComboBoxItem item in EditorNameOrderConvention.Items)
+                        if (string.Equals((item.Tag as string) ?? "", "custom", StringComparison.OrdinalIgnoreCase))
+                        {
+                            EditorNameOrderConvention.SelectedItem = item;
+                            break;
+                        }
+                    if (EditorNameOrderConventionCustom != null)
+                        EditorNameOrderConventionCustom.Text = normalized;
+                    UpdateNameOrderConventionCustomVisibility();
+                    return;
+                }
+            }
+            EditorNameOrderConvention.SelectedIndex = 0;
+            UpdateNameOrderConventionCustomVisibility();
+        }
+
+        private string GetEditorNameOrderConvention()
+        {
+            if (EditorNameOrderConvention == null) return "";
+            string selected = GetSelectedOption(EditorNameOrderConvention);
+            if (string.Equals(selected, "custom", StringComparison.OrdinalIgnoreCase))
+                return EditorNameOrderConventionCustom?.Text?.Trim() ?? "";
+            return selected;
+        }
+
+        private void UpdateNameOrderConventionCustomVisibility()
+        {
+            if (EditorNameOrderConventionCustom == null) return;
+            EditorNameOrderConventionCustom.Visibility =
+                string.Equals(GetSelectedOption(EditorNameOrderConvention), "custom", StringComparison.OrdinalIgnoreCase)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+        }
+
+        private void EditorNameOrderConventionCustom_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            UpdateEditorDirtyState();
         }
 
         private List<string> GetSelectedTraditions()
@@ -1857,6 +1946,7 @@ foreach (var def in _editorTraditionDefs.Values
             if (EditorHeadDetermination != null) PopulateEditorCombo(EditorHeadDetermination, GetHeadDeterminationOptions(), "");
             PopulateTraditionLists(null);
             if (EditorNameList != null) PopulateEditorCombo(EditorNameList, GetNameListOptions(), "");
+            PopulateNameOrderConvention("");
             PopulateGfxLists("coa", new List<string>());
             PopulateGfxLists("building", new List<string>());
             PopulateGfxLists("clothing", new List<string>());
@@ -1934,6 +2024,7 @@ foreach (var def in _editorTraditionDefs.Values
             _editorSavedTraditions = new List<string>(_editorCulture.TraditionKeys ?? new List<string>());
             _editorSavedDlcTraditions = new List<DlcTradition>(_editorCulture.DlcTraditions ?? new List<DlcTradition>());
             _editorSavedNameList = _editorCulture.NameList ?? "";
+            _editorSavedNameOrderConvention = _editorCulture.NameOrderConvention ?? "";
             _editorSavedBuildingGfx = new List<string>(_editorCulture.BuildingGfx ?? new List<string>());
             _editorSavedClothingGfx = new List<string>(_editorCulture.ClothingGfx ?? new List<string>());
             _editorSavedUnitGfx = new List<string>(_editorCulture.UnitGfx ?? new List<string>());
@@ -1962,6 +2053,7 @@ foreach (var def in _editorTraditionDefs.Values
             _editorSavedTraditions = GetSelectedTraditions();
             _editorSavedDlcTraditions = GetDlcTraditions();
             _editorSavedNameList = GetSelectedOption(EditorNameList);
+            _editorSavedNameOrderConvention = GetEditorNameOrderConvention();
             _editorSavedBuildingGfx = GetSelectedGfx("building");
             _editorSavedClothingGfx = GetSelectedGfx("clothing");
             _editorSavedUnitGfx = GetSelectedGfx("unit");
@@ -1991,6 +2083,7 @@ foreach (var def in _editorTraditionDefs.Values
             SetLabelDirty(EditorTraditionsLabel, !TraditionListsEqual(GetSelectedTraditions(), _editorSavedTraditions));
             SetLabelDirty(EditorDlcTraditionsLabel, !DlcTraditionsEqual(GetDlcTraditions(), _editorSavedDlcTraditions));
             SetLabelDirty(EditorNameListLabel, GetSelectedOption(EditorNameList) != _editorSavedNameList);
+            SetLabelDirty(EditorNameOrderConventionLabel, GetEditorNameOrderConvention() != _editorSavedNameOrderConvention);
             SetLabelDirty(EditorBuildingGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("building"), _editorSavedBuildingGfx));
             SetLabelDirty(EditorClothingGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("clothing"), _editorSavedClothingGfx));
             SetLabelDirty(EditorUnitGfxLabel, !OrderedStringListsEqual(GetSelectedGfx("unit"), _editorSavedUnitGfx));
@@ -2652,6 +2745,10 @@ foreach (var def in _editorTraditionDefs.Values
             if (!string.IsNullOrEmpty(nameList))
                 sb.AppendLine($"\tname_list = {nameList}");
 
+            string nameOrderConvention = GetEditorNameOrderConvention();
+            if (!string.IsNullOrEmpty(nameOrderConvention))
+                sb.AppendLine($"\tname_order_convention = {nameOrderConvention}");
+
             var coaGfx = GetSelectedGfx("coa");
             if (coaGfx.Count > 0)
                 sb.AppendLine($"\tcoa_gfx = {{ {string.Join(" ", coaGfx)} }}");
@@ -2901,7 +2998,8 @@ foreach (var def in _editorTraditionDefs.Values
                 $"culture/traditions/cultural_languages_l_{ck3Lang}.yml",
                 $"culture/head_determination_l_{ck3Lang}.yml",
                 $"culture/culture_name_lists_l_{ck3Lang}.yml",
-                $"culture/culture_history_l_{ck3Lang}.yml"
+                $"culture/culture_history_l_{ck3Lang}.yml",
+                $"culture/culture_gfx_l_{ck3Lang}.yml"
             };
 
             foreach (var root in new[] { modRoot, gameRoot })
@@ -2912,6 +3010,17 @@ foreach (var def in _editorTraditionDefs.Values
                     var path = Path.Combine(root, "localization", ck3Lang, relativePath);
                     if (File.Exists(path))
                         ParseLocalizationFile(path, result);
+                }
+            }
+
+            foreach (var kvp in result.ToList())
+            {
+                var value = kvp.Value;
+                if (value.Length > 2 && value.StartsWith('$') && value.EndsWith('$'))
+                {
+                    var inner = value.Substring(1, value.Length - 2);
+                    if (result.TryGetValue(inner, out var resolved) && !string.IsNullOrEmpty(resolved))
+                        result[kvp.Key] = resolved;
                 }
             }
 
@@ -4094,6 +4203,7 @@ foreach (var def in _editorTraditionDefs.Values
                 culture.HistoryLocOverride = ExtractAttribute(block, "history_loc_override") ?? "";
                 culture.Created = ExtractAttribute(block, "created") ?? "";
                 culture.Parents = ExtractParentsAttribute(block);
+                culture.NameOrderConvention = ExtractAttribute(block, "name_order_convention") ?? "";
 
                 culture.TraditionKeys = ExtractTraditionsAttribute(block);
                 culture.DlcTraditions = ExtractDlcTraditionsAttribute(block);
@@ -4682,6 +4792,16 @@ foreach (var def in _editorTraditionDefs.Values
                     DetailLineagePanel.Visibility = Visibility.Collapsed;
                 }
 
+                if (!string.IsNullOrEmpty(culture.NameOrderConvention))
+                {
+                    DetailNameOrderConventionValue.Text = $"{GetNameOrderConventionDisplay(culture.NameOrderConvention)}  ({culture.NameOrderConvention})";
+                    DetailNameOrderConventionPanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    DetailNameOrderConventionPanel.Visibility = Visibility.Collapsed;
+                }
+
                 bool hasGfx = culture.CoaGfx.Count > 0 || culture.BuildingGfx.Count > 0 || 
                               culture.ClothingGfx.Count > 0 || culture.UnitGfx.Count > 0 ||
                               !string.IsNullOrEmpty(culture.HouseCoaFrame) || !string.IsNullOrEmpty(culture.DynastyCoaFrame) ||
@@ -4758,6 +4878,7 @@ foreach (var def in _editorTraditionDefs.Values
                 DetailDlcTraditionsPanel.Visibility = Visibility.Collapsed;
                 DetailHistoryLocPanel.Visibility = Visibility.Collapsed;
                 DetailLineagePanel.Visibility = Visibility.Collapsed;
+                DetailNameOrderConventionPanel.Visibility = Visibility.Collapsed;
                 DetailGfxExpander.Visibility = Visibility.Collapsed;
                 ClearGfxViewport();
             }

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.19]
+
+### Added
+
+- **Name order convention (`name_order_convention`) in the culture editor (Cultures tab)**: the optional attribute that defines how character names are shown for a culture is now parsed into `CultureInfo.NameOrderConvention`. The editor has a combo box with the native presets (`default`, `dynasty_always_first`, `dynasty_first`, `japanese`) shown with their localized display names (from the `culture_aesthetics_naming_*` keys in `culture_gfx_l_*.yml`), plus a "Custom format" option that reveals a free-text field for formats with tokens such as `$DYNASTY$`, `$HOUSE$`, `$NAME$` and `$TIER$`. When editing a culture whose value is not a known preset, the custom field is preselected with the stored value. Saving writes `name_order_convention = <value>` after `name_list`, and unsaved changes are highlighted in red.
+- **Name order convention in culture details**: cultures that define `name_order_convention` show a section in the Details panel with the localized preset name and the raw value.
+- **`culture_gfx_l_*.yml` localization loaded**: `LoadLocalization` now loads the `culture_gfx` localization file, and resolves `$reference$` values so preset names display correctly (e.g. `japanese` → `dynasty_first`).
+
+---
+
 ## [1.6.18]
 
 ### Added
