@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.20]
+
+### Changed
+
+- **Culture localization follows the `culture/` folder convention (Cultures tab)**: all localization reads and writes for the culture domain now respect the `culture/` subfolder used by the base game, both under `localization/{lang}/` and `localization/replace/{lang}/`. `LoadLocalization` searches recursively inside `localization/{lang}/culture/` and `localization/replace/{lang}/culture/` for the culture files (`cultures_l_*.yml`, `culture_history_l_*.yml`, `cultural_traditions_l_*.yml`, `cultural_heritages_l_*.yml`, `cultural_languages_l_*.yml`, `head_determination_l_*.yml`, `culture_name_lists_l_*.yml`, `culture_gfx_l_*.yml`), so mods that place them directly in the language folder (without `culture/`) were previously not read and the editor showed no current localization when editing. Saving now writes `cultures_l_{lang}.yml` inside `culture/` too (previously only `culture_history_l_{lang}.yml` used it), keeping both inside and outside `replace/` consistent.
+
+---
+
 ## [1.6.19]
 
 ### Added

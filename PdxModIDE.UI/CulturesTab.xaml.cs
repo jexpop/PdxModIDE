@@ -2241,8 +2241,9 @@ foreach (var def in _editorTraditionDefs.Values
                 string folderPath = Path.Combine(baseLocPath, ck3Folder);
                 try
                 {
-                    Directory.CreateDirectory(folderPath);
-                    string filePath = Path.Combine(folderPath, $"cultures_l_{ck3Folder}.yml");
+                    string cultureDir = Path.Combine(folderPath, "culture");
+                    Directory.CreateDirectory(cultureDir);
+                    string filePath = Path.Combine(cultureDir, $"cultures_l_{ck3Folder}.yml");
                     var entries = new List<(string Key, string Value)>();
                     if (!string.IsNullOrEmpty(locName))
                         entries.Add((cultureId, locName));
@@ -2254,8 +2255,7 @@ foreach (var def in _editorTraditionDefs.Values
 
                     if (!string.IsNullOrEmpty(locHistoryKey) && !string.IsNullOrEmpty(locHistoryDescription))
                     {
-                        string historyFilePath = Path.Combine(folderPath, "culture", $"culture_history_l_{ck3Folder}.yml");
-                        Directory.CreateDirectory(Path.Combine(folderPath, "culture"));
+                        string historyFilePath = Path.Combine(cultureDir, $"culture_history_l_{ck3Folder}.yml");
                         UpsertLocalizationFile(historyFilePath, $"l_{ck3Folder}:",
                             new List<(string Key, string Value)> { (locHistoryKey, locHistoryDescription) });
                     }
@@ -2990,26 +2990,34 @@ foreach (var def in _editorTraditionDefs.Values
                 _ => "english"
             };
 
-            var files = new[]
+            var fileNames = new[]
             {
-                $"culture/cultures_l_{ck3Lang}.yml",
-                $"culture/traditions/cultural_heritages_l_{ck3Lang}.yml",
-                $"culture/traditions/cultural_traditions_l_{ck3Lang}.yml",
-                $"culture/traditions/cultural_languages_l_{ck3Lang}.yml",
-                $"culture/head_determination_l_{ck3Lang}.yml",
-                $"culture/culture_name_lists_l_{ck3Lang}.yml",
-                $"culture/culture_history_l_{ck3Lang}.yml",
-                $"culture/culture_gfx_l_{ck3Lang}.yml"
+                "cultures_l",
+                "cultural_heritages_l",
+                "cultural_traditions_l",
+                "cultural_languages_l",
+                "head_determination_l",
+                "culture_name_lists_l",
+                "culture_history_l",
+                "culture_gfx_l"
             };
 
             foreach (var root in new[] { modRoot, gameRoot })
             {
                 if (string.IsNullOrEmpty(root)) continue;
-                foreach (var relativePath in files)
+                foreach (var langRoot in new[]
                 {
-                    var path = Path.Combine(root, "localization", ck3Lang, relativePath);
-                    if (File.Exists(path))
-                        ParseLocalizationFile(path, result);
+                    Path.Combine(root, "localization", "replace", ck3Lang),
+                    Path.Combine(root, "localization", ck3Lang)
+                })
+                {
+                    var cultureDir = Path.Combine(langRoot, "culture");
+                    if (!Directory.Exists(cultureDir)) continue;
+                    foreach (var name in fileNames)
+                    {
+                        foreach (var path in Directory.GetFiles(cultureDir, $"{name}_{ck3Lang}.yml", SearchOption.AllDirectories))
+                            ParseLocalizationFile(path, result);
+                    }
                 }
             }
 
