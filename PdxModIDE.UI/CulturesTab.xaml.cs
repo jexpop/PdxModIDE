@@ -133,6 +133,25 @@ namespace PdxModIDE.UI
         }
         private string? _displayName;
         public List<HeritageParameter> Parameters { get; set; } = new();
+        public string Source { get; set; } = "Base";
+        public string SourceFile { get; set; } = "";
+        public bool IsModNew { get; set; }
+        public string AudioParameter
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_audioParameter)) return _audioParameter;
+                var param = Parameters.FirstOrDefault(p => string.Equals(p.Key, "audio_parameter", StringComparison.OrdinalIgnoreCase));
+                return param?.Content ?? "";
+            }
+            set => _audioParameter = value ?? "";
+        }
+        private string? _audioParameter;
+        public System.Windows.Media.Brush SourceBrush => Source == "Mod"
+            ? (IsModNew
+                ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 140, 0))
+                : new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 120, 212)))
+            : System.Windows.Media.Brushes.Black;
     }
 
     public class LanguageParameter
@@ -340,7 +359,15 @@ namespace PdxModIDE.UI
         private string _editorSavedCreated = "";
         private List<string> _editorSavedParents = new();
 
+        private HeritageInfo? _editorHeritage;
+        private bool _editorHeritageIsNew;
+        private bool _heritageHasSavedState;
+        private string _savedHeritageLocName = "";
+        private string _savedHeritageLocCollective = "";
+        private static readonly string[] HeritageAudioFallback = { "byzantine", "european", "indian", "mena", "sea" };
+
         private readonly HashSet<string> _baseCultureRawKeys = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _baseHeritageRawKeys = new(StringComparer.OrdinalIgnoreCase);
         private static readonly HttpClient _translationHttp = new() { Timeout = TimeSpan.FromSeconds(30) };
         private static readonly System.Text.RegularExpressions.Regex _createdDateRegex =
             new(@"^-?\d+\.\d+\.\d+$", System.Text.RegularExpressions.RegexOptions.Compiled);
@@ -472,7 +499,7 @@ namespace PdxModIDE.UI
 
             var namedColors = LoadNamedColors(gameRoot, modRoot);
             var ethosDefinitions = LoadEthosDefinitions(gameRoot, modRoot);
-            var heritageDefinitions = LoadHeritageDefinitions(gameRoot, modRoot);
+            var heritageDefinitions = LoadHeritageDefinitions(gameRoot, modRoot, _baseHeritageRawKeys);
             var languageDefinitions = LoadLanguageDefinitions(gameRoot, modRoot);
             var martialCustomDefinitions = LoadMartialCustomDefinitions(gameRoot, modRoot);
             var headDeterminationDefinitions = LoadHeadDeterminationDefinitions(gameRoot, modRoot);
@@ -595,6 +622,9 @@ namespace PdxModIDE.UI
                 if (localization.TryGetValue($"{heritage.Name}_name", out var heritageName))
                     heritage.DisplayName = heritageName;
             }
+
+            RefreshHeritageList();
+            RefreshHeritageAudioOptions();
 
             foreach (var language in languageDefinitions.Values)
             {
@@ -1059,7 +1089,7 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
 
         private IEnumerable<(string Key, string Display)> GetHeritageOptions()
         {
-            foreach (var def in _editorHeritageDefs.Values.OrderBy(d => d.DisplayName, StringComparer.OrdinalIgnoreCase))
+            foreach (var def in _editorHeritageDefs.Values.OrderBy(d => d.DisplayName, StringComparer.CurrentCultureIgnoreCase))
                 yield return (def.Name, def.DisplayName);
         }
 
@@ -3318,23 +3348,34 @@ foreach (var def in _editorTraditionDefs.Values
             }
         }
 
-        private static Dictionary<string, HeritageInfo> LoadHeritageDefinitions(string gameRoot, string modRoot)
+        private static Dictionary<string, HeritageInfo> LoadHeritageDefinitions(string gameRoot, string modRoot, HashSet<string>? baseKeys = null)
         {
             var result = new Dictionary<string, HeritageInfo>(StringComparer.OrdinalIgnoreCase);
+            string modSub = Path.Combine(modRoot, "common", "culture", "pillars", "mod");
 
-            foreach (var root in new[] { modRoot, gameRoot })
+            foreach (var (root, source) in new[] { (modRoot, "Mod"), (gameRoot, "Base") })
             {
                 if (string.IsNullOrEmpty(root)) continue;
                 var dir = Path.Combine(root, "common", "culture", "pillars");
                 if (!Directory.Exists(dir)) continue;
                 foreach (var file in Directory.GetFiles(dir, "*heritage.txt", SearchOption.AllDirectories))
-                    ParseHeritageFile(file, result);
+                {
+                    bool isModNew = source == "Mod" && IsPathInside(file, modSub);
+                    if (source == "Base" && baseKeys != null)
+                    {
+                        var temp = new Dictionary<string, HeritageInfo>(StringComparer.OrdinalIgnoreCase);
+                        ParseHeritageFile(file, temp, "Base", false);
+                        foreach (var key in temp.Keys)
+                            baseKeys.Add(key);
+                    }
+                    ParseHeritageFile(file, result, source, isModNew);
+                }
             }
 
             return result;
         }
 
-        private static void ParseHeritageFile(string filePath, Dictionary<string, HeritageInfo> output)
+        private static void ParseHeritageFile(string filePath, Dictionary<string, HeritageInfo> output, string source, bool isModNew)
         {
             var text = File.ReadAllText(filePath);
             int pos = 0;
@@ -3356,7 +3397,7 @@ foreach (var def in _editorTraditionDefs.Values
                 pos++;
 
                 string block = ReadBlock(text, ref pos);
-                var heritage = new HeritageInfo { Name = heritageKey };
+                var heritage = new HeritageInfo { Name = heritageKey, Source = source, SourceFile = filePath, IsModNew = isModNew };
                 ParseHeritageParameters(block, heritage.Parameters);
                 output[heritageKey] = heritage;
             }
@@ -6009,6 +6050,756 @@ foreach (var def in _editorTraditionDefs.Values
         private static string ResOptional(string key)
         {
             return System.Windows.Application.Current.TryFindResource(key) as string ?? "";
+        }
+
+        // ---------- Heritage management ----------
+
+        private void RefreshHeritageList()
+        {
+            if (HeritageList == null) return;
+            string? selectedName = (HeritageList.SelectedItem as HeritageInfo)?.Name;
+            var items = _editorHeritageDefs.Values
+                .OrderBy(d => d.DisplayName, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+            HeritageList.ItemsSource = items;
+            if (selectedName != null)
+            {
+                var match = items.FirstOrDefault(h => string.Equals(h.Name, selectedName, StringComparison.OrdinalIgnoreCase));
+                if (match != null)
+                    HeritageList.SelectedItem = match;
+            }
+            else if (items.Count > 0)
+            {
+                HeritageList.SelectedIndex = 0;
+            }
+        }
+
+        private void RefreshHeritageAudioOptions()
+        {
+            if (HeritageAudioParameter == null) return;
+            string? current = GetSelectedOption(HeritageAudioParameter);
+            PopulateEditorCombo(HeritageAudioParameter, GetAudioParameterOptions(), current ?? "");
+            if (current == null && _editorHeritage == null && !_editorHeritageIsNew)
+            {
+                if (HeritageAudioParameter.Items.Count > 1)
+                    HeritageAudioParameter.SelectedIndex = 1;
+            }
+        }
+
+        private IEnumerable<(string Key, string Display)> GetAudioParameterOptions()
+        {
+            var values = _editorHeritageDefs.Values
+                .Select(h => h.AudioParameter)
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .OrderBy(v => v, StringComparer.OrdinalIgnoreCase)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            foreach (var v in values)
+                yield return (v, v);
+            foreach (var fallback in HeritageAudioFallback)
+            {
+                if (!values.Contains(fallback, StringComparer.OrdinalIgnoreCase))
+                    yield return (fallback, fallback);
+            }
+        }
+
+        private void HeritageNew_Click(object sender, RoutedEventArgs e)
+        {
+            if (HeritageId != null) HeritageId.Text = "";
+            if (HeritageLocName != null) HeritageLocName.Text = "";
+            if (HeritageLocCollective != null) HeritageLocCollective.Text = "";
+            if (HeritageAudioParameter != null)
+            {
+                if (HeritageAudioParameter.Items.Count > 1)
+                    HeritageAudioParameter.SelectedIndex = 1;
+                else
+                    HeritageAudioParameter.SelectedIndex = -1;
+            }
+            _editorHeritage = null;
+            _editorHeritageIsNew = true;
+            _heritageHasSavedState = false;
+            _savedHeritageLocName = "";
+            _savedHeritageLocCollective = "";
+            UpdateHeritageModeUi();
+            if (HeritageStatusText != null)
+                HeritageStatusText.Text = Res("CulturesTab_EditorHint");
+        }
+
+        private void HeritageList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var heritage = HeritageList.SelectedItem as HeritageInfo;
+            if (heritage == null)
+            {
+                _editorHeritage = null;
+                _editorHeritageIsNew = false;
+                _heritageHasSavedState = false;
+                UpdateHeritageModeUi();
+                return;
+            }
+
+            _editorHeritage = heritage;
+            _editorHeritageIsNew = false;
+            if (HeritageId != null) HeritageId.Text = heritage.Name.Replace("heritage_", "", StringComparison.OrdinalIgnoreCase);
+            if (HeritageAudioParameter != null)
+                PopulateEditorCombo(HeritageAudioParameter, GetAudioParameterOptions(), heritage.AudioParameter);
+            if (HeritageLocName != null) HeritageLocName.Text = LookupLocalizationValue($"{heritage.Name}_name") ?? "";
+            if (HeritageLocCollective != null) HeritageLocCollective.Text = LookupLocalizationValue($"{heritage.Name}_collective_noun") ?? "";
+            _heritageHasSavedState = true;
+            _savedHeritageLocName = HeritageLocName?.Text?.Trim() ?? "";
+            _savedHeritageLocCollective = HeritageLocCollective?.Text?.Trim() ?? "";
+            UpdateHeritageModeUi();
+
+            if (!heritage.IsModNew && HeritageStatusText != null)
+                HeritageStatusText.Text = Res("CulturesTab_HeritageReadOnly");
+        }
+
+        private void UpdateHeritageModeUi()
+        {
+            bool isNew = _editorHeritageIsNew && _editorHeritage == null;
+            if (HeritageId != null)
+            {
+                HeritageId.IsReadOnly = !isNew;
+                HeritageIdRow.Visibility = isNew ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (HeritageFileNameRow != null)
+                HeritageFileNameRow.Visibility = isNew ? Visibility.Visible : Visibility.Collapsed;
+            if (HeritageSaveButton != null)
+                HeritageSaveButton.IsEnabled = isNew || (_editorHeritage != null && _editorHeritage.IsModNew);
+            if (HeritageDeleteButton != null)
+                HeritageDeleteButton.IsEnabled = _editorHeritage != null && _editorHeritage.IsModNew;
+
+            if (isNew)
+            {
+                if (HeritageModeText != null) HeritageModeText.Text = Res("CulturesTab_HeritageNewTitle");
+                if (HeritageHintText != null) HeritageHintText.Text = Res("CulturesTab_EditorHint");
+                UpdateHeritageDefaultFileName();
+            }
+            else if (_editorHeritage != null)
+            {
+                if (HeritageModeText != null) HeritageModeText.Text = $"{Res("CulturesTab_HeritageEditTitle")}: {_editorHeritage.DisplayName}";
+                if (HeritageHintText != null) HeritageHintText.Text = Res("CulturesTab_EditorEditHint");
+            }
+            else
+            {
+                if (HeritageModeText != null) HeritageModeText.Text = "";
+                if (HeritageHintText != null) HeritageHintText.Text = "";
+            }
+        }
+
+        private void UpdateHeritageDefaultFileName()
+        {
+            if (HeritageFileName == null) return;
+            string profileName = _viewModel?.CurrentProfile?.FileNamePrefixes.TryGetValue("heritage", out var p) == true && !string.IsNullOrEmpty(p)
+                ? p!
+                : "00_heritage.txt";
+            string name = SanitizeFileName(profileName);
+            if (!name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                name += ".txt";
+            HeritageFileName.Text = name;
+        }
+
+        private void HeritageSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.CurrentProfile == null) return;
+            string modRoot = _viewModel.CurrentProfile.ModRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_EditorNoModRoot");
+                return;
+            }
+
+            string heritageId = HeritageId?.Text?.Trim() ?? "";
+            string heritageKey = $"heritage_{heritageId}";
+            if (string.IsNullOrEmpty(heritageId))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_HeritageNeedId");
+                return;
+            }
+            if (!System.Text.RegularExpressions.Regex.IsMatch(heritageId, @"^[a-zA-Z0-9_]+$"))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_HeritageIdInvalid");
+                return;
+            }
+
+            string audio = GetSelectedOption(HeritageAudioParameter);
+            if (string.IsNullOrEmpty(audio))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_HeritageNeedAudio");
+                return;
+            }
+
+            string locName = HeritageLocName?.Text?.Trim() ?? "";
+            string locCollective = HeritageLocCollective?.Text?.Trim() ?? "";
+
+            bool nameChanged = _heritageHasSavedState ? locName != _savedHeritageLocName : !string.IsNullOrEmpty(locName);
+            bool collectiveChanged = _heritageHasSavedState ? locCollective != _savedHeritageLocCollective : !string.IsNullOrEmpty(locCollective);
+
+            if (_heritageHasSavedState)
+            {
+                var blankFields = new List<string>();
+                if (!string.IsNullOrEmpty(_savedHeritageLocName) && string.IsNullOrEmpty(locName))
+                    blankFields.Add(Res("CulturesTab_EditorLocName"));
+                if (!string.IsNullOrEmpty(_savedHeritageLocCollective) && string.IsNullOrEmpty(locCollective))
+                    blankFields.Add(Res("CulturesTab_EditorLocCollective"));
+                if (blankFields.Count > 0)
+                {
+                    if (HeritageStatusText != null)
+                        HeritageStatusText.Text = string.Format(Res("CulturesTab_EditorLocBlank"), string.Join(", ", blankFields));
+                    return;
+                }
+            }
+
+            if (_editorHeritageIsNew)
+            {
+                if (_editorHeritageDefs.ContainsKey(heritageKey))
+                {
+                    if (HeritageStatusText != null) HeritageStatusText.Text = string.Format(Res("CulturesTab_HeritageExists"), heritageId);
+                    return;
+                }
+                SaveAsNewHeritage(heritageKey, BuildHeritageBlock(heritageKey, audio),
+                    (hk) => SaveHeritageLocalizationAsync(hk, nameChanged, locName, collectiveChanged, locCollective));
+            }
+            else if (_editorHeritage != null)
+            {
+                SaveExistingHeritage(BuildHeritageBlock(_editorHeritage.Name, audio),
+                    (hk) => SaveHeritageLocalizationAsync(hk, nameChanged, locName, collectiveChanged, locCollective));
+            }
+        }
+
+        private static string BuildHeritageBlock(string heritageKey, string audio)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"{heritageKey} = {{");
+            sb.AppendLine("\ttype = heritage");
+            sb.AppendLine("\tis_shown = {");
+            sb.AppendLine("\t\theritage_is_shown_trigger = {");
+            sb.AppendLine($"\t\t\tHERITAGE = {heritageKey}");
+            sb.AppendLine("\t\t}");
+            sb.AppendLine("\t}");
+            sb.AppendLine($"\taudio_parameter = {audio}");
+            sb.Append("}");
+            return sb.ToString();
+        }
+
+        private void SaveAsNewHeritage(string heritageKey, string block, Func<string, Task> afterSave)
+        {
+            var profile = _viewModel?.CurrentProfile;
+            if (profile == null) return;
+            string modRoot = profile.ModRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_EditorNoModRoot");
+                return;
+            }
+
+            string folder = Path.Combine(modRoot, "common", "culture", "pillars", "mod");
+            try
+            {
+                Directory.CreateDirectory(folder);
+            }
+            catch
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_EditorFolderInvalid");
+                return;
+            }
+
+            if (HeritageExistsInMod(modRoot, heritageKey, out _))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = string.Format(Res("CulturesTab_HeritageExists"), heritageKey.Replace("heritage_", "", StringComparison.OrdinalIgnoreCase));
+                return;
+            }
+
+            string enteredName = HeritageFileName?.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(enteredName) && !enteredName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_EditorFileNameInvalid");
+                return;
+            }
+            string fileName = string.IsNullOrEmpty(enteredName) ? GetHeritageDefaultFileName() : enteredName;
+            fileName = SanitizeFileName(fileName);
+            if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                fileName += ".txt";
+
+            string fullPath = Path.Combine(folder, fileName);
+
+            try
+            {
+                if (File.Exists(fullPath))
+                {
+                    InsertHeritageIntoFileAlphabetically(fullPath, heritageKey, block);
+                    if (HeritageStatusText != null) HeritageStatusText.Text = string.Format(Res("CulturesTab_EditorAddedToFile"), fileName);
+                }
+                else
+                {
+                    File.WriteAllText(fullPath, block, new UTF8Encoding(true));
+                    if (HeritageStatusText != null) HeritageStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), fileName);
+                }
+                MarkHeritageAsSaved();
+                _ = afterSave(heritageKey);
+                RefreshAfterHeritageChange(heritageKey);
+            }
+            catch (Exception ex)
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
+            }
+        }
+
+        private void SaveExistingHeritage(string block, Func<string, Task> afterSave)
+        {
+            var heritage = _editorHeritage;
+            if (heritage == null || !heritage.IsModNew || string.IsNullOrEmpty(heritage.SourceFile) || !File.Exists(heritage.SourceFile))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_HeritageReadOnly");
+                return;
+            }
+
+            try
+            {
+                ReplaceHeritageInFile(heritage.SourceFile, heritage.Name, block);
+                if (HeritageStatusText != null) HeritageStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), Path.GetFileName(heritage.SourceFile));
+                MarkHeritageAsSaved();
+                _ = afterSave(heritage.Name);
+                RefreshAfterHeritageChange(heritage.Name);
+            }
+            catch (Exception ex)
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
+            }
+        }
+
+        private void MarkHeritageAsSaved()
+        {
+            _editorHeritageIsNew = false;
+            _heritageHasSavedState = true;
+            _savedHeritageLocName = HeritageLocName?.Text?.Trim() ?? "";
+            _savedHeritageLocCollective = HeritageLocCollective?.Text?.Trim() ?? "";
+        }
+
+        private string GetHeritageDefaultFileName()
+        {
+            string profileName = _viewModel?.CurrentProfile?.FileNamePrefixes.TryGetValue("heritage", out var p) == true && !string.IsNullOrEmpty(p)
+                ? p!
+                : "00_heritage.txt";
+            string name = SanitizeFileName(profileName);
+            if (!name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                name += ".txt";
+            return name;
+        }
+
+        private void RefreshAfterHeritageChange(string? selectKey = null)
+        {
+            if (HeritageList == null) return;
+            var profile = _viewModel?.CurrentProfile;
+            if (profile != null)
+            {
+                string appLang = _viewModel?.Language ?? "en";
+                _editorLocalization = LoadLocalization(profile.GameRoot ?? "", profile.ModRoot ?? "", appLang);
+                _editorHeritageDefs = LoadHeritageDefinitions(profile.GameRoot ?? "", profile.ModRoot ?? "", _baseHeritageRawKeys);
+                foreach (var heritage in _editorHeritageDefs.Values)
+                {
+                    if (_editorLocalization != null && _editorLocalization.TryGetValue($"{heritage.Name}_name", out var heritageName))
+                        heritage.DisplayName = heritageName;
+                }
+            }
+            RefreshCultureTree();
+            if (EditorHeritage != null)
+                PopulateEditorCombo(EditorHeritage, GetHeritageOptions(), GetSelectedOption(EditorHeritage));
+            RefreshHeritageAudioOptions();
+            if (!string.IsNullOrEmpty(selectKey) && _editorHeritageDefs.TryGetValue(selectKey, out var updated))
+                _editorHeritage = updated;
+            else if (_editorHeritage != null)
+                _editorHeritage = _editorHeritageDefs.TryGetValue(_editorHeritage.Name, out var match) ? match : null;
+            RefreshHeritageList();
+            UpdateHeritageModeUi();
+        }
+
+        private void HeritageDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var heritage = _editorHeritage;
+            if (heritage == null) return;
+            if (!heritage.IsModNew || string.IsNullOrEmpty(heritage.SourceFile))
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_HeritageDeleteNotAllowed");
+                return;
+            }
+
+            string display = heritage.DisplayName ?? heritage.Name ?? "";
+            if (System.Windows.MessageBox.Show(string.Format(Res("CulturesTab_HeritageDeleteConfirm"), display),
+                                display, System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Warning) != System.Windows.MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                string filePath = heritage.SourceFile;
+                if (!DeleteHeritageBlockFromFile(filePath, heritage.Name!))
+                {
+                    if (HeritageStatusText != null) HeritageStatusText.Text = Res("CulturesTab_EditorSaveError");
+                    return;
+                }
+                if (CountHeritageBlocks(filePath) == 0)
+                    File.Delete(filePath);
+
+                bool existsInBase = _baseHeritageRawKeys.Contains(heritage.Name!);
+                DeleteHeritageLocalization(_viewModel?.CurrentProfile?.ModRoot ?? "", heritage.Name!, existsInBase);
+
+                if (HeritageStatusText != null) HeritageStatusText.Text = string.Format(Res("CulturesTab_HeritageDeleted"), display);
+                _editorHeritage = null;
+                _editorHeritageIsNew = false;
+                _heritageHasSavedState = false;
+                ResetHeritageForm();
+                RefreshAfterHeritageChange();
+            }
+            catch (Exception ex)
+            {
+                if (HeritageStatusText != null) HeritageStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
+            }
+        }
+
+        private void ResetHeritageForm()
+        {
+            if (HeritageId != null) HeritageId.Text = "";
+            if (HeritageLocName != null) HeritageLocName.Text = "";
+            if (HeritageLocCollective != null) HeritageLocCollective.Text = "";
+            if (HeritageAudioParameter != null && HeritageAudioParameter.Items.Count > 1)
+                HeritageAudioParameter.SelectedIndex = 1;
+            UpdateHeritageModeUi();
+        }
+
+        private static bool HeritageExistsInMod(string modRoot, string heritageKey, out string? filePath)
+        {
+            filePath = null;
+            string folder = Path.Combine(modRoot, "common", "culture", "pillars", "mod");
+            if (!Directory.Exists(folder)) return false;
+
+            foreach (var file in Directory.EnumerateFiles(folder, "*.txt", SearchOption.AllDirectories))
+            {
+                if (HeritageBlockExistsInFile(file, heritageKey))
+                {
+                    filePath = file;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool HeritageBlockExistsInFile(string filePath, string heritageKey)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                if (string.Equals(key, heritageKey, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                pos++;
+                ReadBlock(text, ref pos);
+            }
+            return false;
+        }
+
+        private static void InsertHeritageIntoFileAlphabetically(string filePath, string heritageKey, string block)
+        {
+            var text = File.ReadAllText(filePath);
+            var keys = new List<string>();
+            var positions = new List<int>();
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+                keys.Add(key);
+                positions.Add(keyStart);
+            }
+
+            int insertIndex = 0;
+            while (insertIndex < keys.Count &&
+                   string.Compare(keys[insertIndex], heritageKey, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                insertIndex++;
+            }
+
+            var blockText = block.TrimEnd('\n', '\r');
+            string newText;
+            if (insertIndex >= keys.Count)
+            {
+                if (text.Length > 0 && !text.EndsWith("\n", StringComparison.Ordinal))
+                    text += Environment.NewLine;
+                newText = text + blockText + Environment.NewLine;
+            }
+            else
+            {
+                int at = positions[insertIndex];
+                string prefix = text.Substring(0, at);
+                string suffix = text.Substring(at);
+                newText = prefix + blockText + Environment.NewLine + suffix;
+            }
+
+            File.WriteAllText(filePath, newText, new UTF8Encoding(true));
+        }
+
+        private static void ReplaceHeritageInFile(string filePath, string heritageKey, string newBlock)
+        {
+            string text = File.ReadAllText(filePath);
+            string marker = $"{heritageKey} = {{";
+            int idx = text.IndexOf(marker, StringComparison.Ordinal);
+            if (idx < 0)
+                throw new InvalidOperationException("Heritage block not found");
+
+            int bracket = text.IndexOf('{', idx);
+            int depth = 0;
+            int pos = bracket;
+            int end = -1;
+            while (pos < text.Length)
+            {
+                char ch = text[pos];
+                if (ch == '{') depth++;
+                else if (ch == '}') { depth--; if (depth == 0) { end = pos; break; } }
+                pos++;
+            }
+            if (end < 0)
+                throw new InvalidOperationException("Heritage block not found");
+
+            var trimmedBlock = newBlock.TrimEnd();
+            string newText = text.Substring(0, idx)
+                + trimmedBlock
+                + text.Substring(end + 1);
+            File.WriteAllText(filePath, newText, new UTF8Encoding(true));
+        }
+
+        private static bool DeleteHeritageBlockFromFile(string filePath, string heritageKey)
+        {
+            string text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+
+                if (string.Equals(key, heritageKey, StringComparison.OrdinalIgnoreCase))
+                {
+                    int entryEnd = pos;
+                    string newText = text.Remove(keyStart, entryEnd - keyStart);
+                    File.WriteAllText(filePath, newText, new UTF8Encoding(true));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static int CountHeritageBlocks(string filePath)
+        {
+            string text = File.ReadAllText(filePath);
+            int pos = 0;
+            int count = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+                count++;
+            }
+            return count;
+        }
+
+        private static void DeleteHeritageLocalization(string modRoot, string heritageKey, bool existsInBase)
+        {
+            if (string.IsNullOrEmpty(modRoot)) return;
+            var keysToRemove = new[] { $"{heritageKey}_name", $"{heritageKey}_collective_noun" };
+            string baseLocPath = Path.Combine(modRoot, "localization");
+            if (existsInBase)
+                baseLocPath = Path.Combine(baseLocPath, "replace");
+
+            if (!Directory.Exists(baseLocPath)) return;
+            foreach (var file in Directory.GetFiles(baseLocPath, "cultural_heritages_l_*.yml", SearchOption.AllDirectories))
+                RemoveLocalizationKeys(file, keysToRemove);
+        }
+
+        private async Task SaveHeritageLocalizationAsync(string heritageKey, bool nameChanged, string name, bool collectiveChanged, string collective)
+        {
+            var profile = _viewModel?.CurrentProfile;
+            if (profile == null) return;
+            string modRoot = profile.ModRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot)) return;
+
+            if (!nameChanged && !collectiveChanged) return;
+
+            bool autoTranslate = _viewModel?.AutoTranslate ?? true;
+            if (HeritageStatusText != null)
+                HeritageStatusText.Text = autoTranslate ? Res("CulturesTab_EditorLocTranslating") : Res("CulturesTab_EditorLocWriting");
+            SetEditorBusy(true);
+            try
+            {
+            string appLang = _viewModel?.Language ?? "en";
+            string? directFolder = appLang switch
+            {
+                "es" => "spanish",
+                "en" => "english",
+                _ => null
+            };
+
+            bool existsInBase = _baseHeritageRawKeys.Contains(heritageKey);
+            string baseLocPath = Path.Combine(modRoot, "localization");
+            if (existsInBase)
+                baseLocPath = Path.Combine(baseLocPath, "replace");
+
+            string srcCode = appLang.ToLowerInvariant() switch { "es" => "es", "en" => "en", _ => "ca" };
+
+            var providers = autoTranslate ? BuildEnabledProviders() : new List<ITranslationProvider>();
+
+            List<(string Folder, string Code)> targets;
+            if (autoTranslate)
+                targets = GameSupportedLanguages.Select(f => (f.Folder, f.Code)).ToList();
+            else if (directFolder != null)
+                targets = new List<(string Folder, string Code)> { (directFolder, srcCode) };
+            else
+                targets = new List<(string Folder, string Code)>();
+
+            int saved = 0;
+            var errors = new List<string>();
+            var fallbackLangs = new List<string>();
+            foreach (var (ck3Folder, code) in targets)
+            {
+                string locName = name;
+                string locCollective = collective;
+
+                bool usedFallback = false;
+                if (autoTranslate && ck3Folder != directFolder)
+                {
+                    if (nameChanged)
+                    {
+                        var (trName, okName) = await TranslateWithFallbackAsync(name, srcCode, code, providers);
+                        locName = string.IsNullOrEmpty(trName) ? name : trName;
+                        usedFallback |= !okName;
+                    }
+                    if (collectiveChanged)
+                    {
+                        var (trCollective, okCollective) = await TranslateWithFallbackAsync(collective, srcCode, code, providers);
+                        locCollective = string.IsNullOrEmpty(trCollective) ? collective : trCollective;
+                        usedFallback |= !okCollective;
+                    }
+                }
+
+                string folderPath = Path.Combine(baseLocPath, ck3Folder);
+                try
+                {
+                    string traditionsDir = Path.Combine(folderPath, "culture", "traditions");
+                    Directory.CreateDirectory(traditionsDir);
+                    string filePath = Path.Combine(traditionsDir, $"cultural_heritages_l_{ck3Folder}.yml");
+                    var entries = new List<(string Key, string Value)>();
+                    if (nameChanged && !string.IsNullOrEmpty(locName))
+                        entries.Add(($"{heritageKey}_name", locName));
+                    if (collectiveChanged && !string.IsNullOrEmpty(locCollective))
+                        entries.Add(($"{heritageKey}_collective_noun", locCollective));
+                    if (entries.Count > 0)
+                        UpsertLocalizationFile(filePath, $"l_{ck3Folder}:", entries);
+
+                    saved++;
+                    if (usedFallback)
+                        fallbackLangs.Add(ck3Folder);
+                }
+                catch
+                {
+                    errors.Add(ck3Folder);
+                }
+            }
+
+            if (HeritageStatusText == null) return;
+            if (errors.Count > 0)
+            {
+                HeritageStatusText.Text = $"{string.Format(Res("CulturesTab_EditorLocSaved"), saved)} {Res("CulturesTab_EditorLocError")}: {string.Join(", ", errors)}";
+            }
+            else if (fallbackLangs.Count > 0)
+            {
+                HeritageStatusText.Text = $"{string.Format(Res("CulturesTab_EditorLocSaved"), saved)} {string.Format(Res("CulturesTab_EditorLocFallback"), string.Join(", ", fallbackLangs))}";
+            }
+            else if (saved == 0)
+            {
+                HeritageStatusText.Text = Res("CulturesTab_EditorLocDisabled");
+            }
+            else
+            {
+                HeritageStatusText.Text = string.Format(Res("CulturesTab_EditorLocSaved"), saved);
+            }
+            }
+            finally
+            {
+                SetEditorBusy(false);
+                RefreshAfterHeritageChange(heritageKey);
+            }
         }
     }
 }

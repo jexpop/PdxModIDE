@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.21</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.22</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -70,6 +70,8 @@
     <system:String x:Key="ProfileTab_FileNameConventionsInfo">Customize the file names generated for culture files. The preview shows the resulting name.</system:String>
     <system:String x:Key="ProfileTab_CultureFileNamePrefix">Culture file prefix:</system:String>
     <system:String x:Key="ProfileTab_CultureFileNameSuffix">[culture name].txt</system:String>
+    <system:String x:Key="ProfileTab_HeritageFileName">Heritage file name:</system:String>
+    <system:String x:Key="ProfileTab_ProfileSaved">Profile saved.</system:String>
     <system:String x:Key="ProfileTab_ToolTipSaveAllChanges">Unsaved changes are saved with the Save profile button (Profile tab).</system:String>
 
     <!-- ModulesTab -->
@@ -261,6 +263,24 @@
     <system:String x:Key="CulturesTab_EditorLocWriting">Writing localization…</system:String>
     <system:String x:Key="CulturesTab_EditorLocDisabled">Automatic translation is disabled; no localization file was written.</system:String>
     <system:String x:Key="CulturesTab_EditorLocBlank">Localization fields cannot be left blank: {0}.</system:String>
+    <system:String x:Key="CulturesTab_SubTabHeritages">Heritages</system:String>
+    <system:String x:Key="CulturesTab_HeritageNew">New heritage</system:String>
+    <system:String x:Key="CulturesTab_HeritageEditor">Heritage editor</system:String>
+    <system:String x:Key="CulturesTab_HeritageId">Identifier</system:String>
+    <system:String x:Key="CulturesTab_HeritageAudioParameter">Audio parameter</system:String>
+    <system:String x:Key="CulturesTab_HeritageLocSection">Localization</system:String>
+    <system:String x:Key="CulturesTab_HeritageSave">Save heritage</system:String>
+    <system:String x:Key="CulturesTab_HeritageDelete">Delete heritage</system:String>
+    <system:String x:Key="CulturesTab_HeritageNewTitle">New heritage</system:String>
+    <system:String x:Key="CulturesTab_HeritageEditTitle">Edit heritage</system:String>
+    <system:String x:Key="CulturesTab_HeritageReadOnly">Base game heritage. Only heritages created for the mod can be edited or deleted.</system:String>
+    <system:String x:Key="CulturesTab_HeritageNeedId">Enter a heritage identifier.</system:String>
+    <system:String x:Key="CulturesTab_HeritageIdInvalid">Invalid identifier. Use only letters, digits and underscores.</system:String>
+    <system:String x:Key="CulturesTab_HeritageNeedAudio">Select an audio parameter.</system:String>
+    <system:String x:Key="CulturesTab_HeritageExists">A heritage with id {0} already exists.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleteConfirm">Delete heritage {0}? Its definition and localization files will be removed.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleteNotAllowed">Only heritages created for the mod can be deleted.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleted">Heritage {0} deleted.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Heritage</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>

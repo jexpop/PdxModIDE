@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.22]
+
+### Added
+
+- **Heritage management (Cultures tab)**: a new "Heritages" sub-tab manages every heritage defined in `common/culture/pillars/*heritage.txt` (game + mod). The list shows each heritage with its localized name and source (`(Mod)`/`(Base)`), sorted alphabetically according to the current language; the first heritage is selected by default when the tab opens. The editor form has the id, an `audio_parameter` combo (options collected from the real heritages plus a typed fallback), the localized name and collective noun, and — for new heritages — the target file name.
+- **Create heritage**: saving a new heritage writes the standard block `heritage_<id> = { type = heritage, is_shown = { heritage_is_shown_trigger = { HERITAGE = heritage_<id> } }, audio_parameter = X }` to a file under `common/culture/pillars/mod/`. The default file name comes from the new per-profile "Heritage file name" option (default `00_heritage.txt`); if the file already exists the block is inserted alphabetically, otherwise the file is created.
+- **Edit heritage**: only mod-new heritages (files under `pillars/mod/`) are editable; base-game heritages are read-only. Saving rewrites the block in place in its source file.
+- **Delete heritage**: only mod-new heritages can be deleted (confirmation dialog with the display name). Deleting removes the block, deletes the file when it ends up empty, and strips `heritage_<id>_name` and `heritage_<id>_collective_noun` from the mod's `cultural_heritages_l_<lang>.yml` files — under `localization/replace/` when the heritage exists in the base game, otherwise under `localization/`. The base game is never modified.
+- **Heritage localization on save**: the name and collective noun are written to `culture/traditions/cultural_heritages_l_<lang>.yml` with the same selective per-field logic and translation providers as cultures, including the "translating…" status and the "localization saved" summary. After the translation finishes the list refreshes again so the translated name appears.
+- **Live refresh**: after saving or deleting, the heritage list, the culture tree (grouped by heritage) and the culture editor heritage combo refresh immediately without restarting, showing the localized names.
+- **Profile tab — "Heritage file name" option**: a per-profile option sets the default file name used when creating a new heritage, with a live preview of the resulting file name (no path) and a "Profile saved" feedback message after clicking Save.
+
+### Changed
+
+- `ProjectManager.MapToDomain` now guarantees the `heritage` file-name-prefix key (`00_heritage.txt` default) on loaded profiles, so the value persists and loads consistently.
+
+### Fixed
+
+- **Crash on heritage list refresh**: `RefreshHeritageList` mutated a plain bound `List` and reassigned the same instance as `ItemsSource`, desynchronizing the WPF item container generator (repeated `InvalidOperationException` that filled `logs/crash.log`). It now assigns a fresh sorted list on every refresh and restores/selects the item by name.
+- **Profile "Heritage file name" change not saved**: the heritage preview did not refresh while typing (the setter did not notify `HeritageFileNamePreview`), so the change looked unsaved. The setter now notifies the preview, the profile-switch notifications include the heritage fields, and after saving the unsaved-changes highlight clears and the "Profile saved" message is shown.
+
+---
+
 ## [1.6.21]
 
 ### Changed

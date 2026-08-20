@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.21</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.22</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -70,6 +70,8 @@
     <system:String x:Key="ProfileTab_FileNameConventionsInfo">Personalitza els noms dels arxius generats per als arxius de cultura. La previsualització mostra el nom resultant.</system:String>
     <system:String x:Key="ProfileTab_CultureFileNamePrefix">Prefix d'arxius de cultura:</system:String>
     <system:String x:Key="ProfileTab_CultureFileNameSuffix">[nom de la cultura].txt</system:String>
+    <system:String x:Key="ProfileTab_HeritageFileName">Nom d'arxiu d'herència:</system:String>
+    <system:String x:Key="ProfileTab_ProfileSaved">Perfil desat.</system:String>
     <system:String x:Key="ProfileTab_ToolTipSaveAllChanges">Els canvis sense guardar es desen amb el botó Guardar perfil (pestanya Perfil).</system:String>
 
     <!-- ModulesTab -->
@@ -261,6 +263,24 @@
     <system:String x:Key="CulturesTab_EditorLocWriting">Escrivint la localització…</system:String>
     <system:String x:Key="CulturesTab_EditorLocDisabled">La traducció automàtica està desactivada; no s'ha escrit cap fitxer de localització.</system:String>
     <system:String x:Key="CulturesTab_EditorLocBlank">Els camps de localització no poden quedar en blanc: {0}.</system:String>
+    <system:String x:Key="CulturesTab_SubTabHeritages">Herències</system:String>
+    <system:String x:Key="CulturesTab_HeritageNew">Nova herència</system:String>
+    <system:String x:Key="CulturesTab_HeritageEditor">Editor d'herència</system:String>
+    <system:String x:Key="CulturesTab_HeritageId">Identificador</system:String>
+    <system:String x:Key="CulturesTab_HeritageAudioParameter">Paràmetre d'àudio</system:String>
+    <system:String x:Key="CulturesTab_HeritageLocSection">Localització</system:String>
+    <system:String x:Key="CulturesTab_HeritageSave">Desar herència</system:String>
+    <system:String x:Key="CulturesTab_HeritageDelete">Eliminar herència</system:String>
+    <system:String x:Key="CulturesTab_HeritageNewTitle">Nova herència</system:String>
+    <system:String x:Key="CulturesTab_HeritageEditTitle">Editar herència</system:String>
+    <system:String x:Key="CulturesTab_HeritageReadOnly">Herència del joc base. Només les herències creades per al mod es poden editar o eliminar.</system:String>
+    <system:String x:Key="CulturesTab_HeritageNeedId">Introdueix un identificador d'herència.</system:String>
+    <system:String x:Key="CulturesTab_HeritageIdInvalid">Identificador no vàlid. Fes servir només lletres, dígits i guions baixos.</system:String>
+    <system:String x:Key="CulturesTab_HeritageNeedAudio">Selecciona un paràmetre d'àudio.</system:String>
+    <system:String x:Key="CulturesTab_HeritageExists">Ja existeix una herència amb l'id {0}.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleteConfirm">Voleu eliminar l'herència {0}? Se n'eliminarà la definició i els fitxers de localització.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleteNotAllowed">Només les herències creades per al mod es poden eliminar.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleted">Herència {0} eliminada.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Herència</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>

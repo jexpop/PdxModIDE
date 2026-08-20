@@ -70,6 +70,16 @@
                         <TextBlock Text="{Binding CultureFileNamePreview}" VerticalAlignment="Center"
                                    Margin="10,0,0,0" Foreground="Gray"/>
                     </DockPanel>
+                    <TextBlock Text="{DynamicResource ProfileTab_HeritageFileName}" Margin="0,5,0,0"/>
+                    <DockPanel Margin="0,2,0,5">
+                        <TextBox Text="{Binding HeritageFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="{Binding HeritageFileNameModified, Mode=OneWay}"
+                                 Width="200" MaxLength="80" HorizontalAlignment="Left"
+                                 DockPanel.Dock="Left"
+                                 Style="{StaticResource ModifiedTextBox}"/>
+                        <TextBlock Text="{Binding HeritageFileNamePreview}" VerticalAlignment="Center"
+                                   Margin="10,0,0,0" Foreground="Gray"/>
+                    </DockPanel>
                 </StackPanel>
             </GroupBox>
 
@@ -84,6 +94,8 @@
                         Command="{Binding DeleteProfileCommand}"/>
             </StackPanel>
 
+            <TextBlock Text="{Binding ProfileStatusMessage}" Foreground="{DynamicResource StatusGreen}"
+                       Margin="0,0,0,10" TextWrapping="Wrap"/>
 
         </StackPanel>
     </ScrollViewer>

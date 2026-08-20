@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.21</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.22</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -70,6 +70,8 @@
     <system:String x:Key="ProfileTab_FileNameConventionsInfo">Personaliza los nombres de archivo generados para los archivos de cultura. La vista previa muestra el nombre resultante.</system:String>
     <system:String x:Key="ProfileTab_CultureFileNamePrefix">Prefijo de archivos de cultura:</system:String>
     <system:String x:Key="ProfileTab_CultureFileNameSuffix">[nombre de cultura].txt</system:String>
+    <system:String x:Key="ProfileTab_HeritageFileName">Nombre de archivo de herencia:</system:String>
+    <system:String x:Key="ProfileTab_ProfileSaved">Perfil guardado.</system:String>
     <system:String x:Key="ProfileTab_ToolTipSaveAllChanges">Los cambios sin guardar se guardan con el botón Guardar perfil (pestaña Perfil).</system:String>
 
     <!-- ModulesTab -->
@@ -261,6 +263,24 @@
     <system:String x:Key="CulturesTab_EditorLocWriting">Escribiendo la localización…</system:String>
     <system:String x:Key="CulturesTab_EditorLocDisabled">La traducción automática está desactivada; no se escribió ningún fichero de localización.</system:String>
     <system:String x:Key="CulturesTab_EditorLocBlank">Los campos de localización no pueden quedar en blanco: {0}.</system:String>
+    <system:String x:Key="CulturesTab_SubTabHeritages">Herencias</system:String>
+    <system:String x:Key="CulturesTab_HeritageNew">Nueva herencia</system:String>
+    <system:String x:Key="CulturesTab_HeritageEditor">Editor de herencia</system:String>
+    <system:String x:Key="CulturesTab_HeritageId">Identificador</system:String>
+    <system:String x:Key="CulturesTab_HeritageAudioParameter">Parámetro de audio</system:String>
+    <system:String x:Key="CulturesTab_HeritageLocSection">Localización</system:String>
+    <system:String x:Key="CulturesTab_HeritageSave">Guardar herencia</system:String>
+    <system:String x:Key="CulturesTab_HeritageDelete">Eliminar herencia</system:String>
+    <system:String x:Key="CulturesTab_HeritageNewTitle">Nueva herencia</system:String>
+    <system:String x:Key="CulturesTab_HeritageEditTitle">Editar herencia</system:String>
+    <system:String x:Key="CulturesTab_HeritageReadOnly">Herencia del juego base. Solo las herencias creadas para el mod pueden editarse o eliminarse.</system:String>
+    <system:String x:Key="CulturesTab_HeritageNeedId">Introduce un identificador de herencia.</system:String>
+    <system:String x:Key="CulturesTab_HeritageIdInvalid">Identificador no válido. Usa solo letras, dígitos y guiones bajos.</system:String>
+    <system:String x:Key="CulturesTab_HeritageNeedAudio">Selecciona un parámetro de audio.</system:String>
+    <system:String x:Key="CulturesTab_HeritageExists">Ya existe una herencia con el id {0}.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleteConfirm">¿Eliminar la herencia {0}? Se eliminará su definición y sus ficheros de localización.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleteNotAllowed">Solo las herencias creadas para el mod pueden eliminarse.</system:String>
+    <system:String x:Key="CulturesTab_HeritageDeleted">Herencia {0} eliminada.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Herencia</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
