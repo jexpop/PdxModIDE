@@ -1360,8 +1360,9 @@ foreach (var def in _editorTraditionDefs.Values
             EditorParentsAvailable.Items.Clear();
             EditorParentsSelected.Items.Clear();
 
-            foreach (var key in _editorCultureOptions
-                         .Where(k => !selected.Contains(k)))
+foreach (var key in _editorCultureOptions
+                     .Where(k => !selected.Contains(k))
+                     .OrderBy(k => GetCultureDisplayName(k), StringComparer.CurrentCultureIgnoreCase))
                 EditorParentsAvailable.Items.Add(CreateParentListItem(key, false));
 
             foreach (var key in selected)

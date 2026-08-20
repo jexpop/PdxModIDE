@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.23]
+
+### Changed
+
+- **Parent culture selector sorted by display name (Cultures tab)**: the available options of the culture mother (`parents`) selector are now ordered alphabetically by their **localized display name** according to the app language (`GetCultureDisplayName` + `StringComparer.CurrentCultureIgnoreCase`) instead of by the raw culture id, so the visible order matches the language shown. The already-selected parents keep their order so the `parents = { ... }` block written to the file is not reordered.
+
+---
+
 ## [1.6.22]
 
 ### Added
