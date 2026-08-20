@@ -2158,27 +2158,52 @@ foreach (var def in _editorTraditionDefs.Values
             if (!string.IsNullOrEmpty(locHistoryDescription) && string.IsNullOrEmpty(locHistoryKey))
                 locHistoryKey = $"{cultureId}_history_loc";
 
+            bool hasLocBaseline = _editorHasSavedState;
+            bool nameChanged = hasLocBaseline ? locName != _editorSavedLocName : !string.IsNullOrEmpty(locName);
+            bool prefixChanged = hasLocBaseline ? locPrefix != _editorSavedLocPrefix : !string.IsNullOrEmpty(locPrefix);
+            bool collectiveChanged = hasLocBaseline ? locCollective != _editorSavedLocCollective : !string.IsNullOrEmpty(locCollective);
+            bool historyChanged = hasLocBaseline
+                ? (locHistoryKey != _editorSavedHistoryLocOverride || locHistoryDescription != _editorSavedHistoryLocDescription)
+                : !string.IsNullOrEmpty(locHistoryDescription);
+
+            if (hasLocBaseline)
+            {
+                var blankFields = new List<string>();
+                if (!string.IsNullOrEmpty(_editorSavedLocName) && string.IsNullOrEmpty(locName))
+                    blankFields.Add(Res("CulturesTab_EditorLocName"));
+                if (!string.IsNullOrEmpty(_editorSavedLocPrefix) && string.IsNullOrEmpty(locPrefix))
+                    blankFields.Add(Res("CulturesTab_EditorLocPrefix"));
+                if (!string.IsNullOrEmpty(_editorSavedLocCollective) && string.IsNullOrEmpty(locCollective))
+                    blankFields.Add(Res("CulturesTab_EditorLocCollective"));
+                if (!string.IsNullOrEmpty(_editorSavedHistoryLocDescription) && string.IsNullOrEmpty(locHistoryDescription))
+                    blankFields.Add(Res("CulturesTab_EditorHistoryLocDescription"));
+                if (blankFields.Count > 0)
+                {
+                    EditorStatusText.Text = string.Format(Res("CulturesTab_EditorLocBlank"), string.Join(", ", blankFields));
+                    return;
+                }
+            }
+
             string block = BuildCultureBlock(cultureId, locHistoryKey);
 
             if (_editorCulture == null || _editorIsNew)
             {
-                SaveAsNewCulture(cultureId, block, (cid) => SaveCultureLocalizationAsync(cid, locName, locPrefix, locCollective, locHistoryKey, locHistoryDescription));
+                SaveAsNewCulture(cultureId, block, (cid) => SaveCultureLocalizationAsync(cid, nameChanged, locName, prefixChanged, locPrefix, collectiveChanged, locCollective, historyChanged, locHistoryKey, locHistoryDescription));
             }
             else
             {
-                SaveExistingCulture(block, (cid) => SaveCultureLocalizationAsync(cid, locName, locPrefix, locCollective, locHistoryKey, locHistoryDescription));
+                SaveExistingCulture(block, (cid) => SaveCultureLocalizationAsync(cid, nameChanged, locName, prefixChanged, locPrefix, collectiveChanged, locCollective, historyChanged, locHistoryKey, locHistoryDescription));
             }
         }
 
-        private async Task SaveCultureLocalizationAsync(string cultureId, string name, string prefix, string collective, string historyKey, string historyDescription)
+        private async Task SaveCultureLocalizationAsync(string cultureId, bool nameChanged, string name, bool prefixChanged, string prefix, bool collectiveChanged, string collective, bool historyChanged, string historyKey, string historyDescription)
         {
             var profile = _viewModel?.CurrentProfile;
             if (profile == null) return;
             string modRoot = profile.ModRoot ?? "";
             if (string.IsNullOrEmpty(modRoot)) return;
 
-            if (string.IsNullOrEmpty(name)) name = cultureId;
-            if (name == "" && prefix == "" && collective == "") return;
+            if (!nameChanged && !prefixChanged && !collectiveChanged && !historyChanged) return;
 
             if (!string.IsNullOrEmpty(historyDescription) && string.IsNullOrEmpty(historyKey))
                 historyKey = $"{cultureId}_history_loc";
@@ -2227,15 +2252,30 @@ foreach (var def in _editorTraditionDefs.Values
                 bool usedFallback = false;
                 if (autoTranslate && ck3Folder != directFolder)
                 {
-                    var (trName, okName) = await TranslateWithFallbackAsync(name, srcCode, code, providers);
-                    var (trPrefix, okPrefix) = await TranslateWithFallbackAsync(prefix, srcCode, code, providers);
-                    var (trCollective, okCollective) = await TranslateWithFallbackAsync(collective, srcCode, code, providers);
-                    var (trHistory, okHistory) = await TranslateWithFallbackAsync(historyDescription, srcCode, code, providers);
-                    locName = string.IsNullOrEmpty(trName) ? name : trName;
-                    locPrefix = string.IsNullOrEmpty(trPrefix) ? prefix : trPrefix;
-                    locCollective = string.IsNullOrEmpty(trCollective) ? collective : trCollective;
-                    locHistoryDescription = string.IsNullOrEmpty(trHistory) ? historyDescription : trHistory;
-                    usedFallback = !(okName && okPrefix && okCollective && okHistory);
+                    if (nameChanged)
+                    {
+                        var (trName, okName) = await TranslateWithFallbackAsync(name, srcCode, code, providers);
+                        locName = string.IsNullOrEmpty(trName) ? name : trName;
+                        usedFallback |= !okName;
+                    }
+                    if (prefixChanged)
+                    {
+                        var (trPrefix, okPrefix) = await TranslateWithFallbackAsync(prefix, srcCode, code, providers);
+                        locPrefix = string.IsNullOrEmpty(trPrefix) ? prefix : trPrefix;
+                        usedFallback |= !okPrefix;
+                    }
+                    if (collectiveChanged)
+                    {
+                        var (trCollective, okCollective) = await TranslateWithFallbackAsync(collective, srcCode, code, providers);
+                        locCollective = string.IsNullOrEmpty(trCollective) ? collective : trCollective;
+                        usedFallback |= !okCollective;
+                    }
+                    if (historyChanged)
+                    {
+                        var (trHistory, okHistory) = await TranslateWithFallbackAsync(historyDescription, srcCode, code, providers);
+                        locHistoryDescription = string.IsNullOrEmpty(trHistory) ? historyDescription : trHistory;
+                        usedFallback |= !okHistory;
+                    }
                 }
 
                 string folderPath = Path.Combine(baseLocPath, ck3Folder);
@@ -2245,15 +2285,16 @@ foreach (var def in _editorTraditionDefs.Values
                     Directory.CreateDirectory(cultureDir);
                     string filePath = Path.Combine(cultureDir, $"cultures_l_{ck3Folder}.yml");
                     var entries = new List<(string Key, string Value)>();
-                    if (!string.IsNullOrEmpty(locName))
+                    if (nameChanged && !string.IsNullOrEmpty(locName))
                         entries.Add((cultureId, locName));
-                    if (!string.IsNullOrEmpty(locPrefix))
+                    if (prefixChanged && !string.IsNullOrEmpty(locPrefix))
                         entries.Add(($"{cultureId}_prefix", locPrefix));
-                    if (!string.IsNullOrEmpty(locCollective))
+                    if (collectiveChanged && !string.IsNullOrEmpty(locCollective))
                         entries.Add(($"{cultureId}_collective_noun", locCollective));
-                    UpsertLocalizationFile(filePath, $"l_{ck3Folder}:", entries);
+                    if (entries.Count > 0)
+                        UpsertLocalizationFile(filePath, $"l_{ck3Folder}:", entries);
 
-                    if (!string.IsNullOrEmpty(locHistoryKey) && !string.IsNullOrEmpty(locHistoryDescription))
+                    if (historyChanged && !string.IsNullOrEmpty(locHistoryKey) && !string.IsNullOrEmpty(locHistoryDescription))
                     {
                         string historyFilePath = Path.Combine(cultureDir, $"culture_history_l_{ck3Folder}.yml");
                         UpsertLocalizationFile(historyFilePath, $"l_{ck3Folder}:",

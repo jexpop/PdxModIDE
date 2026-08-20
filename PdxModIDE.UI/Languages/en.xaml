@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.20</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.21</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -260,6 +260,7 @@
     <system:String x:Key="CulturesTab_EditorLocFallback">Translation failed for {0}; the typed name was used instead.</system:String>
     <system:String x:Key="CulturesTab_EditorLocWriting">Writing localization…</system:String>
     <system:String x:Key="CulturesTab_EditorLocDisabled">Automatic translation is disabled; no localization file was written.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocBlank">Localization fields cannot be left blank: {0}.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Heritage</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.21]
+
+### Changed
+
+- **Selective culture localization on save (Cultures tab)**: saving a new, copied or edited culture now translates and writes only the localization fields that actually changed (name, prefix, collective noun, history key/description), instead of always translating and upserting all of them. For a new culture, a field counts as changed only when it has text, so a completely empty localization section produces no translation at all (no translation-provider requests). If none of the fields changed, `SaveCultureLocalizationAsync` returns immediately without starting the translation. When editing or copying, a localization field that previously had content cannot be left blank: the save is blocked with a localized error listing the cleared fields (`CulturesTab_EditorLocBlank`). The `name → cultureId` default for new cultures was removed (a blank name is simply not written). The rest of the culture save (the culture file block) is unchanged.
+
+---
+
 ## [1.6.20]
 
 ### Changed

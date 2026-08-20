@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.20</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.21</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -260,6 +260,7 @@
     <system:String x:Key="CulturesTab_EditorLocFallback">La traducció va fallar a {0}; es va usar el nom escrit.</system:String>
     <system:String x:Key="CulturesTab_EditorLocWriting">Escrivint la localització…</system:String>
     <system:String x:Key="CulturesTab_EditorLocDisabled">La traducció automàtica està desactivada; no s'ha escrit cap fitxer de localització.</system:String>
+    <system:String x:Key="CulturesTab_EditorLocBlank">Els camps de localització no poden quedar en blanc: {0}.</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Herència</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>
