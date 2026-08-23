@@ -704,10 +704,16 @@ namespace PdxModIDE.UI
             foreach (var culture in allByName.Values.OrderBy(c => c.Name))
             {
                 var heritageKey = string.IsNullOrEmpty(culture.Heritage) ? "unknown" : culture.Heritage;
-                if (!groups.TryGetValue(heritageKey, out var group))
+                var lookupKey = heritageKey;
+                if (_editorHeritageDefs != null)
                 {
-                    group = new CultureGroup { Name = heritageKey };
-                    groups[heritageKey] = group;
+                    if (!_editorHeritageDefs.ContainsKey(lookupKey) && _editorHeritageDefs.ContainsKey("heritage_" + lookupKey))
+                        lookupKey = "heritage_" + lookupKey;
+                }
+                if (!groups.TryGetValue(lookupKey, out var group))
+                {
+                    group = new CultureGroup { Name = lookupKey };
+                    groups[lookupKey] = group;
                 }
                 group.Cultures.Add(culture);
             }
@@ -721,7 +727,14 @@ namespace PdxModIDE.UI
 
             foreach (var culture in allByName.Values)
             {
-                if (groups.TryGetValue(culture.Heritage, out var group))
+                var heritageKey = string.IsNullOrEmpty(culture.Heritage) ? "unknown" : culture.Heritage;
+                var lookupKey = heritageKey;
+                if (_editorHeritageDefs != null)
+                {
+                    if (!_editorHeritageDefs.ContainsKey(lookupKey) && _editorHeritageDefs.ContainsKey("heritage_" + lookupKey))
+                        lookupKey = "heritage_" + lookupKey;
+                }
+                if (groups.TryGetValue(lookupKey, out var group))
                     culture.HeritageDisplayName = group.DisplayName;
             }
 
@@ -4348,7 +4361,8 @@ foreach (var key in _editorCultureOptions
                                 break;
                             pos++;
                         }
-                        return block.Substring(start, pos - start);
+                        var result = block.Substring(start, pos - start);
+                        return result;
                     }
                 }
 
@@ -4612,6 +4626,37 @@ foreach (var key in _editorCultureOptions
 
         private static void SkipValueAndFollowingBlock(string block, ref int pos)
         {
+            if (pos >= block.Length) return;
+
+            // Handle HSV color format: hsv{...} or hsv { ... }
+            if (pos + 3 < block.Length && 
+                char.ToLowerInvariant(block[pos]) == 'h' &&
+                char.ToLowerInvariant(block[pos + 1]) == 's' &&
+                char.ToLowerInvariant(block[pos + 2]) == 'v')
+            {
+                // Skip "hsv" 
+                pos += 3;
+                SkipWhitespaceAndComments(block, ref pos);
+                if (pos < block.Length && block[pos] == '{')
+                {
+                    pos++; // skip '{'
+                    int depth = 1;
+                    while (pos < block.Length && depth > 0)
+                    {
+                        if (block[pos] == '{') depth++;
+                        else if (block[pos] == '}') depth--;
+                        pos++;
+                    }
+                }
+                else
+                {
+                    // hsv without braces - skip until whitespace or }
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}') pos++;
+                }
+                SkipWhitespaceAndComments(block, ref pos);
+                return;
+            }
+
             if (pos >= block.Length) return;
 
             if (block[pos] == '{')
@@ -6062,17 +6107,23 @@ foreach (var key in _editorCultureOptions
             var items = _editorHeritageDefs.Values
                 .OrderBy(d => d.DisplayName, StringComparer.CurrentCultureIgnoreCase)
                 .ToList();
-            HeritageList.ItemsSource = items;
-            if (selectedName != null)
-            {
-                var match = items.FirstOrDefault(h => string.Equals(h.Name, selectedName, StringComparison.OrdinalIgnoreCase));
-                if (match != null)
-                    HeritageList.SelectedItem = match;
-            }
-            else if (items.Count > 0)
-            {
-                HeritageList.SelectedIndex = 0;
-            }
+HeritageList.ItemsSource = items;
+// Ensure DisplayName is properly set from localization (after async localization finished)
+foreach (var heritage in items)
+{
+    if (_editorLocalization != null && _editorLocalization.TryGetValue($"{heritage.Name}_name", out var ln))
+        heritage.DisplayName = ln;
+}
+if (selectedName != null)
+{
+    var match = items.FirstOrDefault(h => string.Equals(h.Name, selectedName, StringComparison.OrdinalIgnoreCase));
+    if (match != null)
+        HeritageList.SelectedItem = match;
+}
+else if (items.Count > 0)
+{
+    HeritageList.SelectedIndex = 0;
+}
         }
 
         private void RefreshHeritageAudioOptions()

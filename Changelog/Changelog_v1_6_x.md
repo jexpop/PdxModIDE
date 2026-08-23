@@ -15,7 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.6.22]
+## [1.6.24]
+
+### Fixed
+
+- **Heritage "Unknown" grouping bug (Cultures tab)**: cultures with heritages lacking localized `DisplayName` were incorrectly grouped under "Unknown" in the culture list. Fixed by ensuring `RefreshHeritageList` re-applies the localized `DisplayName` from the reloaded `_editorLocalization` after async translation finishes, so the list and culture tree show the proper localized heritage name instead of the raw identifier.
+
+---
+
+## [1.6.25]
+
+### Fixed
+
+- **HSV color parsing bug (Cultures tab)**: cultures using HSV color format (`hsv{...}`) failed to extract their `heritage` attribute because the parser confused the HSV braces with nested blocks, causing them to appear under "Unknown" heritage group. Fixed by enhancing `SkipValueAndFollowingBlock` to correctly recognize and skip `hsv{...}` format.
+
+---
+
+## [1.6.24]
 
 ### Added
 
