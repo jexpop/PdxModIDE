@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.23</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.0</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -147,6 +147,9 @@
     <system:String x:Key="HistoryTab_View_General">General</system:String>
     <system:String x:Key="HistoryTab_View_Title">Titular</system:String>
     <system:String x:Key="HistoryTab_View_Cultural">Cultural</system:String>
+    <system:String x:Key="HistoryTab_View_Terrain">Terreno</system:String>
+    <system:String x:Key="HistoryTab_TerrainModeTooltip">Tipos de terreno (desierto, bosque, montañas, etc.)</system:String>
+    <system:String x:Key="HistoryTab_NoTerrainData">Activa "Base" y/o "Mod" para ver datos de terreno</system:String>
     <system:String x:Key="HistoryTab_Ready">Listo</system:String>
     <system:String x:Key="HistoryTab_NoProfile">Sin perfil seleccionado</system:String>
     <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil con GameRoot válido</system:String>
@@ -185,8 +188,23 @@
     <system:String x:Key="MapTerrain_River">Río</system:String>
     <system:String x:Key="MapTerrain_Impassable">Impasable</system:String>
     <system:String x:Key="MapTerrain_Unknown">Desconocido</system:String>
+    <system:String x:Key="MapTerrain_plains">Llanuras</system:String>
+    <system:String x:Key="MapTerrain_hills">Colinas</system:String>
+    <system:String x:Key="MapTerrain_mountains">Montañas</system:String>
+    <system:String x:Key="MapTerrain_forest">Bosque</system:String>
+    <system:String x:Key="MapTerrain_desert">Desierto</system:String>
+    <system:String x:Key="MapTerrain_wetlands">Humedales</system:String>
+    <system:String x:Key="MapTerrain_taiga">Taiga</system:String>
+    <system:String x:Key="MapTerrain_farmlands">Tierras de cultivo</system:String>
+    <system:String x:Key="MapTerrain_floodplains">Llanuras de inundación</system:String>
+    <system:String x:Key="MapTerrain_oasis">Oasis</system:String>
+    <system:String x:Key="MapTerrain_desert_mountains">Montañas del desierto</system:String>
+    <system:String x:Key="MapTerrain_coastal_sea">Mar costero</system:String>
+    <system:String x:Key="MapTerrain_sea">Mar</system:String>
     <system:String x:Key="HistoryTab_CultureLabel">Cultura:</system:String>
     <system:String x:Key="HistoryTab_CultureHeader">CULTURA</system:String>
+    <system:String x:Key="HistoryTab_TerrainTypeLabel">Tipo de terreno:</system:String>
+    <system:String x:Key="HistoryTab_TerrainHeader">TERRENO</system:String>
     <system:String x:Key="HistoryTab_FromCapital">Heredado de la baronía {0}</system:String>
     <system:String x:Key="HistoryTab_NoCultureData">Activa "Base" y/o "Mod" para ver datos de cultura</system:String>
 

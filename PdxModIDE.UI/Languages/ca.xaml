@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.6.23</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.0</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -147,6 +147,9 @@
     <system:String x:Key="HistoryTab_View_General">General</system:String>
     <system:String x:Key="HistoryTab_View_Title">Titular</system:String>
     <system:String x:Key="HistoryTab_View_Cultural">Cultural</system:String>
+    <system:String x:Key="HistoryTab_View_Terrain">Terreny</system:String>
+    <system:String x:Key="HistoryTab_TerrainModeTooltip">Tipus de terreny (desert, bosc, muntanyes, etc.)</system:String>
+    <system:String x:Key="HistoryTab_NoTerrainData">Activa "Base" i/o "Mod" per veure dades de terreny</system:String>
     <system:String x:Key="HistoryTab_Ready">A punt</system:String>
     <system:String x:Key="HistoryTab_NoProfile">Sense perfil seleccionat</system:String>
     <system:String x:Key="HistoryTab_NoGameRoot">Configura un perfil amb GameRoot vàlid</system:String>
@@ -185,8 +188,23 @@
     <system:String x:Key="MapTerrain_River">Riu</system:String>
     <system:String x:Key="MapTerrain_Impassable">Impassable</system:String>
     <system:String x:Key="MapTerrain_Unknown">Desconegut</system:String>
+    <system:String x:Key="MapTerrain_plains">Planures</system:String>
+    <system:String x:Key="MapTerrain_hills">Collines</system:String>
+    <system:String x:Key="MapTerrain_mountains">Muntanyes</system:String>
+    <system:String x:Key="MapTerrain_forest">Bosc</system:String>
+    <system:String x:Key="MapTerrain_desert">Desert</system:String>
+    <system:String x:Key="MapTerrain_wetlands">Zones humides</system:String>
+    <system:String x:Key="MapTerrain_taiga">Taiga</system:String>
+    <system:String x:Key="MapTerrain_farmlands">Conreus</system:String>
+    <system:String x:Key="MapTerrain_floodplains">Planures d'inundació</system:String>
+    <system:String x:Key="MapTerrain_oasis">Oasi</system:String>
+    <system:String x:Key="MapTerrain_desert_mountains">Muntanyes del desert</system:String>
+    <system:String x:Key="MapTerrain_coastal_sea">Mar costaner</system:String>
+    <system:String x:Key="MapTerrain_sea">Mar</system:String>
     <system:String x:Key="HistoryTab_CultureLabel">Cultura:</system:String>
     <system:String x:Key="HistoryTab_CultureHeader">CULTURA</system:String>
+    <system:String x:Key="HistoryTab_TerrainTypeLabel">Tipus de terreny:</system:String>
+    <system:String x:Key="HistoryTab_TerrainHeader">TERRENY</system:String>
     <system:String x:Key="HistoryTab_FromCapital">Heretat de la baronia {0}</system:String>
     <system:String x:Key="HistoryTab_NoCultureData">Activa "Base" i/o "Mod" per veure dades de cultura</system:String>
 

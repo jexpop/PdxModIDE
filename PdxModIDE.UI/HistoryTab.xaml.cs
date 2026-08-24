@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -45,7 +46,7 @@ namespace PdxModIDE.UI
         private readonly HashSet<int> _selectedProvinceIds = new HashSet<int>();
         private bool _editMode;
 
-        private enum MapViewType { General, Title, Cultural }
+        private enum MapViewType { General, Title, Cultural, Terrain }
         private MapViewType _currentView = MapViewType.General;
 
         private Dictionary<int, ProvincePixelInfo>? _provincePixelInfo;
@@ -140,6 +141,17 @@ namespace PdxModIDE.UI
                 return;
             }
 
+            if (_currentView == MapViewType.Terrain)
+            {
+                BaseSourceCheck!.Visibility = Visibility.Collapsed;
+                ModSourceCheck!.Visibility = Visibility.Collapsed;
+                TitleModePanel.Visibility = Visibility.Collapsed;
+                ModeToggleButton.Visibility = Visibility.Collapsed;
+                SplitCountyButton.Visibility = Visibility.Collapsed;
+                ShowNamesCheck.Visibility = Visibility.Visible;
+                return;
+            }
+
             bool modActive = ModSourceCheck?.IsChecked == true;
 
             if (!modActive && _editMode)
@@ -202,6 +214,8 @@ namespace PdxModIDE.UI
             {
                 if (_currentView == MapViewType.Cultural)
                     hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_View_Cultural") as string ?? "";
+                else if (_currentView == MapViewType.Terrain)
+                    hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_View_Terrain") as string ?? "";
                 else if (HolderModeCheck?.IsChecked == true)
                     hierarchyText = System.Windows.Application.Current.TryFindResource("HistoryTab_HolderMode") as string ?? "";
                 else if (CountyModeCheck?.IsChecked == true)
@@ -448,6 +462,7 @@ namespace PdxModIDE.UI
                     "General" => MapViewType.General,
                     "Title" => MapViewType.Title,
                     "Cultural" => MapViewType.Cultural,
+                    "Terrain" => MapViewType.Terrain,
                     _ => MapViewType.General
                 };
                 SwitchToView(newView);
@@ -500,6 +515,17 @@ namespace PdxModIDE.UI
                         BaseSourceCheck.IsChecked = true;
                     UpdateEditModeState();
                     ApplyCultureMode();
+                    break;
+
+                case MapViewType.Terrain:
+                    if (_editMode)
+                    {
+                        _editMode = false;
+                        ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeViewAction");
+                        ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeView");
+                    }
+                    UpdateEditModeState();
+                    ApplyTerrainMode();
                     break;
             }
 
@@ -1030,6 +1056,11 @@ namespace PdxModIDE.UI
                 ApplyCultureMode();
                 return;
             }
+            if (_currentView == MapViewType.Terrain)
+            {
+                ApplyTerrainMode();
+                return;
+            }
             ReapplyActiveMode();
             UpdateSplitCountyButtonVisibility();
             UpdateModeStatusLabel();
@@ -1040,6 +1071,10 @@ namespace PdxModIDE.UI
             if (_currentView == MapViewType.Cultural)
             {
                 ApplyCultureMode();
+            }
+            else if (_currentView == MapViewType.Terrain)
+            {
+                ApplyTerrainMode();
             }
             else if (HolderModeCheck?.IsChecked == true) ApplyHolderMode();
             else if (CountyModeCheck?.IsChecked == true) ApplyCountyMode();
@@ -1193,6 +1228,8 @@ namespace PdxModIDE.UI
 
             if (_currentView == MapViewType.Cultural)
                 ApplyCultureMode();
+            else if (_currentView == MapViewType.Terrain)
+                ApplyTerrainMode();
             else if (HolderModeCheck.IsChecked == true)
                 ApplyHolderMode();
             else if (CountyModeCheck.IsChecked == true)
@@ -1335,6 +1372,31 @@ namespace PdxModIDE.UI
             UpdateSelectionInfo();
         }
 
+        private void ApplyTerrainMode()
+        {
+            if (_mapLoader == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[ApplyTerrainMode] _mapLoader is null");
+                _renderer?.SetHolderMode(false, null, null);
+                _titleLabels = null;
+                InvalidateRender();
+                return;
+            }
+
+            System.Diagnostics.Debug.WriteLine("[ApplyTerrainMode] Calling BuildTerrainLut...");
+            var terrainLut = _mapLoader!.BuildTerrainLut(out var indexToTerrain);
+            System.Diagnostics.Debug.WriteLine($"[ApplyTerrainMode] BuildTerrainLut returned, calling BuildTerrainPalette...");
+            var palette = _mapLoader.BuildTerrainPalette(indexToTerrain);
+            System.Diagnostics.Debug.WriteLine($"[ApplyTerrainMode] Setting renderer with terrain LUT");
+            _renderer!.SetHolderMode(true, terrainLut, palette);
+            _currentHolderLut = terrainLut;
+            _currentIndexToHolder = indexToTerrain;
+
+            BuildTitleLabels();
+            InvalidateRender();
+            UpdateSelectionInfo();
+        }
+
         private void UpdateSelectionInfo()
         {
             if (_selectedProvinceIds.Count == 0)
@@ -1388,7 +1450,7 @@ namespace PdxModIDE.UI
                 TextTypeValue.Text = GetCommonValue(provinceIds, pid =>
                 {
                     var p = _mapLoader.GetProvinceFromId(pid);
-                    return p != null ? TranslateTerrainType(p.Type) : "-";
+                    return p != null ? TranslateTerrainType(p.Type, pid) : "-";
                 });
 
                 string commonBarony = GetCommonValue(provinceIds, pid =>
@@ -1493,6 +1555,31 @@ namespace PdxModIDE.UI
                     });
                     TextBaronyValue.Text = commonCulture ?? "-";
                 }
+                else if (_currentView == MapViewType.Terrain)
+                {
+                    if (_titleGroupHeader == null)
+                        _titleGroupHeader = (System.Windows.Controls.TextBlock)TitleGroup.Header;
+                    _titleGroupHeader.Text = Res("HistoryTab_TerrainHeader");
+                    TextBaronyLabel.Content = Res("HistoryTab_TerrainTypeLabel");
+                    TextCountyLabel.Content = "";
+                    TextDuchyLabel.Content = "";
+                    TextKingdomLabel.Content = "";
+                    TextEmpireLabel.Content = "";
+                    TextCountyValue.Text = "";
+                    TextDuchyValue.Text = "";
+                    TextKingdomValue.Text = "";
+                    TextEmpireValue.Text = "";
+                    TextCountyValue.Visibility = Visibility.Collapsed;
+                    TextDuchyValue.Visibility = Visibility.Collapsed;
+                    TextKingdomValue.Visibility = Visibility.Collapsed;
+                    TextEmpireValue.Visibility = Visibility.Collapsed;
+                    TextHolderLabel.Content = Res("HistoryTab_BaronyLabel");
+                    TextHolderValue.Text = GetCommonValue(provinceIds, pid =>
+                    {
+                        string bk = _mapLoader.GetTitleFromProvinceId(pid) ?? "-";
+                        return bk != "-" ? GetLocalizedTitleName(bk) : "-";
+                    });
+                }
                 else
                 {
                     if (_titleGroupHeader != null)
@@ -1534,7 +1621,7 @@ namespace PdxModIDE.UI
                 TextIdValue.Text = province.Id.ToString();
                 TextNameValue.Text = GetLocalizedTitleName(province.Name);
                 TextColorValue.Text = $"({province.R},{province.G},{province.B})";
-                TextTypeValue.Text = TranslateTerrainType(province.Type);
+                TextTypeValue.Text = TranslateTerrainType(province.Type, provinceId);
 
                 string baronyKey = _mapLoader.GetTitleFromProvinceId(provinceId) ?? "-";
                 string baronyName = baronyKey != "-" ? GetLocalizedTitleName(baronyKey) : "-";
@@ -1734,8 +1821,16 @@ namespace PdxModIDE.UI
             }
         }
 
-        private string TranslateTerrainType(string? type)
+        private string TranslateTerrainType(string? type, int provinceId = -1)
         {
+            if (provinceId > 0 && _mapLoader != null && _currentView == MapViewType.Terrain)
+            {
+                if (_mapLoader.ProvinceToTerrain.TryGetValue(provinceId, out var terrainKey))
+                {
+                    return Res($"MapTerrain_{terrainKey}");
+                }
+            }
+
             return type switch
             {
                 "land" => Res("MapTerrain_Land"),
@@ -1744,7 +1839,7 @@ namespace PdxModIDE.UI
                 "river" => Res("MapTerrain_River"),
                 "impassable" => Res("MapTerrain_Impassable"),
                 "unknown" => Res("MapTerrain_Unknown"),
-                _ => type ?? "?"
+                _ => Res($"MapTerrain_{type}") ?? type ?? "?"
             };
         }
 

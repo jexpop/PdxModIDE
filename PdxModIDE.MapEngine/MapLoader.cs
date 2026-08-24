@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -42,6 +43,8 @@ namespace PdxModIDE.MapEngine
         public Dictionary<string, (byte R, byte G, byte B)> TitleColors { get; } = new(StringComparer.OrdinalIgnoreCase);
         public Dictionary<string, (byte R, byte G, byte B)> CultureColors { get; } = new(StringComparer.OrdinalIgnoreCase);
         public Dictionary<string, string> CultureDisplayNames { get; } = new(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<int, string> ProvinceToTerrain { get; } = new();
+        public Dictionary<string, (byte R, byte G, byte B)> TerrainColors { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         private Dictionary<int, string> _baseProvinceToBarony = new();
         private Dictionary<string, string> _baseBaronyToCounty = new();
@@ -88,6 +91,7 @@ namespace PdxModIDE.MapEngine
             LoadDefaultMap();
             LoadLandedTitles();
             LoadLocalization();
+            LoadTerrain();
             SaveBaseSnapshot();
             MarkTerrainTypes();
             Lut = BuildOrLoadLut();
@@ -935,6 +939,108 @@ namespace PdxModIDE.MapEngine
             return BuildHolderPalette(indexToEmpire);
         }
 
+        public ushort[] BuildTerrainLut(out Dictionary<int, string> indexToTerrain)
+        {
+            indexToTerrain = new Dictionary<int, string>();
+            var terrainToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            int nextIndex = 1;
+            var lut = new ushort[16_777_216];
+
+            int matched = 0;
+            int unmatched = 0;
+
+            foreach (var info in ProvincesByColor.Values)
+            {
+                int idx = info.ColorPacked;
+                int pid = info.Id;
+
+                if (pid <= 0)
+                {
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                string? terrain = null;
+
+                if (ProvinceToTerrain.TryGetValue(pid, out terrain))
+                {
+                }
+
+                if (terrain == null)
+                {
+                    unmatched++;
+                    lut[idx] = 0;
+                    continue;
+                }
+
+                matched++;
+                if (!terrainToIndex.TryGetValue(terrain, out var tIdx))
+                {
+                    tIdx = nextIndex++;
+                    terrainToIndex[terrain] = tIdx;
+                    indexToTerrain[tIdx] = terrain;
+                }
+
+                lut[idx] = (ushort)tIdx;
+            }
+
+            System.Diagnostics.Trace.WriteLine($"[BuildTerrainLut] Provinces in ProvincesByColor: {ProvincesByColor.Count}");
+            System.Diagnostics.Trace.WriteLine($"[BuildTerrainLut] ProvinceToTerrain entries: {ProvinceToTerrain.Count}");
+            System.Diagnostics.Trace.WriteLine($"[BuildTerrainLut] Matched: {matched}, Unmatched: {unmatched}");
+            System.Diagnostics.Trace.WriteLine($"[BuildTerrainLut] Unique terrain types in LUT: {indexToTerrain.Count}");
+            foreach (var kvp in indexToTerrain)
+            {
+                System.Diagnostics.Trace.WriteLine($"[BuildTerrainLut]   Index {kvp.Key} = {kvp.Value}");
+            }
+
+            return lut;
+        }
+
+        public SKImage BuildTerrainPalette(Dictionary<int, string> indexToTerrain)
+        {
+            int maxIdx = indexToTerrain.Keys.Count > 0 ? indexToTerrain.Keys.Max() : 255;
+            int size = maxIdx + 1;
+            var bmp = new SKBitmap(size, 1, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var pixels = new byte[size * 4];
+
+            for (int i = 0; i < size; i++)
+            {
+                int off = i * 4;
+                if (i == 0 || !indexToTerrain.ContainsKey(i))
+                {
+                    pixels[off] = 40;
+                    pixels[off + 1] = 40;
+                    pixels[off + 2] = 40;
+                    pixels[off + 3] = 255;
+                }
+                else
+                {
+                    string terrainKey = indexToTerrain[i];
+                    if (TerrainColors.TryGetValue(terrainKey, out var color))
+                    {
+                        pixels[off] = color.R;
+                        pixels[off + 1] = color.G;
+                        pixels[off + 2] = color.B;
+                        pixels[off + 3] = 255;
+                        System.Diagnostics.Trace.WriteLine($"[BuildTerrainPalette] Index {i} ({terrainKey}) = RGB({color.R},{color.G},{color.B})");
+                    }
+                    else
+                    {
+                        var (h, s, l) = HueSatLum(i);
+                        var (r, g, b) = HslToRgb(h, s, l);
+                        pixels[off] = r;
+                        pixels[off + 1] = g;
+                        pixels[off + 2] = b;
+                        pixels[off + 3] = 255;
+                        System.Diagnostics.Trace.WriteLine($"[BuildTerrainPalette] Index {i} ({terrainKey}) = FALLBACK RGB({r},{g},{b})");
+                    }
+                }
+            }
+
+            Marshal.Copy(pixels, 0, bmp.GetPixels(), pixels.Length);
+            return SKImage.FromBitmap(bmp);
+        }
+
         public void LoadModCultures(CultureLoader culture)
         {
             foreach (var kvp in culture.AllCultures)
@@ -1088,6 +1194,148 @@ namespace PdxModIDE.MapEngine
             if (!Directory.Exists(locDir)) return;
             LocalizedNames.Clear();
             LoadLocalizationFromDir(locDir);
+        }
+
+        public void LoadTerrain()
+        {
+            ProvinceToTerrain.Clear();
+            TerrainColors.Clear();
+
+            string terrainDir = Path.Combine(_gameRoot, "common", "terrain_types");
+            if (Directory.Exists(terrainDir))
+            {
+                LoadTerrainTypes(terrainDir);
+            }
+
+            string provinceTerrainDir = Path.Combine(_gameRoot, "common", "province_terrain");
+            if (Directory.Exists(provinceTerrainDir))
+            {
+                LoadProvinceTerrain(provinceTerrainDir);
+            }
+
+            System.Diagnostics.Trace.WriteLine($"[LoadTerrain] GameRoot: {_gameRoot}");
+            System.Diagnostics.Trace.WriteLine($"[LoadTerrain] TerrainTypes loaded: {TerrainColors.Count}");
+            foreach (var kvp in TerrainColors)
+            {
+                System.Diagnostics.Trace.WriteLine($"[LoadTerrain]   {kvp.Key} = RGB({kvp.Value.R},{kvp.Value.G},{kvp.Value.B})");
+            }
+            System.Diagnostics.Trace.WriteLine($"[LoadTerrain] ProvinceTerrain loaded: {ProvinceToTerrain.Count}");
+            int sampleCount = 0;
+            foreach (var kvp in ProvinceToTerrain)
+            {
+                if (sampleCount < 10)
+                {
+                    System.Diagnostics.Trace.WriteLine($"[LoadTerrain]   Province {kvp.Key} = {kvp.Value}");
+                    sampleCount++;
+                }
+            }
+        }
+
+        private void LoadTerrainTypes(string dir)
+        {
+            var colorRgbRegex = new Regex(@"color\s*=\s*\{\s*(\d+)\s+(\d+)\s+(\d+)\s*\}");
+            // Matches: hsv { 0.1 0.5 0.8 } or hsv { 0.0 0.0 0.1 0 } (4 values with alpha)
+            var colorHsvRegex = new Regex(@"color\s*=\s*hsv\s*\{\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s+[\d.]+)?\s*\}?");
+            var terrainRegex = new Regex(@"^\s*(\w+)\s*=\s*\{");
+
+            foreach (var file in Directory.EnumerateFiles(dir, "*.txt", SearchOption.AllDirectories))
+            {
+                string? currentTerrain = null;
+                foreach (var rawLine in File.ReadAllLines(file))
+                {
+                    string line = rawLine.Trim();
+                    if (line.StartsWith("#") || string.IsNullOrEmpty(line))
+                        continue;
+
+                    var m = terrainRegex.Match(line);
+                    if (m.Success)
+                    {
+                        currentTerrain = m.Groups[1].Value;
+                        continue;
+                    }
+
+                    var rgbMatch = colorRgbRegex.Match(line);
+                    if (rgbMatch.Success && currentTerrain != null)
+                    {
+                        int r = int.Parse(rgbMatch.Groups[1].Value);
+                        int g = int.Parse(rgbMatch.Groups[2].Value);
+                        int b = int.Parse(rgbMatch.Groups[3].Value);
+                        TerrainColors[currentTerrain] = ((byte)r, (byte)g, (byte)b);
+                    }
+                    else
+                    {
+                        var hsvMatch = colorHsvRegex.Match(line);
+                        if (hsvMatch.Success && currentTerrain != null)
+                        {
+                            float h = float.Parse(hsvMatch.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+                            float s = float.Parse(hsvMatch.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture);
+                            float v = float.Parse(hsvMatch.Groups[3].Value, System.Globalization.CultureInfo.InvariantCulture);
+                            var (r, g, b) = HsvToRgb(h, s, v);
+                            TerrainColors[currentTerrain] = ((byte)r, (byte)g, (byte)b);
+                        }
+                    }
+
+                    int opens = line.Count(c => c == '{');
+                    int closes = line.Count(c => c == '}');
+                    if (closes > opens && currentTerrain != null)
+                    {
+                        currentTerrain = null;
+                    }
+                }
+            }
+        }
+
+        private static (byte r, byte g, byte b) HsvToRgb(float h, float s, float v)
+        {
+            // h in [0, 360] or [0, 1], s and v in [0, 1]
+            if (h > 1) h = h / 360f; // assume degrees if > 1
+            h = h % 1f;
+
+            int hi = (int)(h * 6f) % 6;
+            float f = h * 6f - hi;
+            float p = v * (1f - s);
+            float q = v * (1f - f * s);
+            float t = v * (1f - (1f - f) * s);
+
+            float r, g, b;
+            switch (hi)
+            {
+                case 0: r = v; g = t; b = p; break;
+                case 1: r = q; g = v; b = p; break;
+                case 2: r = p; g = v; b = t; break;
+                case 3: r = p; g = q; b = v; break;
+                case 4: r = t; g = p; b = v; break;
+                default: r = v; g = p; b = q; break;
+            }
+
+            return ((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
+        }
+
+        private void LoadProvinceTerrain(string dir)
+        {
+            // Only parse 00_province_terrain.txt - 01_province_properties.txt has different format
+            string targetFile = Path.Combine(dir, "00_province_terrain.txt");
+            if (!File.Exists(targetFile))
+                return;
+
+            foreach (var rawLine in File.ReadAllLines(targetFile))
+            {
+                string line = rawLine.Trim();
+                if (line.StartsWith("#") || string.IsNullOrEmpty(line))
+                    continue;
+
+                // Formato: province_id=terrain_type  (ej: 1=mountains)
+                var parts = line.Split('=', 2);
+                if (parts.Length == 2)
+                {
+                    string left = parts[0].Trim();
+                    string right = parts[1].Trim();
+                    if (int.TryParse(left, out int pid) && !string.IsNullOrEmpty(right))
+                    {
+                        ProvinceToTerrain[pid] = right;
+                    }
+                }
+            }
         }
 
         private void LoadLocalizationFromDir(string dir)

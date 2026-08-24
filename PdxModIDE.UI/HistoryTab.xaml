@@ -81,6 +81,7 @@
                     <ComboBoxItem Content="{DynamicResource HistoryTab_View_General}" Tag="General"/>
                     <ComboBoxItem Content="{DynamicResource HistoryTab_View_Title}" Tag="Title"/>
                     <ComboBoxItem Content="{DynamicResource HistoryTab_View_Cultural}" Tag="Cultural"/>
+                    <ComboBoxItem Content="{DynamicResource HistoryTab_View_Terrain}" Tag="Terrain"/>
                 </ComboBox>
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
                 <CheckBox x:Name="BaseSourceCheck" Content="{DynamicResource HistoryTab_Base}" VerticalAlignment="Center"

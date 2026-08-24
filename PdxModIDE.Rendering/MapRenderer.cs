@@ -13,6 +13,7 @@ namespace PdxModIDE.Rendering
         private SKImage? _provincesImage;
         private SKImage? _lutImage;
         private SKImage? _paletteImage;
+        private SKImage? _holderLutImage;
         private ushort[]? _holderLutCpu;
         private byte[]? _paletteCpu;
         private MapLoader? _mapLoader;
@@ -215,7 +216,34 @@ half4 main(float2 coord) {
             _holderMode = enabled;
 
             if (holderLutData != null)
+            {
                 _holderLutCpu = holderLutData;
+
+                var lutInfo = new SKImageInfo(4096, 4096, SKColorType.Rgba8888, SKAlphaType.Opaque);
+                var bitmap = new SKBitmap(lutInfo);
+                IntPtr ptr = bitmap.GetPixels();
+                byte[] rgba = new byte[4096 * 4096 * 4];
+
+                for (int i = 0; i < 16_777_216; i++)
+                {
+                    int off = i * 4;
+                    byte val = (byte)holderLutData[i];
+                    rgba[off] = val;
+                    rgba[off + 1] = val;
+                    rgba[off + 2] = val;
+                    rgba[off + 3] = 255;
+                }
+
+                Marshal.Copy(rgba, 0, ptr, rgba.Length);
+                _holderLutImage?.Dispose();
+                _holderLutImage = SKImage.FromBitmap(bitmap);
+
+                var nearest = new SKSamplingOptions(SKFilterMode.Nearest);
+                if (_lastChildren != null)
+                {
+                    _lastChildren["holderLut"] = SKShader.CreateImage(_holderLutImage, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, nearest);
+                }
+            }
 
             if (palette != null)
             {
@@ -465,6 +493,7 @@ half4 main(float2 coord) {
             _provincesImage?.Dispose();
             _lutImage?.Dispose();
             _paletteImage?.Dispose();
+            _holderLutImage?.Dispose();
             _fullEffect?.Dispose();
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using MessageBox = System.Windows.MessageBox;
@@ -10,9 +11,30 @@ namespace PdxModIDE.UI
 {
     public partial class App : System.Windows.Application
     {
+        private static string _logPath;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // Setup log file - use fixed path relative to exe location
+            _logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "debug.log");
+            Directory.CreateDirectory(Path.GetDirectoryName(_logPath)!);
+            
+            // Write startup marker
+            File.AppendAllText(_logPath, $"=== App Starting {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===\n");
+            File.AppendAllText(_logPath, $"BaseDirectory: {AppDomain.CurrentDomain.BaseDirectory}\n");
+            File.AppendAllText(_logPath, $"LogPath: {_logPath}\n");
+
+            // Also add TraceListener for Trace.WriteLine
+            var traceListener = new TextWriterTraceListener(_logPath)
+            {
+                Name = "FileLog"
+            };
+            traceListener.TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ProcessId;
+            Trace.Listeners.Add(traceListener);
+            Trace.AutoFlush = true;
+            Trace.WriteLine($"=== Trace Starting ===");
 
             GameRegistry.Register(new CK3GamePlugin());
 
@@ -66,6 +88,18 @@ namespace PdxModIDE.UI
                 depth++;
             }
             return sb.ToString();
+        }
+
+        public static void Log(string message)
+        {
+            if (!string.IsNullOrEmpty(_logPath))
+            {
+                try
+                {
+                    File.AppendAllText(_logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {message}\n");
+                }
+                catch { }
+            }
         }
     }
 }

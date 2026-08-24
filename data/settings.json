@@ -1,0 +1,10 @@
+﻿{
+  "theme": "light",
+  "language": "en",
+  "translationProviders": [
+    "mymemory"
+  ],
+  "autoTranslate": true,
+  "deeplApiKey": null,
+  "translationProviderUrls": {}
+}
