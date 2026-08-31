@@ -31,6 +31,7 @@ namespace PdxModIDE.UI.ViewModels
         private bool _savedShowTitleNames;
         private string _savedCulturePrefix = "";
         private string _savedHeritageFileName = "";
+        private string _savedLanguageFileName = "";
 
         public IProjectService ProjectService => _projectService;
 
@@ -84,11 +85,14 @@ namespace PdxModIDE.UI.ViewModels
                     OnPropertyChanged(nameof(CultureFileNamePreview));
                     OnPropertyChanged(nameof(HeritageFileName));
                     OnPropertyChanged(nameof(HeritageFileNamePreview));
+                    OnPropertyChanged(nameof(LanguageFileName));
+                    OnPropertyChanged(nameof(LanguageFileNamePreview));
                     OnPropertyChanged(nameof(GameRootModified));
                     OnPropertyChanged(nameof(ModRootModified));
                     OnPropertyChanged(nameof(BackupRootModified));
                     OnPropertyChanged(nameof(CultureFileNamePrefixModified));
                     OnPropertyChanged(nameof(HeritageFileNameModified));
+                    OnPropertyChanged(nameof(LanguageFileNameModified));
                     OnPropertyChanged(nameof(YearOffsetModified));
                     OnPropertyChanged(nameof(ShowTitleNamesModified));
                     OnPropertyChanged(nameof(HasUnsavedProfileChanges));
@@ -107,6 +111,7 @@ namespace PdxModIDE.UI.ViewModels
             _savedShowTitleNames = _currentProfile?.ShowTitleNames ?? true;
             _savedCulturePrefix = CultureFileNamePrefix;
             _savedHeritageFileName = HeritageFileName;
+            _savedLanguageFileName = LanguageFileName;
         }
 
         public string Theme
@@ -240,15 +245,41 @@ namespace PdxModIDE.UI.ViewModels
         public string HeritageFileNamePreview
             => HeritageFileName;
 
+        public string LanguageFileName
+        {
+            get
+            {
+                if (_currentProfile != null &&
+                    _currentProfile.FileNamePrefixes.TryGetValue("language", out var p))
+                    return string.IsNullOrEmpty(p) ? "00_language.txt" : p;
+                return "00_language.txt";
+            }
+            set
+            {
+                if (_currentProfile != null)
+                {
+                    _currentProfile.FileNamePrefixes["language"] = value ?? "";
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(LanguageFileNamePreview));
+                    OnPropertyChanged(nameof(LanguageFileNameModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
+                }
+            }
+        }
+
+        public string LanguageFileNamePreview
+            => LanguageFileName;
+
         public bool GameRootModified => _currentProfile != null && _currentProfile.GameRoot != _savedGameRoot;
         public bool ModRootModified => _currentProfile != null && _currentProfile.ModRoot != _savedModRoot;
         public bool BackupRootModified => _currentProfile != null && _currentProfile.BackupRoot != _savedBackupRoot;
         public bool CultureFileNamePrefixModified => CultureFileNamePrefix != _savedCulturePrefix;
         public bool HeritageFileNameModified => HeritageFileName != _savedHeritageFileName;
+        public bool LanguageFileNameModified => LanguageFileName != _savedLanguageFileName;
         public bool YearOffsetModified => _currentProfile != null && _currentProfile.YearOffset != _savedYearOffset;
         public bool ShowTitleNamesModified => _currentProfile != null && _currentProfile.ShowTitleNames != _savedShowTitleNames;
         public bool HasUnsavedProfileChanges => GameRootModified || ModRootModified || BackupRootModified ||
-            CultureFileNamePrefixModified || HeritageFileNameModified || YearOffsetModified || ShowTitleNamesModified;
+            CultureFileNamePrefixModified || HeritageFileNameModified || LanguageFileNameModified || YearOffsetModified || ShowTitleNamesModified;
 
         private string _profileStatusMessage = "";
         public string ProfileStatusMessage
@@ -606,6 +637,7 @@ namespace PdxModIDE.UI.ViewModels
                 OnPropertyChanged(nameof(BackupRootModified));
                 OnPropertyChanged(nameof(CultureFileNamePrefixModified));
                 OnPropertyChanged(nameof(HeritageFileNameModified));
+                OnPropertyChanged(nameof(LanguageFileNameModified));
                 OnPropertyChanged(nameof(YearOffsetModified));
                 OnPropertyChanged(nameof(HasUnsavedProfileChanges));
             }

@@ -188,7 +188,7 @@ namespace PdxModIDE.Project
                 DatesModules = new List<string>(),
                 Files = new List<string>(),
                 ShowTitleNames = true,
-                FileNamePrefixes = new Dictionary<string, string> { ["culture"] = "", ["heritage"] = "00_heritage.txt" }
+                FileNamePrefixes = new Dictionary<string, string> { ["culture"] = "", ["heritage"] = "00_heritage.txt", ["language"] = "00_language.txt" }
             };
 
             _dataProfiles.Add(dataProfile);
@@ -914,7 +914,8 @@ namespace PdxModIDE.Project
                 FileNamePrefixes = new Dictionary<string, string>(dp.FileNamePrefixes)
                 {
                     ["culture"] = dp.FileNamePrefixes.TryGetValue("culture", out var c) ? c : "",
-                    ["heritage"] = dp.FileNamePrefixes.TryGetValue("heritage", out var h) && !string.IsNullOrEmpty(h) ? h : "00_heritage.txt"
+                    ["heritage"] = dp.FileNamePrefixes.TryGetValue("heritage", out var h) && !string.IsNullOrEmpty(h) ? h : "00_heritage.txt",
+                    ["language"] = dp.FileNamePrefixes.TryGetValue("language", out var lg) && !string.IsNullOrEmpty(lg) ? lg : "00_language.txt"
                 }
             };
         }

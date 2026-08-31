@@ -754,5 +754,89 @@
                 </ScrollViewer>
             </Grid>
         </TabItem>
+
+        <TabItem x:Name="LanguagesTabItem">
+            <TabItem.Header>
+                <TextBlock Text="{DynamicResource CulturesTab_SubTabLanguages}"/>
+            </TabItem.Header>
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Button x:Name="LanguageNewButton" Content="{DynamicResource CulturesTab_LanguageNew}"
+                            Width="140" HorizontalAlignment="Left" Padding="10,3" Click="LanguageNew_Click"/>
+                    <ListBox x:Name="LanguageList" Grid.Row="1" Margin="0,6,0,0"
+                             SelectionChanged="LanguageList_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding DisplayName}" Foreground="{Binding SourceBrush}"/>
+                                    <TextBlock Text="{Binding Source, StringFormat=' ({0})'}"
+                                               Foreground="Gray" Margin="3,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+
+                <ScrollViewer Grid.Column="1" Margin="20,0,0,0" VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <TextBlock x:Name="LanguageModeText" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="LanguageHintText" Foreground="Gray" TextWrapping="Wrap" Margin="0,4,0,10"/>
+                        <GroupBox Header="{DynamicResource CulturesTab_LanguageEditor}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Label x:Name="LanguageIdRow" Content="{DynamicResource CulturesTab_LanguageId}" FontWeight="Bold"/>
+                                <TextBox x:Name="LanguageId" Width="350" MaxLength="60" HorizontalAlignment="Left" Margin="15,0,0,6"/>
+                                <Label Content="{DynamicResource CulturesTab_LanguageColor}" FontWeight="Bold"/>
+                                <StackPanel Orientation="Horizontal" Margin="15,0,0,6">
+                                    <Border x:Name="LanguageColorPreview" Width="24" Height="24" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" CornerRadius="2" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <ComboBox x:Name="LanguageColor" Width="220" IsEditable="True" HorizontalAlignment="Left" SelectionChanged="LanguageColor_SelectionChanged" KeyUp="LanguageColor_KeyUp"/>
+                                    <Button x:Name="LanguageColorPickerButton" Content="{DynamicResource CulturesTab_EditorChooseColor}" Width="110" Margin="8,0,0,0" Click="LanguageColorPicker_Click"/>
+                                </StackPanel>
+                                <TextBlock Text="{DynamicResource CulturesTab_LanguageColorHint}" Foreground="Gray" Margin="15,0,15,6" TextWrapping="Wrap" FontSize="11"/>
+                                <GroupBox Header="{DynamicResource CulturesTab_LanguageAiSection}" Margin="0,4,0,8">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource CulturesTab_LanguageAiHint}" Foreground="Gray" Margin="15,6,15,6" TextWrapping="Wrap" FontSize="11"/>
+                                        <Label Content="{DynamicResource CulturesTab_LanguageAiValue}" FontWeight="Bold"/>
+                                        <TextBox x:Name="LanguageAiValue" Width="100" HorizontalAlignment="Left" Margin="15,0,0,6"/>
+                                        <Label Content="{DynamicResource CulturesTab_LanguageAiMultiply}" FontWeight="Bold"/>
+                                        <TextBox x:Name="LanguageAiMultiply" Width="100" HorizontalAlignment="Left" Margin="15,0,0,6"/>
+                                        <TextBlock Text="{DynamicResource CulturesTab_LanguageAiMultiplyHint}" Foreground="Gray" Margin="15,0,15,4" TextWrapping="Wrap" FontSize="11"/>
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="{DynamicResource CulturesTab_HeritageLocSection}" Margin="0,4,0,8">
+                                    <StackPanel>
+                                        <Label Content="{DynamicResource CulturesTab_LanguageLocName}" FontWeight="Bold"/>
+                                        <TextBox x:Name="LanguageLocName" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,6"/>
+                                    </StackPanel>
+                                </GroupBox>
+                                <StackPanel x:Name="LanguageFileNameRow" Orientation="Horizontal" Margin="0,4,0,4">
+                                    <Label Content="{DynamicResource CulturesTab_EditorFileName}" VerticalAlignment="Center" FontWeight="Bold"/>
+                                    <TextBox x:Name="LanguageFileName" Width="250" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <Button x:Name="LanguageSaveButton" Content="{DynamicResource CulturesTab_LanguageSave}"
+                                    Width="120" MinHeight="26" Padding="0,4,0,4" Click="LanguageSave_Click" Margin="0,0,10,0"/>
+                            <Button x:Name="LanguageDeleteButton" Content="{DynamicResource CulturesTab_LanguageDelete}"
+                                    Width="120" MinHeight="26" Padding="0,4,0,4" Click="LanguageDelete_Click"/>
+                        </StackPanel>
+
+                        <TextBlock x:Name="LanguageStatusText" Foreground="Gray" Margin="0,10,0,20"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </TabItem>
     </TabControl>
 </UserControl>

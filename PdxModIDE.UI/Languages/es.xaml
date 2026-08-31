@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.0</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.1</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -71,6 +71,7 @@
     <system:String x:Key="ProfileTab_CultureFileNamePrefix">Prefijo de archivos de cultura:</system:String>
     <system:String x:Key="ProfileTab_CultureFileNameSuffix">[nombre de cultura].txt</system:String>
     <system:String x:Key="ProfileTab_HeritageFileName">Nombre de archivo de herencia:</system:String>
+    <system:String x:Key="ProfileTab_LanguageFileName">Nombre de archivo de idioma:</system:String>
     <system:String x:Key="ProfileTab_ProfileSaved">Perfil guardado.</system:String>
     <system:String x:Key="ProfileTab_ToolTipSaveAllChanges">Los cambios sin guardar se guardan con el botón Guardar perfil (pestaña Perfil).</system:String>
 
@@ -299,6 +300,32 @@
     <system:String x:Key="CulturesTab_HeritageDeleteConfirm">¿Eliminar la herencia {0}? Se eliminará su definición y sus ficheros de localización.</system:String>
     <system:String x:Key="CulturesTab_HeritageDeleteNotAllowed">Solo las herencias creadas para el mod pueden eliminarse.</system:String>
     <system:String x:Key="CulturesTab_HeritageDeleted">Herencia {0} eliminada.</system:String>
+    <system:String x:Key="CulturesTab_SubTabLanguages">Idiomas</system:String>
+    <system:String x:Key="CulturesTab_LanguageNew">Nuevo idioma</system:String>
+    <system:String x:Key="CulturesTab_LanguageEditor">Editor de idioma</system:String>
+    <system:String x:Key="CulturesTab_LanguageId">Identificador</system:String>
+    <system:String x:Key="CulturesTab_LanguageColor">Color</system:String>
+    <system:String x:Key="CulturesTab_LanguageColorHint">Valor de color como en los ficheros del juego: color nombrado (p. ej. english, french) o hsv { 0.6 0.5 0.7 }. Los colores nombrados se resuelven desde common/named_colors/*.txt.</system:String>
+    <system:String x:Key="CulturesTab_LanguageSave">Guardar idioma</system:String>
+    <system:String x:Key="CulturesTab_LanguageDelete">Eliminar idioma</system:String>
+    <system:String x:Key="CulturesTab_LanguageNewTitle">Nuevo idioma</system:String>
+    <system:String x:Key="CulturesTab_LanguageEditTitle">Editar idioma</system:String>
+    <system:String x:Key="CulturesTab_LanguageReadOnly">Idioma del juego base. Solo los idiomas creados para el mod pueden editarse o eliminarse.</system:String>
+    <system:String x:Key="CulturesTab_LanguageNeedId">Introduce un identificador de idioma.</system:String>
+    <system:String x:Key="CulturesTab_LanguageIdInvalid">Identificador no válido. Usa solo letras, dígitos y guiones bajos.</system:String>
+    <system:String x:Key="CulturesTab_LanguageNeedColor">Introduce un valor de color.</system:String>
+    <system:String x:Key="CulturesTab_LanguageColorInvalid">Formato de color no válido. Usa un color nombrado (p. ej. english) o hsv { 0.6 0.5 0.7 }.</system:String>
+    <system:String x:Key="CulturesTab_LanguageExists">Ya existe un idioma con el id {0}.</system:String>
+    <system:String x:Key="CulturesTab_LanguageDeleteConfirm">¿Eliminar el idioma {0}? Se eliminará su definición y sus ficheros de localización.</system:String>
+    <system:String x:Key="CulturesTab_LanguageDeleteNotAllowed">Solo los idiomas creados para el mod pueden eliminarse.</system:String>
+    <system:String x:Key="CulturesTab_LanguageDeleted">Idioma {0} eliminado.</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiSection">Comportamiento IA (ai_will_do)</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiHint">Opcional. Define el peso de la IA para este idioma. value = prioridad base (10 por defecto). Si se deja en blanco se omite todo el bloque ai_will_do. El multiply da bonificación cuando la cultura ya tiene este idioma (p. ej. 10 = x10 para proteger lengua nativa).</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiValue">Valor IA</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiMultiply">Multiplicador IA</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiMultiplyHint">Multiplicador aplicado cuando has_cultural_pillar = este idioma. P. ej. 10 significa que la IA es 10x más propensa a mantener su lengua nativa.</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiInvalid">Valor IA no válido. Usa un entero.</system:String>
+    <system:String x:Key="CulturesTab_LanguageLocName">Nombre idioma</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Herencia</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>

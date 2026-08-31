@@ -80,6 +80,16 @@
                         <TextBlock Text="{Binding HeritageFileNamePreview}" VerticalAlignment="Center"
                                    Margin="10,0,0,0" Foreground="Gray"/>
                     </DockPanel>
+                    <TextBlock Text="{DynamicResource ProfileTab_LanguageFileName}" Margin="0,5,0,0"/>
+                    <DockPanel Margin="0,2,0,5">
+                        <TextBox Text="{Binding LanguageFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="{Binding LanguageFileNameModified, Mode=OneWay}"
+                                 Width="200" MaxLength="80" HorizontalAlignment="Left"
+                                 DockPanel.Dock="Left"
+                                 Style="{StaticResource ModifiedTextBox}"/>
+                        <TextBlock Text="{Binding LanguageFileNamePreview}" VerticalAlignment="Center"
+                                   Margin="10,0,0,0" Foreground="Gray"/>
+                    </DockPanel>
                 </StackPanel>
             </GroupBox>
 

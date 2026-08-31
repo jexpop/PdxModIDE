@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.0</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.1</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -71,6 +71,7 @@
     <system:String x:Key="ProfileTab_CultureFileNamePrefix">Culture file prefix:</system:String>
     <system:String x:Key="ProfileTab_CultureFileNameSuffix">[culture name].txt</system:String>
     <system:String x:Key="ProfileTab_HeritageFileName">Heritage file name:</system:String>
+    <system:String x:Key="ProfileTab_LanguageFileName">Language file name:</system:String>
     <system:String x:Key="ProfileTab_ProfileSaved">Profile saved.</system:String>
     <system:String x:Key="ProfileTab_ToolTipSaveAllChanges">Unsaved changes are saved with the Save profile button (Profile tab).</system:String>
 
@@ -299,6 +300,32 @@
     <system:String x:Key="CulturesTab_HeritageDeleteConfirm">Delete heritage {0}? Its definition and localization files will be removed.</system:String>
     <system:String x:Key="CulturesTab_HeritageDeleteNotAllowed">Only heritages created for the mod can be deleted.</system:String>
     <system:String x:Key="CulturesTab_HeritageDeleted">Heritage {0} deleted.</system:String>
+    <system:String x:Key="CulturesTab_SubTabLanguages">Languages</system:String>
+    <system:String x:Key="CulturesTab_LanguageNew">New language</system:String>
+    <system:String x:Key="CulturesTab_LanguageEditor">Language editor</system:String>
+    <system:String x:Key="CulturesTab_LanguageId">Identifier</system:String>
+    <system:String x:Key="CulturesTab_LanguageColor">Color</system:String>
+    <system:String x:Key="CulturesTab_LanguageColorHint">Color value as in game files: named color (e.g. english, french) or hsv { 0.6 0.5 0.7 }. Named colors are resolved from common/named_colors/*.txt.</system:String>
+    <system:String x:Key="CulturesTab_LanguageSave">Save language</system:String>
+    <system:String x:Key="CulturesTab_LanguageDelete">Delete language</system:String>
+    <system:String x:Key="CulturesTab_LanguageNewTitle">New language</system:String>
+    <system:String x:Key="CulturesTab_LanguageEditTitle">Edit language</system:String>
+    <system:String x:Key="CulturesTab_LanguageReadOnly">Base game language. Only languages created for the mod can be edited or deleted.</system:String>
+    <system:String x:Key="CulturesTab_LanguageNeedId">Enter a language identifier.</system:String>
+    <system:String x:Key="CulturesTab_LanguageIdInvalid">Invalid identifier. Use only letters, digits and underscores.</system:String>
+    <system:String x:Key="CulturesTab_LanguageNeedColor">Enter a color value.</system:String>
+    <system:String x:Key="CulturesTab_LanguageColorInvalid">Invalid color format. Use a named color (e.g. english) or hsv { 0.6 0.5 0.7 }.</system:String>
+    <system:String x:Key="CulturesTab_LanguageExists">A language with id {0} already exists.</system:String>
+    <system:String x:Key="CulturesTab_LanguageDeleteConfirm">Delete language {0}? Its definition and localization files will be removed.</system:String>
+    <system:String x:Key="CulturesTab_LanguageDeleteNotAllowed">Only languages created for the mod can be deleted.</system:String>
+    <system:String x:Key="CulturesTab_LanguageDeleted">Language {0} deleted.</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiSection">AI behavior (ai_will_do)</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiHint">Optional. Defines the AI weight for this language. value = base priority (10 by default). If the field is left blank the whole ai_will_do block is omitted. The multiply gives a bonus when the culture already has this language (e.g. 10 = x10 to protect native tongue).</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiValue">AI value</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiMultiply">AI multiply</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiMultiplyHint">Multiplier applied when has_cultural_pillar = this language. E.g. 10 means the AI is 10x more likely to keep its native language.</system:String>
+    <system:String x:Key="CulturesTab_LanguageAiInvalid">Invalid AI value. Use an integer.</system:String>
+    <system:String x:Key="CulturesTab_LanguageLocName">Language name</system:String>
     <system:String x:Key="CulturesTab_EditorHeritage">Heritage</system:String>
     <system:String x:Key="CulturesTab_EditorEthos">Ethos</system:String>
     <system:String x:Key="CulturesTab_EditorColor">Color</system:String>

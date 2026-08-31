@@ -172,6 +172,25 @@ namespace PdxModIDE.UI
         }
         private string? _displayName;
         public List<LanguageParameter> Parameters { get; set; } = new();
+        public string Source { get; set; } = "Base";
+        public string SourceFile { get; set; } = "";
+        public bool IsModNew { get; set; }
+        public string Color
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_color)) return _color;
+                var param = Parameters.FirstOrDefault(p => string.Equals(p.Key, "color", StringComparison.OrdinalIgnoreCase));
+                return param?.Content ?? "";
+            }
+            set => _color = value ?? "";
+        }
+        private string? _color;
+        public System.Windows.Media.Brush SourceBrush => Source == "Mod"
+            ? (IsModNew
+                ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 140, 0))
+                : new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 120, 212)))
+            : System.Windows.Media.Brushes.Black;
     }
 
     public class MartialCustomParameter
@@ -366,8 +385,17 @@ namespace PdxModIDE.UI
         private string _savedHeritageLocCollective = "";
         private static readonly string[] HeritageAudioFallback = { "byzantine", "european", "indian", "mena", "sea" };
 
+        private LanguageInfo? _editorLanguage;
+        private bool _editorLanguageIsNew;
+        private bool _languageHasSavedState;
+        private string _savedLanguageLocName = "";
+        private string _savedLanguageColor = "";
+        private string _savedLanguageAiValue = "";
+        private string _savedLanguageAiMultiply = "";
+
         private readonly HashSet<string> _baseCultureRawKeys = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _baseHeritageRawKeys = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _baseLanguageRawKeys = new(StringComparer.OrdinalIgnoreCase);
         private static readonly HttpClient _translationHttp = new() { Timeout = TimeSpan.FromSeconds(30) };
         private static readonly System.Text.RegularExpressions.Regex _createdDateRegex =
             new(@"^-?\d+\.\d+\.\d+$", System.Text.RegularExpressions.RegexOptions.Compiled);
@@ -500,7 +528,7 @@ namespace PdxModIDE.UI
             var namedColors = LoadNamedColors(gameRoot, modRoot);
             var ethosDefinitions = LoadEthosDefinitions(gameRoot, modRoot);
             var heritageDefinitions = LoadHeritageDefinitions(gameRoot, modRoot, _baseHeritageRawKeys);
-            var languageDefinitions = LoadLanguageDefinitions(gameRoot, modRoot);
+            var languageDefinitions = LoadLanguageDefinitions(gameRoot, modRoot, _baseLanguageRawKeys);
             var martialCustomDefinitions = LoadMartialCustomDefinitions(gameRoot, modRoot);
             var headDeterminationDefinitions = LoadHeadDeterminationDefinitions(gameRoot, modRoot);
             var nameListDefinitions = LoadNameListDefinitions(gameRoot, modRoot);
@@ -625,6 +653,8 @@ namespace PdxModIDE.UI
 
             RefreshHeritageList();
             RefreshHeritageAudioOptions();
+            RefreshLanguageList();
+            RefreshLanguageColorOptions();
 
             foreach (var language in languageDefinitions.Values)
             {
@@ -3271,23 +3301,34 @@ foreach (var key in _editorCultureOptions
             }
         }
 
-        private static Dictionary<string, LanguageInfo> LoadLanguageDefinitions(string gameRoot, string modRoot)
+        private static Dictionary<string, LanguageInfo> LoadLanguageDefinitions(string gameRoot, string modRoot, HashSet<string>? baseKeys = null)
         {
             var result = new Dictionary<string, LanguageInfo>(StringComparer.OrdinalIgnoreCase);
+            string modSub = Path.Combine(modRoot, "common", "culture", "pillars", "mod");
 
-            foreach (var root in new[] { modRoot, gameRoot })
+            foreach (var (root, source) in new[] { (modRoot, "Mod"), (gameRoot, "Base") })
             {
                 if (string.IsNullOrEmpty(root)) continue;
                 var dir = Path.Combine(root, "common", "culture", "pillars");
                 if (!Directory.Exists(dir)) continue;
                 foreach (var file in Directory.GetFiles(dir, "*language.txt", SearchOption.AllDirectories))
-                    ParseLanguageFile(file, result);
+                {
+                    bool isModNew = source == "Mod" && IsPathInside(file, modSub);
+                    if (source == "Base" && baseKeys != null)
+                    {
+                        var temp = new Dictionary<string, LanguageInfo>(StringComparer.OrdinalIgnoreCase);
+                        ParseLanguageFile(file, temp, "Base", false);
+                        foreach (var key in temp.Keys)
+                            baseKeys.Add(key);
+                    }
+                    ParseLanguageFile(file, result, source, isModNew);
+                }
             }
 
             return result;
         }
 
-        private static void ParseLanguageFile(string filePath, Dictionary<string, LanguageInfo> output)
+        private static void ParseLanguageFile(string filePath, Dictionary<string, LanguageInfo> output, string source = "Base", bool isModNew = false)
         {
             var text = File.ReadAllText(filePath);
             int pos = 0;
@@ -3309,7 +3350,7 @@ foreach (var key in _editorCultureOptions
                 pos++;
 
                 string block = ReadBlock(text, ref pos);
-                var language = new LanguageInfo { Name = languageKey };
+                var language = new LanguageInfo { Name = languageKey, Source = source, SourceFile = filePath, IsModNew = isModNew };
                 ParseLanguageParameters(block, language.Parameters);
                 output[languageKey] = language;
             }
@@ -3343,6 +3384,39 @@ foreach (var key in _editorCultureOptions
                 {
                     string content = ReadBraceContent(block, ref pos);
                     parameters.Add(new LanguageParameter { Key = key, Content = content });
+                }
+                else if (pos + 3 < block.Length && (block.Substring(pos).StartsWith("hsv", StringComparison.OrdinalIgnoreCase) || block.Substring(pos).StartsWith("rgb", StringComparison.OrdinalIgnoreCase)))
+                {
+                    int start = pos;
+                    int brace = block.IndexOf('{', pos);
+                    if (brace >= 0)
+                    {
+                        int depth = 0;
+                        int p = brace;
+                        int end = -1;
+                        while (p < block.Length)
+                        {
+                            if (block[p] == '{') depth++;
+                            else if (block[p] == '}') { depth--; if (depth == 0) { end = p + 1; break; } }
+                            p++;
+                        }
+                        if (end > start)
+                        {
+                            string content = block.Substring(start, end - start).Trim();
+                            parameters.Add(new LanguageParameter { Key = key, Content = content });
+                            pos = end;
+                            continue;
+                        }
+                    }
+                    // fallback to simple token if not found
+                    int s = pos;
+                    while (pos < block.Length && !char.IsWhiteSpace(block[pos]) && block[pos] != '}' && block[pos] != '#')
+                    {
+                        if (block[pos] == '-' && pos + 1 < block.Length && block[pos + 1] == '-')
+                            break;
+                        pos++;
+                    }
+                    parameters.Add(new LanguageParameter { Key = key, Content = block.Substring(s, pos - s) });
                 }
                 else
                 {
@@ -6517,6 +6591,885 @@ else if (items.Count > 0)
             UpdateHeritageModeUi();
         }
 
+        // ---------- Language management ----------
+
+        private void RefreshLanguageList()
+        {
+            if (LanguageList == null) return;
+            string? selectedName = (LanguageList.SelectedItem as LanguageInfo)?.Name;
+            var items = _editorLanguageDefs.Values
+                .OrderBy(d => d.DisplayName, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+            LanguageList.ItemsSource = items;
+            foreach (var language in items)
+            {
+                if (_editorLocalization != null && _editorLocalization.TryGetValue($"{language.Name}_name", out var ln))
+                    language.DisplayName = ln;
+            }
+            if (selectedName != null)
+            {
+                var match = items.FirstOrDefault(l => string.Equals(l.Name, selectedName, StringComparison.OrdinalIgnoreCase));
+                if (match != null)
+                    LanguageList.SelectedItem = match;
+            }
+            else if (items.Count > 0)
+            {
+                LanguageList.SelectedIndex = 0;
+            }
+        }
+
+        private void RefreshLanguageColorOptions()
+        {
+            if (LanguageColor == null) return;
+            var namedKeys = _editorNamedColors.Keys.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
+            var existingColors = _editorLanguageDefs.Values
+                .Select(l => l.Color)
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            var combined = namedKeys.Concat(existingColors.Where(c => !namedKeys.Contains(c, StringComparer.OrdinalIgnoreCase))).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            string current = LanguageColor.Text ?? "";
+            LanguageColor.Items.Clear();
+            foreach (var c in combined)
+                LanguageColor.Items.Add(c);
+            LanguageColor.Text = current;
+            UpdateLanguageColorPreview();
+        }
+
+        private void LanguageColorPicker_Click(object sender, RoutedEventArgs e)
+        {
+            using var dialog = new System.Windows.Forms.ColorDialog();
+            dialog.FullOpen = true;
+            try
+            {
+                string current = LanguageColor?.Text?.Trim() ?? "";
+                if (_editorNamedColors.TryGetValue(current, out var named) && named.HasColor)
+                    dialog.Color = System.Drawing.Color.FromArgb(named.R, named.G, named.B);
+            }
+            catch { }
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var c = dialog.Color;
+                // Convert to hsv { h s v } 0-1 range for game compatibility
+                double r = c.R / 255.0, g = c.G / 255.0, b = c.B / 255.0;
+                double max = Math.Max(r, Math.Max(g, b));
+                double min = Math.Min(r, Math.Min(g, b));
+                double h = 0, s = 0, v = max;
+                double delta = max - min;
+                if (delta > 0.00001)
+                {
+                    s = delta / max;
+                    if (max == r) h = (g - b) / delta + (g < b ? 6 : 0);
+                    else if (max == g) h = (b - r) / delta + 2;
+                    else h = (r - g) / delta + 4;
+                    h /= 6;
+                }
+                string hsv = $"hsv{{ {h.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)} {s.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)} {v.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)} }}";
+                if (LanguageColor != null)
+                {
+                    LanguageColor.Text = hsv;
+                    UpdateLanguageColorPreview();
+                }
+            }
+        }
+
+        private void UpdateLanguageColorPreview()
+        {
+            if (LanguageColorPreview == null || LanguageColor == null) return;
+            string val = LanguageColor.Text?.Trim() ?? "";
+            if (string.IsNullOrEmpty(val))
+            {
+                LanguageColorPreview.Background = System.Windows.Media.Brushes.Transparent;
+                return;
+            }
+            if (_editorNamedColors.TryGetValue(val, out var named) && named.HasColor)
+            {
+                LanguageColorPreview.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(named.R, named.G, named.B));
+                return;
+            }
+            // try parse hsv { h s v }
+            try
+            {
+                if (val.StartsWith("hsv", StringComparison.OrdinalIgnoreCase))
+                {
+                    var inner = val.Substring(val.IndexOf('{') + 1).TrimEnd('}', ' ').Trim();
+                    var parts = inner.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int i = 0; i < parts.Length; i++) parts[i] = parts[i].Replace(',', '.');
+                    if (parts.Length >= 3 &&
+                        double.TryParse(parts[0], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double h) &&
+                        double.TryParse(parts[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double s) &&
+                        double.TryParse(parts[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double v))
+                    {
+                        var rgb = HsvToRgb(h, s, v);
+                        LanguageColorPreview.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(rgb.R, rgb.G, rgb.B));
+                        return;
+                    }
+                }
+            }
+            catch { }
+            LanguageColorPreview.Background = System.Windows.Media.Brushes.Transparent;
+        }
+
+        private static (byte R, byte G, byte B) HsvToRgb(double h, double s, double v)
+        {
+            h = h % 1.0;
+            if (h < 0) h += 1;
+            double c = v * s;
+            double x = c * (1 - Math.Abs((h * 6) % 2 - 1));
+            double m = v - c;
+            double r1=0,g1=0,b1=0;
+            if (h < 1.0/6) { r1=c; g1=x; }
+            else if (h < 2.0/6) { r1=x; g1=c; }
+            else if (h < 3.0/6) { g1=c; b1=x; }
+            else if (h < 4.0/6) { g1=x; b1=c; }
+            else if (h < 5.0/6) { r1=x; b1=c; }
+            else { r1=c; b1=x; }
+            return ((byte)Math.Round((r1+m)*255), (byte)Math.Round((g1+m)*255), (byte)Math.Round((b1+m)*255));
+        }
+
+        private void LanguageColor_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateLanguageColorPreview();
+        private void LanguageColor_KeyUp(object sender, System.Windows.Input.KeyEventArgs e) => UpdateLanguageColorPreview();
+
+        private void LanguageNew_Click(object sender, RoutedEventArgs e)
+        {
+            if (LanguageId != null) LanguageId.Text = "";
+            if (LanguageColor != null) LanguageColor.Text = "";
+            if (LanguageAiValue != null) LanguageAiValue.Text = "10";
+            if (LanguageAiMultiply != null) LanguageAiMultiply.Text = "10";
+            if (LanguageLocName != null) LanguageLocName.Text = "";
+            _editorLanguage = null;
+            _editorLanguageIsNew = true;
+            _languageHasSavedState = false;
+            _savedLanguageLocName = "";
+            _savedLanguageColor = "";
+            _savedLanguageAiValue = "";
+            _savedLanguageAiMultiply = "";
+            UpdateLanguageColorPreview();
+            UpdateLanguageModeUi();
+            if (LanguageStatusText != null)
+                LanguageStatusText.Text = Res("CulturesTab_EditorHint");
+        }
+
+        private void LanguageList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var language = LanguageList.SelectedItem as LanguageInfo;
+            if (language == null)
+            {
+                _editorLanguage = null;
+                _editorLanguageIsNew = false;
+                _languageHasSavedState = false;
+                UpdateLanguageModeUi();
+                return;
+            }
+
+            _editorLanguage = language;
+            _editorLanguageIsNew = false;
+            if (LanguageId != null) LanguageId.Text = language.Name.Replace("language_", "", StringComparison.OrdinalIgnoreCase);
+            if (LanguageColor != null) LanguageColor.Text = language.Color ?? "";
+            UpdateLanguageColorPreview();
+            // Parse ai_will_do for value/multiply
+            var aiParam = language.Parameters.FirstOrDefault(p => string.Equals(p.Key, "ai_will_do", StringComparison.OrdinalIgnoreCase));
+            string aiValue = "10", aiMultiply = "10";
+            if (aiParam != null)
+            {
+                var mVal = System.Text.RegularExpressions.Regex.Match(aiParam.Content, @"value\s*=\s*(\d+)");
+                if (mVal.Success) aiValue = mVal.Groups[1].Value;
+                var mMul = System.Text.RegularExpressions.Regex.Match(aiParam.Content, @"multiply\s*=\s*(\d+)");
+                if (mMul.Success) aiMultiply = mMul.Groups[1].Value;
+            }
+            if (LanguageAiValue != null) LanguageAiValue.Text = aiValue;
+            if (LanguageAiMultiply != null) LanguageAiMultiply.Text = aiMultiply;
+            if (LanguageLocName != null) LanguageLocName.Text = LookupLocalizationValue($"{language.Name}_name") ?? "";
+            _languageHasSavedState = true;
+            _savedLanguageLocName = LanguageLocName?.Text?.Trim() ?? "";
+            _savedLanguageColor = LanguageColor?.Text?.Trim() ?? "";
+            _savedLanguageAiValue = LanguageAiValue?.Text?.Trim() ?? "";
+            _savedLanguageAiMultiply = LanguageAiMultiply?.Text?.Trim() ?? "";
+            UpdateLanguageModeUi();
+
+            if (!language.IsModNew && LanguageStatusText != null)
+                LanguageStatusText.Text = Res("CulturesTab_LanguageReadOnly");
+        }
+
+        private void UpdateLanguageModeUi()
+        {
+            bool isNew = _editorLanguageIsNew && _editorLanguage == null;
+            if (LanguageId != null)
+            {
+                LanguageId.IsReadOnly = !isNew;
+                LanguageIdRow.Visibility = isNew ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (LanguageFileNameRow != null)
+                LanguageFileNameRow.Visibility = isNew ? Visibility.Visible : Visibility.Collapsed;
+            if (LanguageSaveButton != null)
+                LanguageSaveButton.IsEnabled = isNew || (_editorLanguage != null && _editorLanguage.IsModNew);
+            if (LanguageDeleteButton != null)
+                LanguageDeleteButton.IsEnabled = _editorLanguage != null && _editorLanguage.IsModNew;
+
+            if (isNew)
+            {
+                if (LanguageModeText != null) LanguageModeText.Text = Res("CulturesTab_LanguageNewTitle");
+                if (LanguageHintText != null) LanguageHintText.Text = Res("CulturesTab_EditorHint");
+                UpdateLanguageDefaultFileName();
+            }
+            else if (_editorLanguage != null)
+            {
+                if (LanguageModeText != null) LanguageModeText.Text = $"{Res("CulturesTab_LanguageEditTitle")}: {_editorLanguage.DisplayName}";
+                if (LanguageHintText != null) LanguageHintText.Text = Res("CulturesTab_EditorEditHint");
+            }
+            else
+            {
+                if (LanguageModeText != null) LanguageModeText.Text = "";
+                if (LanguageHintText != null) LanguageHintText.Text = "";
+            }
+        }
+
+        private void UpdateLanguageDefaultFileName()
+        {
+            if (LanguageFileName == null) return;
+            string profileName = _viewModel?.CurrentProfile?.FileNamePrefixes.TryGetValue("language", out var p) == true && !string.IsNullOrEmpty(p)
+                ? p!
+                : "00_language.txt";
+            string name = SanitizeFileName(profileName);
+            if (!name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                name += ".txt";
+            LanguageFileName.Text = name;
+        }
+
+        private void LanguageSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.CurrentProfile == null) return;
+            string modRoot = _viewModel.CurrentProfile.ModRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_EditorNoModRoot");
+                return;
+            }
+
+            string languageId = LanguageId?.Text?.Trim() ?? "";
+            string languageKey = $"language_{languageId}";
+            if (string.IsNullOrEmpty(languageId))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_LanguageNeedId");
+                return;
+            }
+            if (!System.Text.RegularExpressions.Regex.IsMatch(languageId, @"^[a-zA-Z0-9_]+$"))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_LanguageIdInvalid");
+                return;
+            }
+
+            string color = LanguageColor?.Text?.Trim() ?? "";
+            if (string.IsNullOrEmpty(color))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_LanguageNeedColor");
+                return;
+            }
+            if (color.StartsWith("hsv", StringComparison.OrdinalIgnoreCase))
+            {
+                var hsvMatch = System.Text.RegularExpressions.Regex.IsMatch(color, @"^hsv\s*\{\s*[\d\.,]+\s+[\d\.,]+\s+[\d\.,]+\s*\}$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                if (!hsvMatch)
+                {
+                    if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_LanguageColorInvalid");
+                    return;
+                }
+                // Normalize commas to dots for game files (invariant)
+                color = color.Replace(',', '.');
+            }
+
+            string locName = LanguageLocName?.Text?.Trim() ?? "";
+            string aiValue = LanguageAiValue?.Text?.Trim() ?? "";
+            string aiMultiply = LanguageAiMultiply?.Text?.Trim() ?? "";
+
+            // optional: validate numeric if provided
+            if (!string.IsNullOrEmpty(aiValue) && !int.TryParse(aiValue, out _))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_LanguageAiInvalid");
+                return;
+            }
+            if (!string.IsNullOrEmpty(aiMultiply) && !int.TryParse(aiMultiply, out _))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_LanguageAiInvalid");
+                return;
+            }
+
+            bool nameChanged = _languageHasSavedState ? locName != _savedLanguageLocName : !string.IsNullOrEmpty(locName);
+
+            if (_languageHasSavedState)
+            {
+                var blankFields = new List<string>();
+                if (!string.IsNullOrEmpty(_savedLanguageLocName) && string.IsNullOrEmpty(locName))
+                    blankFields.Add(Res("CulturesTab_EditorLocName"));
+                if (blankFields.Count > 0)
+                {
+                    if (LanguageStatusText != null)
+                        LanguageStatusText.Text = string.Format(Res("CulturesTab_EditorLocBlank"), string.Join(", ", blankFields));
+                    return;
+                }
+            }
+
+            string block = BuildLanguageBlock(languageKey, color, aiValue, aiMultiply);
+            string existingBlock = _editorLanguage != null ? BuildLanguageBlock(_editorLanguage.Name, color, aiValue, aiMultiply) : block;
+
+            if (_editorLanguageIsNew)
+            {
+                if (_editorLanguageDefs.ContainsKey(languageKey))
+                {
+                    if (LanguageStatusText != null) LanguageStatusText.Text = string.Format(Res("CulturesTab_LanguageExists"), languageId);
+                    return;
+                }
+                SaveAsNewLanguage(languageKey, block,
+                    (lk) => SaveLanguageLocalizationAsync(lk, nameChanged, locName));
+            }
+            else if (_editorLanguage != null)
+            {
+                SaveExistingLanguage(existingBlock,
+                    (lk) => SaveLanguageLocalizationAsync(lk, nameChanged, locName));
+            }
+        }
+
+        private static string BuildLanguageBlock(string languageKey, string color, string aiValue = "", string aiMultiply = "")
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"{languageKey} = {{");
+            sb.AppendLine("\ttype = language");
+            sb.AppendLine("\tis_shown = {");
+            sb.AppendLine("\t\tlanguage_is_shown_trigger = {");
+            sb.AppendLine($"\t\t\tLANGUAGE = {languageKey}");
+            sb.AppendLine("\t\t}");
+            sb.AppendLine("\t}");
+            string v = string.IsNullOrWhiteSpace(aiValue) ? "" : aiValue.Trim();
+            string m = string.IsNullOrWhiteSpace(aiMultiply) ? "" : aiMultiply.Trim();
+            if (!string.IsNullOrEmpty(v) || !string.IsNullOrEmpty(m))
+            {
+                if (string.IsNullOrEmpty(v)) v = "10";
+                if (string.IsNullOrEmpty(m)) m = "10";
+                sb.AppendLine("\tai_will_do = {");
+                sb.AppendLine($"\t\tvalue = {v}");
+            sb.AppendLine("\t\tif = {");
+            sb.AppendLine($"\t\t\tlimit = {{ has_cultural_pillar = {languageKey} }}");
+                sb.AppendLine($"\t\t\tmultiply = {m}");
+                            sb.AppendLine("\t\t}");
+                sb.AppendLine("\t}");
+            }
+            sb.AppendLine($"\tcolor = {color}");
+            sb.Append("}");
+            return sb.ToString();
+        }
+
+        private void SaveAsNewLanguage(string languageKey, string block, Func<string, Task> afterSave)
+        {
+            var profile = _viewModel?.CurrentProfile;
+            if (profile == null) return;
+            string modRoot = profile.ModRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_EditorNoModRoot");
+                return;
+            }
+
+            string folder = Path.Combine(modRoot, "common", "culture", "pillars", "mod");
+            try
+            {
+                Directory.CreateDirectory(folder);
+            }
+            catch
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_EditorFolderInvalid");
+                return;
+            }
+
+            if (LanguageExistsInMod(modRoot, languageKey, out _))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = string.Format(Res("CulturesTab_LanguageExists"), languageKey.Replace("language_", "", StringComparison.OrdinalIgnoreCase));
+                return;
+            }
+
+            string enteredName = LanguageFileName?.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(enteredName) && !enteredName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_EditorFileNameInvalid");
+                return;
+            }
+            string fileName = string.IsNullOrEmpty(enteredName) ? GetLanguageDefaultFileName() : enteredName;
+            fileName = SanitizeFileName(fileName);
+            if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                fileName += ".txt";
+
+            string fullPath = Path.Combine(folder, fileName);
+
+            try
+            {
+                if (File.Exists(fullPath))
+                {
+                    InsertLanguageIntoFileAlphabetically(fullPath, languageKey, block);
+                    if (LanguageStatusText != null) LanguageStatusText.Text = string.Format(Res("CulturesTab_EditorAddedToFile"), fileName);
+                }
+                else
+                {
+                    File.WriteAllText(fullPath, block, new UTF8Encoding(true));
+                    if (LanguageStatusText != null) LanguageStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), fileName);
+                }
+                MarkLanguageAsSaved();
+                _ = afterSave(languageKey);
+                RefreshAfterLanguageChange(languageKey);
+            }
+            catch (Exception ex)
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
+            }
+        }
+
+        private void SaveExistingLanguage(string block, Func<string, Task> afterSave)
+        {
+            var language = _editorLanguage;
+            if (language == null || !language.IsModNew || string.IsNullOrEmpty(language.SourceFile) || !File.Exists(language.SourceFile))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_LanguageReadOnly");
+                return;
+            }
+
+            try
+            {
+                ReplaceLanguageInFile(language.SourceFile, language.Name, block);
+                if (LanguageStatusText != null) LanguageStatusText.Text = string.Format(Res("CulturesTab_EditorSaved"), Path.GetFileName(language.SourceFile));
+                MarkLanguageAsSaved();
+                _ = afterSave(language.Name);
+                RefreshAfterLanguageChange(language.Name);
+            }
+            catch (Exception ex)
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
+            }
+        }
+
+        private void MarkLanguageAsSaved()
+        {
+            _editorLanguageIsNew = false;
+            _languageHasSavedState = true;
+            _savedLanguageLocName = LanguageLocName?.Text?.Trim() ?? "";
+            _savedLanguageColor = LanguageColor?.Text?.Trim() ?? "";
+            _savedLanguageAiValue = LanguageAiValue?.Text?.Trim() ?? "";
+            _savedLanguageAiMultiply = LanguageAiMultiply?.Text?.Trim() ?? "";
+        }
+
+        private string GetLanguageDefaultFileName()
+        {
+            string profileName = _viewModel?.CurrentProfile?.FileNamePrefixes.TryGetValue("language", out var p) == true && !string.IsNullOrEmpty(p)
+                ? p!
+                : "00_language.txt";
+            string name = SanitizeFileName(profileName);
+            if (!name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                name += ".txt";
+            return name;
+        }
+
+        private void RefreshAfterLanguageChange(string? selectKey = null)
+        {
+            if (LanguageList == null) return;
+            var profile = _viewModel?.CurrentProfile;
+            if (profile != null)
+            {
+                string appLang = _viewModel?.Language ?? "en";
+                _editorLocalization = LoadLocalization(profile.GameRoot ?? "", profile.ModRoot ?? "", appLang);
+                _editorLanguageDefs = LoadLanguageDefinitions(profile.GameRoot ?? "", profile.ModRoot ?? "", _baseLanguageRawKeys);
+                foreach (var language in _editorLanguageDefs.Values)
+                {
+                    if (_editorLocalization != null && _editorLocalization.TryGetValue($"{language.Name}_name", out var languageName))
+                        language.DisplayName = languageName;
+                }
+            }
+            RefreshCultureTree();
+            if (EditorLanguage != null)
+                PopulateEditorCombo(EditorLanguage, GetLanguageOptions(), GetSelectedOption(EditorLanguage));
+            if (!string.IsNullOrEmpty(selectKey) && _editorLanguageDefs.TryGetValue(selectKey, out var updated))
+                _editorLanguage = updated;
+            else if (_editorLanguage != null)
+                _editorLanguage = _editorLanguageDefs.TryGetValue(_editorLanguage.Name, out var match) ? match : null;
+            RefreshLanguageList();
+            UpdateLanguageModeUi();
+        }
+
+        private void LanguageDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var language = _editorLanguage;
+            if (language == null) return;
+            if (!language.IsModNew || string.IsNullOrEmpty(language.SourceFile))
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_LanguageDeleteNotAllowed");
+                return;
+            }
+
+            string display = language.DisplayName ?? language.Name ?? "";
+            if (System.Windows.MessageBox.Show(string.Format(Res("CulturesTab_LanguageDeleteConfirm"), display),
+                                display, System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Warning) != System.Windows.MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                string filePath = language.SourceFile;
+                if (!DeleteLanguageBlockFromFile(filePath, language.Name!))
+                {
+                    if (LanguageStatusText != null) LanguageStatusText.Text = Res("CulturesTab_EditorSaveError");
+                    return;
+                }
+                if (CountLanguageBlocks(filePath) == 0)
+                    File.Delete(filePath);
+
+                bool existsInBase = _baseLanguageRawKeys.Contains(language.Name!);
+                DeleteLanguageLocalization(_viewModel?.CurrentProfile?.ModRoot ?? "", language.Name!, existsInBase);
+
+                if (LanguageStatusText != null) LanguageStatusText.Text = string.Format(Res("CulturesTab_LanguageDeleted"), display);
+                _editorLanguage = null;
+                _editorLanguageIsNew = false;
+                _languageHasSavedState = false;
+                ResetLanguageForm();
+                RefreshAfterLanguageChange();
+            }
+            catch (Exception ex)
+            {
+                if (LanguageStatusText != null) LanguageStatusText.Text = $"{Res("CulturesTab_EditorSaveError")}: {ex.Message}";
+            }
+        }
+
+        private void ResetLanguageForm()
+        {
+            if (LanguageId != null) LanguageId.Text = "";
+            if (LanguageColor != null) LanguageColor.Text = "";
+            if (LanguageAiValue != null) LanguageAiValue.Text = "10";
+            if (LanguageAiMultiply != null) LanguageAiMultiply.Text = "10";
+            if (LanguageLocName != null) LanguageLocName.Text = "";
+            UpdateLanguageColorPreview();
+            UpdateLanguageModeUi();
+        }
+
+        private static bool LanguageExistsInMod(string modRoot, string languageKey, out string? filePath)
+        {
+            filePath = null;
+            string folder = Path.Combine(modRoot, "common", "culture", "pillars", "mod");
+            if (!Directory.Exists(folder)) return false;
+
+            foreach (var file in Directory.EnumerateFiles(folder, "*.txt", SearchOption.AllDirectories))
+            {
+                if (LanguageBlockExistsInFile(file, languageKey))
+                {
+                    filePath = file;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool LanguageBlockExistsInFile(string filePath, string languageKey)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                if (string.Equals(key, languageKey, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                pos++;
+                ReadBlock(text, ref pos);
+            }
+            return false;
+        }
+
+        private static void InsertLanguageIntoFileAlphabetically(string filePath, string languageKey, string block)
+        {
+            var text = File.ReadAllText(filePath);
+            var keys = new List<string>();
+            var positions = new List<int>();
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+                keys.Add(key);
+                positions.Add(keyStart);
+            }
+
+            int insertIndex = 0;
+            while (insertIndex < keys.Count &&
+                   string.Compare(keys[insertIndex], languageKey, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                insertIndex++;
+            }
+
+            var blockText = block.TrimEnd('\n', '\r');
+            string newText;
+            if (insertIndex >= keys.Count)
+            {
+                if (text.Length > 0 && !text.EndsWith("\n", StringComparison.Ordinal))
+                    text += Environment.NewLine;
+                newText = text + blockText + Environment.NewLine;
+            }
+            else
+            {
+                int at = positions[insertIndex];
+                string prefix = text.Substring(0, at);
+                string suffix = text.Substring(at);
+                newText = prefix + blockText + Environment.NewLine + suffix;
+            }
+
+            File.WriteAllText(filePath, newText, new UTF8Encoding(true));
+        }
+
+        private static void ReplaceLanguageInFile(string filePath, string languageKey, string newBlock)
+        {
+            string text = File.ReadAllText(filePath);
+            string marker = $"{languageKey} = {{";
+            int idx = text.IndexOf(marker, StringComparison.Ordinal);
+            if (idx < 0)
+                throw new InvalidOperationException("Language block not found");
+
+            int bracket = text.IndexOf('{', idx);
+            int depth = 0;
+            int pos = bracket;
+            int end = -1;
+            while (pos < text.Length)
+            {
+                char ch = text[pos];
+                if (ch == '{') depth++;
+                else if (ch == '}') { depth--; if (depth == 0) { end = pos; break; } }
+                pos++;
+            }
+            if (end < 0)
+                throw new InvalidOperationException("Language block not found");
+
+            var trimmedBlock = newBlock.TrimEnd();
+            string newText = text.Substring(0, idx)
+                + trimmedBlock
+                + text.Substring(end + 1);
+            File.WriteAllText(filePath, newText, new UTF8Encoding(true));
+        }
+
+        private static bool DeleteLanguageBlockFromFile(string filePath, string languageKey)
+        {
+            string text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+
+                if (string.Equals(key, languageKey, StringComparison.OrdinalIgnoreCase))
+                {
+                    int entryEnd = pos;
+                    string newText = text.Remove(keyStart, entryEnd - keyStart);
+                    File.WriteAllText(filePath, newText, new UTF8Encoding(true));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static int CountLanguageBlocks(string filePath)
+        {
+            string text = File.ReadAllText(filePath);
+            int count = 0;
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{')
+                {
+                    SkipValueAndFollowingBlock(text, ref pos);
+                    continue;
+                }
+                pos++;
+                ReadBlock(text, ref pos);
+                count++;
+            }
+            return count;
+        }
+
+        private static void DeleteLanguageLocalization(string modRoot, string languageKey, bool existsInBase)
+        {
+            if (string.IsNullOrEmpty(modRoot)) return;
+            var keysToRemove = new[] { $"{languageKey}_name" };
+            string baseLocPath = Path.Combine(modRoot, "localization");
+            if (existsInBase)
+                baseLocPath = Path.Combine(baseLocPath, "replace");
+
+            if (!Directory.Exists(baseLocPath)) return;
+            foreach (var file in Directory.GetFiles(baseLocPath, "cultural_languages_l_*.yml", SearchOption.AllDirectories))
+                RemoveLocalizationKeys(file, keysToRemove);
+        }
+
+        private async Task SaveLanguageLocalizationAsync(string languageKey, bool nameChanged, string name)
+        {
+            var profile = _viewModel?.CurrentProfile;
+            if (profile == null) return;
+            string modRoot = profile.ModRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot)) return;
+
+            if (!nameChanged) return;
+
+            bool autoTranslate = _viewModel?.AutoTranslate ?? true;
+            if (LanguageStatusText != null)
+                LanguageStatusText.Text = autoTranslate ? Res("CulturesTab_EditorLocTranslating") : Res("CulturesTab_EditorLocWriting");
+            SetEditorBusy(true);
+            try
+            {
+            string appLang = _viewModel?.Language ?? "en";
+            string? directFolder = appLang switch
+            {
+                "es" => "spanish",
+                "en" => "english",
+                _ => null
+            };
+
+            bool existsInBase = _baseLanguageRawKeys.Contains(languageKey);
+            string baseLocPath = Path.Combine(modRoot, "localization");
+            if (existsInBase)
+                baseLocPath = Path.Combine(baseLocPath, "replace");
+
+            string srcCode = appLang.ToLowerInvariant() switch { "es" => "es", "en" => "en", _ => "ca" };
+
+            var providers = autoTranslate ? BuildEnabledProviders() : new List<ITranslationProvider>();
+
+            List<(string Folder, string Code)> targets;
+            if (autoTranslate)
+                targets = GameSupportedLanguages.Select(f => (f.Folder, f.Code)).ToList();
+            else if (directFolder != null)
+                targets = new List<(string Folder, string Code)> { (directFolder, srcCode) };
+            else
+                targets = new List<(string Folder, string Code)>();
+
+            int saved = 0;
+            var errors = new List<string>();
+            var fallbackLangs = new List<string>();
+            foreach (var (ck3Folder, code) in targets)
+            {
+                string locName = name;
+
+                bool usedFallback = false;
+                if (autoTranslate && ck3Folder != directFolder)
+                {
+                    if (nameChanged)
+                    {
+                        var (trName, okName) = await TranslateWithFallbackAsync(name, srcCode, code, providers);
+                        locName = string.IsNullOrEmpty(trName) ? name : trName;
+                        usedFallback |= !okName;
+                    }
+                }
+
+                string folderPath = Path.Combine(baseLocPath, ck3Folder);
+                try
+                {
+                    string traditionsDir = Path.Combine(folderPath, "culture", "traditions");
+                    Directory.CreateDirectory(traditionsDir);
+                    string filePath = Path.Combine(traditionsDir, $"cultural_languages_l_{ck3Folder}.yml");
+                    var entries = new List<(string Key, string Value)>();
+                    if (nameChanged && !string.IsNullOrEmpty(locName))
+                        entries.Add(($"{languageKey}_name", locName));
+                    if (entries.Count > 0)
+                        UpsertLocalizationFile(filePath, $"l_{ck3Folder}:", entries);
+
+                    saved++;
+                    if (usedFallback)
+                        fallbackLangs.Add(ck3Folder);
+                }
+                catch
+                {
+                    errors.Add(ck3Folder);
+                }
+            }
+
+            if (LanguageStatusText == null) return;
+            if (errors.Count > 0)
+            {
+                LanguageStatusText.Text = $"{string.Format(Res("CulturesTab_EditorLocSaved"), saved)} {Res("CulturesTab_EditorLocError")}: {string.Join(", ", errors)}";
+            }
+            else if (fallbackLangs.Count > 0)
+            {
+                LanguageStatusText.Text = $"{string.Format(Res("CulturesTab_EditorLocSaved"), saved)} {string.Format(Res("CulturesTab_EditorLocFallback"), string.Join(", ", fallbackLangs))}";
+            }
+            else if (saved == 0)
+            {
+                LanguageStatusText.Text = Res("CulturesTab_EditorLocDisabled");
+            }
+            else
+            {
+                LanguageStatusText.Text = string.Format(Res("CulturesTab_EditorLocSaved"), saved);
+            }
+            }
+            finally
+            {
+                SetEditorBusy(false);
+                RefreshAfterLanguageChange(languageKey);
+            }
+        }
+
         private static bool HeritageExistsInMod(string modRoot, string heritageKey, out string? filePath)
         {
             filePath = null;
@@ -6855,3 +7808,4 @@ else if (items.Count > 0)
         }
     }
 }
+

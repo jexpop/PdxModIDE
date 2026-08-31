@@ -11,7 +11,7 @@ namespace PdxModIDE.UI
 {
     public partial class App : System.Windows.Application
     {
-        private static string _logPath;
+        private static string _logPath = "";
 
         protected override void OnStartup(StartupEventArgs e)
         {
