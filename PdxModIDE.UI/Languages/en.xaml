@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.1</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.2</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -117,6 +117,11 @@
     <system:String x:Key="HistoryTab_ColorLabel">Color:</system:String>
     <system:String x:Key="HistoryTab_Type">Type: -</system:String>
     <system:String x:Key="HistoryTab_TypeLabel">Type:</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceLabel">History source:</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceMod">Mod (single)</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceModGrouped">Mod (grouped)</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceGame">Base game</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceNotFound">Not found</system:String>
     <system:String x:Key="HistoryTab_Title">TITLE</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Barony:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">County:</system:String>

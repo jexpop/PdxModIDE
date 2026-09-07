@@ -493,6 +493,7 @@ namespace PdxModIDE.UI
                     _renderer?.SetHolderMode(false, null, null);
                     _titleLabels = null;
                     InvalidateRender();
+                    UpdateHistorySourceVisibility();
                     break;
 
                 case MapViewType.Title:
@@ -502,6 +503,7 @@ namespace PdxModIDE.UI
                     UpdateTitleModeVisibility();
                     EnsureAtLeastOneMode();
                     ReapplyActiveMode();
+                    UpdateHistorySourceVisibility();
                     break;
 
                 case MapViewType.Cultural:
@@ -515,6 +517,8 @@ namespace PdxModIDE.UI
                         BaseSourceCheck.IsChecked = true;
                     UpdateEditModeState();
                     ApplyCultureMode();
+                    UpdateHistorySourceVisibility();
+                    UpdateSelectionInfo();
                     break;
 
                 case MapViewType.Terrain:
@@ -526,6 +530,7 @@ namespace PdxModIDE.UI
                     }
                     UpdateEditModeState();
                     ApplyTerrainMode();
+                    UpdateHistorySourceVisibility();
                     break;
             }
 
@@ -1453,6 +1458,9 @@ namespace PdxModIDE.UI
                     return p != null ? TranslateTerrainType(p.Type, pid) : "-";
                 });
 
+                TextHistorySourceValue.Text = GetCommonValue(provinceIds, pid => GetProvinceHistorySourceText(pid));
+                UpdateHistorySourceVisibility();
+
                 string commonBarony = GetCommonValue(provinceIds, pid =>
                 {
                     string bk = _mapLoader.GetTitleFromProvinceId(pid) ?? "-";
@@ -1622,6 +1630,8 @@ namespace PdxModIDE.UI
                 TextNameValue.Text = GetLocalizedTitleName(province.Name);
                 TextColorValue.Text = $"({province.R},{province.G},{province.B})";
                 TextTypeValue.Text = TranslateTerrainType(province.Type, provinceId);
+                TextHistorySourceValue.Text = GetProvinceHistorySourceText(provinceId);
+                UpdateHistorySourceVisibility();
 
                 string baronyKey = _mapLoader.GetTitleFromProvinceId(provinceId) ?? "-";
                 string baronyName = baronyKey != "-" ? GetLocalizedTitleName(baronyKey) : "-";
@@ -1841,6 +1851,29 @@ namespace PdxModIDE.UI
                 "unknown" => Res("MapTerrain_Unknown"),
                 _ => Res($"MapTerrain_{type}") ?? type ?? "?"
             };
+        }
+
+        private string GetProvinceHistorySourceText(int provinceId)
+        {
+            string modRoot = ViewModel?.CurrentProfile?.ModRoot ?? "";
+            string gameRoot = ViewModel?.CurrentProfile?.GameRoot ?? "";
+            var loc = ProvinceHistoryService.Locate(provinceId, modRoot, gameRoot);
+            return loc.Origin switch
+            {
+                ProvinceHistoryOrigin.ModSingle => $"{Res("HistoryTab_HistorySourceMod")} ({loc.DisplayName})",
+                ProvinceHistoryOrigin.ModGrouped => $"{Res("HistoryTab_HistorySourceModGrouped")} ({loc.DisplayName})",
+                ProvinceHistoryOrigin.Game => $"{Res("HistoryTab_HistorySourceGame")} ({loc.DisplayName})",
+                _ => Res("HistoryTab_HistorySourceNotFound")
+            };
+        }
+
+        private void UpdateHistorySourceVisibility()
+        {
+            bool visible = _currentView == MapViewType.Cultural;
+            if (TextHistorySourceLabel != null)
+                TextHistorySourceLabel.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            if (TextHistorySourceValue != null)
+                TextHistorySourceValue.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private static string Res(string key)

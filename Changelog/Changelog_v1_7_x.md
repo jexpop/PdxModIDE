@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.2] - 2026-09-07
+
+### Added
+- **Province history source locator T1 (Map, Cultural view, read-only)** — new `PdxModIDE.MapEngine/ProvinceHistoryService.cs` with `Locate(id, modRoot, gameRoot)` resolving in order `history/provinces/mod/<id>.txt` → `history/provinces/**/*.txt` in mod (excluding `mod/`, regex `^\s*<id>\s*=\s*\{` ignoring `#`) → `history/provinces/**/*.txt` in base game. Returns `ProvinceHistoryOrigin { NotFound, ModSingle, ModGrouped, Game }` with `FilePath`/`DisplayName`. No writes, no `.bkp`, no split in T1.
+- **History source display (Cultural view only)** — new `HistorySourceLabel` + `TextHistorySourceValue` row in `HistoryTab.xaml` PROVINCE group (`Visibility=Collapsed` by default). `UpdateProvinceInfo`/`UpdateMultiProvinceInfo` fill via `GetProvinceHistorySourceText(id)` (`Mod (single) (8000.txt)` / `Mod (grouped) (k_akan.txt)` / `Base game (k_akan.txt)` / `Not found`); `UpdateHistorySourceVisibility()` shows only when `_currentView == Cultural`, called from `SwitchToView` (General/Title/Cultural/Terrain) and selection updates. Multi-select uses common value or `(Multiple)`.
+- i18n: new keys `HistoryTab_HistorySourceLabel/Mod/ModGrouped/Game/NotFound` in `en/es/ca.xaml`.
+
+### Changed
+- Updated application title to version 1.7.2 in all language files (en, es, ca)
+
+---
+
 ## [1.7.1] - 2026-08-31
 
 ### Added

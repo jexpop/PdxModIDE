@@ -38,6 +38,8 @@
                     <TextBlock x:Name="TextColorValue" Margin="15,0,0,5" />
                     <Label Content="{DynamicResource HistoryTab_TypeLabel}" FontWeight="Bold" />
                     <TextBlock x:Name="TextTypeValue" Margin="15,0,0,5" />
+                    <Label x:Name="TextHistorySourceLabel" Content="{DynamicResource HistoryTab_HistorySourceLabel}" FontWeight="Bold" Visibility="Collapsed" />
+                    <TextBlock x:Name="TextHistorySourceValue" Margin="15,0,0,5" TextWrapping="Wrap" Visibility="Collapsed" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Margin="0,0,0,5" x:Name="TitleGroup">

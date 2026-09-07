@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.7.1 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.7.2 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -203,6 +203,8 @@ interface IGamePlugin {
 **Duchy/Kingdom/Empire Modes**: New methods `BuildDuchyLut`, `BuildKingdomLut`, `BuildEmpireLut` use the full hierarchy `CountyToDuchy` → `DuchyToKingdom` → `KingdomToEmpire` to color by each level. In the Map tab: mutually exclusive checkboxes (Tit./Cty./Dch./Kgd./Emp.) with tooltips.
 
 **Culture Mode** (`CultureLoader`): `LoadCultures` parses culture definitions from `common/culture/cultures/*.txt` and resolves `color = <name>` references against `common/named_colors/*.txt` (game + mod roots). Title history (`history/titles/*.txt`) and character history (`history/characters/*.txt`) accept both numeric and string character IDs (eastern content: China/Japan/Korea), so provinces without a direct `culture =` inherit the county holder's culture correctly.
+
+**Province history source T1 (1.7.2, read-only)**: `ProvinceHistoryService.Locate(id, modRoot, gameRoot)` resolves `history/provinces` in order `mod/history/provinces/mod/<id>.txt` → `mod/history/provinces/**/*.txt` (excluding `mod/`) → `game/history/provinces/**/*.txt` via `^\s*<id>\s*=\s*\{` ignoring `#`. `HistoryTab` shows the result in the Cultural view only (`HistorySourceLabel/Value`, `UpdateHistorySourceVisibility`), as `Mod (single)` / `Mod (grouped)` / `Base game` / `Not found` with file name; multi-select shows the common value or `(Multiple)`. No writes in T1.
 
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
@@ -488,4 +490,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-08-31 | Project: PdxModIDE | Version: 1.7.1 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-09-07 | Project: PdxModIDE | Version: 1.7.2 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

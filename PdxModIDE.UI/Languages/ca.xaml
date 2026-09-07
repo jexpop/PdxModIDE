@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.1</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.2</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -117,6 +117,11 @@
     <system:String x:Key="HistoryTab_ColorLabel">Color:</system:String>
     <system:String x:Key="HistoryTab_Type">Tipus: -</system:String>
     <system:String x:Key="HistoryTab_TypeLabel">Tipus:</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceLabel">Origen històric:</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceMod">Mod (individual)</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceModGrouped">Mod (agrupat)</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceGame">Joc base</system:String>
+    <system:String x:Key="HistoryTab_HistorySourceNotFound">No trobat</system:String>
     <system:String x:Key="HistoryTab_Title">TÍTOL</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Baronia:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Comtat:</system:String>
