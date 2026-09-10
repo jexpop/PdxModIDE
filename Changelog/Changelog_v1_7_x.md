@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.3] - 2026-09-10
+
+### Added
+- **Province history simple write T2 (backend, no UI yet)** — extended `PdxModIDE.MapEngine/ProvinceHistoryService.cs` with `OffsetBackupDirName = "offset_backup"` (`GetOffsetBackupDir` → `ModRoot/history/provinces/offset_backup/`, `MoveToOffsetBackup` moves `<name>.txt` → `<name>.bkp` with `_1` suffix on collision, creates dir; implemented now for T3 split, not yet called in T2 simple path), `TryExtractProvinceBlock`/`GetAllProvinceIds` (balanced-brace `id = { ... }`), `UpsertCultureInBlock(block, "800.1.1", "andalusian")` (updates `culture` inside existing dated block preserving other attrs, else inserts `\t<date> = { culture = X }` before final `}`, format as `k_andalusia.txt:12`), and `TryWriteSingleCulture(modRoot,gameRoot,id,dateStr,newCulture)` → `Written`/`RequiresSplit`/`SourceNotFound`/`InvalidArgs`/`IOError` (validates `^-?\d+\.\d+\.\d+$`, `^[A-Za-z0-9_]+$`; `ModSingle` rewrites `mod/<id>.txt`, `Game` clones base block to `mod/<id>.txt` UTF-8 BOM, `NotFound` creates minimal dated file, `ModGrouped` returns `RequiresSplit` without touching disk for T3).
+
+### Changed
+- Updated application title to version 1.7.3 in all language files (en, es, ca)
+
+---
+
 ## [1.7.2] - 2026-09-07
 
 ### Added
