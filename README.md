@@ -5,7 +5,7 @@
 **Desktop IDE for managing and processing Paradox Interactive game mods (CK3, EU4, HOI4, etc.)**
 WPF application (.NET 8) that automates copying game files to the mod directory, applies year offsets, and validates differences.
 
-**Current version:** 1.7.3
+**Current version:** 1.7.4
 
 ### Documentation
 

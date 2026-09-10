@@ -181,6 +181,55 @@ namespace PdxModIDE.MapEngine
             }
         }
 
+        public sealed record SplitGroupedOutcome(
+            ProvinceWriteResult Result,
+            System.Collections.Generic.List<string> WrittenFiles,
+            string? BackupPath,
+            string Error);
+
+        public static SplitGroupedOutcome TrySplitGroupedFile(string modRoot, string gameRoot, string groupedPath, int targetId, string dateStr, string newCulture)
+        {
+            var written = new System.Collections.Generic.List<string>();
+            if (string.IsNullOrWhiteSpace(modRoot) || string.IsNullOrWhiteSpace(groupedPath) || targetId <= 0 ||
+                string.IsNullOrWhiteSpace(dateStr) || string.IsNullOrWhiteSpace(newCulture))
+                return new SplitGroupedOutcome(ProvinceWriteResult.InvalidArgs, written, null, "InvalidArgs");
+            dateStr = dateStr.Trim();
+            newCulture = newCulture.Trim();
+            if (!Regex.IsMatch(dateStr, @"^-?\d+\.\d+\.\d+$") || !Regex.IsMatch(newCulture, @"^[A-Za-z0-9_]+$"))
+                return new SplitGroupedOutcome(ProvinceWriteResult.InvalidArgs, written, null, "InvalidArgs");
+            try
+            {
+                if (!File.Exists(groupedPath))
+                    return new SplitGroupedOutcome(ProvinceWriteResult.SourceNotFound, written, null, "SourceNotFound");
+                string text = File.ReadAllText(groupedPath);
+                var ids = GetAllProvinceIds(text);
+                if (ids.Count == 0 || !ids.Contains(targetId))
+                    return new SplitGroupedOutcome(ProvinceWriteResult.SourceNotFound, written, null, "SourceNotFound");
+                var blocks = new System.Collections.Generic.Dictionary<int, string>();
+                foreach (int id in ids)
+                {
+                    if (!TryExtractProvinceBlock(text, id, out string b, out _, out _))
+                        return new SplitGroupedOutcome(ProvinceWriteResult.IOError, written, null, $"BlockNotFound:{id}");
+                    blocks[id] = id == targetId ? UpsertCultureInBlock(b, dateStr, newCulture) : b;
+                }
+                foreach (var kvp in blocks)
+                {
+                    string single = GetSinglePath(modRoot, kvp.Key);
+                    if (kvp.Key != targetId && File.Exists(single))
+                        continue;
+                    Directory.CreateDirectory(Path.GetDirectoryName(single)!);
+                    File.WriteAllText(single, kvp.Value + "\n", new System.Text.UTF8Encoding(true));
+                    written.Add(single);
+                }
+                string backup = MoveToOffsetBackup(groupedPath, modRoot);
+                return new SplitGroupedOutcome(ProvinceWriteResult.Written, written, backup, "");
+            }
+            catch (Exception ex)
+            {
+                return new SplitGroupedOutcome(ProvinceWriteResult.IOError, written, null, ex.Message);
+            }
+        }
+
         public static ProvinceHistoryLocation Locate(int provinceId, string modRoot, string gameRoot)
         {
             if (!string.IsNullOrEmpty(modRoot) && Directory.Exists(modRoot))

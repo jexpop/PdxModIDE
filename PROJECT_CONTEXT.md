@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.7.3 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.7.4 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -207,6 +207,8 @@ interface IGamePlugin {
 **Province history source T1 (1.7.2, read-only)**: `ProvinceHistoryService.Locate(id, modRoot, gameRoot)` resolves `history/provinces` in order `mod/history/provinces/mod/<id>.txt` → `mod/history/provinces/**/*.txt` (excluding `mod/`) → `game/history/provinces/**/*.txt` via `^\s*<id>\s*=\s*\{` ignoring `#`. `HistoryTab` shows the result in the Cultural view only (`HistorySourceLabel/Value`, `UpdateHistorySourceVisibility`), as `Mod (single)` / `Mod (grouped)` / `Base game` / `Not found` with file name; multi-select shows the common value or `(Multiple)`. No writes in T1.
 
 **Province history simple write T2 (1.7.3, backend, no UI)**: `ProvinceHistoryService` adds `OffsetBackupDirName = "offset_backup"` (`history/provinces/offset_backup/`, `MoveToOffsetBackup` → `<name>.bkp` with collision suffix, for T3 split), `TryExtractProvinceBlock`/`GetAllProvinceIds`, `UpsertCultureInBlock` (update `culture` in existing dated block preserving attrs, else insert `\t<date> = { culture = X }`), and `TryWriteSingleCulture` (`ModSingle` rewrite, `Game` clone to `mod/<id>.txt`, `NotFound` minimal create, `ModGrouped` → `RequiresSplit` untouched).
+
+**Province history split T3 (1.7.4, backend, no UI)**: `SplitGroupedOutcome` + `TrySplitGroupedFile(modRoot, gameRoot, groupedPath, targetId, dateStr, newCulture)` extracts all ids in memory, applies `UpsertCultureInBlock` only to `targetId`, clones the rest, writes `mod/<id>.txt` (skips existing non-target singles), then `MoveToOffsetBackup(grouped)` → `history/provinces/offset_backup/<name>.bkp`.
 
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
@@ -492,4 +494,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-09-10 | Project: PdxModIDE | Version: 1.7.3 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-09-10 | Project: PdxModIDE | Version: 1.7.4 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

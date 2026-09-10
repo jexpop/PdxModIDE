@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.4] - 2026-09-10
+
+### Added
+- **Province history split T3 (backend, no UI)** — new `SplitGroupedOutcome(Result, WrittenFiles, BackupPath, Error)` + `TrySplitGroupedFile(modRoot, gameRoot, groupedPath, targetId, dateStr, newCulture)` in `PdxModIDE.MapEngine/ProvinceHistoryService.cs`: validates args (`^-?\d+\.\d+\.\d+$`, `^[A-Za-z0-9_]+$`), reads grouped file, `GetAllProvinceIds` must contain `targetId`, extracts all blocks in memory first (any `BlockNotFound` aborts without writes), applies `UpsertCultureInBlock` only to `targetId`, clones the rest exactly, writes `mod/<id>.txt` UTF-8 BOM (skips existing non-target singles to avoid overwrite), and only then `MoveToOffsetBackup(grouped)` → `history/provinces/offset_backup/<name>.bkp`. Single-id grouped files follow the same write + backup path. `###c_xxx` headers outside blocks are not migrated (blocks only).
+
+### Changed
+- Updated application title to version 1.7.4 in all language files (en, es, ca)
+
+---
+
 ## [1.7.3] - 2026-09-10
 
 ### Added
