@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.4</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.6</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -122,6 +122,15 @@
     <system:String x:Key="HistoryTab_HistorySourceModGrouped">Mod (agrupado)</system:String>
     <system:String x:Key="HistoryTab_HistorySourceGame">Juego base</system:String>
     <system:String x:Key="HistoryTab_HistorySourceNotFound">No encontrado</system:String>
+    <system:String x:Key="HistoryTab_CultureEdit">Editar cultura</system:String>
+    <system:String x:Key="HistoryTab_CultureEditCulture">Cultura:</system:String>
+    <system:String x:Key="HistoryTab_CultureEditHint">Guarda la cultura en Mod Date (año + offset) como M.1.1 en history/provinces/mod/&lt;id&gt;.txt. Los ficheros agrupados del mod se dividen (resto preservado) y se mueven a offset_backup/*.bkp. El resto de atributos se conserva.</system:String>
+    <system:String x:Key="HistoryTab_CultureSave">Guardar cultura</system:String>
+    <system:String x:Key="HistoryTab_CultureEditSaved">Cultura {0} guardada en {1} en {2}.</system:String>
+    <system:String x:Key="HistoryTab_CultureEditNoModRoot">La raíz del mod no está configurada. Configura el perfil primero.</system:String>
+    <system:String x:Key="HistoryTab_CultureEditInvalidYear">Año no válido.</system:String>
+    <system:String x:Key="HistoryTab_CultureEditNeedCulture">Selecciona primero una cultura.</system:String>
+    <system:String x:Key="HistoryTab_CultureEditError">No se pudo guardar la cultura</system:String>
     <system:String x:Key="HistoryTab_Title">TÍTULO</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Baronía:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Condado:</system:String>

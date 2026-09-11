@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.6] - 2026-09-11
+
+### Added
+- **Nested split paths from file comments** — new `TryExtractProvinceHeaders(text, id)` captures the closest preceding `#k_...` / `##d_...` / `###c_...` comment tokens per province block, and `GetNestedSinglePath(modRoot, id, k, d, c)` writes to `history/provinces/mod/[k/][d/][c/]<id>.txt` (e.g. `mod/k_england/d_bedford/c_middlesex/1527.txt`, sanitized, flat fallback when no headers). `Locate(ModSingle)` is now recursive under `mod/` and shows the relative path; `TryWriteSingleCulture` rewrites in place and derives nested paths for new `Game` clones; `TrySplitGroupedFile` writes each id to its nested path (skips existing non-target singles).
+- **Chronologically ordered dates + coherent base (culture only)** — `UpsertCultureInBlock` now inserts a new `<date> = { culture = X }` before the first greater dated block (year/month/day comparison) instead of appending at the end; no-date files still append directly. When the new date is earlier than all existing dated blocks, the undated base `culture =` is also updated to the new value (inserted after `{` if absent); otherwise the base is untouched. Only `culture` is ever modified, all other attributes (`religion`, `holding`, etc.) are preserved.
+
+### Changed
+- Updated application title to version 1.7.6 in all language files (en, es, ca)
+
+---
+
+## [1.7.5] - 2026-09-11
+
+### Added
+- **Province culture editing UI T4 (Map, Cultural view)** — integrated `CultureEditLabel` + `CultureEditCombo` + `CultureSaveButton` (tooltip = hint) + `CultureEditStatus` at the end of the existing `TitleGroup` (CULTURE) panel, no separate group box. Visible only with Cultural view + single province + `Mod` source checked (`UpdateCultureEditVisibility`); hidden otherwise and `CultureSave_Click` guards the same. The combo lists game+mod cultures (localized display, current culture preselected); save writes at Mod Date (`YearBox + offset` as `M.1.1`) via `TryWriteSingleCulture`, falling back to `TrySplitGroupedFile` on `RequiresSplit` (backup to `offset_backup/*.bkp`), then clears and reloads `_cultureMod.ProvinceCultures`, `ApplyCultureMode()` and `UpdateProvinceInfo()`. Status via `HistoryTab_CultureEditSaved/NoModRoot/InvalidYear/NeedCulture/Error`.
+- i18n: new keys `HistoryTab_CultureEdit/EditCulture/Hint/Save/Saved/NoModRoot/InvalidYear/NeedCulture/Error` in `en/es/ca.xaml`.
+
+### Changed
+- Updated application title to version 1.7.5 in all language files (en, es, ca) — superseded by 1.7.6 in the same cycle
+
+---
+
 ## [1.7.4] - 2026-09-10
 
 ### Added

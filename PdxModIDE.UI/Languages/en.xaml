@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.4</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.6</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -122,6 +122,15 @@
     <system:String x:Key="HistoryTab_HistorySourceModGrouped">Mod (grouped)</system:String>
     <system:String x:Key="HistoryTab_HistorySourceGame">Base game</system:String>
     <system:String x:Key="HistoryTab_HistorySourceNotFound">Not found</system:String>
+    <system:String x:Key="HistoryTab_CultureEdit">Edit culture</system:String>
+    <system:String x:Key="HistoryTab_CultureEditCulture">Culture:</system:String>
+    <system:String x:Key="HistoryTab_CultureEditHint">Saves culture at Mod Date (year + offset) as M.1.1 in history/provinces/mod/&lt;id&gt;.txt. Grouped mod files are split (others preserved) and moved to offset_backup/*.bkp. Other attributes are preserved.</system:String>
+    <system:String x:Key="HistoryTab_CultureSave">Save culture</system:String>
+    <system:String x:Key="HistoryTab_CultureEditSaved">Culture {0} saved at {1} in {2}.</system:String>
+    <system:String x:Key="HistoryTab_CultureEditNoModRoot">Mod root is not set. Configure the profile first.</system:String>
+    <system:String x:Key="HistoryTab_CultureEditInvalidYear">Invalid year.</system:String>
+    <system:String x:Key="HistoryTab_CultureEditNeedCulture">Select a culture first.</system:String>
+    <system:String x:Key="HistoryTab_CultureEditError">Could not save culture</system:String>
     <system:String x:Key="HistoryTab_Title">TITLE</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Barony:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">County:</system:String>

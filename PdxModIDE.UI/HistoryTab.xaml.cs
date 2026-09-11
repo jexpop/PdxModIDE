@@ -1632,6 +1632,8 @@ namespace PdxModIDE.UI
                 TextTypeValue.Text = TranslateTerrainType(province.Type, provinceId);
                 TextHistorySourceValue.Text = GetProvinceHistorySourceText(provinceId);
                 UpdateHistorySourceVisibility();
+                RefreshCultureEditOptions(GetCurrentCultureKey(provinceId));
+                if (CultureEditStatus != null) CultureEditStatus.Text = "";
 
                 string baronyKey = _mapLoader.GetTitleFromProvinceId(provinceId) ?? "-";
                 string baronyName = baronyKey != "-" ? GetLocalizedTitleName(baronyKey) : "-";
@@ -1874,6 +1876,140 @@ namespace PdxModIDE.UI
                 TextHistorySourceLabel.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
             if (TextHistorySourceValue != null)
                 TextHistorySourceValue.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            UpdateCultureEditVisibility();
+        }
+
+        private void UpdateCultureEditVisibility()
+        {
+            bool visible = _currentView == MapViewType.Cultural
+                && _selectedProvinceIds.Count == 1
+                && InfoPanel.Visibility == Visibility.Visible
+                && ModSourceCheck?.IsChecked == true;
+            if (CultureEditLabel != null)
+                CultureEditLabel.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            if (CultureEditCombo != null)
+                CultureEditCombo.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            if (CultureSaveButton != null)
+            {
+                CultureSaveButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+                CultureSaveButton.ToolTip = Res("HistoryTab_CultureEditHint");
+            }
+            if (CultureEditStatus != null)
+                CultureEditStatus.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private string? GetCurrentCultureKey(int provinceId)
+        {
+            if (!int.TryParse(YearBox.Text, out int yr)) return null;
+            int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
+            bool useMod = ModSourceCheck?.IsChecked == true;
+            bool useBase = BaseSourceCheck?.IsChecked == true;
+            string? key = null;
+            if (useMod && _cultureMod != null && _cultureMod.ProvinceCultures.TryGetValue(provinceId, out var modCultures))
+                key = CultureLoader.GetCultureAtYear(modCultures, yr + offset);
+            if (key == null && useBase && _cultureBase != null && _cultureBase.ProvinceCultures.TryGetValue(provinceId, out var baseCultures))
+                key = CultureLoader.GetCultureAtYear(baseCultures, yr);
+            if (key == null && _cultureBase != null)
+                key = _cultureBase.GetEffectiveCulture(provinceId, yr);
+            return key;
+        }
+
+        private void RefreshCultureEditOptions(string? selectKey = null)
+        {
+            if (CultureEditCombo == null) return;
+            var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (_cultureBase != null) foreach (var k in _cultureBase.AllCultures.Keys) keys.Add(k);
+            if (_cultureMod != null) foreach (var k in _cultureMod.AllCultures.Keys) keys.Add(k);
+            var sorted = keys.OrderBy(k => GetCultureDisplayName(k), StringComparer.CurrentCultureIgnoreCase).ToList();
+            CultureEditCombo.Items.Clear();
+            foreach (var k in sorted)
+                CultureEditCombo.Items.Add(new ComboBoxItem { Tag = k, Content = GetCultureDisplayName(k) });
+            if (!string.IsNullOrEmpty(selectKey))
+            {
+                foreach (ComboBoxItem item in CultureEditCombo.Items)
+                {
+                    if (string.Equals((item.Tag as string) ?? "", selectKey, StringComparison.OrdinalIgnoreCase))
+                    {
+                        CultureEditCombo.SelectedItem = item;
+                        return;
+                    }
+                }
+            }
+            if (CultureEditCombo.Items.Count > 0 && CultureEditCombo.SelectedItem == null)
+                CultureEditCombo.SelectedIndex = 0;
+        }
+
+        private void CultureSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (_mapLoader == null || ViewModel?.CurrentProfile == null) return;
+            if (_selectedProvinceIds.Count != 1) return;
+            if (_currentView != MapViewType.Cultural || ModSourceCheck?.IsChecked != true) return;
+            int provinceId = _selectedProvinceIds.First();
+            string modRoot = ViewModel.CurrentProfile.ModRoot ?? "";
+            string gameRoot = ViewModel.CurrentProfile.GameRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot) || !Directory.Exists(modRoot))
+            {
+                if (CultureEditStatus != null) CultureEditStatus.Text = Res("HistoryTab_CultureEditNoModRoot");
+                return;
+            }
+            if (!int.TryParse(YearBox.Text, out int year))
+            {
+                if (CultureEditStatus != null) CultureEditStatus.Text = Res("HistoryTab_CultureEditInvalidYear");
+                return;
+            }
+            string? newCulture = (CultureEditCombo?.SelectedItem as ComboBoxItem)?.Tag as string;
+            if (string.IsNullOrEmpty(newCulture))
+            {
+                if (CultureEditStatus != null) CultureEditStatus.Text = Res("HistoryTab_CultureEditNeedCulture");
+                return;
+            }
+            int offset = ViewModel.CurrentProfile.YearOffset;
+            int modYear = year + offset;
+            string dateStr = $"{modYear}.1.1";
+            var write = ProvinceHistoryService.TryWriteSingleCulture(modRoot, gameRoot, provinceId, dateStr, newCulture, out string written, out string err);
+            if (write == ProvinceWriteResult.RequiresSplit)
+            {
+                var loc = ProvinceHistoryService.Locate(provinceId, modRoot, gameRoot);
+                if (loc.Origin != ProvinceHistoryOrigin.ModGrouped || string.IsNullOrEmpty(loc.FilePath))
+                {
+                    if (CultureEditStatus != null) CultureEditStatus.Text = Res("HistoryTab_CultureEditError");
+                    return;
+                }
+                var split = ProvinceHistoryService.TrySplitGroupedFile(modRoot, gameRoot, loc.FilePath, provinceId, dateStr, newCulture);
+                if (split.Result != ProvinceWriteResult.Written)
+                {
+                    if (CultureEditStatus != null) CultureEditStatus.Text = $"{Res("HistoryTab_CultureEditError")}: {split.Error}";
+                    return;
+                }
+                written = string.Join(", ", split.WrittenFiles.Select(Path.GetFileName));
+                if (!string.IsNullOrEmpty(split.BackupPath))
+                    written += $" → {Path.GetFileName(split.BackupPath)}";
+            }
+            else if (write != ProvinceWriteResult.Written)
+            {
+                if (CultureEditStatus != null) CultureEditStatus.Text = $"{Res("HistoryTab_CultureEditError")}: {err}";
+                return;
+            }
+            try
+            {
+                if (_cultureMod == null)
+                {
+                    _cultureMod = new CultureLoader();
+                    _cultureMod.LoadCultures(modRoot, overwriteDuplicates: true, namedColorsRoot: gameRoot);
+                }
+                _cultureMod.ProvinceCultures.Clear();
+                _cultureMod.LoadProvinceHistory(modRoot, overwriteDuplicates: true);
+            }
+            catch (Exception ex)
+            {
+                if (CultureEditStatus != null) CultureEditStatus.Text = $"{Res("HistoryTab_CultureEditError")}: {ex.Message}";
+                return;
+            }
+            ApplyCultureMode();
+            UpdateProvinceInfo(provinceId);
+            RefreshCultureEditOptions(newCulture);
+            if (CultureEditStatus != null)
+                CultureEditStatus.Text = string.Format(Res("HistoryTab_CultureEditSaved"), newCulture, dateStr, written);
         }
 
         private static string Res(string key)

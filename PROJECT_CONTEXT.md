@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.7.4 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.7.6 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -209,6 +209,10 @@ interface IGamePlugin {
 **Province history simple write T2 (1.7.3, backend, no UI)**: `ProvinceHistoryService` adds `OffsetBackupDirName = "offset_backup"` (`history/provinces/offset_backup/`, `MoveToOffsetBackup` → `<name>.bkp` with collision suffix, for T3 split), `TryExtractProvinceBlock`/`GetAllProvinceIds`, `UpsertCultureInBlock` (update `culture` in existing dated block preserving attrs, else insert `\t<date> = { culture = X }`), and `TryWriteSingleCulture` (`ModSingle` rewrite, `Game` clone to `mod/<id>.txt`, `NotFound` minimal create, `ModGrouped` → `RequiresSplit` untouched).
 
 **Province history split T3 (1.7.4, backend, no UI)**: `SplitGroupedOutcome` + `TrySplitGroupedFile(modRoot, gameRoot, groupedPath, targetId, dateStr, newCulture)` extracts all ids in memory, applies `UpsertCultureInBlock` only to `targetId`, clones the rest, writes `mod/<id>.txt` (skips existing non-target singles), then `MoveToOffsetBackup(grouped)` → `history/provinces/offset_backup/<name>.bkp`.
+
+**Province culture editing UI T4 (1.7.5)**: `HistoryTab` CULTURE panel integrates `CultureEditLabel/Combo/Button/Status` (no separate group); visible only with Cultural view + single province + `Mod` checked (`UpdateCultureEditVisibility`, guarded save). Combo lists game+mod cultures localized with current preselected; save uses Mod Date (`YearBox + offset` as `M.1.1`) via `TryWriteSingleCulture` with `TrySplitGroupedFile` fallback, then reloads `_cultureMod.ProvinceCultures`, `ApplyCultureMode()` and refreshes the panel.
+
+**Nested split + ordered dates (1.7.6)**: `TryExtractProvinceHeaders` reads `#k_/#d_/#c_` comments per block and `GetNestedSinglePath` writes `mod/[k/][d/][c/]<id>.txt` (flat fallback); `Locate(ModSingle)` is recursive with relative display. `UpsertCultureInBlock` inserts new dates chronologically (year/month/day) and, only when the new date precedes all existing ones, updates the undated base `culture` too; only `culture` is modified.
 
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
@@ -494,4 +498,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-09-10 | Project: PdxModIDE | Version: 1.7.4 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-09-11 | Project: PdxModIDE | Version: 1.7.6 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
