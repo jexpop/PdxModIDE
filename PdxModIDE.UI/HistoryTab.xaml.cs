@@ -132,10 +132,18 @@ namespace PdxModIDE.UI
 
             if (_currentView == MapViewType.Cultural)
             {
+                bool modActiveC = ModSourceCheck?.IsChecked == true;
+                if (!modActiveC && _editMode)
+                {
+                    _editMode = false;
+                    ModeToggleButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "HistoryTab_ModeViewAction");
+                    ModeToggleButton.SetResourceReference(System.Windows.FrameworkElement.ToolTipProperty, "HistoryTab_ModeView");
+                }
                 BaseSourceCheck!.Visibility = Visibility.Visible;
                 ModSourceCheck!.Visibility = Visibility.Visible;
                 TitleModePanel.Visibility = Visibility.Collapsed;
-                ModeToggleButton.Visibility = Visibility.Collapsed;
+                ModeToggleButton.Visibility = Visibility.Visible;
+                ModeToggleButton.IsEnabled = modActiveC;
                 SplitCountyButton.Visibility = Visibility.Collapsed;
                 ShowNamesCheck.Visibility = Visibility.Visible;
                 return;
@@ -445,6 +453,11 @@ namespace PdxModIDE.UI
             }
             UpdateEditModeState();
             UpdateModeStatusLabel();
+            if (_currentView == MapViewType.Cultural)
+            {
+                UpdateSelectionInfo();
+                return;
+            }
             if (!_editMode && (HolderModeCheck.IsChecked == true || CountyModeCheck.IsChecked == true ||
                      DuchyModeCheck.IsChecked == true || KingdomModeCheck.IsChecked == true ||
                      EmpireModeCheck.IsChecked == true))
@@ -859,6 +872,16 @@ namespace PdxModIDE.UI
                     var province = _mapLoader.GetProvinceFromId(provinceId);
                     if (province != null)
                     {
+                        // In Cultural view only land provinces are selectable (base: Titles non-land branch).
+                        if (_currentView == MapViewType.Cultural && province.Type != "land")
+                        {
+                            _selectedProvinceIds.Clear();
+                            _renderer.SetHighlightProvinces(_selectedProvinceIds);
+                            InfoPanel.Visibility = Visibility.Collapsed;
+                            InfoPlaceholder.Visibility = Visibility.Visible;
+                            QueueRender();
+                            return;
+                        }
                         if (_editMode)
                         {
                             if (province.Type != "land")
@@ -1460,6 +1483,8 @@ namespace PdxModIDE.UI
 
                 TextHistorySourceValue.Text = GetCommonValue(provinceIds, pid => GetProvinceHistorySourceText(pid));
                 UpdateHistorySourceVisibility();
+                RefreshCultureEditOptions(GetCommonCultureKey(provinceIds));
+                if (CultureEditStatus != null) CultureEditStatus.Text = "";
 
                 string commonBarony = GetCommonValue(provinceIds, pid =>
                 {
@@ -1882,7 +1907,8 @@ namespace PdxModIDE.UI
         private void UpdateCultureEditVisibility()
         {
             bool visible = _currentView == MapViewType.Cultural
-                && _selectedProvinceIds.Count == 1
+                && _editMode
+                && _selectedProvinceIds.Count >= 1
                 && InfoPanel.Visibility == Visibility.Visible
                 && ModSourceCheck?.IsChecked == true;
             if (CultureEditLabel != null)
@@ -1939,12 +1965,26 @@ namespace PdxModIDE.UI
                 CultureEditCombo.SelectedIndex = 0;
         }
 
+        private string? GetCommonCultureKey(HashSet<int> ids)
+        {
+            string? first = null;
+            bool hasFirst = false;
+            foreach (int id in ids)
+            {
+                string? cur = GetCurrentCultureKey(id);
+                if (!hasFirst) { first = cur; hasFirst = true; }
+                else if (!string.Equals(first, cur, StringComparison.OrdinalIgnoreCase))
+                    return null;
+            }
+            return first;
+        }
+
         private void CultureSave_Click(object sender, RoutedEventArgs e)
         {
             if (_mapLoader == null || ViewModel?.CurrentProfile == null) return;
-            if (_selectedProvinceIds.Count != 1) return;
-            if (_currentView != MapViewType.Cultural || ModSourceCheck?.IsChecked != true) return;
-            int provinceId = _selectedProvinceIds.First();
+            if (_selectedProvinceIds.Count < 1) return;
+            if (_currentView != MapViewType.Cultural || !_editMode || ModSourceCheck?.IsChecked != true) return;
+            var provinceIds = _selectedProvinceIds.OrderBy(id => id).ToList();
             string modRoot = ViewModel.CurrentProfile.ModRoot ?? "";
             string gameRoot = ViewModel.CurrentProfile.GameRoot ?? "";
             if (string.IsNullOrEmpty(modRoot) || !Directory.Exists(modRoot))
@@ -1966,28 +2006,48 @@ namespace PdxModIDE.UI
             int offset = ViewModel.CurrentProfile.YearOffset;
             int modYear = year + offset;
             string dateStr = $"{modYear}.1.1";
-            var write = ProvinceHistoryService.TryWriteSingleCulture(modRoot, gameRoot, provinceId, dateStr, newCulture, out string written, out string err);
-            if (write == ProvinceWriteResult.RequiresSplit)
+            int okCount = 0;
+            var writtenSamples = new System.Collections.Generic.List<string>();
+            var errors = new System.Collections.Generic.List<string>();
+            foreach (int provinceId in provinceIds)
             {
-                var loc = ProvinceHistoryService.Locate(provinceId, modRoot, gameRoot);
-                if (loc.Origin != ProvinceHistoryOrigin.ModGrouped || string.IsNullOrEmpty(loc.FilePath))
+                string displayFiles = "";
+                var write = ProvinceHistoryService.TryWriteSingleCulture(modRoot, gameRoot, provinceId, dateStr, newCulture, out string written, out string err);
+                if (write == ProvinceWriteResult.RequiresSplit)
                 {
-                    if (CultureEditStatus != null) CultureEditStatus.Text = Res("HistoryTab_CultureEditError");
-                    return;
+                    var loc = ProvinceHistoryService.Locate(provinceId, modRoot, gameRoot);
+                    if (loc.Origin != ProvinceHistoryOrigin.ModGrouped || string.IsNullOrEmpty(loc.FilePath))
+                    {
+                        errors.Add($"{provinceId}: {Res("HistoryTab_CultureEditError")}");
+                        continue;
+                    }
+                    var split = ProvinceHistoryService.TrySplitGroupedFile(modRoot, gameRoot, loc.FilePath, provinceId, dateStr, newCulture);
+                    if (split.Result != ProvinceWriteResult.Written)
+                    {
+                        errors.Add($"{provinceId}: {split.Error}");
+                        continue;
+                    }
+                    displayFiles = string.Join(", ", split.WrittenFiles.Select(Path.GetFileName));
+                    if (!string.IsNullOrEmpty(split.BackupPath))
+                        displayFiles += $" → {Path.GetFileName(split.BackupPath)}";
                 }
-                var split = ProvinceHistoryService.TrySplitGroupedFile(modRoot, gameRoot, loc.FilePath, provinceId, dateStr, newCulture);
-                if (split.Result != ProvinceWriteResult.Written)
+                else if (write != ProvinceWriteResult.Written)
                 {
-                    if (CultureEditStatus != null) CultureEditStatus.Text = $"{Res("HistoryTab_CultureEditError")}: {split.Error}";
-                    return;
+                    errors.Add($"{provinceId}: {err}");
+                    continue;
                 }
-                written = string.Join(", ", split.WrittenFiles.Select(Path.GetFileName));
-                if (!string.IsNullOrEmpty(split.BackupPath))
-                    written += $" → {Path.GetFileName(split.BackupPath)}";
+                else
+                {
+                    displayFiles = Path.GetFileName(written);
+                }
+                okCount++;
+                if (writtenSamples.Count < 3 && !string.IsNullOrEmpty(displayFiles))
+                    writtenSamples.Add($"{provinceId} ({displayFiles})");
             }
-            else if (write != ProvinceWriteResult.Written)
+            if (okCount == 0)
             {
-                if (CultureEditStatus != null) CultureEditStatus.Text = $"{Res("HistoryTab_CultureEditError")}: {err}";
+                if (CultureEditStatus != null)
+                    CultureEditStatus.Text = $"{Res("HistoryTab_CultureEditError")}: {string.Join("; ", errors)}";
                 return;
             }
             try
@@ -2006,10 +2066,17 @@ namespace PdxModIDE.UI
                 return;
             }
             ApplyCultureMode();
-            UpdateProvinceInfo(provinceId);
+            UpdateSelectionInfo();
             RefreshCultureEditOptions(newCulture);
             if (CultureEditStatus != null)
-                CultureEditStatus.Text = string.Format(Res("HistoryTab_CultureEditSaved"), newCulture, dateStr, written);
+            {
+                if (provinceIds.Count == 1)
+                    CultureEditStatus.Text = string.Format(Res("HistoryTab_CultureEditSaved"), newCulture, dateStr, writtenSamples.FirstOrDefault() ?? "");
+                else if (errors.Count == 0)
+                    CultureEditStatus.Text = string.Format(Res("HistoryTab_CultureEditSavedMulti"), newCulture, dateStr, okCount);
+                else
+                    CultureEditStatus.Text = $"{string.Format(Res("HistoryTab_CultureEditSavedMulti"), newCulture, dateStr, okCount)} {string.Format(Res("HistoryTab_CultureEditErrors"), errors.Count, string.Join("; ", errors))}";
+            }
         }
 
         private static string Res(string key)

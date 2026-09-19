@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.7.6 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.7.7 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -213,6 +213,8 @@ interface IGamePlugin {
 **Province culture editing UI T4 (1.7.5)**: `HistoryTab` CULTURE panel integrates `CultureEditLabel/Combo/Button/Status` (no separate group); visible only with Cultural view + single province + `Mod` checked (`UpdateCultureEditVisibility`, guarded save). Combo lists game+mod cultures localized with current preselected; save uses Mod Date (`YearBox + offset` as `M.1.1`) via `TryWriteSingleCulture` with `TrySplitGroupedFile` fallback, then reloads `_cultureMod.ProvinceCultures`, `ApplyCultureMode()` and refreshes the panel.
 
 **Nested split + ordered dates (1.7.6)**: `TryExtractProvinceHeaders` reads `#k_/#d_/#c_` comments per block and `GetNestedSinglePath` writes `mod/[k/][d/][c/]<id>.txt` (flat fallback); `Locate(ModSingle)` is recursive with relative display. `UpsertCultureInBlock` inserts new dates chronologically (year/month/day) and, only when the new date precedes all existing ones, updates the undated base `culture` too; only `culture` is modified.
+
+**Province culture editing T5 (1.7.7, UI + backend)**: `HistoryTab` CULTURE panel now supports **multi-province editing**. In Cultural view, pressing `ModeToggleButton` (visible only when `Mod` source checked, like Titles) switches to **Edit mode** where `Ctrl+click` toggles province selection in a set (any number, land-only — non-land types like sea/river/lake/impassable clear the entire selection instead). `UpdateCultureEditVisibility` now requires `_editMode` (editor visible only in Edit mode); `CultureSave_Click` writes the selected culture to **all** selected provinces in sorted order via `TryWriteSingleCulture`/`TrySplitGroupedFile`, collecting `okCount` and per-province errors and displaying a summary (`HistoryTab_CultureEditSavedMulti` / `CultureEditErrors`). `GetCommonCultureKey` returns the common culture at the selected year (or `null` if provinces differ), preselecting the combo accordingly (or leaving it unselected). `UpsertCultureInBlock` now also updates the undated base `culture` when editing an **existing** date that is the earliest of all (`culture` only, preserving all other attributes), fixing the case where the base fell out of sync when the first dated block was modified.
 
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
@@ -498,4 +500,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-09-11 | Project: PdxModIDE | Version: 1.7.6 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-09-19 | Project: PdxModIDE | Version: 1.7.7 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

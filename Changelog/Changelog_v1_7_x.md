@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.7] - 2026-09-19
+
+### Added
+- **Multi-province culture editing (T5, Cultural view)** — `ModeToggleButton` now visible in Cultural view when `Mod` source checked (like Titles), switching between **View** and **Edit** mode. In Edit mode, `Ctrl+click` toggles province selection in a set; the editor (`CultureEditCombo`/`CultureSaveButton`) and status are visible only in Edit mode with ≥1 selected province. Non-land provinces (sea, river, lake, impassable, `unknown`) cannot be selected and clear the entire selection when clicked. `CultureSave_Click` writes the culture to **all** selected provinces in sorted order via `TryWriteSingleCulture`/`TrySplitGroupedFile`, collecting `okCount`, per-province errors and samples; status shows `HistoryTab_CultureEditSavedMulti` (N provinces) or `HistoryTab_CultureEditErrors` (M errors). `GetCommonCultureKey` returns the common culture at the selected year (or `null` if provinces differ), preselecting the combo or leaving it unselected. New i18n keys `HistoryTab_CultureEditSavedMulti` / `CultureEditErrors` in `en/es/ca.xaml`.
+- **Base culture coherence on existing-date edit** — `UpsertCultureInBlock` now also updates the undated base `culture` when editing an **existing** date that is the earliest of all (`culture` only, preserving all other attributes), fixing the case where the base fell out of sync when the first dated block was modified.
+
+### Changed
+- Updated application title to version 1.7.7 in all language files (en, es, ca)
+
+---
+
 ## [1.7.6] - 2026-09-11
 
 ### Added

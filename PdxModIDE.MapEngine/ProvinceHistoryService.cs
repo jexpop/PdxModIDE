@@ -184,7 +184,36 @@ namespace PdxModIDE.MapEngine
                     updatedInner = inner.Substring(0, cm.Index) + $"culture = {newCulture}" + inner.Substring(cm.Index + cm.Length);
                 else
                     updatedInner = "\n\t\tculture = " + newCulture + inner;
-                return blockText.Substring(0, brace + 1) + updatedInner + blockText.Substring(close);
+                string updatedBlock = blockText.Substring(0, brace + 1) + updatedInner + blockText.Substring(close);
+                // base coherence: if the edited date is the earliest of all, update undated base culture too (culture only)
+                if (TryParseDate(dateStr, out int ey, out int em2, out int ed2))
+                {
+                    var datedRe2 = new Regex(@"(?m)^\s*(?<date>-?\d+\.\d+\.\d+)\s*=\s*\{");
+                    bool earliest = true;
+                    foreach (Match m2 in datedRe2.Matches(blockText))
+                    {
+                        if (m2.Index == dm.Index) continue;
+                        if (TryParseDate(m2.Groups["date"].Value, out int oy, out int om, out int od))
+                        {
+                            if (CompareDates((oy, om, od), (ey, em2, ed2)) < 0) { earliest = false; break; }
+                        }
+                    }
+                    if (earliest)
+                    {
+                        var baseRe = new Regex(@"culture\s*=\s*[A-Za-z0-9_]+");
+                        var bm = baseRe.Match(updatedBlock);
+                        var firstDateAfter = datedRe2.Match(updatedBlock);
+                        if (bm.Success && (!firstDateAfter.Success || bm.Index < firstDateAfter.Index))
+                            updatedBlock = updatedBlock.Substring(0, bm.Index) + $"culture = {newCulture}" + updatedBlock.Substring(bm.Index + bm.Length);
+                        else if (!bm.Success)
+                        {
+                            int open = updatedBlock.IndexOf('{');
+                            if (open >= 0)
+                                updatedBlock = updatedBlock.Substring(0, open + 1) + $"\n\tculture = {newCulture}" + updatedBlock.Substring(open + 1);
+                        }
+                    }
+                }
+                return updatedBlock;
             }
             else
             {
