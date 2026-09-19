@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.7</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.8</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -133,6 +133,7 @@
     <system:String x:Key="HistoryTab_CultureEditError">No s'ha pogut desar la cultura</system:String>
     <system:String x:Key="HistoryTab_CultureEditSavedMulti">Cultura {0} desada a {1} a {2} províncies.</system:String>
     <system:String x:Key="HistoryTab_CultureEditErrors">Errors ({0}): {1}</system:String>
+    <system:String x:Key="HistoryTab_CultureSearchHint">Filtrar cultures…</system:String>
     <system:String x:Key="HistoryTab_Title">TÍTOL</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Baronia:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Comtat:</system:String>

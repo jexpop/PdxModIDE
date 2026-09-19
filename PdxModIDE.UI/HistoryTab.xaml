@@ -60,6 +60,9 @@
                     <Label x:Name="TextEmpireLabel" Content="{DynamicResource HistoryTab_EmpireLabel}" FontWeight="Bold" />
                     <TextBlock x:Name="TextEmpireValue" Margin="15,0,0,5" />
                     <Label x:Name="CultureEditLabel" Content="{DynamicResource HistoryTab_CultureEditCulture}" FontWeight="Bold" Visibility="Collapsed" />
+                    <TextBox x:Name="CultureSearchBox" Margin="15,0,0,5" Height="26" VerticalContentAlignment="Center"
+                             ToolTip="{DynamicResource HistoryTab_CultureSearchHint}" TextChanged="CultureSearch_TextChanged"
+                             Visibility="Collapsed" />
                     <ComboBox x:Name="CultureEditCombo" Margin="15,0,0,5" Visibility="Collapsed" />
                     <Button x:Name="CultureSaveButton" Content="{DynamicResource HistoryTab_CultureSave}"
                             Width="120" Height="26" HorizontalAlignment="Left" Margin="15,0,0,5" Click="CultureSave_Click" Visibility="Collapsed" />

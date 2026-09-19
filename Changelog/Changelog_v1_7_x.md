@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.8] - 2026-09-19
+
+### Added
+- **Culture text filter in Cultural view** — `HistoryTab` CULTURE panel adds a `CultureSearchBox` `TextBox` (`ToolTip` hint) above `CultureEditCombo` that filters options in real-time as you type; `CultureSearch_TextChanged` → `RefreshCultureEditOptions` matches only against the localized display name (`GetCultureDisplayName`, app language). The search box is visible only in Edit mode with ≥1 selected province. i18n key `HistoryTab_CultureSearchHint` added to `en/es/ca.xaml`. Mod culture localization resolved via `_mapLoader.LocalizedNames[uiLang]` (`MapLoader.LoadLocalization` + `LoadModLocalization`, includes `localization/replace/`) merged into `_cultureLocalizedNames` so mod cultures display localized names (e.g. "Britona" in Spanish).
+- Updated application title to version 1.7.8 in all language files (en, es, ca)
+
+---
+
 ## [1.7.7] - 2026-09-19
 
 ### Added

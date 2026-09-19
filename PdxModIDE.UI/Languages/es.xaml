@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.7</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.8</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -133,6 +133,7 @@
     <system:String x:Key="HistoryTab_CultureEditError">No se pudo guardar la cultura</system:String>
     <system:String x:Key="HistoryTab_CultureEditSavedMulti">Cultura {0} guardada en {1} en {2} provincias.</system:String>
     <system:String x:Key="HistoryTab_CultureEditErrors">Errores ({0}): {1}</system:String>
+    <system:String x:Key="HistoryTab_CultureSearchHint">Filtrar culturas…</system:String>
     <system:String x:Key="HistoryTab_Title">TÍTULO</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Baronía:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Condado:</system:String>

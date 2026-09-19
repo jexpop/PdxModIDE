@@ -46,8 +46,8 @@ namespace PdxModIDE.UI
         private readonly HashSet<int> _selectedProvinceIds = new HashSet<int>();
         private bool _editMode;
 
-        private enum MapViewType { General, Title, Cultural, Terrain }
-        private MapViewType _currentView = MapViewType.General;
+         private enum MapViewType { General, Title, Cultural, Terrain }
+         private MapViewType _currentView = MapViewType.General;
 
         private Dictionary<int, ProvincePixelInfo>? _provincePixelInfo;
         private List<TitleLabelInfo>? _titleLabels;
@@ -689,11 +689,11 @@ namespace PdxModIDE.UI
                     _dynastyMod = new DynastyLoader();
                     modDynCount = _dynastyMod.LoadAll(modRoot, overwriteDuplicates: true);
 
-                    _cultureMod = new CultureLoader();
-                    _cultureMod.LoadCultures(modRoot, overwriteDuplicates: true, namedColorsRoot: gameRoot);
-                    _cultureMod.LoadProvinceHistory(modRoot, overwriteDuplicates: true);
-                    loader.LoadModLocalization(modRoot);
-                }
+                     _cultureMod = new CultureLoader();
+                     _cultureMod.LoadCultures(modRoot, overwriteDuplicates: true, namedColorsRoot: gameRoot);
+                     _cultureMod.LoadProvinceHistory(modRoot, overwriteDuplicates: true);
+                     loader.LoadModLocalization(modRoot);
+                 }
                 else
                 {
                     _titleHistoryMod = null;
@@ -702,8 +702,11 @@ namespace PdxModIDE.UI
                     _cultureMod = null;
                 }
 
-                _mapLoader = loader;
-                _cultureBase.BuildProvinceToCounty(_mapLoader);
+                 _mapLoader = loader;
+                 if (_mapLoader.LocalizedNames.TryGetValue(uiLang, out var modLangNames))
+                     foreach (var kvp in modLangNames)
+                         _cultureLocalizedNames[kvp.Key] = kvp.Value;
+                 _cultureBase.BuildProvinceToCounty(_mapLoader);
 
                 var renderer = new MapRenderer();
                 if (!renderer.Load(loader))
@@ -1922,6 +1925,8 @@ namespace PdxModIDE.UI
             }
             if (CultureEditStatus != null)
                 CultureEditStatus.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            if (CultureSearchBox != null)
+                CultureSearchBox.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private string? GetCurrentCultureKey(int provinceId)
@@ -1940,30 +1945,43 @@ namespace PdxModIDE.UI
             return key;
         }
 
-        private void RefreshCultureEditOptions(string? selectKey = null)
-        {
-            if (CultureEditCombo == null) return;
-            var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (_cultureBase != null) foreach (var k in _cultureBase.AllCultures.Keys) keys.Add(k);
-            if (_cultureMod != null) foreach (var k in _cultureMod.AllCultures.Keys) keys.Add(k);
-            var sorted = keys.OrderBy(k => GetCultureDisplayName(k), StringComparer.CurrentCultureIgnoreCase).ToList();
-            CultureEditCombo.Items.Clear();
-            foreach (var k in sorted)
-                CultureEditCombo.Items.Add(new ComboBoxItem { Tag = k, Content = GetCultureDisplayName(k) });
-            if (!string.IsNullOrEmpty(selectKey))
+         private void RefreshCultureEditOptions(string? selectKey = null)
+         {
+             if (CultureEditCombo == null) return;
+             var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+             if (_cultureBase != null) foreach (var k in _cultureBase.AllCultures.Keys) keys.Add(k);
+             if (_cultureMod != null) foreach (var k in _cultureMod.AllCultures.Keys) keys.Add(k);
+            var filtered = keys.Where(k =>
             {
-                foreach (ComboBoxItem item in CultureEditCombo.Items)
-                {
-                    if (string.Equals((item.Tag as string) ?? "", selectKey, StringComparison.OrdinalIgnoreCase))
-                    {
-                        CultureEditCombo.SelectedItem = item;
-                        return;
-                    }
-                }
-            }
-            if (CultureEditCombo.Items.Count > 0 && CultureEditCombo.SelectedItem == null)
-                CultureEditCombo.SelectedIndex = 0;
-        }
+                if (string.IsNullOrEmpty(_cultureSearchText)) return true;
+                string disp = GetCultureDisplayName(k).ToLowerInvariant();
+                return disp.Contains(_cultureSearchText);
+            }).ToList();
+             var sorted = filtered.OrderBy(k => GetCultureDisplayName(k), StringComparer.CurrentCultureIgnoreCase).ToList();
+             CultureEditCombo.Items.Clear();
+             foreach (var k in sorted)
+                 CultureEditCombo.Items.Add(new ComboBoxItem { Tag = k, Content = GetCultureDisplayName(k) });
+             if (!string.IsNullOrEmpty(selectKey))
+             {
+                 foreach (ComboBoxItem item in CultureEditCombo.Items)
+                 {
+                     if (string.Equals((item.Tag as string) ?? "", selectKey, StringComparison.OrdinalIgnoreCase))
+                     {
+                         CultureEditCombo.SelectedItem = item;
+                         return;
+                     }
+                 }
+             }
+             if (CultureEditCombo.Items.Count > 0 && CultureEditCombo.SelectedItem == null)
+                 CultureEditCombo.SelectedIndex = 0;
+         }
+
+         private string? _cultureSearchText;
+         private void CultureSearch_TextChanged(object sender, TextChangedEventArgs e)
+         {
+             _cultureSearchText = CultureSearchBox?.Text?.Trim();
+             RefreshCultureEditOptions();
+         }
 
         private string? GetCommonCultureKey(HashSet<int> ids)
         {
