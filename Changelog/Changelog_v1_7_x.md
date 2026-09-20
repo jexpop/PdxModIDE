@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.9] - 2026-09-19
+
+### Changed
+- **Culture combo UX** — `CultureEditCombo` in HistoryTab Cultural view gets `MaxDropDownHeight="300"` and `ScrollViewer.CanContentScroll="True"` to limit dropdown height and enable smooth scrolling when browsing hundreds of cultures (matching the project's `ScrollViewer + MaxHeight` pattern from `CulturesTab`). The edit block (`CultureEditLabel` + `CultureSearchBox` + `CultureEditCombo` + save) is moved immediately below the current culture display (`TextBaronyValue`) instead of the bottom of the panel, so in Cultural view it appears as `Baronía → Cultura: <value> → Modificar cultura: [filter] [combo]`.
+- **Culture edit label** — `HistoryTab_CultureEditCulture` changed from `Culture:` / `Cultura:` to `Modify culture:` / `Modificar cultura:` in `en/es/ca.xaml`.
+
+---
+
 ## [1.7.8] - 2026-09-19
 
 ### Added

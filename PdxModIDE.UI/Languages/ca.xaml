@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.8</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.9</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -123,7 +123,7 @@
     <system:String x:Key="HistoryTab_HistorySourceGame">Joc base</system:String>
     <system:String x:Key="HistoryTab_HistorySourceNotFound">No trobat</system:String>
     <system:String x:Key="HistoryTab_CultureEdit">Editar cultura</system:String>
-    <system:String x:Key="HistoryTab_CultureEditCulture">Cultura:</system:String>
+    <system:String x:Key="HistoryTab_CultureEditCulture">Modificar cultura:</system:String>
     <system:String x:Key="HistoryTab_CultureEditHint">Desa la cultura a Mod Date (any + offset) com M.1.1 a history/provinces/mod/&lt;id&gt;.txt. Els fitxers agrupats del mod es divideixen (resta preservada) i es mouen a offset_backup/*.bkp. La resta d'atributs es conserva.</system:String>
     <system:String x:Key="HistoryTab_CultureSave">Desar cultura</system:String>
     <system:String x:Key="HistoryTab_CultureEditSaved">Cultura {0} desada a {1} a {2}.</system:String>

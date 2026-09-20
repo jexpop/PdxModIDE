@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.7.8 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
+**Current version**: 1.7.9 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (9 projects).
 
 ---
 
@@ -217,6 +217,8 @@ interface IGamePlugin {
 **Province culture editing T5 (1.7.7, UI + backend)**: `HistoryTab` CULTURE panel now supports **multi-province editing**. In Cultural view, pressing `ModeToggleButton` (visible only when `Mod` source checked, like Titles) switches to **Edit mode** where `Ctrl+click` toggles province selection in a set (any number, land-only — non-land types like sea/river/lake/impassable clear the entire selection instead). `UpdateCultureEditVisibility` now requires `_editMode` (editor visible only in Edit mode); `CultureSave_Click` writes the selected culture to **all** selected provinces in sorted order via `TryWriteSingleCulture`/`TrySplitGroupedFile`, collecting `okCount` and per-province errors and displaying a summary (`HistoryTab_CultureEditSavedMulti` / `CultureEditErrors`). `GetCommonCultureKey` returns the common culture at the selected year (or `null` if provinces differ), preselecting the combo accordingly (or leaving it unselected). `UpsertCultureInBlock` now also updates the undated base `culture` when editing an **existing** date that is the earliest of all (`culture` only, preserving all other attributes), fixing the case where the base fell out of sync when the first dated block was modified.
 
 **Culture filter T6 (1.7.8)**: `HistoryTab` CULTURE panel adds a `CultureSearchBox` `TextBox` (`ToolTip` hint) above `CultureEditCombo` that filters options in real-time as you type — `CultureSearch_TextChanged` → `RefreshCultureEditOptions` matches only against `GetCultureDisplayName(k)` (localized name in the app language, not the raw key). The search box is visible only in Edit mode with ≥1 selected province (controlled by `UpdateCultureEditVisibility`). i18n key `HistoryTab_CultureSearchHint` added to `en/es/ca.xaml`. Mod culture localization resolved via `_mapLoader.LocalizedNames[uiLang]` (loaded by `MapLoader.LoadLocalization` + `LoadModLocalization`, covering `localization/` and `localization/replace/`) merged into `_cultureLocalizedNames` after `_mapLoader` assignment — so mod cultures show localized names.
+
+**Culture combo UX T7 (1.7.9)**: `CultureEditCombo` in HistoryTab Cultural view gets `MaxDropDownHeight="300"` and `ScrollViewer.CanContentScroll="True"` to limit dropdown height and enable smooth scrolling when browsing hundreds of cultures (matching the project's `ScrollViewer + MaxHeight` pattern from `CulturesTab`). The edit block is moved immediately below the current culture display (`TextBaronyValue`) instead of the bottom of `TitleGroup`, so in Cultural view it appears as `Baronía → Cultura: <value> → Modificar cultura: [filter] [combo]`; `HistoryTab_CultureEditCulture` changed to `Modify culture:` / `Modificar cultura:` in `en/es/ca.xaml`.
 
 ### 5.5 `ModuleValidator` (`PdxModIDE.Validation`)
 
@@ -502,4 +504,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-09-19 | Project: PdxModIDE | Version: 1.7.8 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-09-19 | Project: PdxModIDE | Version: 1.7.9 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
