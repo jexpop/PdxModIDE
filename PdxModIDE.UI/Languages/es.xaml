@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.0</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.1</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -146,6 +146,11 @@
     <system:String x:Key="HistoryTab_ZoomOut">Zoom -</system:String>
     <system:String x:Key="HistoryTab_Fit">Ajustar</system:String>
     <system:String x:Key="HistoryTab_Year">Año:</system:String>
+    <system:String x:Key="HistoryTab_Date">Fecha:</system:String>
+    <system:String x:Key="HistoryTab_BookmarkGroup">Grupo:</system:String>
+    <system:String x:Key="HistoryTab_BookmarkGroupTooltip">Grupo de marcadores</system:String>
+    <system:String x:Key="HistoryTab_BookmarkLabel">Marcador:</system:String>
+    <system:String x:Key="HistoryTab_BookmarkTooltip">Selecciona un marcador para fijar la fecha del mapa</system:String>
     <system:String x:Key="HistoryTab_OffsetMod">Fecha Mod: -</system:String>
     <system:String x:Key="HistoryTab_OffsetModTooltip">Fecha resultante en el mod (año + offset del perfil)</system:String>
     <system:String x:Key="HistoryTab_Base">Base</system:String>

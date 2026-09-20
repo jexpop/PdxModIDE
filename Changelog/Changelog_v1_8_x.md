@@ -21,3 +21,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated application title to version 1.8.0 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.1] - 2026-09-20
+
+### Added
+- **Map date driven by bookmarks (1.8.1)** — `HistoryTab` no longer has an editable `YearBox`. New grouped control `BookmarkDateBorder` (`Group:` + `Bookmark:` + `Date:` + `Offset`) shows the date read-only and a two-level bookmark selector (group → bookmark). First-level `BookmarkGroupCombo` and second-level `BookmarkCombo` are ordered chronologically (`default_start_date` / `start_date`), filtered to hide groups without markers. `BookmarkGroupCombo_SelectionChanged` refreshes the bookmark list; `BookmarkCombo_SelectionChanged` sets `_currentFullDate` / `_currentYear`, updates `DateLabel` (`867.1.1`) and `OffsetLabel` (`year+offset.M.D`) and calls `ReapplyActiveMode()`.
+
+### Changed
+- **HistoryTab layout** — `WrapPanel Grid.Row="0"` split into `StackPanel` with two `WrapPanel` rows: first line `Zoom / Fit / BookmarkDateBorder / ViewSelector / TitleModePanel / ShowNames / ModeToggle / Split`; second line `Base / Mod` (as requested, `Base` and `Mod` on a second line).
+- **Bookmark loading respects source mode** — `LoadBookmarkCombos()` checks `BaseSourceCheck` / `ModSourceCheck`: both → `LoadMergedBookmarks` (mod priority), only base → `LoadGroups/LoadBookmarks(game)`, only mod → `LoadGroups/LoadBookmarks(mod)`. `SourceModeChanged` now reloads the combos. Empty groups are hidden (`Where(groupsWithMarkers)`).
+- **Bookmark combos hidden in General/Terrain** — `UpdateBookmarkDateBorderVisibility()` (`General`/`Terrain` → `Collapsed`, else `Visible`) called from `UpdateEditModeState()` and at the end of `SwitchToView()`.
+- Updated application title to version 1.8.1 in all language files (en, es, ca) — `MainWindow_Title`.
+
+### Fixed
+- Added `_yearBoxShim` (`TextBox` shim) so legacy `int.TryParse(YearBox.Text)` code (culture editing, holder LUT) keeps working after `YearBox` removal from XAML; `UpdateDateDisplays()` syncs the shim.
+
+### i18n
+- New keys `HistoryTab_Date`, `HistoryTab_BookmarkGroup` / `BookmarkGroupTooltip`, `HistoryTab_BookmarkLabel` / `BookmarkTooltip` in `en/es/ca.xaml`.
+

@@ -55,6 +55,16 @@ namespace PdxModIDE.UI
         private ushort[]? _currentHolderLut;
         private Dictionary<int, string>? _currentIndexToHolder;
 
+        // Bookmark date selection (1.8.1)
+        private Dictionary<string, BookmarkGroupInfo> _bookmarkGroups = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, BookmarkInfo> _bookmarks = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, string> _bookmarkLoc = new(StringComparer.OrdinalIgnoreCase);
+        private bool _bookmarkLoading;
+        private int _currentYear = 867;
+        private string _currentFullDate = "867.1.1";
+        private readonly System.Windows.Controls.TextBox _yearBoxShim = new System.Windows.Controls.TextBox { Text = "867" };
+        private System.Windows.Controls.TextBox YearBox => _yearBoxShim;
+
         private class ProvincePixelInfo
         {
             public float CenterX;
@@ -101,7 +111,8 @@ namespace PdxModIDE.UI
             if (ViewModel != null)
                 ViewModel.PropertyChanged += OnViewModelPropertyChanged;
             IsVisibleChanged += OnIsVisibleChanged;
-            UpdateOffsetLabel();
+            LoadBookmarkCombos();
+            UpdateDateDisplays();
             UpdateShowNamesCheck();
         }
 
@@ -111,8 +122,16 @@ namespace PdxModIDE.UI
                 ShowNamesCheck.IsChecked = ViewModel.CurrentProfile.ShowTitleNames;
         }
 
+        private void UpdateBookmarkDateBorderVisibility()
+        {
+            if (BookmarkDateBorder == null) return;
+            bool show = _currentView != MapViewType.General && _currentView != MapViewType.Terrain;
+            BookmarkDateBorder.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         private void UpdateEditModeState()
         {
+            UpdateBookmarkDateBorderVisibility();
             if (_currentView == MapViewType.General)
             {
                 if (_editMode)
@@ -157,6 +176,7 @@ namespace PdxModIDE.UI
                 ModeToggleButton.Visibility = Visibility.Collapsed;
                 SplitCountyButton.Visibility = Visibility.Collapsed;
                 ShowNamesCheck.Visibility = Visibility.Visible;
+                UpdateBookmarkDateBorderVisibility();
                 return;
             }
 
@@ -547,6 +567,7 @@ namespace PdxModIDE.UI
                     break;
             }
 
+            UpdateBookmarkDateBorderVisibility();
             UpdateModeStatusLabel();
         }
 
@@ -573,9 +594,14 @@ namespace PdxModIDE.UI
             {
                 _mapLoaded = false;
                 UpdateShowNamesCheck();
+                LoadBookmarkCombos();
             }
             if (e.PropertyName == nameof(MainViewModel.CurrentProfile) || e.PropertyName == nameof(MainViewModel.YearOffset))
-                UpdateOffsetLabel();
+                UpdateDateDisplays();
+            if (e.PropertyName == nameof(MainViewModel.Language))
+            {
+                LoadBookmarkCombos();
+            }
             if (e.PropertyName == nameof(MainViewModel.Language))
             {
                 if (_selectedProvinceIds.Count > 0)
@@ -589,19 +615,164 @@ namespace PdxModIDE.UI
             }
         }
 
-        private void UpdateOffsetLabel()
+        private void UpdateOffsetLabel() => UpdateDateDisplays();
+
+        private void UpdateDateDisplays()
         {
-            if (OffsetLabel == null) return;
+            if (DateLabel == null || OffsetLabel == null) return;
             var profile = ViewModel?.CurrentProfile;
             if (profile == null)
             {
-                OffsetLabel.Content = TryFindResource("HistoryTab_OffsetMod") ?? "Mod Date: -";
+                DateLabel.Text = _currentFullDate;
+                OffsetLabel.Text = TryFindResource("HistoryTab_OffsetMod") as string ?? "Mod Date: -";
                 return;
             }
-            if (int.TryParse(YearBox.Text, out int year))
-                OffsetLabel.Content = $"Mod Date: {year + profile.YearOffset}";
+            DateLabel.Text = _currentFullDate;
+            _yearBoxShim.Text = _currentYear.ToString();
+            var parsed = TryParseFullDate(_currentFullDate);
+            if (parsed != null)
+                OffsetLabel.Text = $"{parsed.Value.y + profile.YearOffset}.{parsed.Value.m}.{parsed.Value.d}";
             else
-                OffsetLabel.Content = TryFindResource("HistoryTab_OffsetMod") ?? "Mod Date: -";
+                OffsetLabel.Text = $"Mod Date: {_currentYear + profile.YearOffset}";
+        }
+
+        private static (int y, int m, int d)? TryParseFullDate(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return null;
+            var p = s.Trim().Split('.', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (p.Length < 1 || !int.TryParse(p[0], out int y)) return null;
+            int m = 1, d = 1;
+            if (p.Length >= 2) int.TryParse(p[1], out m);
+            if (p.Length >= 3) int.TryParse(p[2], out d);
+            return (y, m, d);
+        }
+
+        private int GetCurrentYear() => _currentYear;
+        private string GetCurrentFullDate() => _currentFullDate;
+
+        private void LoadBookmarkCombos()
+        {
+            if (_bookmarkLoading) return;
+            _bookmarkLoading = true;
+            try
+            {
+                var profile = ViewModel?.CurrentProfile;
+                if (profile == null || string.IsNullOrEmpty(profile.GameRoot))
+                {
+                    BookmarkGroupCombo.ItemsSource = null;
+                    BookmarkCombo.ItemsSource = null;
+                    return;
+                }
+                var gameRoot = profile.GameRoot;
+                var modRoot = profile.ModRoot ?? "";
+                var lang = ViewModel?.Language ?? "en";
+                bool useBase = BaseSourceCheck?.IsChecked == true;
+                bool useMod = ModSourceCheck?.IsChecked == true;
+                if (!useBase && !useMod) { useBase = true; useMod = true; }
+                Dictionary<string, BookmarkGroupInfo> groups;
+                Dictionary<string, BookmarkInfo> merged;
+                if (useBase && useMod)
+                {
+                    merged = BookmarkLoader.LoadMergedBookmarks(gameRoot, modRoot, out groups);
+                }
+                else if (useBase)
+                {
+                    groups = BookmarkLoader.LoadGroups(gameRoot, "Base");
+                    merged = BookmarkLoader.LoadBookmarks(gameRoot, "Base");
+                }
+                else // only mod
+                {
+                    if (!string.IsNullOrEmpty(modRoot))
+                    {
+                        groups = BookmarkLoader.LoadGroups(modRoot, "Mod");
+                        merged = BookmarkLoader.LoadBookmarks(modRoot, "Mod");
+                    }
+                    else
+                    {
+                        groups = new Dictionary<string, BookmarkGroupInfo>(StringComparer.OrdinalIgnoreCase);
+                        merged = new Dictionary<string, BookmarkInfo>(StringComparer.OrdinalIgnoreCase);
+                    }
+                }
+                _bookmarkGroups = groups;
+                _bookmarks = merged;
+                _bookmarkLoc = BookmarkLoader.LoadBookmarkLocalization(gameRoot, modRoot, lang);
+                foreach (var g in _bookmarkGroups.Values)
+                {
+                    if (_bookmarkLoc.TryGetValue(g.Name, out var loc)) g.DisplayName = loc;
+                    else g.DisplayName = g.Name;
+                }
+                foreach (var b in _bookmarks.Values)
+                {
+                    if (_bookmarkLoc.TryGetValue(b.Name, out var loc)) b.DisplayName = loc;
+                    else b.DisplayName = b.Name;
+                }
+                // filter groups without markers (point 2)
+                var groupsWithMarkers = new HashSet<string>(merged.Values.Select(b => b.Group ?? ""), StringComparer.OrdinalIgnoreCase);
+                var sortedGroups = _bookmarkGroups.Values
+                    .Where(g => groupsWithMarkers.Contains(g.Name))
+                    .OrderBy(g => TryParseFullDate(g.DefaultStartDate)?.y ?? int.MaxValue)
+                    .ThenBy(g => TryParseFullDate(g.DefaultStartDate)?.m ?? 1)
+                    .ThenBy(g => TryParseFullDate(g.DefaultStartDate)?.d ?? 1)
+                    .ThenBy(g => g.DisplayName, StringComparer.CurrentCultureIgnoreCase)
+                    .ToList();
+                BookmarkGroupCombo.ItemsSource = sortedGroups;
+                BookmarkGroupCombo.DisplayMemberPath = "DisplayName";
+                BookmarkGroupCombo.SelectedValuePath = "Name";
+                if (sortedGroups.Count > 0 && BookmarkGroupCombo.SelectedItem == null)
+                    BookmarkGroupCombo.SelectedIndex = 0;
+                else if (sortedGroups.Count > 0)
+                    RefreshBookmarkComboForSelectedGroup();
+                else
+                {
+                    BookmarkCombo.ItemsSource = null;
+                }
+            }
+            catch { }
+            finally { _bookmarkLoading = false; }
+        }
+
+        private void RefreshBookmarkComboForSelectedGroup()
+        {
+            if (BookmarkGroupCombo.SelectedItem is not BookmarkGroupInfo g) return;
+            var bms = _bookmarks.Values.Where(b => string.Equals(b.Group, g.Name, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(b => TryParseFullDate(b.StartDate ?? g.DefaultStartDate)?.y ?? int.MaxValue)
+                .ThenBy(b => b.DisplayName, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+            BookmarkCombo.ItemsSource = bms;
+            BookmarkCombo.DisplayMemberPath = "DisplayName";
+            BookmarkCombo.SelectedValuePath = "Name";
+            if (bms.Count > 0)
+                BookmarkCombo.SelectedIndex = 0;
+            else
+            {
+                string fallback = g.DefaultStartDate ?? "867.1.1";
+                if (!string.IsNullOrWhiteSpace(fallback))
+                {
+                    _currentFullDate = fallback;
+                    var pd = TryParseFullDate(fallback);
+                    _currentYear = pd?.y ?? 867;
+                    UpdateDateDisplays();
+                    ReapplyActiveMode();
+                }
+            }
+        }
+
+        private void BookmarkGroupCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_bookmarkLoading) return;
+            RefreshBookmarkComboForSelectedGroup();
+        }
+
+        private void BookmarkCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_bookmarkLoading || BookmarkCombo.SelectedItem is not BookmarkInfo bm) return;
+            string full = !string.IsNullOrWhiteSpace(bm.StartDate) ? bm.StartDate : (_bookmarkGroups.TryGetValue(bm.Group ?? "", out var gg) ? gg.DefaultStartDate : "867.1.1");
+            if (string.IsNullOrWhiteSpace(full)) full = "867.1.1";
+            _currentFullDate = full.Trim();
+            var parsed = TryParseFullDate(_currentFullDate);
+            _currentYear = parsed?.y ?? 867;
+            UpdateDateDisplays();
+            ReapplyActiveMode();
         }
 
         private void TryAutoLoad()
@@ -1054,6 +1225,7 @@ namespace PdxModIDE.UI
 
             UpdateEditModeState();
             UpdateTitleModeVisibility();
+            LoadBookmarkCombos();
             ApplySourceStructure();
 
             if (InfoPanel.Visibility == Visibility.Visible && _selectedProvinceIds.Count > 0)
@@ -1254,28 +1426,13 @@ namespace PdxModIDE.UI
 
         private void YearBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            UpdateOffsetLabel();
-            if (!_mapLoaded || _renderer == null) return;
-
-            if (_currentView == MapViewType.Cultural)
-                ApplyCultureMode();
-            else if (_currentView == MapViewType.Terrain)
-                ApplyTerrainMode();
-            else if (HolderModeCheck.IsChecked == true)
-                ApplyHolderMode();
-            else if (CountyModeCheck.IsChecked == true)
-                ApplyCountyMode();
-            else if (DuchyModeCheck.IsChecked == true)
-                ApplyDuchyMode();
-            else if (KingdomModeCheck.IsChecked == true)
-                ApplyKingdomMode();
-            else if (EmpireModeCheck.IsChecked == true)
-                ApplyEmpireMode();
+            UpdateDateDisplays();
+            ReapplyActiveMode();
         }
 
         private void ApplyHolderMode()
         {
-            if (!int.TryParse(YearBox.Text, out int year)) return;
+            int year = GetCurrentYear();
 
             if (!HasActiveSource())
             {
@@ -1379,8 +1536,7 @@ namespace PdxModIDE.UI
                 return;
             }
 
-            if (!int.TryParse(YearBox.Text, out int year))
-                year = 867;
+            int year = GetCurrentYear();
 
             bool useBase = BaseSourceCheck?.IsChecked == true;
             bool useMod = ModSourceCheck?.IsChecked == true;

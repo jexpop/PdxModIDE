@@ -78,62 +78,78 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
-                <Button Content="{DynamicResource HistoryTab_ZoomIn}" Width="70" Height="26" Click="ZoomIn_Click"/>
-                <Button Content="{DynamicResource HistoryTab_ZoomOut}" Width="70" Height="26" Margin="5,0,0,0" Click="ZoomOut_Click"/>
-                <Button Content="{DynamicResource HistoryTab_Fit}" Width="70" Height="26" Margin="5,0,0,0" Click="FitToWindow_Click"/>
-                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
-                <Label Content="{DynamicResource HistoryTab_Year}" VerticalAlignment="Center" Margin="5,0,3,0"/>
-                <TextBox x:Name="YearBox" Width="60" Height="26" VerticalContentAlignment="Center" Text="1200" TextChanged="YearBox_TextChanged"/>
-                <Label x:Name="OffsetLabel" Content="{DynamicResource HistoryTab_OffsetMod}" VerticalAlignment="Center" Margin="10,0,0,0" ToolTip="{DynamicResource HistoryTab_OffsetModTooltip}"/>
-                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
-                <ComboBox x:Name="ViewSelector" Width="110" Height="26" VerticalAlignment="Center"
-                          SelectedIndex="0" SelectionChanged="ViewSelector_SelectionChanged">
-                    <ComboBoxItem Content="{DynamicResource HistoryTab_View_General}" Tag="General"/>
-                    <ComboBoxItem Content="{DynamicResource HistoryTab_View_Title}" Tag="Title"/>
-                    <ComboBoxItem Content="{DynamicResource HistoryTab_View_Cultural}" Tag="Cultural"/>
-                    <ComboBoxItem Content="{DynamicResource HistoryTab_View_Terrain}" Tag="Terrain"/>
-                </ComboBox>
-                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
-                <CheckBox x:Name="BaseSourceCheck" Content="{DynamicResource HistoryTab_Base}" VerticalAlignment="Center"
-                          Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_BaseTooltip}"/>
-                <CheckBox x:Name="ModSourceCheck" Content="{DynamicResource HistoryTab_Mod}" VerticalAlignment="Center"
-                          Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_ModTooltip}"/>
-                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
-                <StackPanel x:Name="TitleModePanel" Orientation="Horizontal" Visibility="Collapsed">
-                    <CheckBox x:Name="HolderModeCheck" Content="{DynamicResource HistoryTab_HolderMode}" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged" ToolTip="{DynamicResource HistoryTab_HolderModeTooltip}"/>
-                    <CheckBox x:Name="CountyModeCheck" Content="{DynamicResource HistoryTab_CountyMode}" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Checked="CountyModeChanged" Unchecked="CountyModeChanged" ToolTip="{DynamicResource HistoryTab_CountyModeTooltip}"/>
-                    <CheckBox x:Name="DuchyModeCheck" Content="{DynamicResource HistoryTab_DuchyMode}" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Checked="DuchyModeChanged" Unchecked="DuchyModeChanged" ToolTip="{DynamicResource HistoryTab_DuchyModeTooltip}"/>
-                    <CheckBox x:Name="KingdomModeCheck" Content="{DynamicResource HistoryTab_KingdomMode}" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Checked="KingdomModeChanged" Unchecked="KingdomModeChanged" ToolTip="{DynamicResource HistoryTab_KingdomModeTooltip}"/>
-                    <CheckBox x:Name="EmpireModeCheck" Content="{DynamicResource HistoryTab_EmpireMode}" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="{DynamicResource HistoryTab_EmpireModeTooltip}"/>
-                </StackPanel>
-                <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
-                          Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"
-                          Tag="{Binding ShowTitleNamesModified, Mode=OneWay}"
-                          ToolTip="{DynamicResource ProfileTab_ToolTipSaveAllChanges}">
-                    <CheckBox.Style>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="Foreground" Value="Black"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
-                                    <Setter Property="Foreground" Value="Red"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
-                <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeViewAction}" Width="140" Height="26"
-                        Margin="10,0,0,0" Click="ModeToggleButton_Click"
-                        ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>
-                <Button x:Name="SplitCountyButton" Content="{DynamicResource HistoryTab_SplitCounty}" Width="120" Height="26"
-                        Margin="5,0,0,0" Click="SplitCountyButton_Click"
-                        Visibility="Collapsed"/>
-            </WrapPanel>
+            <StackPanel Grid.Row="0" Margin="0,0,0,5">
+                <WrapPanel Orientation="Horizontal">
+                    <Button Content="{DynamicResource HistoryTab_ZoomIn}" Width="70" Height="26" Click="ZoomIn_Click"/>
+                    <Button Content="{DynamicResource HistoryTab_ZoomOut}" Width="70" Height="26" Margin="5,0,0,0" Click="ZoomOut_Click"/>
+                    <Button Content="{DynamicResource HistoryTab_Fit}" Width="70" Height="26" Margin="5,0,0,0" Click="FitToWindow_Click"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
+                    <Border x:Name="BookmarkDateBorder" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" CornerRadius="4" Padding="6,2" Margin="5,0,0,0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Content="{DynamicResource HistoryTab_BookmarkGroup}" VerticalAlignment="Center" Margin="0,0,3,0"/>
+                            <ComboBox x:Name="BookmarkGroupCombo" Width="150" Height="26" VerticalAlignment="Center"
+                                      SelectionChanged="BookmarkGroupCombo_SelectionChanged"
+                                      ToolTip="{DynamicResource HistoryTab_BookmarkGroupTooltip}"/>
+                            <Label Content="{DynamicResource HistoryTab_BookmarkLabel}" VerticalAlignment="Center" Margin="8,0,3,0"/>
+                            <ComboBox x:Name="BookmarkCombo" Width="200" Height="26" VerticalAlignment="Center"
+                                      SelectionChanged="BookmarkCombo_SelectionChanged"
+                                      ToolTip="{DynamicResource HistoryTab_BookmarkTooltip}"/>
+                            <Label Content="{DynamicResource HistoryTab_Date}" VerticalAlignment="Center" Margin="8,0,3,0"/>
+                            <TextBlock x:Name="DateLabel" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold"/>
+                            <TextBlock x:Name="OffsetLabel" VerticalAlignment="Center" Margin="10,0,0,0" ToolTip="{DynamicResource HistoryTab_OffsetModTooltip}" Foreground="Gray"/>
+                        </StackPanel>
+                    </Border>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
+                    <ComboBox x:Name="ViewSelector" Width="110" Height="26" VerticalAlignment="Center"
+                              SelectedIndex="0" SelectionChanged="ViewSelector_SelectionChanged">
+                        <ComboBoxItem Content="{DynamicResource HistoryTab_View_General}" Tag="General"/>
+                        <ComboBoxItem Content="{DynamicResource HistoryTab_View_Title}" Tag="Title"/>
+                        <ComboBoxItem Content="{DynamicResource HistoryTab_View_Cultural}" Tag="Cultural"/>
+                        <ComboBoxItem Content="{DynamicResource HistoryTab_View_Terrain}" Tag="Terrain"/>
+                    </ComboBox>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
+                    <StackPanel x:Name="TitleModePanel" Orientation="Horizontal" Visibility="Collapsed">
+                        <CheckBox x:Name="HolderModeCheck" Content="{DynamicResource HistoryTab_HolderMode}" VerticalAlignment="Center"
+                                  Margin="5,0,0,0" Checked="HolderModeChanged" Unchecked="HolderModeChanged" ToolTip="{DynamicResource HistoryTab_HolderModeTooltip}"/>
+                        <CheckBox x:Name="CountyModeCheck" Content="{DynamicResource HistoryTab_CountyMode}" VerticalAlignment="Center"
+                                  Margin="5,0,0,0" Checked="CountyModeChanged" Unchecked="CountyModeChanged" ToolTip="{DynamicResource HistoryTab_CountyModeTooltip}"/>
+                        <CheckBox x:Name="DuchyModeCheck" Content="{DynamicResource HistoryTab_DuchyMode}" VerticalAlignment="Center"
+                                  Margin="5,0,0,0" Checked="DuchyModeChanged" Unchecked="DuchyModeChanged" ToolTip="{DynamicResource HistoryTab_DuchyModeTooltip}"/>
+                        <CheckBox x:Name="KingdomModeCheck" Content="{DynamicResource HistoryTab_KingdomMode}" VerticalAlignment="Center"
+                                  Margin="5,0,0,0" Checked="KingdomModeChanged" Unchecked="KingdomModeChanged" ToolTip="{DynamicResource HistoryTab_KingdomModeTooltip}"/>
+                        <CheckBox x:Name="EmpireModeCheck" Content="{DynamicResource HistoryTab_EmpireMode}" VerticalAlignment="Center"
+                                  Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="{DynamicResource HistoryTab_EmpireModeTooltip}"/>
+                    </StackPanel>
+                    <CheckBox x:Name="ShowNamesCheck" Content="{DynamicResource HistoryTab_ShowNames}" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="ShowNamesChanged" Unchecked="ShowNamesChanged"
+                              Tag="{Binding ShowTitleNamesModified, Mode=OneWay}"
+                              ToolTip="{DynamicResource ProfileTab_ToolTipSaveAllChanges}">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox">
+                                <Setter Property="Foreground" Value="Black"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                    <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeViewAction}" Width="140" Height="26"
+                            Margin="10,0,0,0" Click="ModeToggleButton_Click"
+                            ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>
+                    <Button x:Name="SplitCountyButton" Content="{DynamicResource HistoryTab_SplitCounty}" Width="120" Height="26"
+                            Margin="5,0,0,0" Click="SplitCountyButton_Click"
+                            Visibility="Collapsed"/>
+                </WrapPanel>
+                <WrapPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <CheckBox x:Name="BaseSourceCheck" Content="{DynamicResource HistoryTab_Base}" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_BaseTooltip}"/>
+                    <CheckBox x:Name="ModSourceCheck" Content="{DynamicResource HistoryTab_Mod}" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_ModTooltip}"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
+                </WrapPanel>
+            </StackPanel>
 
             <Image x:Name="MapImage" Grid.Row="1"
                    MouseDown="MapImage_MouseDown"
