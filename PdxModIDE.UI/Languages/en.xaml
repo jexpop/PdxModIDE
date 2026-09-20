@@ -44,11 +44,12 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.7.9</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.0</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
     <system:String x:Key="MainWindow_Tab_Cultures">Cultures</system:String>
+    <system:String x:Key="MainWindow_Tab_Bookmarks">Bookmarks</system:String>
     <system:String x:Key="MainWindow_Tab_Dates">Dates</system:String>
     <system:String x:Key="MainWindow_Tab_Modules">Modules</system:String>
     <system:String x:Key="MainWindow_Tab_Validation">Validation</system:String>
@@ -541,5 +542,43 @@
     <system:String x:Key="Msg_NewModulePathTitle">Module Path</system:String>
     <system:String x:Key="Msg_NewModulePathPrompt">Relative path:</system:String>
     <system:String x:Key="Msg_DeleteModuleConfirm">Delete module '{0}'?</system:String>
+
+    <!-- BookmarksTab -->
+    <system:String x:Key="BookmarksTab_Refresh">Refresh</system:String>
+    <system:String x:Key="BookmarksTab_BookmarksCount">bookmarks</system:String>
+    <system:String x:Key="BookmarksTab_Stats">Statistics</system:String>
+    <system:String x:Key="BookmarksTab_Groups">Groups</system:String>
+    <system:String x:Key="BookmarksTab_Bookmarks">Total bookmarks</system:String>
+    <system:String x:Key="BookmarksTab_ModBookmarks">Mod bookmarks</system:String>
+    <system:String x:Key="BookmarksTab_BaseBookmarks">Base game bookmarks</system:String>
+    <system:String x:Key="BookmarksTab_LegendBase">• Base game</system:String>
+    <system:String x:Key="BookmarksTab_LegendMod">• Mod (override, read-only)</system:String>
+    <system:String x:Key="BookmarksTab_LegendModNew">• Mod (new, writable in future)</system:String>
+    <system:String x:Key="BookmarksTab_Details">Bookmark Details</system:String>
+    <system:String x:Key="BookmarksTab_SelectPrompt">Select a bookmark or group to view details</system:String>
+    <system:String x:Key="BookmarksTab_Source">Source:</system:String>
+    <system:String x:Key="BookmarksTab_SourceBase">Base game (read-only)</system:String>
+    <system:String x:Key="BookmarksTab_SourceMod">Mod</system:String>
+    <system:String x:Key="BookmarksTab_SourceModNew">— new</system:String>
+    <system:String x:Key="BookmarksTab_BookmarkName">Name:</system:String>
+    <system:String x:Key="BookmarksTab_StartDate">Start date:</system:String>
+    <system:String x:Key="BookmarksTab_Group">Group:</system:String>
+    <system:String x:Key="BookmarksTab_IsPlayable">Playable:</system:String>
+    <system:String x:Key="BookmarksTab_Recommended">Recommended:</system:String>
+    <system:String x:Key="BookmarksTab_RequiresDlc">Requires DLC:</system:String>
+    <system:String x:Key="BookmarksTab_Characters">Characters:</system:String>
+    <system:String x:Key="BookmarksTab_RawBlock">Raw block</system:String>
+    <system:String x:Key="BookmarksTab_GroupDetails">Group Details</system:String>
+    <system:String x:Key="BookmarksTab_GroupName">Group name:</system:String>
+    <system:String x:Key="BookmarksTab_DefaultStartDate">Default start date:</system:String>
+    <system:String x:Key="BookmarksTab_NoProfile">No profile selected</system:String>
+    <system:String x:Key="BookmarksTab_NoGameRoot">Set up a profile with a valid GameRoot</system:String>
+    <system:String x:Key="BookmarksTab_LoadError">Error loading bookmarks</system:String>
+    <system:String x:Key="BookmarksTab_Ungrouped">Ungrouped</system:String>
+    <system:String x:Key="BookmarksTab_UngroupedHint">Bookmarks without a group.</system:String>
+    <system:String x:Key="BookmarksTab_SectionMod">Mod bookmarks</system:String>
+    <system:String x:Key="BookmarksTab_SectionBase">Base game bookmarks (informative)</system:String>
+    <system:String x:Key="BookmarksTab_ModEmpty">No mod bookmarks found.</system:String>
+    <system:String x:Key="BookmarksTab_BaseEmpty">No base game bookmarks found.</system:String>
 
 </ResourceDictionary>

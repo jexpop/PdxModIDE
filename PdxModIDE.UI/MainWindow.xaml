@@ -95,6 +95,9 @@
             <TabItem Header="{DynamicResource MainWindow_Tab_Cultures}">
                 <local:CulturesTab/>
             </TabItem>
+            <TabItem Header="{DynamicResource MainWindow_Tab_Bookmarks}">
+                <local:BookmarksTab/>
+            </TabItem>
             <TabItem Header="{DynamicResource MainWindow_Tab_Dates}">
                 <local:DatesTab/>
             </TabItem>
