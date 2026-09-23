@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.8.0] - 2026-09-20
+## [1.8.0]
 
 ### Added
 - **Bookmarks tab (MVP read-only, 1.8.0)** — new top-level tab `Bookmarks` / `Marcadores` / `Marcadors` (`MainWindow_Tab_Bookmarks`) between Cultures and Dates. Two-section TreeView:
@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.8.1] - 2026-09-20
+## [1.8.1]
 
 ### Added
 - **Map date driven by bookmarks (1.8.1)** — `HistoryTab` no longer has an editable `YearBox`. New grouped control `BookmarkDateBorder` (`Group:` + `Bookmark:` + `Date:` + `Offset`) shows the date read-only and a two-level bookmark selector (group → bookmark). First-level `BookmarkGroupCombo` and second-level `BookmarkCombo` are ordered chronologically (`default_start_date` / `start_date`), filtered to hide groups without markers. `BookmarkGroupCombo_SelectionChanged` refreshes the bookmark list; `BookmarkCombo_SelectionChanged` sets `_currentFullDate` / `_currentYear`, updates `DateLabel` (`867.1.1`) and `OffsetLabel` (`year+offset.M.D`) and calls `ReapplyActiveMode()`.
@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.8.2] - 2026-09-20
+## [1.8.2]
 
 ### Changed
 - **HistoryTab layout — Base/Mod at same level as titles (1.8.2)** — `Base`/`Mod` moved from a second line below to the same line as titles (`Holder / County / Duchy / Kingdom / Empire`), separated by a vertical `Separator`, as requested. First attempt used a `StackPanel` with two `WrapPanel` rows; final layout uses a single `WrapPanel` (1.8.2 first iteration) and then a `StackPanel` with `Row0 Height="70"` fixed to keep the map from jumping between layers (General/Terrain collapsed vs Title/Cultural populated). `UpdateBookmarkDateBorderVisibility()` keeps `BookmarkDateBorder` hidden in `General`/`Terrain`.
@@ -50,4 +50,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Stable map height** — `Grid.RowDefinitions Row0 Height="70"` (top bar fixed) guarantees two-row space even when the second row is empty, so the map does not shift when switching between `General`/`Terrain` and `Title`/`Cultural`.
 - Updated application title to version 1.8.2 in all language files (en, es, ca) — `MainWindow_Title`.
+
+---
+
+## [1.8.3]
+
+### Changed
+- **HistoryTab ViewSelector position (1.8.3)** — `ViewSelector` (layer combo `General` / `Title` / `Cultural` / `Terrain`) moved to the first row next to `Zoom` / `Fit`, removing the `Separator` that was before it. New order: `Zoom | Fit | ViewSelector | BookmarkDateBorder | Separator | Base/Mod | Titles…`. No logic or i18n changes.
+
+### Fixed
+- Updated application title to version 1.8.3 in all language files (en, es, ca) — `MainWindow_Title`.
 
