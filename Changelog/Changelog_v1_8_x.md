@@ -61,3 +61,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated application title to version 1.8.3 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.4]
+
+### Changed
+- **HistoryTab ShowNames position (1.8.4)** — `ShowNamesCheck` moved to the first position of the second row, before `Base` / `Mod` and `TitleModePanel`. Order now: `ShowNames | Base | Mod | Holder/County/Duchy/Kingdom/Empire`.
+- **Stable two-row header (1.8.4)** — `Grid.Row0 Height="70"` and both `WrapPanel Height="30"` fixed, so the two-row block does not resize with content (`BookmarkDateBorder` hidden in General/Terrain vs visible in Title/Cultural, `Base/Mod` collapsed vs visible). Map no longer shifts between layers.
+
+### Fixed
+- Updated application title to version 1.8.4 in all language files (en, es, ca) — `MainWindow_Title`.
+
