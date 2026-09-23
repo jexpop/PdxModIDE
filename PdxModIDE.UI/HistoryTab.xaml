@@ -74,7 +74,7 @@
 
         <Grid Grid.Column="1" Margin="5,0,0,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="70"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -107,6 +107,12 @@
                         <ComboBoxItem Content="{DynamicResource HistoryTab_View_Cultural}" Tag="Cultural"/>
                         <ComboBoxItem Content="{DynamicResource HistoryTab_View_Terrain}" Tag="Terrain"/>
                     </ComboBox>
+                </WrapPanel>
+                <WrapPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <CheckBox x:Name="BaseSourceCheck" Content="{DynamicResource HistoryTab_Base}" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_BaseTooltip}"/>
+                    <CheckBox x:Name="ModSourceCheck" Content="{DynamicResource HistoryTab_Mod}" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_ModTooltip}"/>
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
                     <StackPanel x:Name="TitleModePanel" Orientation="Horizontal" Visibility="Collapsed">
                         <CheckBox x:Name="HolderModeCheck" Content="{DynamicResource HistoryTab_HolderMode}" VerticalAlignment="Center"
@@ -141,13 +147,6 @@
                     <Button x:Name="SplitCountyButton" Content="{DynamicResource HistoryTab_SplitCounty}" Width="120" Height="26"
                             Margin="5,0,0,0" Click="SplitCountyButton_Click"
                             Visibility="Collapsed"/>
-                </WrapPanel>
-                <WrapPanel Orientation="Horizontal" Margin="0,4,0,0">
-                    <CheckBox x:Name="BaseSourceCheck" Content="{DynamicResource HistoryTab_Base}" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_BaseTooltip}"/>
-                    <CheckBox x:Name="ModSourceCheck" Content="{DynamicResource HistoryTab_Mod}" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_ModTooltip}"/>
-                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
                 </WrapPanel>
             </StackPanel>
 

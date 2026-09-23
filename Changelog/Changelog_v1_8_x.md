@@ -40,3 +40,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### i18n
 - New keys `HistoryTab_Date`, `HistoryTab_BookmarkGroup` / `BookmarkGroupTooltip`, `HistoryTab_BookmarkLabel` / `BookmarkTooltip` in `en/es/ca.xaml`.
 
+---
+
+## [1.8.2] - 2026-09-20
+
+### Changed
+- **HistoryTab layout — Base/Mod at same level as titles (1.8.2)** — `Base`/`Mod` moved from a second line below to the same line as titles (`Holder / County / Duchy / Kingdom / Empire`), separated by a vertical `Separator`, as requested. First attempt used a `StackPanel` with two `WrapPanel` rows; final layout uses a single `WrapPanel` (1.8.2 first iteration) and then a `StackPanel` with `Row0 Height="70"` fixed to keep the map from jumping between layers (General/Terrain collapsed vs Title/Cultural populated). `UpdateBookmarkDateBorderVisibility()` keeps `BookmarkDateBorder` hidden in `General`/`Terrain`.
+
+### Fixed
+- **Stable map height** — `Grid.RowDefinitions Row0 Height="70"` (top bar fixed) guarantees two-row space even when the second row is empty, so the map does not shift when switching between `General`/`Terrain` and `Title`/`Cultural`.
+- Updated application title to version 1.8.2 in all language files (en, es, ca) — `MainWindow_Title`.
+
