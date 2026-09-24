@@ -72,3 +72,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated application title to version 1.8.4 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.5]
+
+### Changed
+- **HistoryTab ShowNames first (1.8.5)** — `ShowNamesCheck` moved to the first position of the second row, before `Base` / `Mod`. Second row order now: `ShowNames | Base | Mod | ModeToggle | Holder/County/Duchy/Kingdom/Empire`.
+- **HistoryTab ModeToggle next to Base/Mod (1.8.5)** — `ModeToggleButton` (View/Edit) moved immediately after `Mod`, always next to `Base`/`Mod` instead of at the end of the second row.
+- **HistoryTab stable header (1.8.5)** — second `WrapPanel Height="30"` + `StackPanel MinHeight` / `Grid Row0 Height="70"` fixes to keep the two-row header from resizing with content and to keep the map from shifting between `General`/`Terrain` and `Title`/`Cultural`.
+
+### Fixed
+- **ModeToggle visibility on first Title entry (1.8.5)** — `UpdateEditModeState()` now forces `ModeToggleButton.Visibility = Visible` (and `IsEnabled = modActive`) in the Title layer (both view and edit modes); previously it stayed `Collapsed` inherited from `General` on first entry.
+- Updated application title to version 1.8.5 in all language files (en, es, ca) — `MainWindow_Title`.
+

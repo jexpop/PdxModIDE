@@ -190,6 +190,7 @@ namespace PdxModIDE.UI
             }
 
             ModeToggleButton.IsEnabled = modActive;
+            ModeToggleButton.Visibility = Visibility.Visible;
 
             if (_editMode)
             {

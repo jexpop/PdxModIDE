@@ -127,6 +127,9 @@
                               Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_BaseTooltip}"/>
                     <CheckBox x:Name="ModSourceCheck" Content="{DynamicResource HistoryTab_Mod}" VerticalAlignment="Center"
                               Margin="5,0,0,0" Checked="SourceModeChanged" Unchecked="SourceModeChanged" ToolTip="{DynamicResource HistoryTab_ModTooltip}"/>
+                    <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeViewAction}" Width="140" Height="26"
+                            Margin="5,0,0,0" Click="ModeToggleButton_Click"
+                            ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,2"/>
                     <StackPanel x:Name="TitleModePanel" Orientation="Horizontal" Visibility="Collapsed">
                         <CheckBox x:Name="HolderModeCheck" Content="{DynamicResource HistoryTab_HolderMode}" VerticalAlignment="Center"
@@ -140,9 +143,6 @@
                         <CheckBox x:Name="EmpireModeCheck" Content="{DynamicResource HistoryTab_EmpireMode}" VerticalAlignment="Center"
                                   Margin="5,0,0,0" Checked="EmpireModeChanged" Unchecked="EmpireModeChanged" ToolTip="{DynamicResource HistoryTab_EmpireModeTooltip}"/>
                     </StackPanel>
-                    <Button x:Name="ModeToggleButton" Content="{DynamicResource HistoryTab_ModeViewAction}" Width="140" Height="26"
-                            Margin="10,0,0,0" Click="ModeToggleButton_Click"
-                            ToolTip="{DynamicResource HistoryTab_ModeViewTooltip}"/>
                     <Button x:Name="SplitCountyButton" Content="{DynamicResource HistoryTab_SplitCounty}" Width="120" Height="26"
                             Margin="5,0,0,0" Click="SplitCountyButton_Click"
                             Visibility="Collapsed"/>
