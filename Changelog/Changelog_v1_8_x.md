@@ -93,3 +93,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Bookmark group/marker refresh (1.8.6)** — `LoadBookmarkCombos()` now releases `_bookmarkLoading` before setting `BookmarkGroupCombo.SelectedIndex`, so `BookmarkGroupCombo_SelectionChanged` → `RefreshBookmarkComboForSelectedGroup()` → `BookmarkCombo.SelectedIndex = 0` → `BookmarkCombo_SelectionChanged` → `UpdateDateDisplays()` / `ReapplyActiveMode()` always fires. Changing group now shows its first marker and repaints the map.
 - Updated application title to version 1.8.6 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.7]
+
+### Removed
+- **Bookmarks refresh button (1.8.7)** — removed `BtnRefresh` (`BookmarksTab_Refresh`) from `BookmarksTab.xaml` (`Grid.Row="0"` now only `StatsText`) and its `BtnRefresh_Click` handler; reload is automatic on profile/language/source change.
+
+### Fixed
+- Updated application title to version 1.8.7 in all language files (en, es, ca) — `MainWindow_Title`.
+

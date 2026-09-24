@@ -19,10 +19,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
-                <Button x:Name="BtnRefresh" Content="{DynamicResource BookmarksTab_Refresh}" Padding="10,3" Click="BtnRefresh_Click"/>
-                <TextBlock x:Name="StatsText" Margin="10,4,0,0" Foreground="Gray" TextWrapping="Wrap"/>
-            </StackPanel>
+            <TextBlock x:Name="StatsText" Grid.Row="0" Margin="0,0,0,6" Foreground="Gray" TextWrapping="Wrap"/>
 
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                 <StackPanel>

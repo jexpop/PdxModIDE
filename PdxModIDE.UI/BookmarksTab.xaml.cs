@@ -81,8 +81,6 @@ namespace PdxModIDE.UI
             return System.Windows.Application.Current?.MainWindow?.DataContext as MainViewModel;
         }
 
-        private void BtnRefresh_Click(object sender, RoutedEventArgs e) => LoadBookmarks();
-
         private void LoadBookmarks()
         {
             if (_viewModel?.CurrentProfile == null)
