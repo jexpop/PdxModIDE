@@ -719,10 +719,16 @@ namespace PdxModIDE.UI
                 BookmarkGroupCombo.ItemsSource = sortedGroups;
                 BookmarkGroupCombo.DisplayMemberPath = "DisplayName";
                 BookmarkGroupCombo.SelectedValuePath = "Name";
-                if (sortedGroups.Count > 0 && BookmarkGroupCombo.SelectedItem == null)
-                    BookmarkGroupCombo.SelectedIndex = 0;
-                else if (sortedGroups.Count > 0)
-                    RefreshBookmarkComboForSelectedGroup();
+                _bookmarkLoading = false;
+                if (sortedGroups.Count > 0)
+                {
+                    if (BookmarkGroupCombo.SelectedItem == null)
+                        BookmarkGroupCombo.SelectedIndex = 0;
+                    else
+                        RefreshBookmarkComboForSelectedGroup();
+                    if (BookmarkCombo.ItemsSource == null && BookmarkGroupCombo.SelectedItem is BookmarkGroupInfo)
+                        RefreshBookmarkComboForSelectedGroup();
+                }
                 else
                 {
                     BookmarkCombo.ItemsSource = null;

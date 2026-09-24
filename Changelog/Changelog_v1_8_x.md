@@ -85,3 +85,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ModeToggle visibility on first Title entry (1.8.5)** — `UpdateEditModeState()` now forces `ModeToggleButton.Visibility = Visible` (and `IsEnabled = modActive`) in the Title layer (both view and edit modes); previously it stayed `Collapsed` inherited from `General` on first entry.
 - Updated application title to version 1.8.5 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.6]
+
+### Fixed
+- **Bookmark group/marker refresh (1.8.6)** — `LoadBookmarkCombos()` now releases `_bookmarkLoading` before setting `BookmarkGroupCombo.SelectedIndex`, so `BookmarkGroupCombo_SelectionChanged` → `RefreshBookmarkComboForSelectedGroup()` → `BookmarkCombo.SelectedIndex = 0` → `BookmarkCombo_SelectionChanged` → `UpdateDateDisplays()` / `ReapplyActiveMode()` always fires. Changing group now shows its first marker and repaints the map.
+- Updated application title to version 1.8.6 in all language files (en, es, ca) — `MainWindow_Title`.
+
