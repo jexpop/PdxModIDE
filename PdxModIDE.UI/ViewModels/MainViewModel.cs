@@ -32,6 +32,8 @@ namespace PdxModIDE.UI.ViewModels
         private string _savedCulturePrefix = "";
         private string _savedHeritageFileName = "";
         private string _savedLanguageFileName = "";
+        private string _savedBookmarkGroupFileName = "";
+        private string _savedBookmarkFileName = "";
 
         public IProjectService ProjectService => _projectService;
 
@@ -87,12 +89,18 @@ namespace PdxModIDE.UI.ViewModels
                     OnPropertyChanged(nameof(HeritageFileNamePreview));
                     OnPropertyChanged(nameof(LanguageFileName));
                     OnPropertyChanged(nameof(LanguageFileNamePreview));
+                    OnPropertyChanged(nameof(BookmarkGroupFileName));
+                    OnPropertyChanged(nameof(BookmarkGroupFileNamePreview));
+                    OnPropertyChanged(nameof(BookmarkFileName));
+                    OnPropertyChanged(nameof(BookmarkFileNamePreview));
                     OnPropertyChanged(nameof(GameRootModified));
                     OnPropertyChanged(nameof(ModRootModified));
                     OnPropertyChanged(nameof(BackupRootModified));
                     OnPropertyChanged(nameof(CultureFileNamePrefixModified));
                     OnPropertyChanged(nameof(HeritageFileNameModified));
                     OnPropertyChanged(nameof(LanguageFileNameModified));
+                    OnPropertyChanged(nameof(BookmarkGroupFileNameModified));
+                    OnPropertyChanged(nameof(BookmarkFileNameModified));
                     OnPropertyChanged(nameof(YearOffsetModified));
                     OnPropertyChanged(nameof(ShowTitleNamesModified));
                     OnPropertyChanged(nameof(HasUnsavedProfileChanges));
@@ -112,6 +120,8 @@ namespace PdxModIDE.UI.ViewModels
             _savedCulturePrefix = CultureFileNamePrefix;
             _savedHeritageFileName = HeritageFileName;
             _savedLanguageFileName = LanguageFileName;
+            _savedBookmarkGroupFileName = BookmarkGroupFileName;
+            _savedBookmarkFileName = BookmarkFileName;
         }
 
         public string Theme
@@ -270,16 +280,66 @@ namespace PdxModIDE.UI.ViewModels
         public string LanguageFileNamePreview
             => LanguageFileName;
 
+        public string BookmarkGroupFileName
+        {
+            get
+            {
+                if (_currentProfile != null &&
+                    _currentProfile.FileNamePrefixes.TryGetValue("bookmark_group", out var p))
+                    return string.IsNullOrEmpty(p) ? "00_bookmark_groups.txt" : p;
+                return "00_bookmark_groups.txt";
+            }
+            set
+            {
+                if (_currentProfile != null)
+                {
+                    _currentProfile.FileNamePrefixes["bookmark_group"] = value ?? "";
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(BookmarkGroupFileNamePreview));
+                    OnPropertyChanged(nameof(BookmarkGroupFileNameModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
+                }
+            }
+        }
+
+        public string BookmarkGroupFileNamePreview => BookmarkGroupFileName;
+
+        public string BookmarkFileName
+        {
+            get
+            {
+                if (_currentProfile != null &&
+                    _currentProfile.FileNamePrefixes.TryGetValue("bookmark", out var p))
+                    return string.IsNullOrEmpty(p) ? "00_bookmarks.txt" : p;
+                return "00_bookmarks.txt";
+            }
+            set
+            {
+                if (_currentProfile != null)
+                {
+                    _currentProfile.FileNamePrefixes["bookmark"] = value ?? "";
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(BookmarkFileNamePreview));
+                    OnPropertyChanged(nameof(BookmarkFileNameModified));
+                    OnPropertyChanged(nameof(HasUnsavedProfileChanges));
+                }
+            }
+        }
+
+        public string BookmarkFileNamePreview => BookmarkFileName;
+
         public bool GameRootModified => _currentProfile != null && _currentProfile.GameRoot != _savedGameRoot;
         public bool ModRootModified => _currentProfile != null && _currentProfile.ModRoot != _savedModRoot;
         public bool BackupRootModified => _currentProfile != null && _currentProfile.BackupRoot != _savedBackupRoot;
         public bool CultureFileNamePrefixModified => CultureFileNamePrefix != _savedCulturePrefix;
         public bool HeritageFileNameModified => HeritageFileName != _savedHeritageFileName;
         public bool LanguageFileNameModified => LanguageFileName != _savedLanguageFileName;
+        public bool BookmarkGroupFileNameModified => BookmarkGroupFileName != _savedBookmarkGroupFileName;
+        public bool BookmarkFileNameModified => BookmarkFileName != _savedBookmarkFileName;
         public bool YearOffsetModified => _currentProfile != null && _currentProfile.YearOffset != _savedYearOffset;
         public bool ShowTitleNamesModified => _currentProfile != null && _currentProfile.ShowTitleNames != _savedShowTitleNames;
         public bool HasUnsavedProfileChanges => GameRootModified || ModRootModified || BackupRootModified ||
-            CultureFileNamePrefixModified || HeritageFileNameModified || LanguageFileNameModified || YearOffsetModified || ShowTitleNamesModified;
+            CultureFileNamePrefixModified || HeritageFileNameModified || LanguageFileNameModified || BookmarkGroupFileNameModified || BookmarkFileNameModified || YearOffsetModified || ShowTitleNamesModified;
 
         private string _profileStatusMessage = "";
         public string ProfileStatusMessage
@@ -638,6 +698,8 @@ namespace PdxModIDE.UI.ViewModels
                 OnPropertyChanged(nameof(CultureFileNamePrefixModified));
                 OnPropertyChanged(nameof(HeritageFileNameModified));
                 OnPropertyChanged(nameof(LanguageFileNameModified));
+                OnPropertyChanged(nameof(BookmarkGroupFileNameModified));
+                OnPropertyChanged(nameof(BookmarkFileNameModified));
                 OnPropertyChanged(nameof(YearOffsetModified));
                 OnPropertyChanged(nameof(HasUnsavedProfileChanges));
             }

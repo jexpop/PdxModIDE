@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.7</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.8</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -73,6 +73,8 @@
     <system:String x:Key="ProfileTab_CultureFileNameSuffix">[culture name].txt</system:String>
     <system:String x:Key="ProfileTab_HeritageFileName">Heritage file name:</system:String>
     <system:String x:Key="ProfileTab_LanguageFileName">Language file name:</system:String>
+    <system:String x:Key="ProfileTab_BookmarkGroupFileName">Bookmark group file name:</system:String>
+    <system:String x:Key="ProfileTab_BookmarkFileName">Bookmark file name:</system:String>
     <system:String x:Key="ProfileTab_ProfileSaved">Profile saved.</system:String>
     <system:String x:Key="ProfileTab_ToolTipSaveAllChanges">Unsaved changes are saved with the Save profile button (Profile tab).</system:String>
 
@@ -585,5 +587,64 @@
     <system:String x:Key="BookmarksTab_SectionBase">Base game bookmarks (informative)</system:String>
     <system:String x:Key="BookmarksTab_ModEmpty">No mod bookmarks found.</system:String>
     <system:String x:Key="BookmarksTab_BaseEmpty">No base game bookmarks found.</system:String>
+    <system:String x:Key="BookmarksTab_SubTabList">Bookmark list</system:String>
+    <system:String x:Key="BookmarksTab_SubTabGroup">Groups</system:String>
+    <system:String x:Key="BookmarksTab_SubTabNewGroup">New group</system:String>
+    <system:String x:Key="BookmarksTab_SubTabBookmark">Bookmarks</system:String>
+    <system:String x:Key="BookmarksTab_CtxNewGroup">New group</system:String>
+    <system:String x:Key="BookmarksTab_CtxNewBookmark">New bookmark</system:String>
+    <system:String x:Key="BookmarksTab_CtxCopy">Create by copying</system:String>
+    <system:String x:Key="BookmarksTab_CtxEdit">Edit</system:String>
+    <system:String x:Key="BookmarksTab_CtxDelete">Delete</system:String>
+    <system:String x:Key="BookmarksTab_EditorNewTitle">New bookmark / group</system:String>
+    <system:String x:Key="BookmarksTab_EditorEditTitle">Edit</system:String>
+    <system:String x:Key="BookmarksTab_EditorHint">Fill in the fields and press Save. Groups go to common/bookmarks/groups/mod/ and bookmarks to common/bookmarks/bookmarks/mod/ (00_*.txt).</system:String>
+    <system:String x:Key="BookmarksTab_GroupEditorNewTitle">New group</system:String>
+    <system:String x:Key="BookmarksTab_GroupEditorEditTitle">Edit group</system:String>
+    <system:String x:Key="BookmarksTab_GroupEditorHint">Groups are saved to common/bookmarks/groups/ (file from profile settings, default 00_bookmark_groups.txt).</system:String>
+    <system:String x:Key="BookmarksTab_BookmarkEditorNewTitle">New bookmark</system:String>
+    <system:String x:Key="BookmarksTab_BookmarkEditorEditTitle">Edit bookmark</system:String>
+    <system:String x:Key="BookmarksTab_BookmarkEditorHint">Bookmarks are saved to common/bookmarks/bookmarks/ (file from profile settings, default 00_bookmarks.txt).</system:String>
+    <system:String x:Key="BookmarksTab_EditorType">Type</system:String>
+    <system:String x:Key="BookmarksTab_EditorTypeGroup">Group</system:String>
+    <system:String x:Key="BookmarksTab_EditorTypeBookmark">Bookmark</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroup">Group</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroupId">Group id</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroupName">Group name</system:String>
+    <system:String x:Key="BookmarksTab_EditorLocTranslating">Translating and writing localization…</system:String>
+    <system:String x:Key="BookmarksTab_EditorLocError">Localization error:</system:String>
+    <system:String x:Key="BookmarksTab_EditorFieldRequired">Field required: {0}.</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroupDefaultDate">Default start date</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmark">Bookmark</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkId">Bookmark id</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkStartDate">Start date</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkGroup">Group</system:String>
+    <system:String x:Key="BookmarksTab_EditorIsPlayable">Playable</system:String>
+    <system:String x:Key="BookmarksTab_EditorRecommended">Recommended</system:String>
+    <system:String x:Key="BookmarksTab_EditorRequiresDlc">Requires DLC flag</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharacter">Character</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharName">Name key</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharHistoryId">History id</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharTitle">Title</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharCulture">Culture</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharReligion">Religion</system:String>
+    <system:String x:Key="BookmarksTab_EditorDateHint">Date format: Year.Month.Day (e.g. 867.1.1)</system:String>
+    <system:String x:Key="BookmarksTab_EditorSave">Save</system:String>
+    <system:String x:Key="BookmarksTab_EditorClear">Clear</system:String>
+    <system:String x:Key="BookmarksTab_EditorNeedId">Enter an identifier first.</system:String>
+    <system:String x:Key="BookmarksTab_EditorIdInvalid">Invalid identifier. Use only letters, digits and underscores.</system:String>
+    <system:String x:Key="BookmarksTab_EditorDateInvalid">Invalid date. Use Year.Month.Day (e.g. 867.1.1).</system:String>
+    <system:String x:Key="BookmarksTab_EditorExists">An entry named "{0}" already exists.</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroupNotFound">Group "{0}" not found.</system:String>
+    <system:String x:Key="BookmarksTab_EditorNoModRoot">Mod root is not set. Configure the profile first.</system:String>
+    <system:String x:Key="BookmarksTab_EditorSaved">Saved as {0}</system:String>
+    <system:String x:Key="BookmarksTab_EditorSaveError">Could not save:</system:String>
+    <system:String x:Key="BookmarksTab_DeleteConfirmTitle">Confirm deletion</system:String>
+    <system:String x:Key="BookmarksTab_DeleteConfirm">Delete "{0}"? This cannot be undone.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteNotAllowed">Only mod entries can be deleted.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteBlockNotFound">Block not found in file.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteGroupHasBookmarks">Group has mod bookmarks; delete them first.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteSuccess">Deleted {0}.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteError">Error deleting:</system:String>
 
 </ResourceDictionary>

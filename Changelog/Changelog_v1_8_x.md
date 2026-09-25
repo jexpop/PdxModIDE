@@ -103,3 +103,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated application title to version 1.8.7 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.8]
+
+### Added
+- **Bookmarks CRUD for groups and markers (1.8.8)** — `BookmarksTab` now has three sub-tabs: `List`, `New group` (always visible) and `Bookmarks` editor (on demand). Context menu on the Mod tree: `New group`, `New bookmark`, `Create by copying`, `Edit`, `Delete` (gated to `Source=="Mod"`; base is read-only and hidden on key clash). Groups saved to `common/bookmarks/groups/<profile file>` (default `00_bookmark_groups.txt`) and bookmarks to `common/bookmarks/bookmarks/<profile file>` (default `00_bookmarks.txt`); both file names configurable per profile in `ProfileTab` (`FileNamePrefixes["bookmark_group"/"bookmark"]`, persisted in `data/profiles.json`).
+- **Group dates with offset (1.8.8)** — the group form takes the real date; the file stores `real + Profile.YearOffset` (`ShiftDate`, BC `-year` supported) with a `# real -> file (offset N)` reference comment. New groups are inserted chronologically (`InsertGroupChronologically` by `default_start_date`), not appended; editing the date reorders (delete + chronological insert). The editor shows the real date (`file - offset`).
+- **Group localization via providers (1.8.8)** — `SaveGroupLocalizationIfChanged` writes the `bm_group_*` key to `localization/replace/<lang>/bookmarks_l_<lang>.yml` in the app language plus all CK3 languages via the `ITranslationProvider` chain when `AutoTranslate` is on. Group `common/` ids are normalized to lowercase English with spaces to `_` and no quotes (`NormalizeFileId`).
+- **Validation and UX (1.8.8)** — required-field validation with `BookmarksTab_EditorFieldRequired: {0}` for group (id, name, date) and bookmark (id, start date, group, character name/history/title/culture/religion); `RequiresDlc` stays optional. Id is read-only when editing. `Clear` keeps the current title (`New...` vs `Edit...:`) and restores saved values in edit mode. Editor sub-tabs start collapsed and only appear on demand, except `New group`. Per-click diagnostics in `logs/bookmarks_debug.log` (plus `Documents/PdxModIDE_logs` fallback) and `EditorSave_Click` returns success so localization only runs after the `.txt` write.
+
+### Changed
+- `BookmarkLoader` extended with file helpers (`SanitizeFileName`, `BlockExists`, `DeleteBlock` with preceding `#` cleanup, `CountBlocks`, `ReplaceBlock` with `#` cleanup, `InsertBlockAlphabetically`, `BuildGroupBlock/WithOffset`, `BuildBookmarkBlock`, `ShiftDate`, `CompareDates`, `InsertGroupChronologically`).
+- `DeleteGroup` also strips the group key from `localization/replace/**/bookmarks_l_*.yml` (plus legacy `localization/**`), deleting empty files.
+
+### Fixed
+- Fixed new-group save going through the edit branch (`_editorGroup==null` → `NullReference`, masked by localization status); `EditorSave_Click` now returns `bool` and `GroupEditorSave_Click` only localizes on success. Removed unreachable-code `CS0162`.
+- Fixed negative (BC) dates in `ShiftDate`/`TryParseDate` and chronological group insert.
+- Fixed unsaved-changes (red) indicator for the two new profile file names (`BookmarkGroupFileNameModified`/`BookmarkFileNameModified` notified in `UpdateProfile` and `CurrentProfile` setter; defaults backfilled in `MapToDomain`).
+
+### i18n
+- New keys in `en/es/ca.xaml`: `ProfileTab_BookmarkGroupFileName`, `ProfileTab_BookmarkFileName`, `BookmarksTab_SubTabGroup/NewGroup/Bookmark`, `EditorGroupName`, `Group/BookmarkEditorNewTitle/EditTitle/Hint`, `EditorFieldRequired`, `EditorLocTranslating/LocError`, plus the full editor/delete set (`CtxNewGroup/NewBookmark/Copy/Edit/Delete`, `Editor*NeedId/IdInvalid/DateInvalid/Exists/GroupNotFound/NoModRoot/Saved/SaveError`, `DeleteConfirm*/NotAllowed/BlockNotFound/GroupHasBookmarks/Success/Error`).
+- Updated application title to version 1.8.8 in all language files (en, es, ca) — `MainWindow_Title`.
+

@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validando...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.7</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.8</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Ajustes generales</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -73,6 +73,8 @@
     <system:String x:Key="ProfileTab_CultureFileNameSuffix">[nombre de cultura].txt</system:String>
     <system:String x:Key="ProfileTab_HeritageFileName">Nombre de archivo de herencia:</system:String>
     <system:String x:Key="ProfileTab_LanguageFileName">Nombre de archivo de idioma:</system:String>
+    <system:String x:Key="ProfileTab_BookmarkGroupFileName">Nombre de archivo de grupos de marcadores:</system:String>
+    <system:String x:Key="ProfileTab_BookmarkFileName">Nombre de archivo de marcadores:</system:String>
     <system:String x:Key="ProfileTab_ProfileSaved">Perfil guardado.</system:String>
     <system:String x:Key="ProfileTab_ToolTipSaveAllChanges">Los cambios sin guardar se guardan con el botón Guardar perfil (pestaña Perfil).</system:String>
 
@@ -585,5 +587,64 @@
     <system:String x:Key="BookmarksTab_SectionBase">Marcadores del juego base (informativo)</system:String>
     <system:String x:Key="BookmarksTab_ModEmpty">No se encontraron marcadores en el mod.</system:String>
     <system:String x:Key="BookmarksTab_BaseEmpty">No se encontraron marcadores en el juego base.</system:String>
+    <system:String x:Key="BookmarksTab_SubTabList">Listado de marcadores</system:String>
+    <system:String x:Key="BookmarksTab_SubTabGroup">Grupos</system:String>
+    <system:String x:Key="BookmarksTab_SubTabNewGroup">Nuevo grupo</system:String>
+    <system:String x:Key="BookmarksTab_SubTabBookmark">Marcadores</system:String>
+    <system:String x:Key="BookmarksTab_CtxNewGroup">Nuevo grupo</system:String>
+    <system:String x:Key="BookmarksTab_CtxNewBookmark">Nuevo marcador</system:String>
+    <system:String x:Key="BookmarksTab_CtxCopy">Crear copiando</system:String>
+    <system:String x:Key="BookmarksTab_CtxEdit">Editar</system:String>
+    <system:String x:Key="BookmarksTab_CtxDelete">Eliminar</system:String>
+    <system:String x:Key="BookmarksTab_EditorNewTitle">Nuevo marcador / grupo</system:String>
+    <system:String x:Key="BookmarksTab_EditorEditTitle">Editar</system:String>
+    <system:String x:Key="BookmarksTab_EditorHint">Rellena los campos y pulsa Guardar. Los grupos van a common/bookmarks/groups/mod/ y los marcadores a common/bookmarks/bookmarks/mod/ (00_*.txt).</system:String>
+    <system:String x:Key="BookmarksTab_GroupEditorNewTitle">Nuevo grupo</system:String>
+    <system:String x:Key="BookmarksTab_GroupEditorEditTitle">Editar grupo</system:String>
+    <system:String x:Key="BookmarksTab_GroupEditorHint">Los grupos se guardan en common/bookmarks/groups/ (fichero de ajustes del perfil, por defecto 00_bookmark_groups.txt).</system:String>
+    <system:String x:Key="BookmarksTab_BookmarkEditorNewTitle">Nuevo marcador</system:String>
+    <system:String x:Key="BookmarksTab_BookmarkEditorEditTitle">Editar marcador</system:String>
+    <system:String x:Key="BookmarksTab_BookmarkEditorHint">Los marcadores se guardan en common/bookmarks/bookmarks/ (fichero de ajustes del perfil, por defecto 00_bookmarks.txt).</system:String>
+    <system:String x:Key="BookmarksTab_EditorType">Tipo</system:String>
+    <system:String x:Key="BookmarksTab_EditorTypeGroup">Grupo</system:String>
+    <system:String x:Key="BookmarksTab_EditorTypeBookmark">Marcador</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroup">Grupo</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroupId">Id de grupo</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroupName">Nombre del grupo</system:String>
+    <system:String x:Key="BookmarksTab_EditorLocTranslating">Traduciendo y escribiendo la localización…</system:String>
+    <system:String x:Key="BookmarksTab_EditorLocError">Error de localización:</system:String>
+    <system:String x:Key="BookmarksTab_EditorFieldRequired">Campo obligatorio: {0}.</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroupDefaultDate">Fecha por defecto</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmark">Marcador</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkId">Id de marcador</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkStartDate">Fecha inicial</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkGroup">Grupo</system:String>
+    <system:String x:Key="BookmarksTab_EditorIsPlayable">Jugable</system:String>
+    <system:String x:Key="BookmarksTab_EditorRecommended">Recomendado</system:String>
+    <system:String x:Key="BookmarksTab_EditorRequiresDlc">DLC requerido</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharacter">Personaje</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharName">Clave de nombre</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharHistoryId">Id histórico</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharTitle">Título</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharCulture">Cultura</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharReligion">Religión</system:String>
+    <system:String x:Key="BookmarksTab_EditorDateHint">Formato: Año.Mes.Día (ej. 867.1.1)</system:String>
+    <system:String x:Key="BookmarksTab_EditorSave">Guardar</system:String>
+    <system:String x:Key="BookmarksTab_EditorClear">Limpiar</system:String>
+    <system:String x:Key="BookmarksTab_EditorNeedId">Indica un identificador.</system:String>
+    <system:String x:Key="BookmarksTab_EditorIdInvalid">Identificador no válido. Usa solo letras, dígitos y guiones bajos.</system:String>
+    <system:String x:Key="BookmarksTab_EditorDateInvalid">Fecha no válida. Usa Año.Mes.Día (ej. 867.1.1).</system:String>
+    <system:String x:Key="BookmarksTab_EditorExists">Ya existe una entrada llamada "{0}".</system:String>
+    <system:String x:Key="BookmarksTab_EditorGroupNotFound">No se encontró el grupo "{0}".</system:String>
+    <system:String x:Key="BookmarksTab_EditorNoModRoot">La raíz del mod no está configurada.</system:String>
+    <system:String x:Key="BookmarksTab_EditorSaved">Guardado como {0}</system:String>
+    <system:String x:Key="BookmarksTab_EditorSaveError">No se pudo guardar:</system:String>
+    <system:String x:Key="BookmarksTab_DeleteConfirmTitle">Confirmar borrado</system:String>
+    <system:String x:Key="BookmarksTab_DeleteConfirm">¿Eliminar "{0}"? No se puede deshacer.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteNotAllowed">Solo se pueden eliminar entradas del mod.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteBlockNotFound">Bloque no encontrado.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteGroupHasBookmarks">El grupo tiene marcadores del mod; elimínalos primero.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteSuccess">Eliminado {0}.</system:String>
+    <system:String x:Key="BookmarksTab_DeleteError">Error al eliminar:</system:String>
 
 </ResourceDictionary>

@@ -6,160 +6,250 @@
              xmlns:local="clr-namespace:PdxModIDE.UI"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="1000">
-    <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="340"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <TabControl x:Name="BookmarksSubTabs">
+        <TabItem x:Name="ListTabItem" Header="{DynamicResource BookmarksTab_SubTabList}">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="340"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-            <TextBlock x:Name="StatsText" Grid.Row="0" Margin="0,0,0,6" Foreground="Gray" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="StatsText" Grid.Row="0" Margin="0,0,0,6" Foreground="Gray" TextWrapping="Wrap"/>
 
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                <StackPanel>
-                    <TextBlock Text="{DynamicResource BookmarksTab_SectionMod}" FontWeight="Bold" Margin="0,0,0,4"/>
-                    <TreeView x:Name="BookmarkTreeMod" SelectedItemChanged="BookmarkTree_SelectedItemChanged">
-                        <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Bookmarks}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding DisplayName}" FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding CountText}" Foreground="Gray" Margin="5,0,0,0"/>
-                                </StackPanel>
-                                <HierarchicalDataTemplate.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding DisplayName}" Foreground="{Binding SourceBrush}"/>
-                                            <TextBlock Text="{Binding Source, StringFormat=' ({0})'}" Foreground="Gray" Margin="3,0,0,0"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </HierarchicalDataTemplate.ItemTemplate>
-                            </HierarchicalDataTemplate>
-                        </TreeView.ItemTemplate>
-                    </TreeView>
-                    <TextBlock x:Name="ModEmptyText" Text="{DynamicResource BookmarksTab_ModEmpty}" Foreground="Gray" Margin="0,4,0,8" Visibility="Collapsed" TextWrapping="Wrap"/>
-                    <Separator Margin="0,8,0,8"/>
-                    <TextBlock Text="{DynamicResource BookmarksTab_SectionBase}" FontWeight="Bold" Margin="0,0,0,4" Foreground="DimGray"/>
-                    <TreeView x:Name="BookmarkTreeBase" SelectedItemChanged="BookmarkTree_SelectedItemChanged">
-                        <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Bookmarks}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" Foreground="DimGray"/>
-                                    <TextBlock Text="{Binding CountText}" Foreground="Gray" Margin="5,0,0,0"/>
-                                </StackPanel>
-                                <HierarchicalDataTemplate.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding DisplayName}" Foreground="Gray"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </HierarchicalDataTemplate.ItemTemplate>
-                            </HierarchicalDataTemplate>
-                        </TreeView.ItemTemplate>
-                    </TreeView>
-                    <TextBlock x:Name="BaseEmptyText" Text="{DynamicResource BookmarksTab_BaseEmpty}" Foreground="Gray" Margin="0,4,0,0" Visibility="Collapsed" TextWrapping="Wrap"/>
-                </StackPanel>
-            </ScrollViewer>
-
-            <GroupBox Grid.Row="2" Header="{DynamicResource BookmarksTab_Stats}" Margin="0,6,0,0" x:Name="StatsGroup">
-                <StackPanel>
-                    <TextBlock x:Name="StatsGroupsValue"/>
-                    <TextBlock x:Name="StatsBookmarksValue" Margin="0,3,0,0"/>
-                    <TextBlock x:Name="StatsModBookmarksValue" Margin="0,3,0,0"/>
-                    <TextBlock x:Name="StatsBaseBookmarksValue" Margin="0,3,0,0"/>
-                    <Separator Margin="0,6,0,4"/>
-                    <TextBlock Margin="0,0,0,2">
-                        <TextBlock.Inlines>
-                            <Run Text="■ " Foreground="Black"/><Run Text="{DynamicResource BookmarksTab_LegendBase}"/>
-                        </TextBlock.Inlines>
-                    </TextBlock>
-                    <TextBlock Margin="0,0,0,2">
-                        <TextBlock.Inlines>
-                            <Run Text="■ " Foreground="#0078D4"/><Run Text="{DynamicResource BookmarksTab_LegendMod}"/>
-                        </TextBlock.Inlines>
-                    </TextBlock>
-                    <TextBlock Margin="0,0,0,2">
-                        <TextBlock.Inlines>
-                            <Run Text="■ " Foreground="#008C00"/><Run Text="{DynamicResource BookmarksTab_LegendModNew}"/>
-                        </TextBlock.Inlines>
-                    </TextBlock>
-                </StackPanel>
-            </GroupBox>
-        </Grid>
-
-        <Grid Grid.Column="1" Margin="20,0,0,0">
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel>
-                    <GroupBox Header="{DynamicResource BookmarksTab_Details}" Margin="0,0,0,10"
-                              Visibility="Collapsed" x:Name="DetailGroup">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <Label Content="{DynamicResource BookmarksTab_Source}" FontWeight="Bold"/>
-                            <TextBlock x:Name="DetailSourceValue" Margin="15,0,0,5"/>
-                            <TextBlock x:Name="DetailSourceFileValue" Margin="15,0,0,5" Foreground="Gray" TextWrapping="Wrap" FontSize="11"/>
-                            <Label Content="{DynamicResource BookmarksTab_BookmarkName}" FontWeight="Bold"/>
-                            <TextBlock x:Name="DetailNameValue" Margin="15,0,0,5" TextWrapping="Wrap"/>
-                            <Label Content="{DynamicResource BookmarksTab_StartDate}" FontWeight="Bold"/>
-                            <TextBlock x:Name="DetailStartDateValue" Margin="15,0,0,5"/>
-                            <Label Content="{DynamicResource BookmarksTab_Group}" FontWeight="Bold"/>
-                            <TextBlock x:Name="DetailGroupValue" Margin="15,0,0,5"/>
-                            <Label Content="{DynamicResource BookmarksTab_IsPlayable}" FontWeight="Bold"/>
-                            <TextBlock x:Name="DetailIsPlayableValue" Margin="15,0,0,5"/>
-                            <Label Content="{DynamicResource BookmarksTab_Recommended}" FontWeight="Bold"/>
-                            <TextBlock x:Name="DetailRecommendedValue" Margin="15,0,0,5"/>
-                            <Label Content="{DynamicResource BookmarksTab_RequiresDlc}" FontWeight="Bold"/>
-                            <TextBlock x:Name="DetailRequiresDlcValue" Margin="15,0,0,5"/>
-                            <Label Content="{DynamicResource BookmarksTab_Characters}" FontWeight="Bold"/>
-                            <ItemsControl x:Name="CharactersList" Margin="15,0,0,5">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" CornerRadius="3" Padding="6" Margin="0,0,0,6">
-                                            <StackPanel>
-                                                <TextBlock FontWeight="Bold" Text="{Binding TitleLine}" TextWrapping="Wrap"/>
-                                                <TextBlock Text="{Binding MetaLine}" Foreground="Gray" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                                                <ItemsControl ItemsSource="{Binding SubCharacters}" Margin="0,4,0,0">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding SubLine}" Foreground="DimGray" TextWrapping="Wrap" Margin="0,1,0,0"/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <Expander x:Name="DetailRawExpander" Header="{DynamicResource BookmarksTab_RawBlock}" Margin="15,0,0,5">
-                                <TextBlock x:Name="DetailRawValue" FontFamily="Consolas" TextWrapping="Wrap" Margin="4"/>
-                            </Expander>
+                            <TextBlock Text="{DynamicResource BookmarksTab_SectionMod}" FontWeight="Bold" Margin="0,0,0,4"/>
+                            <TreeView x:Name="BookmarkTreeMod" SelectedItemChanged="BookmarkTree_SelectedItemChanged"
+                                      PreviewMouseRightButtonDown="BookmarkTree_PreviewMouseRightButtonDown"
+                                      ContextMenuOpening="BookmarkTree_ContextMenuOpening">
+                                <TreeView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{DynamicResource BookmarksTab_CtxNewGroup}" Click="CtxNewGroup_Click"/>
+                                        <MenuItem Header="{DynamicResource BookmarksTab_CtxNewBookmark}" Click="CtxNewBookmark_Click"/>
+                                        <Separator/>
+                                        <MenuItem Header="{DynamicResource BookmarksTab_CtxCopy}" Click="CtxCopy_Click"/>
+                                        <MenuItem x:Name="CtxEditMenuItem" Header="{DynamicResource BookmarksTab_CtxEdit}" Click="CtxEdit_Click"/>
+                                        <Separator/>
+                                        <MenuItem x:Name="CtxDeleteMenuItem" Header="{DynamicResource BookmarksTab_CtxDelete}" Click="CtxDelete_Click"/>
+                                    </ContextMenu>
+                                </TreeView.ContextMenu>
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate ItemsSource="{Binding Bookmarks}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding CountText}" Foreground="Gray" Margin="5,0,0,0"/>
+                                        </StackPanel>
+                                        <HierarchicalDataTemplate.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding DisplayName}" Foreground="{Binding SourceBrush}"/>
+                                                    <TextBlock Text="{Binding Source, StringFormat=' ({0})'}" Foreground="Gray" Margin="3,0,0,0"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </HierarchicalDataTemplate.ItemTemplate>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
+                            <TextBlock x:Name="ModEmptyText" Text="{DynamicResource BookmarksTab_ModEmpty}" Foreground="Gray" Margin="0,4,0,8" Visibility="Collapsed" TextWrapping="Wrap"/>
+                            <Separator Margin="0,8,0,8"/>
+                            <TextBlock Text="{DynamicResource BookmarksTab_SectionBase}" FontWeight="Bold" Margin="0,0,0,4" Foreground="DimGray"/>
+                            <TreeView x:Name="BookmarkTreeBase" SelectedItemChanged="BookmarkTree_SelectedItemChanged">
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate ItemsSource="{Binding Bookmarks}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" Foreground="DimGray"/>
+                                            <TextBlock Text="{Binding CountText}" Foreground="Gray" Margin="5,0,0,0"/>
+                                        </StackPanel>
+                                        <HierarchicalDataTemplate.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding DisplayName}" Foreground="Gray"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </HierarchicalDataTemplate.ItemTemplate>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
+                            <TextBlock x:Name="BaseEmptyText" Text="{DynamicResource BookmarksTab_BaseEmpty}" Foreground="Gray" Margin="0,4,0,0" Visibility="Collapsed" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <GroupBox Grid.Row="2" Header="{DynamicResource BookmarksTab_Stats}" Margin="0,6,0,0" x:Name="StatsGroup">
+                        <StackPanel>
+                            <TextBlock x:Name="StatsGroupsValue"/>
+                            <TextBlock x:Name="StatsBookmarksValue" Margin="0,3,0,0"/>
+                            <TextBlock x:Name="StatsModBookmarksValue" Margin="0,3,0,0"/>
+                            <TextBlock x:Name="StatsBaseBookmarksValue" Margin="0,3,0,0"/>
+                            <Separator Margin="0,6,0,4"/>
+                            <TextBlock Margin="0,0,0,2">
+                                <TextBlock.Inlines>
+                                    <Run Text="■ " Foreground="Black"/><Run Text="{DynamicResource BookmarksTab_LegendBase}"/>
+                                </TextBlock.Inlines>
+                            </TextBlock>
+                            <TextBlock Margin="0,0,0,2">
+                                <TextBlock.Inlines>
+                                    <Run Text="■ " Foreground="#0078D4"/><Run Text="{DynamicResource BookmarksTab_LegendMod}"/>
+                                </TextBlock.Inlines>
+                            </TextBlock>
+                            <TextBlock Margin="0,0,0,2">
+                                <TextBlock.Inlines>
+                                    <Run Text="■ " Foreground="#008C00"/><Run Text="{DynamicResource BookmarksTab_LegendModNew}"/>
+                                </TextBlock.Inlines>
+                            </TextBlock>
                         </StackPanel>
                     </GroupBox>
+                </Grid>
 
-                    <GroupBox Header="{DynamicResource BookmarksTab_GroupDetails}" Margin="0,0,0,10"
-                              Visibility="Collapsed" x:Name="GroupDetailGroup">
+                <Grid Grid.Column="1" Margin="20,0,0,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
-                            <Label Content="{DynamicResource BookmarksTab_Source}" FontWeight="Bold"/>
-                            <TextBlock x:Name="GroupSourceValue" Margin="15,0,0,5"/>
-                            <TextBlock x:Name="GroupSourceFileValue" Margin="15,0,0,5" Foreground="Gray" TextWrapping="Wrap" FontSize="11"/>
-                            <Label Content="{DynamicResource BookmarksTab_GroupName}" FontWeight="Bold"/>
-                            <TextBlock x:Name="GroupNameValue" Margin="15,0,0,5"/>
-                            <Label Content="{DynamicResource BookmarksTab_DefaultStartDate}" FontWeight="Bold"/>
-                            <TextBlock x:Name="GroupDefaultStartDateValue" Margin="15,0,0,5"/>
-                            <Expander x:Name="GroupRawExpander" Header="{DynamicResource BookmarksTab_RawBlock}" Margin="15,0,0,5">
-                                <TextBlock x:Name="GroupRawValue" FontFamily="Consolas" TextWrapping="Wrap" Margin="4"/>
-                            </Expander>
+                            <GroupBox Header="{DynamicResource BookmarksTab_Details}" Margin="0,0,0,10"
+                                      Visibility="Collapsed" x:Name="DetailGroup">
+                                <StackPanel>
+                                    <Label Content="{DynamicResource BookmarksTab_Source}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="DetailSourceValue" Margin="15,0,0,5"/>
+                                    <TextBlock x:Name="DetailSourceFileValue" Margin="15,0,0,5" Foreground="Gray" TextWrapping="Wrap" FontSize="11"/>
+                                    <Label Content="{DynamicResource BookmarksTab_BookmarkName}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="DetailNameValue" Margin="15,0,0,5" TextWrapping="Wrap"/>
+                                    <Label Content="{DynamicResource BookmarksTab_StartDate}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="DetailStartDateValue" Margin="15,0,0,5"/>
+                                    <Label Content="{DynamicResource BookmarksTab_Group}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="DetailGroupValue" Margin="15,0,0,5"/>
+                                    <Label Content="{DynamicResource BookmarksTab_IsPlayable}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="DetailIsPlayableValue" Margin="15,0,0,5"/>
+                                    <Label Content="{DynamicResource BookmarksTab_Recommended}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="DetailRecommendedValue" Margin="15,0,0,5"/>
+                                    <Label Content="{DynamicResource BookmarksTab_RequiresDlc}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="DetailRequiresDlcValue" Margin="15,0,0,5"/>
+                                    <Label Content="{DynamicResource BookmarksTab_Characters}" FontWeight="Bold"/>
+                                    <ItemsControl x:Name="CharactersList" Margin="15,0,0,5">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" CornerRadius="3" Padding="6" Margin="0,0,0,6">
+                                                    <StackPanel>
+                                                        <TextBlock FontWeight="Bold" Text="{Binding TitleLine}" TextWrapping="Wrap"/>
+                                                        <TextBlock Text="{Binding MetaLine}" Foreground="Gray" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                                        <ItemsControl ItemsSource="{Binding SubCharacters}" Margin="0,4,0,0">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding SubLine}" Foreground="DimGray" TextWrapping="Wrap" Margin="0,1,0,0"/>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <Expander x:Name="DetailRawExpander" Header="{DynamicResource BookmarksTab_RawBlock}" Margin="15,0,0,5">
+                                        <TextBlock x:Name="DetailRawValue" FontFamily="Consolas" TextWrapping="Wrap" Margin="4"/>
+                                    </Expander>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="{DynamicResource BookmarksTab_GroupDetails}" Margin="0,0,0,10"
+                                      Visibility="Collapsed" x:Name="GroupDetailGroup">
+                                <StackPanel>
+                                    <Label Content="{DynamicResource BookmarksTab_Source}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="GroupSourceValue" Margin="15,0,0,5"/>
+                                    <TextBlock x:Name="GroupSourceFileValue" Margin="15,0,0,5" Foreground="Gray" TextWrapping="Wrap" FontSize="11"/>
+                                    <Label Content="{DynamicResource BookmarksTab_GroupName}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="GroupNameValue" Margin="15,0,0,5"/>
+                                    <Label Content="{DynamicResource BookmarksTab_DefaultStartDate}" FontWeight="Bold"/>
+                                    <TextBlock x:Name="GroupDefaultStartDateValue" Margin="15,0,0,5"/>
+                                    <Expander x:Name="GroupRawExpander" Header="{DynamicResource BookmarksTab_RawBlock}" Margin="15,0,0,5">
+                                        <TextBlock x:Name="GroupRawValue" FontFamily="Consolas" TextWrapping="Wrap" Margin="4"/>
+                                    </Expander>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <TextBlock x:Name="DetailEmptyText"
+                                       Text="{DynamicResource BookmarksTab_SelectPrompt}"
+                                       Foreground="Gray" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </TabItem>
+
+        <TabItem x:Name="GroupEditorTabItem" Visibility="Visible">
+            <TabItem.Header>
+                <TextBlock x:Name="GroupEditorTabHeaderText" Text="{DynamicResource BookmarksTab_SubTabNewGroup}"/>
+            </TabItem.Header>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10">
+                    <TextBlock x:Name="GroupEditorModeText" FontWeight="Bold" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="GroupEditorHintText" Foreground="Gray" TextWrapping="Wrap" Margin="0,4,0,10"/>
+                    <GroupBox Header="{DynamicResource BookmarksTab_EditorGroup}" Margin="0,0,0,10">
+                        <StackPanel>
+                            <Label Content="{DynamicResource BookmarksTab_EditorGroupId}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorGroupId" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <Label Content="{DynamicResource BookmarksTab_EditorGroupName}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorGroupName" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <Label Content="{DynamicResource BookmarksTab_EditorGroupDefaultDate}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorGroupDate" Width="150" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <TextBlock Text="{DynamicResource BookmarksTab_EditorDateHint}" Foreground="Gray" Margin="15,0,0,4" TextWrapping="Wrap"/>
                         </StackPanel>
                     </GroupBox>
-
-                    <TextBlock x:Name="DetailEmptyText"
-                               Text="{DynamicResource BookmarksTab_SelectPrompt}"
-                               Foreground="Gray" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button x:Name="GroupEditorSaveButton" Content="{DynamicResource BookmarksTab_EditorSave}" Width="120" Height="26" Click="GroupEditorSave_Click"/>
+                        <Button x:Name="GroupEditorClearButton" Content="{DynamicResource BookmarksTab_EditorClear}" Width="120" Height="26" Margin="10,0,0,0" Click="GroupEditorClear_Click"/>
+                    </StackPanel>
+                    <TextBlock x:Name="GroupEditorStatusText" Margin="0,10,0,0" Foreground="Gray" TextWrapping="Wrap"/>
                 </StackPanel>
             </ScrollViewer>
-        </Grid>
-    </Grid>
+        </TabItem>
+
+        <TabItem x:Name="BookmarkEditorTabItem" Visibility="Collapsed">
+            <TabItem.Header>
+                <TextBlock x:Name="BookmarkEditorTabHeaderText"/>
+            </TabItem.Header>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10">
+                    <TextBlock x:Name="BookmarkEditorModeText" FontWeight="Bold" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="BookmarkEditorHintText" Foreground="Gray" TextWrapping="Wrap" Margin="0,4,0,10"/>
+                    <GroupBox Header="{DynamicResource BookmarksTab_EditorBookmark}" Margin="0,0,0,10">
+                        <StackPanel>
+                            <Label Content="{DynamicResource BookmarksTab_EditorBookmarkId}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorBookmarkId" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <Label Content="{DynamicResource BookmarksTab_EditorBookmarkStartDate}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorBookmarkStartDate" Width="150" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <Label Content="{DynamicResource BookmarksTab_EditorBookmarkGroup}" FontWeight="Bold"/>
+                            <ComboBox x:Name="EditorBookmarkGroup" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4" IsEditable="True"/>
+                            <CheckBox x:Name="EditorIsPlayable" Content="{DynamicResource BookmarksTab_EditorIsPlayable}" Margin="15,6,0,4"/>
+                            <CheckBox x:Name="EditorRecommended" Content="{DynamicResource BookmarksTab_EditorRecommended}" Margin="15,0,0,4"/>
+                            <Label Content="{DynamicResource BookmarksTab_EditorRequiresDlc}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorRequiresDlc" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <GroupBox Header="{DynamicResource BookmarksTab_EditorCharacter}" Margin="0,6,0,4">
+                                <StackPanel>
+                                    <Label Content="{DynamicResource BookmarksTab_EditorCharName}" FontWeight="Bold"/>
+                                    <TextBox x:Name="EditorCharName" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                                    <Label Content="{DynamicResource BookmarksTab_EditorCharHistoryId}" FontWeight="Bold"/>
+                                    <TextBox x:Name="EditorCharHistoryId" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                                    <Label Content="{DynamicResource BookmarksTab_EditorCharTitle}" FontWeight="Bold"/>
+                                    <TextBox x:Name="EditorCharTitle" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                                    <Label Content="{DynamicResource BookmarksTab_EditorCharCulture}" FontWeight="Bold"/>
+                                    <TextBox x:Name="EditorCharCulture" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                                    <Label Content="{DynamicResource BookmarksTab_EditorCharReligion}" FontWeight="Bold"/>
+                                    <TextBox x:Name="EditorCharReligion" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button x:Name="BookmarkEditorSaveButton" Content="{DynamicResource BookmarksTab_EditorSave}" Width="120" Height="26" Click="BookmarkEditorSave_Click"/>
+                        <Button x:Name="BookmarkEditorClearButton" Content="{DynamicResource BookmarksTab_EditorClear}" Width="120" Height="26" Margin="10,0,0,0" Click="BookmarkEditorClear_Click"/>
+                    </StackPanel>
+                    <TextBlock x:Name="BookmarkEditorStatusText" Margin="0,10,0,0" Foreground="Gray" TextWrapping="Wrap"/>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+    </TabControl>
 </UserControl>

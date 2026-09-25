@@ -487,5 +487,348 @@ namespace PdxModIDE.MapEngine
                 if (pos < block.Length && block[pos] == '{') { pos++; ReadBlock(block, ref pos); }
             }
         }
+
+        // File helpers for CRUD (parity with CulturesTab)
+        public static string SanitizeFileName(string name)
+        {
+            var invalid = Path.GetInvalidFileNameChars();
+            var sb = new System.Text.StringBuilder();
+            foreach (char c in name)
+                sb.Append(invalid.Contains(c) ? '_' : c);
+            return sb.ToString();
+        }
+
+        public static bool BookmarkBlockExistsInFile(string filePath, string id) => BlockExistsInFile(filePath, id);
+        public static bool GroupBlockExistsInFile(string filePath, string id) => BlockExistsInFile(filePath, id);
+
+        private static bool BlockExistsInFile(string filePath, string id)
+        {
+            if (!File.Exists(filePath)) return false;
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                if (string.Equals(key, id, StringComparison.OrdinalIgnoreCase)) return true;
+                pos++; ReadBlock(text, ref pos);
+            }
+            return false;
+        }
+
+        public static bool DeleteBookmarkBlockFromFile(string filePath, string id) => DeleteBlockFromFile(filePath, id);
+        public static bool DeleteGroupBlockFromFile(string filePath, string id) => DeleteBlockFromFile(filePath, id);
+
+        private static bool DeleteBlockFromFile(string filePath, string id)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                int braceStart = pos;
+                pos++; string inner = ReadBlock(text, ref pos);
+                int blockEnd = pos;
+                if (string.Equals(key, id, StringComparison.OrdinalIgnoreCase))
+                {
+                    // remove from keyStart to blockEnd, also strip preceding standalone comment lines (# real->file)
+                    string before = text.Substring(0, keyStart);
+                    string trimmedBefore = before.TrimEnd();
+                    while (true)
+                    {
+                        int nl = trimmedBefore.LastIndexOf('\n');
+                        string lastLine = nl >= 0 ? trimmedBefore.Substring(nl + 1) : trimmedBefore;
+                        if (lastLine.TrimStart().StartsWith("#"))
+                            trimmedBefore = (nl >= 0 ? trimmedBefore.Substring(0, nl) : "").TrimEnd();
+                        else break;
+                    }
+                    string after = text.Substring(blockEnd);
+                    string newText = trimmedBefore + (string.IsNullOrWhiteSpace(after) ? (trimmedBefore.Length > 0 ? "\n" : "") : "\n" + after.TrimStart());
+                    if (string.IsNullOrWhiteSpace(newText)) newText = "";
+                    File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static int CountBookmarkBlocks(string filePath) => CountBlocks(filePath);
+        public static int CountGroupBlocks(string filePath) => CountBlocks(filePath);
+
+        private static int CountBlocks(string filePath)
+        {
+            if (!File.Exists(filePath)) return 0;
+            var text = File.ReadAllText(filePath);
+            int pos = 0; int count = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; ReadBlock(text, ref pos); count++;
+            }
+            return count;
+        }
+
+        public static void ReplaceBlockInFile(string filePath, string id, string newBlock)
+        {
+            var text = File.ReadAllText(filePath);
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                int braceStart = pos;
+                pos++; string inner = ReadBlock(text, ref pos);
+                int blockEnd = pos;
+                if (string.Equals(key, id, StringComparison.OrdinalIgnoreCase))
+                {
+                    string before = text.Substring(0, keyStart);
+                    // remove preceding standalone comment lines (# ...) right before the block so old "(real)" references don't accumulate
+                    string trimmedBefore = before.TrimEnd();
+                    while (true)
+                    {
+                        int nl = trimmedBefore.LastIndexOf('\n');
+                        string lastLine = nl >= 0 ? trimmedBefore.Substring(nl + 1) : trimmedBefore;
+                        if (lastLine.TrimStart().StartsWith("#"))
+                        {
+                            trimmedBefore = (nl >= 0 ? trimmedBefore.Substring(0, nl) : "").TrimEnd();
+                        }
+                        else break;
+                    }
+                    string after = text.Substring(blockEnd);
+                    string newText = trimmedBefore + (trimmedBefore.Length > 0 ? "\n" : "") + newBlock.TrimEnd() + "\n" + after.TrimStart();
+                    File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
+                    return;
+                }
+            }
+            throw new InvalidOperationException($"Block {id} not found in {filePath}");
+        }
+
+        public static void InsertBlockAlphabetically(string filePath, string id, string block)
+        {
+            var text = File.ReadAllText(filePath);
+            var ids = new List<string>(); var positions = new List<int>();
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; ReadBlock(text, ref pos);
+                ids.Add(key); positions.Add(keyStart);
+            }
+            int idx = 0;
+            while (idx < ids.Count && string.Compare(ids[idx], id, StringComparison.OrdinalIgnoreCase) < 0) idx++;
+            string blockText = block.TrimEnd() + "\n";
+            string newText;
+            if (idx >= ids.Count)
+            {
+                if (text.Length > 0 && !text.EndsWith("\n")) text += "\n";
+                newText = text + blockText;
+            }
+            else
+            {
+                int at = positions[idx];
+                newText = text.Substring(0, at) + blockText + text.Substring(at);
+            }
+            File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
+        }
+
+        public static string BuildGroupBlock(string id, string defaultStartDate)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"{id} = {{");
+            if (!string.IsNullOrWhiteSpace(defaultStartDate))
+                sb.AppendLine($"\tdefault_start_date = {defaultStartDate.Trim()}");
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+
+        public static string BuildGroupBlockWithOffset(string id, string realDate, int offset)
+        {
+            string fileDate = ShiftDate(realDate, offset) ?? realDate.Trim();
+            var sb = new System.Text.StringBuilder();
+            if (!string.IsNullOrWhiteSpace(realDate) && offset != 0)
+                sb.AppendLine($"# {realDate.Trim()} (real) -> {fileDate} (file, offset {offset})");
+            sb.AppendLine($"{id} = {{");
+            if (!string.IsNullOrWhiteSpace(fileDate))
+                sb.AppendLine($"\tdefault_start_date = {fileDate}");
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+
+        public static string? ShiftDate(string date, int offset)
+        {
+            if (string.IsNullOrWhiteSpace(date)) return null;
+            var raw = date.Trim();
+            // allow leading '-' for BC years (e.g. "-500.1.1"); Split with RemoveEmptyEntries would drop it
+            bool negative = raw.StartsWith("-");
+            if (negative) raw = raw.Substring(1);
+            var parts = raw.Split('.', System.StringSplitOptions.TrimEntries);
+            if (parts.Length < 1 || string.IsNullOrWhiteSpace(parts[0]) || !int.TryParse(parts[0], out int y)) return null;
+            if (negative) y = -y;
+            int m = 1, d = 1;
+            if (parts.Length >= 2 && !string.IsNullOrWhiteSpace(parts[1])) int.TryParse(parts[1], out m);
+            if (parts.Length >= 3 && !string.IsNullOrWhiteSpace(parts[2])) int.TryParse(parts[2], out d);
+            return $"{y + offset}.{m}.{d}";
+        }
+
+        public static int CompareDates(string a, string b)
+        {
+            var pa = TryParseDate(a);
+            var pb = TryParseDate(b);
+            if (pa == null && pb == null) return string.Compare(a, b, StringComparison.OrdinalIgnoreCase);
+            if (pa == null) return 1;
+            if (pb == null) return -1;
+            int c = pa.Value.y.CompareTo(pb.Value.y);
+            if (c != 0) return c;
+            c = pa.Value.m.CompareTo(pb.Value.m);
+            if (c != 0) return c;
+            return pa.Value.d.CompareTo(pb.Value.d);
+        }
+
+        private static (int y, int m, int d)? TryParseDate(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return null;
+            var raw = s.Trim();
+            bool negative = raw.StartsWith("-");
+            if (negative) raw = raw.Substring(1);
+            var p = raw.Split('.', System.StringSplitOptions.TrimEntries);
+            if (p.Length < 1 || string.IsNullOrWhiteSpace(p[0]) || !int.TryParse(p[0], out int y)) return null;
+            if (negative) y = -y;
+            int m = 1, d = 1;
+            if (p.Length >= 2 && !string.IsNullOrWhiteSpace(p[1])) int.TryParse(p[1], out m);
+            if (p.Length >= 3 && !string.IsNullOrWhiteSpace(p[2])) int.TryParse(p[2], out d);
+            return (y, m, d);
+        }
+
+        public static void InsertGroupChronologically(string filePath, string id, string block, string fileDate)
+        {
+            var text = File.Exists(filePath) ? File.ReadAllText(filePath) : "";
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                File.WriteAllText(filePath, block.TrimEnd() + "\n", new System.Text.UTF8Encoding(true));
+                return;
+            }
+            // collect existing groups with their dates and positions
+            var entries = new List<(string Id, string Date, int Pos)>();
+            int pos = 0;
+            while (pos < text.Length)
+            {
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length) break;
+                int keyStart = pos;
+                string key = ReadKey(text, ref pos);
+                if (string.IsNullOrEmpty(key)) break;
+                SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '=') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; SkipWhitespaceAndComments(text, ref pos);
+                if (pos >= text.Length || text[pos] != '{') { SkipValueAndFollowingBlock(text, ref pos); continue; }
+                pos++; string inner = ReadBlock(text, ref pos);
+                string date = ExtractAttribute(inner, "default_start_date") ?? "";
+                entries.Add((key, date, keyStart));
+            }
+            int idx = 0;
+            while (idx < entries.Count && CompareDates(entries[idx].Date, fileDate) < 0) idx++;
+            string blockText = block.TrimEnd() + "\n";
+            string newText;
+            if (idx >= entries.Count)
+            {
+                if (text.Length > 0 && !text.EndsWith("\n")) text += "\n";
+                newText = text + blockText;
+            }
+            else
+            {
+                int at = entries[idx].Pos;
+                newText = text.Substring(0, at) + blockText + text.Substring(at);
+            }
+            File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
+        }
+
+        public static string BuildBookmarkBlock(string id, string startDate, string group, string isPlayable, string recommended, string requiresDlc, string weightRaw, List<BookmarkCharacter> characters)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"{id} = {{");
+            if (!string.IsNullOrWhiteSpace(startDate)) sb.AppendLine($"\tstart_date = {startDate.Trim()}");
+            if (!string.IsNullOrWhiteSpace(isPlayable)) sb.AppendLine($"\tis_playable = {isPlayable.Trim()}");
+            if (!string.IsNullOrWhiteSpace(group)) sb.AppendLine($"\tgroup = {group.Trim()}");
+            if (!string.IsNullOrWhiteSpace(recommended)) sb.AppendLine($"\trecommended = {recommended.Trim()}");
+            if (!string.IsNullOrWhiteSpace(requiresDlc)) sb.AppendLine($"\trequires_dlc_flag = {requiresDlc.Trim()}");
+            if (!string.IsNullOrWhiteSpace(weightRaw))
+            {
+                // weightRaw already contains inner block content
+                if (weightRaw.Trim().StartsWith("{"))
+                    sb.AppendLine($"\tweight = {weightRaw.Trim()}");
+                else
+                    sb.AppendLine($"\tweight = {{ {weightRaw.Trim()} }}");
+            }
+            foreach (var ch in characters)
+            {
+                sb.AppendLine("\tcharacter = {");
+                if (!string.IsNullOrWhiteSpace(ch.NameKey)) sb.AppendLine($"\t\tname = \"{ch.NameKey}\"");
+                if (!string.IsNullOrWhiteSpace(ch.HistoryId)) sb.AppendLine($"\t\thistory_id = {ch.HistoryId}");
+                if (!string.IsNullOrWhiteSpace(ch.BookmarkType)) sb.AppendLine($"\t\tbookmark_type = {ch.BookmarkType}");
+                if (!string.IsNullOrWhiteSpace(ch.Dynasty)) sb.AppendLine($"\t\tdynasty = {ch.Dynasty}");
+                if (!string.IsNullOrWhiteSpace(ch.DynastyHouse)) sb.AppendLine($"\t\tdynasty_house = {ch.DynastyHouse}");
+                if (!string.IsNullOrWhiteSpace(ch.Title)) sb.AppendLine($"\t\ttitle = {ch.Title}");
+                if (!string.IsNullOrWhiteSpace(ch.Government)) sb.AppendLine($"\t\tgovernment = {ch.Government}");
+                if (!string.IsNullOrWhiteSpace(ch.Culture)) sb.AppendLine($"\t\tculture = {ch.Culture}");
+                if (!string.IsNullOrWhiteSpace(ch.Religion)) sb.AppendLine($"\t\treligion = {ch.Religion}");
+                if (!string.IsNullOrWhiteSpace(ch.Difficulty)) sb.AppendLine($"\t\tdifficulty = \"{ch.Difficulty}\"");
+                if (!string.IsNullOrWhiteSpace(ch.Relation)) sb.AppendLine($"\t\trelation = \"{ch.Relation}\"");
+                if (!string.IsNullOrWhiteSpace(ch.Type)) sb.AppendLine($"\t\ttype = {ch.Type}");
+                if (!string.IsNullOrWhiteSpace(ch.Birth)) sb.AppendLine($"\t\tbirth = {ch.Birth}");
+                foreach (var sub in ch.SubCharacters)
+                {
+                    sb.AppendLine("\t\tcharacter = {");
+                    if (!string.IsNullOrWhiteSpace(sub.NameKey)) sb.AppendLine($"\t\t\tname = \"{sub.NameKey}\"");
+                    if (!string.IsNullOrWhiteSpace(sub.HistoryId)) sb.AppendLine($"\t\t\thistory_id = {sub.HistoryId}");
+                    if (!string.IsNullOrWhiteSpace(sub.Relation)) sb.AppendLine($"\t\t\trelation = \"{sub.Relation}\"");
+                    if (!string.IsNullOrWhiteSpace(sub.Dynasty)) sb.AppendLine($"\t\t\tdynasty = {sub.Dynasty}");
+                    if (!string.IsNullOrWhiteSpace(sub.DynastyHouse)) sb.AppendLine($"\t\t\tdynasty_house = {sub.DynastyHouse}");
+                    if (!string.IsNullOrWhiteSpace(sub.Type)) sb.AppendLine($"\t\t\ttype = {sub.Type}");
+                    if (!string.IsNullOrWhiteSpace(sub.Birth)) sb.AppendLine($"\t\t\tbirth = {sub.Birth}");
+                    if (!string.IsNullOrWhiteSpace(sub.Culture)) sb.AppendLine($"\t\t\tculture = {sub.Culture}");
+                    if (!string.IsNullOrWhiteSpace(sub.Religion)) sb.AppendLine($"\t\t\treligion = {sub.Religion}");
+                    sb.AppendLine("\t\t}");
+                }
+                sb.AppendLine("\t}");
+            }
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
     }
 }
