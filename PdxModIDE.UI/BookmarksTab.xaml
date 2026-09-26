@@ -31,8 +31,8 @@
                                       ContextMenuOpening="BookmarkTree_ContextMenuOpening">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="{DynamicResource BookmarksTab_CtxNewGroup}" Click="CtxNewGroup_Click"/>
-                                        <MenuItem Header="{DynamicResource BookmarksTab_CtxNewBookmark}" Click="CtxNewBookmark_Click"/>
+                                        <MenuItem x:Name="CtxNewGroupMenuItem" Header="{DynamicResource BookmarksTab_CtxNewGroup}" Click="CtxNewGroup_Click"/>
+                                        <MenuItem x:Name="CtxNewBookmarkMenuItem" Header="{DynamicResource BookmarksTab_CtxNewBookmark}" Click="CtxNewBookmark_Click"/>
                                         <Separator/>
                                         <MenuItem Header="{DynamicResource BookmarksTab_CtxCopy}" Click="CtxCopy_Click"/>
                                         <MenuItem x:Name="CtxEditMenuItem" Header="{DynamicResource BookmarksTab_CtxEdit}" Click="CtxEdit_Click"/>

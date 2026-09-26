@@ -126,3 +126,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New keys in `en/es/ca.xaml`: `ProfileTab_BookmarkGroupFileName`, `ProfileTab_BookmarkFileName`, `BookmarksTab_SubTabGroup/NewGroup/Bookmark`, `EditorGroupName`, `Group/BookmarkEditorNewTitle/EditTitle/Hint`, `EditorFieldRequired`, `EditorLocTranslating/LocError`, plus the full editor/delete set (`CtxNewGroup/NewBookmark/Copy/Edit/Delete`, `Editor*NeedId/IdInvalid/DateInvalid/Exists/GroupNotFound/NoModRoot/Saved/SaveError`, `DeleteConfirm*/NotAllowed/BlockNotFound/GroupHasBookmarks/Success/Error`).
 - Updated application title to version 1.8.8 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.9]
+
+### Changed
+- **Bookmark context menu by selection (1.8.9)** — `CtxNewGroupMenuItem`/`CtxNewBookmarkMenuItem` visibility in `BookmarkTree_ContextMenuOpening`: marker selection shows only `New bookmark`; group or empty selection shows both `New group` + `New bookmark`.
+- **Group default date with offset, formatted (1.8.9)** — `ShowGroup` now renders `GroupDefaultStartDateValue` as the real date (`file − Profile.YearOffset`) formatted day-month-year with the month name in the app language (`en-GB/es-ES/ca-ES`, e.g. `1 enero 4`); negative years shown as absolute value plus `BCE` (English) or `AEC` (Spanish/Catalan), positives with no suffix. The raw block (`GroupRawValue`) is unchanged with the file date.
+
+### Fixed
+- Updated application title to version 1.8.9 in all language files (en, es, ca) — `MainWindow_Title`.
+

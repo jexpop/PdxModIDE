@@ -486,8 +486,31 @@ namespace PdxModIDE.UI
             GroupNameValue.Text = g.DisplayName;
             GroupSourceValue.Text = g.Source == "Mod" ? $"{Res("BookmarksTab_SourceMod")} {(g.IsModNew ? Res("BookmarksTab_SourceModNew") : "")}" : Res("BookmarksTab_SourceBase");
             GroupSourceFileValue.Text = g.SourceFile ?? "";
-            GroupDefaultStartDateValue.Text = string.IsNullOrEmpty(g.DefaultStartDate) ? "-" : g.DefaultStartDate;
+            GroupDefaultStartDateValue.Text = FormatGroupDateWithOffset(g.DefaultStartDate);
             GroupRawValue.Text = string.IsNullOrEmpty(g.RawBlock) ? "-" : g.RawBlock.Trim();
+        }
+
+        private string FormatGroupDateWithOffset(string? fileDate)
+        {
+            if (string.IsNullOrWhiteSpace(fileDate)) return "-";
+            int offset = _viewModel?.CurrentProfile?.YearOffset ?? 0;
+            string real = BookmarkLoader.ShiftDate(fileDate, -offset) ?? fileDate.Trim();
+            var parts = real.Split('.', System.StringSplitOptions.TrimEntries);
+            if (parts.Length < 1 || !int.TryParse(parts[0], out int y)) return real;
+            int m = 1, d = 1;
+            if (parts.Length >= 2) int.TryParse(parts[1], out m);
+            if (parts.Length >= 3) int.TryParse(parts[2], out d);
+            string lang = _viewModel?.Language ?? "en";
+            string culture = lang switch { "es" => "es-ES", "ca" => "ca-ES", _ => "en-GB" };
+            string month;
+            try
+            {
+                var ci = new System.Globalization.CultureInfo(culture);
+                month = (m >= 1 && m <= 12) ? ci.DateTimeFormat.GetMonthName(m) : m.ToString();
+            }
+            catch { month = m.ToString(); }
+            if (y < 0) return lang == "en" ? $"{d} {month} {-y} BCE" : $"{d} {month} {-y} AEC";
+            return $"{d} {month} {y}";
         }
 
         private void ShowBookmark(BookmarkInfo? bm)
@@ -582,6 +605,11 @@ namespace PdxModIDE.UI
         private void BookmarkTree_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             var sel = BookmarkTreeMod.SelectedItem;
+            // New group / new bookmark visibility: group -> both, marker -> only new marker
+            bool showNewGroup = true;
+            if (sel is BookmarkVm) showNewGroup = false;
+            if (CtxNewGroupMenuItem != null) CtxNewGroupMenuItem.Visibility = showNewGroup ? Visibility.Visible : Visibility.Collapsed;
+            if (CtxNewBookmarkMenuItem != null) CtxNewBookmarkMenuItem.Visibility = Visibility.Visible;
             // if base tree has selection, prefer it? handled separately
             if (sel is BookmarkVm vm)
             {
