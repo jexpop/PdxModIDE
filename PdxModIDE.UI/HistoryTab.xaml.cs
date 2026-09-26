@@ -755,13 +755,21 @@ namespace PdxModIDE.UI
                 string fallback = g.DefaultStartDate ?? "867.1.1";
                 if (!string.IsNullOrWhiteSpace(fallback))
                 {
-                    _currentFullDate = fallback;
-                    var pd = TryParseFullDate(fallback);
+                    _currentFullDate = ToBaseDate(fallback, g.Source);
+                    var pd = TryParseFullDate(_currentFullDate);
                     _currentYear = pd?.y ?? 867;
                     UpdateDateDisplays();
                     ReapplyActiveMode();
                 }
             }
+        }
+
+        private string ToBaseDate(string fileDate, string? source)
+        {
+            if (string.IsNullOrWhiteSpace(fileDate)) return "867.1.1";
+            if (!string.Equals(source, "Mod", StringComparison.OrdinalIgnoreCase)) return fileDate.Trim();
+            int offset = ViewModel?.CurrentProfile?.YearOffset ?? 0;
+            return BookmarkLoader.ShiftDate(fileDate, -offset) ?? fileDate.Trim();
         }
 
         private void BookmarkGroupCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -773,9 +781,12 @@ namespace PdxModIDE.UI
         private void BookmarkCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_bookmarkLoading || BookmarkCombo.SelectedItem is not BookmarkInfo bm) return;
-            string full = !string.IsNullOrWhiteSpace(bm.StartDate) ? bm.StartDate : (_bookmarkGroups.TryGetValue(bm.Group ?? "", out var gg) ? gg.DefaultStartDate : "867.1.1");
-            if (string.IsNullOrWhiteSpace(full)) full = "867.1.1";
-            _currentFullDate = full.Trim();
+            string fileFull = !string.IsNullOrWhiteSpace(bm.StartDate) ? bm.StartDate : (_bookmarkGroups.TryGetValue(bm.Group ?? "", out var gg) ? gg.DefaultStartDate : "867.1.1");
+            if (string.IsNullOrWhiteSpace(fileFull)) fileFull = "867.1.1";
+            string baseFull = ToBaseDate(fileFull, bm.Source);
+            if (!string.Equals(bm.Source, "Mod", StringComparison.OrdinalIgnoreCase) && _bookmarkGroups.TryGetValue(bm.Group ?? "", out var gg2) && string.IsNullOrWhiteSpace(bm.StartDate))
+                baseFull = ToBaseDate(fileFull, gg2.Source);
+            _currentFullDate = baseFull.Trim();
             var parsed = TryParseFullDate(_currentFullDate);
             _currentYear = parsed?.y ?? 867;
             UpdateDateDisplays();

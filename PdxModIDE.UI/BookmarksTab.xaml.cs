@@ -723,12 +723,14 @@ namespace PdxModIDE.UI
             _editorGroup = null;
             _editorIsNew = asNew || bm == null;
             RefreshBookmarkGroupCombo();
+            int offBm = _viewModel?.CurrentProfile?.YearOffset ?? 0;
+            string ToRealBm(BookmarkInfo b) => b.Source == "Mod" ? (BookmarkLoader.ShiftDate(b.StartDate ?? "", -offBm) ?? b.StartDate ?? "") : (b.StartDate ?? "");
             if (bm != null && !asNew)
             {
                 BookmarkEditorTabHeaderText.Text = $"{Res("BookmarksTab_BookmarkEditorEditTitle")}: {bm.DisplayName}";
                 BookmarkEditorModeText.Text = $"{Res("BookmarksTab_BookmarkEditorEditTitle")}: {bm.DisplayName}";
                 EditorBookmarkId.Text = bm.Name;
-                EditorBookmarkStartDate.Text = bm.StartDate ?? "";
+                EditorBookmarkStartDate.Text = ToRealBm(bm);
                 EditorBookmarkGroup.SelectedValue = bm.Group ?? "";
                 if (EditorBookmarkGroup.SelectedItem == null) EditorBookmarkGroup.Text = bm.Group ?? "";
                 EditorIsPlayable.IsChecked = string.Equals(bm.IsPlayable, "yes", StringComparison.OrdinalIgnoreCase);
@@ -756,7 +758,7 @@ namespace PdxModIDE.UI
                 BookmarkEditorTabHeaderText.Text = Res("BookmarksTab_BookmarkEditorNewTitle");
                 BookmarkEditorModeText.Text = $"{Res("BookmarksTab_BookmarkEditorNewTitle")} ({bm.DisplayName})";
                 EditorBookmarkId.Text = bm.Name + "_copy";
-                EditorBookmarkStartDate.Text = bm.StartDate ?? "";
+                EditorBookmarkStartDate.Text = ToRealBm(bm);
                 EditorBookmarkGroup.SelectedValue = bm.Group ?? "";
                 if (EditorBookmarkGroup.SelectedItem == null) EditorBookmarkGroup.Text = bm.Group ?? "";
                 EditorIsPlayable.IsChecked = string.Equals(bm.IsPlayable, "yes", StringComparison.OrdinalIgnoreCase);
@@ -1023,7 +1025,8 @@ namespace PdxModIDE.UI
                 {
                     var bm = _editorBookmark;
                     EditorBookmarkId.Text = bm.Name;
-                    EditorBookmarkStartDate.Text = bm.StartDate ?? "";
+                    int offClear = _viewModel?.CurrentProfile?.YearOffset ?? 0;
+                    EditorBookmarkStartDate.Text = bm.Source == "Mod" ? (BookmarkLoader.ShiftDate(bm.StartDate ?? "", -offClear) ?? bm.StartDate ?? "") : (bm.StartDate ?? "");
                     EditorBookmarkGroup.SelectedValue = bm.Group ?? "";
                     if (EditorBookmarkGroup.SelectedItem == null) EditorBookmarkGroup.Text = bm.Group ?? "";
                     EditorIsPlayable.IsChecked = string.Equals(bm.IsPlayable, "yes", StringComparison.OrdinalIgnoreCase);
@@ -1360,7 +1363,8 @@ namespace PdxModIDE.UI
                 };
                 var chars = new List<BookmarkCharacter>();
                 if (!string.IsNullOrEmpty(ch.NameKey) || !string.IsNullOrEmpty(ch.HistoryId)) chars.Add(ch);
-                string block = BookmarkLoader.BuildBookmarkBlock(id, startDate, group, isPlayable, recommended, dlc, weightRaw, chars);
+                int bmOffset = _viewModel?.CurrentProfile?.YearOffset ?? 0;
+                string block = BookmarkLoader.BuildBookmarkBlockWithOffset(id, startDate, bmOffset, group, isPlayable, recommended, dlc, weightRaw, chars);
                 string fileName = _viewModel?.BookmarkFileName ?? "00_bookmarks.txt";
                 string folder = System.IO.Path.Combine(modRoot, "common", "bookmarks", "bookmarks");
                 System.IO.Directory.CreateDirectory(folder);

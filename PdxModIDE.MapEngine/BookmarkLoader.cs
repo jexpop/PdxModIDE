@@ -778,6 +778,16 @@ namespace PdxModIDE.MapEngine
             File.WriteAllText(filePath, newText, new System.Text.UTF8Encoding(true));
         }
 
+        public static string BuildBookmarkBlockWithOffset(string id, string realStartDate, int offset, string group, string isPlayable, string recommended, string requiresDlc, string weightRaw, List<BookmarkCharacter> characters)
+        {
+            string fileDate = string.IsNullOrWhiteSpace(realStartDate) ? (realStartDate ?? "") : (ShiftDate(realStartDate, offset) ?? realStartDate.Trim());
+            var sb = new System.Text.StringBuilder();
+            if (!string.IsNullOrWhiteSpace(realStartDate) && offset != 0)
+                sb.AppendLine($"# {realStartDate.Trim()} (real) -> {fileDate} (file, offset {offset})");
+            sb.Append(BuildBookmarkBlock(id, fileDate, group, isPlayable, recommended, requiresDlc, weightRaw, characters));
+            return sb.ToString();
+        }
+
         public static string BuildBookmarkBlock(string id, string startDate, string group, string isPlayable, string recommended, string requiresDlc, string weightRaw, List<BookmarkCharacter> characters)
         {
             var sb = new System.Text.StringBuilder();

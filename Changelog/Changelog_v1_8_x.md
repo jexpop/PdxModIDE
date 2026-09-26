@@ -153,3 +153,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New keys `BookmarksTab_EditorRecommendedHint`, `BookmarksTab_EditorWeight`, `BookmarksTab_EditorWeightHint` in `en/es/ca.xaml`.
 - Updated application title to version 1.8.10 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.11]
+
+### Changed
+- **Bookmark start dates with offset (1.8.11)** — bookmark editor now takes the real date and stores `real + Profile.YearOffset` with a `# real -> file (offset N)` reference comment (`BuildBookmarkBlockWithOffset`, parity with groups; only `start_date`). The editor shows the original value (`file − offset` for mod entries, as-is for base) in new/copy/edit/clear-restore.
+- **Map avoids double offset (1.8.11)** — `HistoryTab` converts mod marker/group file dates back to base years (`ToBaseDate`) on selection and group fallback, so `modYear = year + offset` applies exactly once. `DateLabel` shows base, `OffsetLabel` shows base+offset.
+- Migration note: mod bookmarks saved in 1.8.8–1.8.10 (without offset) display shifted until re-saved once.
+
+### Fixed
+- Updated application title to version 1.8.11 in all language files (en, es, ca) — `MainWindow_Title`.
+
