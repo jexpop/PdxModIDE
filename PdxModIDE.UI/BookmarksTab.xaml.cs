@@ -61,6 +61,13 @@ namespace PdxModIDE.UI
         private BookmarkInfo? _editorBookmark;
         private bool _editorIsNew;
         private string _editorType = "Group"; // Group or Bookmark
+        private List<BookmarkGroupInfo> _bookmarkGroupOptions = new();
+        private List<string> _dlcOptions = new();
+        private bool _groupFilterAttached;
+        private bool _dlcFilterAttached;
+        private bool _filteringCombo;
+        private string _editorSavedWeightRaw = "";
+        private string _editorSavedWeightValue = "";
         private static readonly System.Text.RegularExpressions.Regex _dateRegex = new(@"^-?\d+\.\d+\.\d+$", System.Text.RegularExpressions.RegexOptions.Compiled);
         private static readonly System.Text.RegularExpressions.Regex _idRegex = new(@"^[a-zA-Z0-9_]+$", System.Text.RegularExpressions.RegexOptions.Compiled);
         private Dictionary<string, string> _loc = new(StringComparer.OrdinalIgnoreCase);
@@ -722,10 +729,14 @@ namespace PdxModIDE.UI
                 BookmarkEditorModeText.Text = $"{Res("BookmarksTab_BookmarkEditorEditTitle")}: {bm.DisplayName}";
                 EditorBookmarkId.Text = bm.Name;
                 EditorBookmarkStartDate.Text = bm.StartDate ?? "";
-                EditorBookmarkGroup.Text = bm.Group ?? "";
+                EditorBookmarkGroup.SelectedValue = bm.Group ?? "";
+                if (EditorBookmarkGroup.SelectedItem == null) EditorBookmarkGroup.Text = bm.Group ?? "";
                 EditorIsPlayable.IsChecked = string.Equals(bm.IsPlayable, "yes", StringComparison.OrdinalIgnoreCase);
                 EditorRecommended.IsChecked = string.Equals(bm.Recommended, "yes", StringComparison.OrdinalIgnoreCase);
                 EditorRequiresDlc.Text = bm.RequiresDlcFlag ?? "";
+                _editorSavedWeightRaw = bm.WeightRaw ?? "";
+                _editorSavedWeightValue = ExtractWeightValue(bm.WeightRaw);
+                EditorWeight.Text = _editorSavedWeightValue;
                 var ch = bm.Characters.FirstOrDefault();
                 if (ch != null)
                 {
@@ -746,10 +757,14 @@ namespace PdxModIDE.UI
                 BookmarkEditorModeText.Text = $"{Res("BookmarksTab_BookmarkEditorNewTitle")} ({bm.DisplayName})";
                 EditorBookmarkId.Text = bm.Name + "_copy";
                 EditorBookmarkStartDate.Text = bm.StartDate ?? "";
-                EditorBookmarkGroup.Text = bm.Group ?? "";
+                EditorBookmarkGroup.SelectedValue = bm.Group ?? "";
+                if (EditorBookmarkGroup.SelectedItem == null) EditorBookmarkGroup.Text = bm.Group ?? "";
                 EditorIsPlayable.IsChecked = string.Equals(bm.IsPlayable, "yes", StringComparison.OrdinalIgnoreCase);
                 EditorRecommended.IsChecked = string.Equals(bm.Recommended, "yes", StringComparison.OrdinalIgnoreCase);
                 EditorRequiresDlc.Text = bm.RequiresDlcFlag ?? "";
+                _editorSavedWeightRaw = "";
+                _editorSavedWeightValue = ExtractWeightValue(bm.WeightRaw);
+                EditorWeight.Text = _editorSavedWeightValue;
                 var ch = bm.Characters.FirstOrDefault();
                 if (ch != null)
                 {
@@ -770,10 +785,14 @@ namespace PdxModIDE.UI
                 BookmarkEditorModeText.Text = Res("BookmarksTab_BookmarkEditorNewTitle");
                 EditorBookmarkId.Text = "";
                 EditorBookmarkStartDate.Text = "";
+                EditorBookmarkGroup.SelectedItem = null;
                 EditorBookmarkGroup.Text = "";
                 EditorIsPlayable.IsChecked = true;
                 EditorRecommended.IsChecked = false;
                 EditorRequiresDlc.Text = "";
+                _editorSavedWeightRaw = "";
+                _editorSavedWeightValue = "";
+                EditorWeight.Text = "";
                 EditorCharName.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
             }
             BookmarkEditorHintText.Text = Res("BookmarksTab_BookmarkEditorHint");
@@ -786,8 +805,95 @@ namespace PdxModIDE.UI
         private void RefreshBookmarkGroupCombo()
         {
             if (EditorBookmarkGroup == null) return;
-            var groups = _groupsMerged.Values.OrderBy(g => g.DisplayName, StringComparer.CurrentCultureIgnoreCase).Select(g => g.Name).ToList();
-            EditorBookmarkGroup.ItemsSource = groups;
+            _bookmarkGroupOptions = _groupsMerged.Values.OrderBy(g => g.DisplayName, StringComparer.CurrentCultureIgnoreCase).ToList();
+            EditorBookmarkGroup.DisplayMemberPath = "DisplayName";
+            EditorBookmarkGroup.SelectedValuePath = "Name";
+            EditorBookmarkGroup.ItemsSource = _bookmarkGroupOptions;
+            if (!_groupFilterAttached)
+            {
+                EditorBookmarkGroup.AddHandler(System.Windows.Controls.TextBox.TextChangedEvent, new System.Windows.Controls.TextChangedEventHandler(EditorBookmarkGroupFilter_TextChanged));
+                _groupFilterAttached = true;
+            }
+            RefreshDlcOptions();
+        }
+
+        private void RefreshDlcOptions()
+        {
+            if (EditorRequiresDlc == null) return;
+            var flags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var b in _bookmarksMerged.Values)
+                if (!string.IsNullOrWhiteSpace(b.RequiresDlcFlag)) flags.Add(b.RequiresDlcFlag.Trim());
+            foreach (var b in _bookmarksBase.Values)
+                if (!string.IsNullOrWhiteSpace(b.RequiresDlcFlag)) flags.Add(b.RequiresDlcFlag.Trim());
+            _dlcOptions = flags.OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
+            EditorRequiresDlc.ItemsSource = _dlcOptions;
+            if (!_dlcFilterAttached)
+            {
+                EditorRequiresDlc.AddHandler(System.Windows.Controls.TextBox.TextChangedEvent, new System.Windows.Controls.TextChangedEventHandler(EditorRequiresDlcFilter_TextChanged));
+                _dlcFilterAttached = true;
+            }
+        }
+
+        private void EditorBookmarkGroupFilter_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (_filteringCombo || EditorBookmarkGroup == null) return;
+            string text = (EditorBookmarkGroup.Text ?? "").Trim();
+            if (string.IsNullOrEmpty(text))
+            {
+                _filteringCombo = true;
+                try { EditorBookmarkGroup.ItemsSource = _bookmarkGroupOptions; }
+                finally { _filteringCombo = false; }
+                return;
+            }
+            var filtered = _bookmarkGroupOptions.Where(g =>
+                g.DisplayName.Contains(text, StringComparison.OrdinalIgnoreCase) ||
+                g.Name.Contains(text, StringComparison.OrdinalIgnoreCase)).ToList();
+            _filteringCombo = true;
+            try
+            {
+                EditorBookmarkGroup.ItemsSource = filtered;
+                EditorBookmarkGroup.IsDropDownOpen = true;
+            }
+            finally { _filteringCombo = false; }
+        }
+
+        private void EditorRequiresDlcFilter_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (_filteringCombo || EditorRequiresDlc == null) return;
+            string text = (EditorRequiresDlc.Text ?? "").Trim();
+            if (string.IsNullOrEmpty(text))
+            {
+                _filteringCombo = true;
+                try { EditorRequiresDlc.ItemsSource = _dlcOptions; }
+                finally { _filteringCombo = false; }
+                return;
+            }
+            var filtered = _dlcOptions.Where(f => f.Contains(text, StringComparison.OrdinalIgnoreCase)).ToList();
+            _filteringCombo = true;
+            try
+            {
+                EditorRequiresDlc.ItemsSource = filtered;
+                EditorRequiresDlc.IsDropDownOpen = true;
+            }
+            finally { _filteringCombo = false; }
+        }
+
+        private string ResolveGroupId(string text)
+        {
+            string t = (text ?? "").Trim();
+            if (string.IsNullOrEmpty(t)) return "";
+            var byId = _groupsMerged.Values.FirstOrDefault(g => string.Equals(g.Name, t, StringComparison.OrdinalIgnoreCase));
+            if (byId != null) return byId.Name;
+            var byDisplay = _groupsMerged.Values.FirstOrDefault(g => string.Equals(g.DisplayName, t, StringComparison.OrdinalIgnoreCase));
+            if (byDisplay != null) return byDisplay.Name;
+            return t;
+        }
+
+        private static string ExtractWeightValue(string? weightRaw)
+        {
+            if (string.IsNullOrWhiteSpace(weightRaw)) return "";
+            var m = System.Text.RegularExpressions.Regex.Match(weightRaw, @"value\s*=\s*(-?\d+)");
+            return m.Success ? m.Groups[1].Value : "";
         }
 
         private void DeleteBookmark(BookmarkInfo bm)
@@ -906,20 +1012,24 @@ namespace PdxModIDE.UI
             {
                 if (_editorIsNew || _editorBookmark == null)
                 {
-                    EditorBookmarkId.Text = ""; EditorBookmarkStartDate.Text = ""; EditorBookmarkGroup.Text = "";
+                    EditorBookmarkId.Text = ""; EditorBookmarkStartDate.Text = ""; EditorBookmarkGroup.SelectedItem = null; EditorBookmarkGroup.Text = "";
                     EditorIsPlayable.IsChecked = true; EditorRecommended.IsChecked = false; EditorRequiresDlc.Text = "";
+                    EditorWeight.Text = "";
                     EditorCharName.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
                     _editorBookmark = null; _editorIsNew = true;
+                    _editorSavedWeightRaw = ""; _editorSavedWeightValue = "";
                 }
                 else
                 {
                     var bm = _editorBookmark;
                     EditorBookmarkId.Text = bm.Name;
                     EditorBookmarkStartDate.Text = bm.StartDate ?? "";
-                    EditorBookmarkGroup.Text = bm.Group ?? "";
+                    EditorBookmarkGroup.SelectedValue = bm.Group ?? "";
+                    if (EditorBookmarkGroup.SelectedItem == null) EditorBookmarkGroup.Text = bm.Group ?? "";
                     EditorIsPlayable.IsChecked = string.Equals(bm.IsPlayable, "yes", StringComparison.OrdinalIgnoreCase);
                     EditorRecommended.IsChecked = string.Equals(bm.Recommended, "yes", StringComparison.OrdinalIgnoreCase);
                     EditorRequiresDlc.Text = bm.RequiresDlcFlag ?? "";
+                    EditorWeight.Text = ExtractWeightValue(bm.WeightRaw);
                     var ch = bm.Characters.FirstOrDefault();
                     if (ch != null)
                     {
@@ -1228,31 +1338,29 @@ namespace PdxModIDE.UI
                 string startDate = EditorBookmarkStartDate.Text?.Trim() ?? "";
                 if (string.IsNullOrEmpty(startDate)) { status.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorBookmarkStartDate")); return false; }
                 if (!_dateRegex.IsMatch(startDate)) { status.Text = Res("BookmarksTab_EditorDateInvalid"); return false; }
-                string group = EditorBookmarkGroup.Text?.Trim() ?? "";
+                string groupRaw = EditorBookmarkGroup.SelectedValue as string ?? EditorBookmarkGroup.Text?.Trim() ?? "";
+                string group = ResolveGroupId(groupRaw);
                 if (string.IsNullOrEmpty(group)) { status.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorBookmarkGroup")); return false; }
                 string isPlayable = EditorIsPlayable.IsChecked == true ? "yes" : "no";
                 string recommended = EditorRecommended.IsChecked == true ? "yes" : "no";
                 string dlc = EditorRequiresDlc.Text?.Trim() ?? "";
-                string charName = EditorCharName.Text?.Trim() ?? "";
-                string charHistoryId = EditorCharHistoryId.Text?.Trim() ?? "";
-                string charTitle = EditorCharTitle.Text?.Trim() ?? "";
-                string charCulture = EditorCharCulture.Text?.Trim() ?? "";
-                string charReligion = EditorCharReligion.Text?.Trim() ?? "";
-                if (string.IsNullOrEmpty(charName)) { status.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorCharName")); return false; }
-                if (string.IsNullOrEmpty(charHistoryId)) { status.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorCharHistoryId")); return false; }
-                if (string.IsNullOrEmpty(charTitle)) { status.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorCharTitle")); return false; }
-                if (string.IsNullOrEmpty(charCulture)) { status.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorCharCulture")); return false; }
-                if (string.IsNullOrEmpty(charReligion)) { status.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorCharReligion")); return false; }
+                string weightText = EditorWeight.Text?.Trim() ?? "";
+                if (!string.IsNullOrEmpty(weightText) && !int.TryParse(weightText, out _)) { status.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorWeight")); return false; }
+                string weightRaw;
+                if (string.IsNullOrEmpty(weightText)) weightRaw = "";
+                else if (!_editorIsNew && weightText == _editorSavedWeightValue) weightRaw = _editorSavedWeightRaw;
+                else weightRaw = $"{{ value = {weightText} }}";
                 var ch = new BookmarkCharacter
                 {
-                    NameKey = charName,
-                    HistoryId = charHistoryId,
-                    Title = charTitle,
-                    Culture = charCulture,
-                    Religion = charReligion,
+                    NameKey = EditorCharName.Text?.Trim() ?? "",
+                    HistoryId = EditorCharHistoryId.Text?.Trim() ?? "",
+                    Title = EditorCharTitle.Text?.Trim() ?? "",
+                    Culture = EditorCharCulture.Text?.Trim() ?? "",
+                    Religion = EditorCharReligion.Text?.Trim() ?? "",
                 };
-                var chars = new List<BookmarkCharacter> { ch };
-                string block = BookmarkLoader.BuildBookmarkBlock(id, startDate, group, isPlayable, recommended, dlc, "", chars);
+                var chars = new List<BookmarkCharacter>();
+                if (!string.IsNullOrEmpty(ch.NameKey) || !string.IsNullOrEmpty(ch.HistoryId)) chars.Add(ch);
+                string block = BookmarkLoader.BuildBookmarkBlock(id, startDate, group, isPlayable, recommended, dlc, weightRaw, chars);
                 string fileName = _viewModel?.BookmarkFileName ?? "00_bookmarks.txt";
                 string folder = System.IO.Path.Combine(modRoot, "common", "bookmarks", "bookmarks");
                 System.IO.Directory.CreateDirectory(folder);
@@ -1276,7 +1384,12 @@ namespace PdxModIDE.UI
                     }
                     LoadBookmarks();
                     _editorIsNew = false;
-                    if (_bookmarksMerged.TryGetValue(id, out var nb)) _editorBookmark = nb;
+                    if (_bookmarksMerged.TryGetValue(id, out var nb))
+                    {
+                        _editorBookmark = nb;
+                        _editorSavedWeightRaw = nb.WeightRaw ?? "";
+                        _editorSavedWeightValue = ExtractWeightValue(nb.WeightRaw);
+                    }
                     UpdateEditorModeUi();
                     return true;
                 }

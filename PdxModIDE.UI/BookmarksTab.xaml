@@ -221,12 +221,17 @@
                             <TextBox x:Name="EditorBookmarkId" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
                             <Label Content="{DynamicResource BookmarksTab_EditorBookmarkStartDate}" FontWeight="Bold"/>
                             <TextBox x:Name="EditorBookmarkStartDate" Width="150" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <TextBlock Text="{DynamicResource BookmarksTab_EditorDateHint}" Foreground="Gray" Margin="15,0,0,4" TextWrapping="Wrap"/>
                             <Label Content="{DynamicResource BookmarksTab_EditorBookmarkGroup}" FontWeight="Bold"/>
-                            <ComboBox x:Name="EditorBookmarkGroup" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4" IsEditable="True"/>
+                            <ComboBox x:Name="EditorBookmarkGroup" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4" IsEditable="True" MaxDropDownHeight="200"/>
                             <CheckBox x:Name="EditorIsPlayable" Content="{DynamicResource BookmarksTab_EditorIsPlayable}" Margin="15,6,0,4"/>
                             <CheckBox x:Name="EditorRecommended" Content="{DynamicResource BookmarksTab_EditorRecommended}" Margin="15,0,0,4"/>
+                            <TextBlock Text="{DynamicResource BookmarksTab_EditorRecommendedHint}" Foreground="Gray" Margin="15,0,0,4" TextWrapping="Wrap"/>
                             <Label Content="{DynamicResource BookmarksTab_EditorRequiresDlc}" FontWeight="Bold"/>
-                            <TextBox x:Name="EditorRequiresDlc" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <ComboBox x:Name="EditorRequiresDlc" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4" IsEditable="True" MaxDropDownHeight="200"/>
+                            <Label Content="{DynamicResource BookmarksTab_EditorWeight}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorWeight" Width="150" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <TextBlock Text="{DynamicResource BookmarksTab_EditorWeightHint}" Foreground="Gray" Margin="15,0,0,4" TextWrapping="Wrap"/>
                             <GroupBox Header="{DynamicResource BookmarksTab_EditorCharacter}" Margin="0,6,0,4">
                                 <StackPanel>
                                     <Label Content="{DynamicResource BookmarksTab_EditorCharName}" FontWeight="Bold"/>

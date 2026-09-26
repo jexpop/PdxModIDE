@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.9</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.10</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -614,6 +614,9 @@
     <system:String x:Key="BookmarksTab_EditorLocTranslating">Traduint i escrivint la localització…</system:String>
     <system:String x:Key="BookmarksTab_EditorLocError">Error de localització:</system:String>
     <system:String x:Key="BookmarksTab_EditorFieldRequired">Camp obligatori: {0}.</system:String>
+    <system:String x:Key="BookmarksTab_EditorRecommendedHint">Si està marcat, aquest marcador es mostra com a recomanat a la pantalla inicial.</system:String>
+    <system:String x:Key="BookmarksTab_EditorWeight">Pes</system:String>
+    <system:String x:Key="BookmarksTab_EditorWeightHint">Pes base per a la selecció del marcador per defecte (guanya el major). El bloc amb condicions es conserva si no canvia.</system:String>
     <system:String x:Key="BookmarksTab_EditorGroupDefaultDate">Data per defecte</system:String>
     <system:String x:Key="BookmarksTab_EditorBookmark">Marcador</system:String>
     <system:String x:Key="BookmarksTab_EditorBookmarkId">Id de marcador</system:String>

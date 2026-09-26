@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.9</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.10</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -614,6 +614,9 @@
     <system:String x:Key="BookmarksTab_EditorLocTranslating">Translating and writing localization…</system:String>
     <system:String x:Key="BookmarksTab_EditorLocError">Localization error:</system:String>
     <system:String x:Key="BookmarksTab_EditorFieldRequired">Field required: {0}.</system:String>
+    <system:String x:Key="BookmarksTab_EditorRecommendedHint">If checked, this bookmark is shown as recommended on the start screen.</system:String>
+    <system:String x:Key="BookmarksTab_EditorWeight">Weight</system:String>
+    <system:String x:Key="BookmarksTab_EditorWeightHint">Base weight for the default bookmark selection (higher wins). The existing scripted block is preserved if unchanged.</system:String>
     <system:String x:Key="BookmarksTab_EditorGroupDefaultDate">Default start date</system:String>
     <system:String x:Key="BookmarksTab_EditorBookmark">Bookmark</system:String>
     <system:String x:Key="BookmarksTab_EditorBookmarkId">Bookmark id</system:String>

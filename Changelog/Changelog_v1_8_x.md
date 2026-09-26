@@ -137,3 +137,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated application title to version 1.8.9 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.10]
+
+### Added
+- **Bookmark editor polish (1.8.10)** — date format hint under bookmark start date (reuses `EditorDateHint`); `Recommended` explanatory hint (`EditorRecommendedHint`); new `Weight` field (`EditorWeight`/`WeightHint`) showing the base `value`, preserving the original scripted `weight = { }` block (with `if` conditions) when unchanged.
+- **Localized group combo with filter (1.8.10)** — bookmark editor group combo lists localized `DisplayName` (`SelectedValue` = id) and filters as you type by name or id; `RequiresDlc` changed from `TextBox` to editable `ComboBox` with the real `requires_dlc_flag` values from game+mod and the same type-to-filter behavior (free text still allowed).
+
+### Changed
+- Bookmark save resolves the group text (display name or id) back to its id and validates required fields (`EditorFieldRequired`) for id, start date and group; character block stays optional (written only with name or history id). Group editor unchanged.
+- Context menu rule kept: marker selection shows only `New bookmark`; group/empty shows both.
+
+### i18n
+- New keys `BookmarksTab_EditorRecommendedHint`, `BookmarksTab_EditorWeight`, `BookmarksTab_EditorWeightHint` in `en/es/ca.xaml`.
+- Updated application title to version 1.8.10 in all language files (en, es, ca) — `MainWindow_Title`.
+
