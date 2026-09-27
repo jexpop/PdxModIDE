@@ -192,3 +192,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New key `HistoryTab_CultureOpenFileHint` in `en/es/ca.xaml`.
 - Updated application title to version 1.8.13 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.14]
+
+### Changed
+- **Mandatory heritage localization (1.8.14)** — `HeritageSave_Click` now requires both name and collective noun on create and edit (previously only blocked clearing a previously-set value), reporting missing fields via `EditorLocBlank`.
+- **Right-click creation (1.8.14)** — culture list context menu gains `New culture` (reuses `EditorNewTitle`) opening a blank editor; heritage `New heritage` button removed in favor of a `HeritageList` context menu (`New heritage`, works on empty area too) with right-click selection.
+- **Heritage loc labels (1.8.14)** — heritage form no longer reuses `Nombre cultura`; new keys `HeritageLocName`/`HeritageLocCollective` (`Heritage name`/`Collective noun`, `Nombre herencia`/`Sustantivo colectivo`, `Nom herència`/`Substantiu col·lectiu`), also used in the blank-fields error.
+
+### Fixed
+- Updated application title to version 1.8.14 in all language files (en, es, ca) — `MainWindow_Title`.
+

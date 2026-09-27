@@ -17,7 +17,7 @@
 - **Parallel / Task** (module processing, validation, map loading)
 - **No DI container** (manual instantiation in `ProjectManager`)
 
-**Current version**: 1.8.13 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (10 projects — BookmarksTab with full group/bookmark CRUD and localization; HistoryTab bookmark-driven date with double-click file open).
+**Current version**: 1.8.14 (see the `Changelog/` folder, one file per minor version). Solution: `PdxModIDE.sln` (10 projects — CulturesTab with mandatory heritage localization and right-click creation; BookmarksTab with full CRUD; HistoryTab bookmark-driven date).
 
 ---
 
@@ -505,4 +505,4 @@ No mandatory environment variables. All configuration in `data/*.json`.
 
 ---
 
-*Generated: 2026-09-26 | Project: PdxModIDE | Version: 1.8.13 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*
+*Generated: 2026-09-26 | Project: PdxModIDE | Version: 1.8.14 | Stack: .NET 8 / WPF / SkiaSharp 3.116.1 / System.Text.Json*

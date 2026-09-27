@@ -42,6 +42,9 @@
                       ContextMenuOpening="CultureTree_ContextMenuOpening">
                 <TreeView.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="{DynamicResource CulturesTab_EditorNewTitle}"
+                                  Click="CtxNewCulture_Click"/>
+                        <Separator/>
                         <MenuItem Header="{DynamicResource CulturesTab_CtxCopy}"
                                   Click="CtxCopyCulture_Click"/>
                         <MenuItem x:Name="CtxEditMenuItem" Header="{DynamicResource CulturesTab_CtxEdit}"
@@ -699,10 +702,15 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button x:Name="HeritageNewButton" Content="{DynamicResource CulturesTab_HeritageNew}"
-                            Width="140" HorizontalAlignment="Left" Padding="10,3" Click="HeritageNew_Click"/>
-                    <ListBox x:Name="HeritageList" Grid.Row="1" Margin="0,6,0,0"
-                             SelectionChanged="HeritageList_SelectionChanged">
+                    <ListBox x:Name="HeritageList" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0"
+                             SelectionChanged="HeritageList_SelectionChanged"
+                             PreviewMouseRightButtonDown="HeritageList_PreviewMouseRightButtonDown">
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="{DynamicResource CulturesTab_HeritageNew}"
+                                          Click="HeritageNew_Click"/>
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -728,9 +736,9 @@
                                 <ComboBox x:Name="HeritageAudioParameter" Width="250" HorizontalAlignment="Left" Margin="15,0,0,6"/>
                                 <GroupBox Header="{DynamicResource CulturesTab_HeritageLocSection}" Margin="0,4,0,8">
                                     <StackPanel>
-                                        <Label Content="{DynamicResource CulturesTab_EditorLocName}" FontWeight="Bold"/>
+                                        <Label Content="{DynamicResource CulturesTab_HeritageLocName}" FontWeight="Bold"/>
                                         <TextBox x:Name="HeritageLocName" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,6"/>
-                                        <Label Content="{DynamicResource CulturesTab_EditorLocCollective}" FontWeight="Bold"/>
+                                        <Label Content="{DynamicResource CulturesTab_HeritageLocCollective}" FontWeight="Bold"/>
                                         <TextBox x:Name="HeritageLocCollective" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="15,0,15,6"/>
                                     </StackPanel>
                                 </GroupBox>

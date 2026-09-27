@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.13</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.14</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -314,6 +314,8 @@
     <system:String x:Key="CulturesTab_HeritageId">Identifier</system:String>
     <system:String x:Key="CulturesTab_HeritageAudioParameter">Audio parameter</system:String>
     <system:String x:Key="CulturesTab_HeritageLocSection">Localization</system:String>
+    <system:String x:Key="CulturesTab_HeritageLocName">Heritage name</system:String>
+    <system:String x:Key="CulturesTab_HeritageLocCollective">Collective noun</system:String>
     <system:String x:Key="CulturesTab_HeritageSave">Save heritage</system:String>
     <system:String x:Key="CulturesTab_HeritageDelete">Delete heritage</system:String>
     <system:String x:Key="CulturesTab_HeritageNewTitle">New heritage</system:String>

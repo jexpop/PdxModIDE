@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.13</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.14</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -314,6 +314,8 @@
     <system:String x:Key="CulturesTab_HeritageId">Identificador</system:String>
     <system:String x:Key="CulturesTab_HeritageAudioParameter">Paràmetre d'àudio</system:String>
     <system:String x:Key="CulturesTab_HeritageLocSection">Localització</system:String>
+    <system:String x:Key="CulturesTab_HeritageLocName">Nom herència</system:String>
+    <system:String x:Key="CulturesTab_HeritageLocCollective">Substantiu col·lectiu</system:String>
     <system:String x:Key="CulturesTab_HeritageSave">Desar herència</system:String>
     <system:String x:Key="CulturesTab_HeritageDelete">Eliminar herència</system:String>
     <system:String x:Key="CulturesTab_HeritageNewTitle">Nova herència</system:String>

@@ -790,6 +790,29 @@ StatsBaseCulturesText.Text = $"{Res("CulturesTab_BaseCultures")}: {totalCultures
             OpenEditor(culture, copyAsNew: true);
         }
 
+        private void CtxNewCulture_Click(object sender, RoutedEventArgs e)
+        {
+            ResetEditorForNewCulture();
+            _editorCulture = null;
+            _editorIsNew = true;
+            _editorFileNameManual = false;
+            if (EditorCultureId != null) EditorCultureId.Text = "";
+            _editorHasSavedState = false;
+            var modRootForEditor = _viewModel?.CurrentProfile?.ModRoot;
+            _editorTargetFolder = string.IsNullOrEmpty(modRootForEditor)
+                ? ""
+                : Path.Combine(modRootForEditor, "common", "culture", "cultures", "mod");
+            UpdateEditorModeUi();
+            if (EditorTabHeaderText != null) EditorTabHeaderText.Text = Res("CulturesTab_EditorNewTitle");
+            if (EditorModeText != null) EditorModeText.Text = Res("CulturesTab_EditorNewTitle");
+            if (CulturesSubTabs != null)
+            {
+                var editTab = EditorTabItem as System.Windows.Controls.TabItem;
+                if (editTab != null)
+                    CulturesSubTabs.SelectedItem = editTab;
+            }
+        }
+
         private void CultureTree_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var item = FindAncestor<System.Windows.Controls.TreeViewItem>(e.OriginalSource as DependencyObject);
@@ -6251,6 +6274,16 @@ else if (items.Count > 0)
                 HeritageStatusText.Text = Res("CulturesTab_EditorHint");
         }
 
+        private void HeritageList_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var item = FindAncestor<System.Windows.Controls.ListBoxItem>(e.OriginalSource as DependencyObject);
+            if (item != null)
+            {
+                item.IsSelected = true;
+                item.Focus();
+            }
+        }
+
         private void HeritageList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var heritage = HeritageList.SelectedItem as HeritageInfo;
@@ -6360,13 +6393,12 @@ else if (items.Count > 0)
             bool nameChanged = _heritageHasSavedState ? locName != _savedHeritageLocName : !string.IsNullOrEmpty(locName);
             bool collectiveChanged = _heritageHasSavedState ? locCollective != _savedHeritageLocCollective : !string.IsNullOrEmpty(locCollective);
 
-            if (_heritageHasSavedState)
             {
                 var blankFields = new List<string>();
-                if (!string.IsNullOrEmpty(_savedHeritageLocName) && string.IsNullOrEmpty(locName))
-                    blankFields.Add(Res("CulturesTab_EditorLocName"));
-                if (!string.IsNullOrEmpty(_savedHeritageLocCollective) && string.IsNullOrEmpty(locCollective))
-                    blankFields.Add(Res("CulturesTab_EditorLocCollective"));
+                if (string.IsNullOrEmpty(locName))
+                    blankFields.Add(Res("CulturesTab_HeritageLocName"));
+                if (string.IsNullOrEmpty(locCollective))
+                    blankFields.Add(Res("CulturesTab_HeritageLocCollective"));
                 if (blankFields.Count > 0)
                 {
                     if (HeritageStatusText != null)
