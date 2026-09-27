@@ -3132,6 +3132,7 @@ foreach (var key in _editorCultureOptions
             {
                 "cultures_l",
                 "cultural_heritages_l",
+                "mod_cultural_heritages_l",
                 "cultural_traditions_l",
                 "cultural_languages_l",
                 "head_determination_l",
@@ -7721,8 +7722,9 @@ else if (items.Count > 0)
                 baseLocPath = Path.Combine(baseLocPath, "replace");
 
             if (!Directory.Exists(baseLocPath)) return;
-            foreach (var file in Directory.GetFiles(baseLocPath, "cultural_heritages_l_*.yml", SearchOption.AllDirectories))
-                RemoveLocalizationKeys(file, keysToRemove);
+            foreach (var pattern in new[] { "mod_cultural_heritages_l_*.yml", "cultural_heritages_l_*.yml" })
+                foreach (var file in Directory.GetFiles(baseLocPath, pattern, SearchOption.AllDirectories))
+                    RemoveLocalizationKeys(file, keysToRemove);
         }
 
         private async Task SaveHeritageLocalizationAsync(string heritageKey, bool nameChanged, string name, bool collectiveChanged, string collective)
@@ -7795,7 +7797,11 @@ else if (items.Count > 0)
                 {
                     string traditionsDir = Path.Combine(folderPath, "culture", "traditions");
                     Directory.CreateDirectory(traditionsDir);
-                    string filePath = Path.Combine(traditionsDir, $"cultural_heritages_l_{ck3Folder}.yml");
+                    // Inside replace/ keep the vanilla name (same-name override); outside use mod_ prefix (key merge, no conflict).
+                    string heritageFileName = existsInBase
+                        ? $"cultural_heritages_l_{ck3Folder}.yml"
+                        : $"mod_cultural_heritages_l_{ck3Folder}.yml";
+                    string filePath = Path.Combine(traditionsDir, heritageFileName);
                     var entries = new List<(string Key, string Value)>();
                     if (nameChanged && !string.IsNullOrEmpty(locName))
                         entries.Add(($"{heritageKey}_name", locName));
