@@ -27,7 +27,9 @@ namespace PdxModIDE.UI
         public string Source { get; set; } = "Base";
         public string DisplayKey => Name;
         public System.Windows.Media.Brush SourceBrush => Source == "Mod"
-            ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 120, 212))
+            ? (Model?.IsModNew == true
+                ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 140, 0))
+                : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 120, 212)))
             : System.Windows.Media.Brushes.Black;
         public BookmarkInfo? Model { get; set; }
     }
@@ -51,6 +53,11 @@ namespace PdxModIDE.UI
             ("korean", "ko"), ("polish", "pl"), ("russian", "ru"), ("simp_chinese", "zh-CN"), ("spanish", "es")
         };
         private string _editorSavedGroupName = "";
+        private bool _bookmarkLocHasBaseline;
+        private string _editorSavedBookmarkName = "";
+        private string _editorSavedBookmarkDesc = "";
+        private string _editorSavedCharDisplayName = "";
+        private string _editorSavedCharDesc = "";
         private Dictionary<string, BookmarkGroupInfo> _groupsMerged = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, BookmarkInfo> _bookmarksMerged = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, BookmarkGroupInfo> _groupsBase = new(StringComparer.OrdinalIgnoreCase);
@@ -730,6 +737,8 @@ namespace PdxModIDE.UI
                 BookmarkEditorTabHeaderText.Text = $"{Res("BookmarksTab_BookmarkEditorEditTitle")}: {bm.DisplayName}";
                 BookmarkEditorModeText.Text = $"{Res("BookmarksTab_BookmarkEditorEditTitle")}: {bm.DisplayName}";
                 EditorBookmarkId.Text = bm.Name;
+                EditorBookmarkName.Text = LookupBookmarkLoc(bm.Name) ?? "";
+                EditorBookmarkDesc.Text = LookupBookmarkLoc(bm.Name + "_desc") ?? "";
                 EditorBookmarkStartDate.Text = ToRealBm(bm);
                 EditorBookmarkGroup.SelectedValue = bm.Group ?? "";
                 if (EditorBookmarkGroup.SelectedItem == null) EditorBookmarkGroup.Text = bm.Group ?? "";
@@ -739,10 +748,18 @@ namespace PdxModIDE.UI
                 _editorSavedWeightRaw = bm.WeightRaw ?? "";
                 _editorSavedWeightValue = ExtractWeightValue(bm.WeightRaw);
                 EditorWeight.Text = _editorSavedWeightValue;
+                _bookmarkLocHasBaseline = true;
+                _editorSavedBookmarkName = EditorBookmarkName.Text?.Trim() ?? "";
+                _editorSavedBookmarkDesc = EditorBookmarkDesc.Text?.Trim() ?? "";
+                var ch0 = bm.Characters.FirstOrDefault();
+                _editorSavedCharDisplayName = ch0 != null && !string.IsNullOrEmpty(ch0.NameKey) ? (LookupBookmarkLoc(ch0.NameKey) ?? "") : "";
+                _editorSavedCharDesc = ch0 != null && !string.IsNullOrEmpty(ch0.NameKey) ? (LookupBookmarkLoc(ch0.NameKey + "_desc") ?? "") : "";
                 var ch = bm.Characters.FirstOrDefault();
                 if (ch != null)
                 {
                     EditorCharName.Text = ch.NameKey ?? "";
+                    EditorCharDisplayName.Text = string.IsNullOrEmpty(ch.NameKey) ? "" : (LookupBookmarkLoc(ch.NameKey) ?? "");
+                    EditorCharDesc.Text = string.IsNullOrEmpty(ch.NameKey) ? "" : (LookupBookmarkLoc(ch.NameKey + "_desc") ?? "");
                     EditorCharHistoryId.Text = ch.HistoryId ?? "";
                     EditorCharTitle.Text = ch.Title ?? "";
                     EditorCharCulture.Text = ch.Culture ?? "";
@@ -750,7 +767,7 @@ namespace PdxModIDE.UI
                 }
                 else
                 {
-                    EditorCharName.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
+                    EditorCharName.Text = ""; EditorCharDisplayName.Text = ""; EditorCharDesc.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
                 }
             }
             else if (bm != null && asNew)
@@ -767,10 +784,17 @@ namespace PdxModIDE.UI
                 _editorSavedWeightRaw = "";
                 _editorSavedWeightValue = ExtractWeightValue(bm.WeightRaw);
                 EditorWeight.Text = _editorSavedWeightValue;
+                _bookmarkLocHasBaseline = false;
+                _editorSavedBookmarkName = ""; _editorSavedBookmarkDesc = "";
+                _editorSavedCharDisplayName = ""; _editorSavedCharDesc = "";
+                EditorBookmarkName.Text = LookupBookmarkLoc(bm.Name) ?? "";
+                EditorBookmarkDesc.Text = LookupBookmarkLoc(bm.Name + "_desc") ?? "";
                 var ch = bm.Characters.FirstOrDefault();
                 if (ch != null)
                 {
                     EditorCharName.Text = ch.NameKey ?? "";
+                    EditorCharDisplayName.Text = string.IsNullOrEmpty(ch.NameKey) ? "" : (LookupBookmarkLoc(ch.NameKey) ?? "");
+                    EditorCharDesc.Text = string.IsNullOrEmpty(ch.NameKey) ? "" : (LookupBookmarkLoc(ch.NameKey + "_desc") ?? "");
                     EditorCharHistoryId.Text = ch.HistoryId ?? "";
                     EditorCharTitle.Text = ch.Title ?? "";
                     EditorCharCulture.Text = ch.Culture ?? "";
@@ -778,7 +802,7 @@ namespace PdxModIDE.UI
                 }
                 else
                 {
-                    EditorCharName.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
+                    EditorCharName.Text = ""; EditorCharDisplayName.Text = ""; EditorCharDesc.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
                 }
             }
             else
@@ -795,7 +819,11 @@ namespace PdxModIDE.UI
                 _editorSavedWeightRaw = "";
                 _editorSavedWeightValue = "";
                 EditorWeight.Text = "";
-                EditorCharName.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
+                _bookmarkLocHasBaseline = false;
+                _editorSavedBookmarkName = ""; _editorSavedBookmarkDesc = "";
+                _editorSavedCharDisplayName = ""; _editorSavedCharDesc = "";
+                EditorBookmarkName.Text = ""; EditorBookmarkDesc.Text = "";
+                EditorCharName.Text = ""; EditorCharDisplayName.Text = ""; EditorCharDesc.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
             }
             BookmarkEditorHintText.Text = Res("BookmarksTab_BookmarkEditorHint");
             UpdateEditorModeUi();
@@ -908,6 +936,9 @@ namespace PdxModIDE.UI
                 string file = bm.SourceFile;
                 if (!BookmarkLoader.DeleteBookmarkBlockFromFile(file, bm.RawKey)) { BookmarkEditorStatusText.Text = Res("BookmarksTab_DeleteBlockNotFound"); return; }
                 if (BookmarkLoader.CountBookmarkBlocks(file) == 0) System.IO.File.Delete(file);
+                var profile = _viewModel?.CurrentProfile;
+                if (profile != null && !string.IsNullOrEmpty(profile.ModRoot))
+                    DeleteBookmarkLocalization(profile.ModRoot, bm);
                 LoadBookmarks();
                 BookmarkEditorStatusText.Text = string.Format(Res("BookmarksTab_DeleteSuccess"), bm.Name);
                 if (_editorBookmark != null && string.Equals(_editorBookmark.RawKey, bm.RawKey, StringComparison.OrdinalIgnoreCase))
@@ -1014,17 +1045,23 @@ namespace PdxModIDE.UI
             {
                 if (_editorIsNew || _editorBookmark == null)
                 {
-                    EditorBookmarkId.Text = ""; EditorBookmarkStartDate.Text = ""; EditorBookmarkGroup.SelectedItem = null; EditorBookmarkGroup.Text = "";
+                    EditorBookmarkId.Text = ""; EditorBookmarkName.Text = ""; EditorBookmarkDesc.Text = "";
+                    EditorBookmarkStartDate.Text = ""; EditorBookmarkGroup.SelectedItem = null; EditorBookmarkGroup.Text = "";
                     EditorIsPlayable.IsChecked = true; EditorRecommended.IsChecked = false; EditorRequiresDlc.Text = "";
                     EditorWeight.Text = "";
-                    EditorCharName.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
+                    EditorCharName.Text = ""; EditorCharDisplayName.Text = ""; EditorCharDesc.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
                     _editorBookmark = null; _editorIsNew = true;
                     _editorSavedWeightRaw = ""; _editorSavedWeightValue = "";
+                    _bookmarkLocHasBaseline = false;
+                    _editorSavedBookmarkName = ""; _editorSavedBookmarkDesc = "";
+                    _editorSavedCharDisplayName = ""; _editorSavedCharDesc = "";
                 }
                 else
                 {
                     var bm = _editorBookmark;
                     EditorBookmarkId.Text = bm.Name;
+                    EditorBookmarkName.Text = LookupBookmarkLoc(bm.Name) ?? "";
+                    EditorBookmarkDesc.Text = LookupBookmarkLoc(bm.Name + "_desc") ?? "";
                     int offClear = _viewModel?.CurrentProfile?.YearOffset ?? 0;
                     EditorBookmarkStartDate.Text = bm.Source == "Mod" ? (BookmarkLoader.ShiftDate(bm.StartDate ?? "", -offClear) ?? bm.StartDate ?? "") : (bm.StartDate ?? "");
                     EditorBookmarkGroup.SelectedValue = bm.Group ?? "";
@@ -1036,13 +1073,21 @@ namespace PdxModIDE.UI
                     var ch = bm.Characters.FirstOrDefault();
                     if (ch != null)
                     {
-                        EditorCharName.Text = ch.NameKey ?? ""; EditorCharHistoryId.Text = ch.HistoryId ?? "";
+                        EditorCharName.Text = ch.NameKey ?? "";
+                        EditorCharDisplayName.Text = string.IsNullOrEmpty(ch.NameKey) ? "" : (LookupBookmarkLoc(ch.NameKey) ?? "");
+                        EditorCharDesc.Text = string.IsNullOrEmpty(ch.NameKey) ? "" : (LookupBookmarkLoc(ch.NameKey + "_desc") ?? "");
+                        EditorCharHistoryId.Text = ch.HistoryId ?? "";
                         EditorCharTitle.Text = ch.Title ?? ""; EditorCharCulture.Text = ch.Culture ?? ""; EditorCharReligion.Text = ch.Religion ?? "";
                     }
                     else
                     {
-                        EditorCharName.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
+                        EditorCharName.Text = ""; EditorCharDisplayName.Text = ""; EditorCharDesc.Text = ""; EditorCharHistoryId.Text = ""; EditorCharTitle.Text = ""; EditorCharCulture.Text = ""; EditorCharReligion.Text = "";
                     }
+                    _bookmarkLocHasBaseline = true;
+                    _editorSavedBookmarkName = EditorBookmarkName.Text?.Trim() ?? "";
+                    _editorSavedBookmarkDesc = EditorBookmarkDesc.Text?.Trim() ?? "";
+                    _editorSavedCharDisplayName = EditorCharDisplayName.Text?.Trim() ?? "";
+                    _editorSavedCharDesc = EditorCharDesc.Text?.Trim() ?? "";
                 }
                 BookmarkEditorStatusText.Text = Res("BookmarksTab_BookmarkEditorHint");
             }
@@ -1065,7 +1110,128 @@ namespace PdxModIDE.UI
             if (!string.IsNullOrEmpty(savedId))
                 await SaveGroupLocalizationIfChanged(savedId);
         }
-        private void BookmarkEditorSave_Click(object sender, RoutedEventArgs e) { _editorType = "Bookmark"; EditorSave_Click(sender, e); }
+        private async void BookmarkEditorSave_Click(object sender, RoutedEventArgs e)
+        {
+            _editorType = "Bookmark";
+            BookmarkEditorStatusText.Text = "Guardando marcador…";
+            string id = EditorBookmarkId.Text?.Trim() ?? "";
+            bool ok = EditorSave_Click(sender, e);
+            LogBookmark($"CLICK Save bookmark result: ok={ok} id='{id}' status='{BookmarkEditorStatusText.Text}'");
+            if (!ok) return;
+            string savedId = _editorBookmark?.RawKey ?? _editorBookmark?.Name ?? id;
+            if (!string.IsNullOrEmpty(savedId))
+                await SaveBookmarkLocalizationIfChanged(savedId);
+        }
+
+        private async Task SaveBookmarkLocalizationIfChanged(string? forceId = null)
+        {
+            var profile = _viewModel?.CurrentProfile;
+            if (profile == null) return;
+            string modRoot = profile.ModRoot ?? "";
+            if (string.IsNullOrEmpty(modRoot)) return;
+            string editId = EditorBookmarkId.Text?.Trim() ?? "";
+            string id = !string.IsNullOrEmpty(editId) ? editId : (forceId ?? "");
+            if (string.IsNullOrEmpty(id)) return;
+            string bmName = EditorBookmarkName.Text?.Trim() ?? "";
+            string bmDesc = EditorBookmarkDesc.Text?.Trim() ?? "";
+            string charKey = EditorCharName.Text?.Trim() ?? "";
+            string charName = EditorCharDisplayName.Text?.Trim() ?? "";
+            string charDesc = EditorCharDesc.Text?.Trim() ?? "";
+            bool nameChanged = _bookmarkLocHasBaseline ? bmName != _editorSavedBookmarkName : !string.IsNullOrEmpty(bmName);
+            bool descChanged = _bookmarkLocHasBaseline ? bmDesc != _editorSavedBookmarkDesc : !string.IsNullOrEmpty(bmDesc);
+            bool charNameChanged = _bookmarkLocHasBaseline ? charName != _editorSavedCharDisplayName : !string.IsNullOrEmpty(charName);
+            bool charDescChanged = _bookmarkLocHasBaseline ? charDesc != _editorSavedCharDesc : !string.IsNullOrEmpty(charDesc);
+            if (!nameChanged && !descChanged && !charNameChanged && !charDescChanged) { LogBookmark($"Bookmark loc: unchanged '{id}'"); return; }
+            if (!string.IsNullOrEmpty(charName) || !string.IsNullOrEmpty(charDesc))
+            {
+                if (string.IsNullOrEmpty(charKey)) { BookmarkEditorStatusText.Text = string.Format(Res("BookmarksTab_EditorFieldRequired"), Res("BookmarksTab_EditorCharName")); return; }
+            }
+            LogBookmark($"Bookmark loc: start id='{id}' name={nameChanged} desc={descChanged} char={charNameChanged}/{charDescChanged}");
+            BookmarkEditorStatusText.Text = Res("BookmarksTab_EditorLocTranslating");
+            try
+            {
+                string appLang = _viewModel?.Language ?? "en";
+                bool autoTranslate = _viewModel?.AutoTranslate ?? true;
+                string srcCode = appLang.ToLowerInvariant() switch { "es" => "es", "en" => "en", _ => "ca" };
+                var providers = autoTranslate ? BuildBookmarkProviders() : Array.Empty<PdxModIDE.UI.Translation.ITranslationProvider>();
+                string? directFolder = appLang switch { "es" => "spanish", "en" => "english", _ => null };
+                var targets = autoTranslate
+                    ? GameSupportedLanguages.Select(f => (f.Folder, f.Code)).ToList()
+                    : (directFolder != null ? new List<(string, string)> { (directFolder, srcCode) } : new List<(string, string)>());
+                int saved = 0;
+                foreach (var (folder, code) in targets)
+                {
+                    string tBmName = bmName, tBmDesc = bmDesc, tCharName = charName, tCharDesc = charDesc;
+                    if (autoTranslate && folder != directFolder)
+                    {
+                        if (nameChanged) { var (tr, _) = await TranslateBookmarkAsync(bmName, srcCode, code, providers); if (!string.IsNullOrEmpty(tr)) tBmName = tr; }
+                        if (descChanged) { var (tr, _) = await TranslateBookmarkAsync(bmDesc, srcCode, code, providers); if (!string.IsNullOrEmpty(tr)) tBmDesc = tr; }
+                        if (charNameChanged) { var (tr, _) = await TranslateBookmarkAsync(charName, srcCode, code, providers); if (!string.IsNullOrEmpty(tr)) tCharName = tr; }
+                        if (charDescChanged) { var (tr, _) = await TranslateBookmarkAsync(charDesc, srcCode, code, providers); if (!string.IsNullOrEmpty(tr)) tCharDesc = tr; }
+                    }
+                    string dir = System.IO.Path.Combine(modRoot, "localization", "replace", folder);
+                    var writtenKeys = new List<string>();
+                    try
+                    {
+                        System.IO.Directory.CreateDirectory(dir);
+                        string file = System.IO.Path.Combine(dir, $"bookmarks_l_{folder}.yml");
+                        if (nameChanged && !string.IsNullOrEmpty(tBmName)) { UpsertSimpleLoc(file, $"l_{folder}:", id, tBmName); writtenKeys.Add(id); }
+                        if (descChanged && !string.IsNullOrEmpty(tBmDesc)) { UpsertSimpleLoc(file, $"l_{folder}:", id + "_desc", tBmDesc); writtenKeys.Add(id + "_desc"); }
+                        if (!string.IsNullOrEmpty(charKey))
+                        {
+                            if (charNameChanged && !string.IsNullOrEmpty(tCharName)) { UpsertSimpleLoc(file, $"l_{folder}:", charKey, tCharName); writtenKeys.Add(charKey); }
+                            if (charDescChanged && !string.IsNullOrEmpty(tCharDesc)) { UpsertSimpleLoc(file, $"l_{folder}:", charKey + "_desc", tCharDesc); writtenKeys.Add(charKey + "_desc"); }
+                        }
+                        // clean legacy location (bookmark/ subfolder) so stale duplicates don't win
+                        string legacyFile = System.IO.Path.Combine(dir, "bookmark", $"bookmarks_l_{folder}.yml");
+                        if (writtenKeys.Count > 0 && System.IO.File.Exists(legacyFile))
+                            RemoveBookmarkLocKeys(legacyFile, writtenKeys.ToArray());
+                        saved++;
+                        LogBookmark($"Bookmark loc: wrote '{file}' id='{id}'");
+                    }
+                    catch (Exception ex) { LogBookmark($"Bookmark loc EX '{folder}': {ex}"); }
+                }
+                BookmarkEditorStatusText.Text = $"{string.Format(Res("BookmarksTab_EditorSaved"), id)} ({saved})";
+                _bookmarkLocHasBaseline = true;
+                _editorSavedBookmarkName = bmName; _editorSavedBookmarkDesc = bmDesc;
+                _editorSavedCharDisplayName = charName; _editorSavedCharDesc = charDesc;
+                LogBookmark($"Bookmark loc: done id='{id}' saved={saved}");
+                LoadBookmarks();
+            }
+            catch (Exception ex) { BookmarkEditorStatusText.Text = $"{Res("BookmarksTab_EditorLocError")}: {ex.Message}"; }
+        }
+
+        private static void DeleteBookmarkLocalization(string modRoot, BookmarkInfo bm)
+        {
+            var keys = new List<string> { bm.RawKey, bm.RawKey + "_desc" };
+            foreach (var ch in bm.Characters)
+            {
+                if (!string.IsNullOrEmpty(ch.NameKey))
+                {
+                    keys.Add(ch.NameKey);
+                    keys.Add(ch.NameKey + "_desc");
+                }
+                foreach (var sub in ch.SubCharacters)
+                {
+                    if (!string.IsNullOrEmpty(sub.NameKey))
+                    {
+                        keys.Add(sub.NameKey);
+                        keys.Add(sub.NameKey + "_desc");
+                    }
+                }
+            }
+            var roots = new[]
+            {
+                System.IO.Path.Combine(modRoot, "localization", "replace"),
+                System.IO.Path.Combine(modRoot, "localization")
+            };
+            foreach (var root in roots)
+            {
+                if (!System.IO.Directory.Exists(root)) continue;
+                foreach (var file in System.IO.Directory.GetFiles(root, "bookmarks_l_*.yml", System.IO.SearchOption.AllDirectories))
+                    RemoveBookmarkLocKeys(file, keys.ToArray());
+            }
+        }
 
         private static string? _logFilePath;
         private static void LogBookmark(string msg)

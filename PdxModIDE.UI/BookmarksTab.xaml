@@ -219,6 +219,10 @@
                         <StackPanel>
                             <Label Content="{DynamicResource BookmarksTab_EditorBookmarkId}" FontWeight="Bold"/>
                             <TextBox x:Name="EditorBookmarkId" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <Label Content="{DynamicResource BookmarksTab_EditorBookmarkName}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorBookmarkName" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                            <Label Content="{DynamicResource BookmarksTab_EditorBookmarkDesc}" FontWeight="Bold"/>
+                            <TextBox x:Name="EditorBookmarkDesc" Width="400" Height="60" HorizontalAlignment="Left" Margin="15,0,0,4" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
                             <Label Content="{DynamicResource BookmarksTab_EditorBookmarkStartDate}" FontWeight="Bold"/>
                             <TextBox x:Name="EditorBookmarkStartDate" Width="150" HorizontalAlignment="Left" Margin="15,0,0,4"/>
                             <TextBlock Text="{DynamicResource BookmarksTab_EditorDateHint}" Foreground="Gray" Margin="15,0,0,4" TextWrapping="Wrap"/>
@@ -236,6 +240,10 @@
                                 <StackPanel>
                                     <Label Content="{DynamicResource BookmarksTab_EditorCharName}" FontWeight="Bold"/>
                                     <TextBox x:Name="EditorCharName" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                                    <Label Content="{DynamicResource BookmarksTab_EditorCharDisplayName}" FontWeight="Bold"/>
+                                    <TextBox x:Name="EditorCharDisplayName" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
+                                    <Label Content="{DynamicResource BookmarksTab_EditorCharDesc}" FontWeight="Bold"/>
+                                    <TextBox x:Name="EditorCharDesc" Width="400" Height="60" HorizontalAlignment="Left" Margin="15,0,0,4" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
                                     <Label Content="{DynamicResource BookmarksTab_EditorCharHistoryId}" FontWeight="Bold"/>
                                     <TextBox x:Name="EditorCharHistoryId" Width="300" HorizontalAlignment="Left" Margin="15,0,0,4"/>
                                     <Label Content="{DynamicResource BookmarksTab_EditorCharTitle}" FontWeight="Bold"/>

@@ -165,3 +165,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated application title to version 1.8.11 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.12]
+
+### Added
+- **Bookmark editor polish (1.8.12)** — date format hint under bookmark start date; `Recommended` hint; `Weight` field showing the base value while preserving the original scripted block when unchanged; group combo with localized names and type-to-filter; `RequiresDlc` as an editable combo with the real flags from game+mod and the same filter behavior.
+- **Bookmark localization (1.8.12)** — bookmark name/desc (`<bm_id>`, `<bm_id>_desc`) and character name/desc (`<nameKey>`, `<nameKey>_desc`) saved via `ITranslationProvider` (app language + 9 CK3 languages when `AutoTranslate`) to `localization/replace/<lang>/bookmarks_l_<lang>.yml` (shared with groups; legacy `bookmark/` duplicates cleaned); selective per-field writes with baselines; keys removed on bookmark delete.
+- **Bookmark list colors (1.8.12)** — new mod bookmarks in green (`IsModNew`), mod overrides in blue, base in black (parity with Cultures); legend updated to `Mod (override)` / `Mod (new)`.
+
+### Changed
+- Character block stays optional (written only with name or history id).
+
+### i18n
+- New keys `BookmarksTab_EditorBookmarkName/Desc`, `BookmarksTab_EditorCharDisplayName/Desc`, `BookmarksTab_EditorRecommendedHint`, `BookmarksTab_EditorWeight/WeightHint` in `en/es/ca.xaml`.
+- Updated application title to version 1.8.12 in all language files (en, es, ca) — `MainWindow_Title`.
+
+---
+
+## [1.8.13]
+
+### Added
+- **Double-click province history file open (1.8.13)** — Cultural map view, View mode only: italic hint `CultureOpenFileHint` in the CULTURE panel (next to `Modify culture`) and left double-click (`ClickCount==2`) opens the province history file resolved by `ProvinceHistoryService.Locate` (mod priority) with the system default program (`UseShellExecute=true`, silent when missing). Normal click selection is preserved.
+
+### i18n
+- New key `HistoryTab_CultureOpenFileHint` in `en/es/ca.xaml`.
+- Updated application title to version 1.8.13 in all language files (en, es, ca) — `MainWindow_Title`.
+

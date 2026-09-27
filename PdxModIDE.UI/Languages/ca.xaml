@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validant...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.11</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.13</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">Configuració general</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Perfil</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Mapa</system:String>
@@ -137,6 +137,7 @@
     <system:String x:Key="HistoryTab_CultureEditSavedMulti">Cultura {0} desada a {1} a {2} províncies.</system:String>
     <system:String x:Key="HistoryTab_CultureEditErrors">Errors ({0}): {1}</system:String>
     <system:String x:Key="HistoryTab_CultureSearchHint">Filtrar cultures…</system:String>
+    <system:String x:Key="HistoryTab_CultureOpenFileHint">Fes doble clic en una província per obrir el seu fitxer.</system:String>
     <system:String x:Key="HistoryTab_Title">TÍTOL</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Baronia:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">Comtat:</system:String>
@@ -559,8 +560,8 @@
     <system:String x:Key="BookmarksTab_ModBookmarks">Marcadors del mod</system:String>
     <system:String x:Key="BookmarksTab_BaseBookmarks">Marcadors del joc base</system:String>
     <system:String x:Key="BookmarksTab_LegendBase">• Joc base</system:String>
-    <system:String x:Key="BookmarksTab_LegendMod">• Mod (sobreescriu, només lectura)</system:String>
-    <system:String x:Key="BookmarksTab_LegendModNew">• Mod (nou, editable en el futur)</system:String>
+    <system:String x:Key="BookmarksTab_LegendMod">• Mod (sobreescriu)</system:String>
+    <system:String x:Key="BookmarksTab_LegendModNew">• Mod (nou)</system:String>
     <system:String x:Key="BookmarksTab_Details">Detalls del marcador</system:String>
     <system:String x:Key="BookmarksTab_SelectPrompt">Selecciona un marcador o grup per veure detalls</system:String>
     <system:String x:Key="BookmarksTab_Source">Origen:</system:String>
@@ -617,6 +618,10 @@
     <system:String x:Key="BookmarksTab_EditorRecommendedHint">Si està marcat, aquest marcador es mostra com a recomanat a la pantalla inicial.</system:String>
     <system:String x:Key="BookmarksTab_EditorWeight">Pes</system:String>
     <system:String x:Key="BookmarksTab_EditorWeightHint">Pes base per a la selecció del marcador per defecte (guanya el major). El bloc amb condicions es conserva si no canvia.</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkName">Nom del marcador</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkDesc">Descripció del marcador</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharDisplayName">Nom del personatge</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharDesc">Descripció del personatge</system:String>
     <system:String x:Key="BookmarksTab_EditorGroupDefaultDate">Data per defecte</system:String>
     <system:String x:Key="BookmarksTab_EditorBookmark">Marcador</system:String>
     <system:String x:Key="BookmarksTab_EditorBookmarkId">Id de marcador</system:String>

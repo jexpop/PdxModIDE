@@ -1059,6 +1059,8 @@ namespace PdxModIDE.UI
                 int y = (int)(pos.Y * (MapImage.ActualHeight > 0 ? _cachedHeight / MapImage.ActualHeight : 1));
 
                 int provinceId = _renderer.GetProvinceAt(x, y);
+                if (e.ClickCount == 2 && _currentView == MapViewType.Cultural && !_editMode && provinceId > 0)
+                    TryOpenProvinceHistoryFile(provinceId);
                 if (provinceId > 0 && _mapLoader != null)
                 {
                     var province = _mapLoader.GetProvinceFromId(provinceId);
@@ -2101,6 +2103,31 @@ namespace PdxModIDE.UI
                 CultureEditStatus.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
             if (CultureSearchBox != null)
                 CultureSearchBox.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            UpdateCultureOpenFileHint();
+        }
+
+        private void UpdateCultureOpenFileHint()
+        {
+            bool visible = _currentView == MapViewType.Cultural
+                && !_editMode
+                && _selectedProvinceIds.Count >= 1
+                && InfoPanel.Visibility == Visibility.Visible;
+            if (CultureOpenFileHint != null)
+                CultureOpenFileHint.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void TryOpenProvinceHistoryFile(int provinceId)
+        {
+            var profile = ViewModel?.CurrentProfile;
+            if (profile == null) return;
+            try
+            {
+                var loc = ProvinceHistoryService.Locate(provinceId, profile.ModRoot ?? "", profile.GameRoot ?? "");
+                if (loc.Origin == ProvinceHistoryOrigin.NotFound || string.IsNullOrEmpty(loc.FilePath) || !File.Exists(loc.FilePath))
+                    return;
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(loc.FilePath) { UseShellExecute = true });
+            }
+            catch { }
         }
 
         private string? GetCurrentCultureKey(int provinceId)

@@ -44,7 +44,7 @@
     <system:String x:Key="Settings_DeeplValidating">Validating...</system:String>
 
     <!-- MainWindow -->
-    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.11</system:String>
+    <system:String x:Key="MainWindow_Title">Paradox Mod IDE v.1.8.13</system:String>
     <system:String x:Key="MainWindow_Tooltip_GeneralSettings">General Settings</system:String>
     <system:String x:Key="MainWindow_Tab_Profile">Profile</system:String>
     <system:String x:Key="MainWindow_Tab_Map">Map</system:String>
@@ -137,6 +137,7 @@
     <system:String x:Key="HistoryTab_CultureEditSavedMulti">Culture {0} saved at {1} for {2} provinces.</system:String>
     <system:String x:Key="HistoryTab_CultureEditErrors">Errors ({0}): {1}</system:String>
     <system:String x:Key="HistoryTab_CultureSearchHint">Filter cultures…</system:String>
+    <system:String x:Key="HistoryTab_CultureOpenFileHint">Double-click a province to open its history file.</system:String>
     <system:String x:Key="HistoryTab_Title">TITLE</system:String>
     <system:String x:Key="HistoryTab_BaronyLabel">Barony:</system:String>
     <system:String x:Key="HistoryTab_CountyLabel">County:</system:String>
@@ -559,8 +560,8 @@
     <system:String x:Key="BookmarksTab_ModBookmarks">Mod bookmarks</system:String>
     <system:String x:Key="BookmarksTab_BaseBookmarks">Base game bookmarks</system:String>
     <system:String x:Key="BookmarksTab_LegendBase">• Base game</system:String>
-    <system:String x:Key="BookmarksTab_LegendMod">• Mod (override, read-only)</system:String>
-    <system:String x:Key="BookmarksTab_LegendModNew">• Mod (new, writable in future)</system:String>
+    <system:String x:Key="BookmarksTab_LegendMod">• Mod (override)</system:String>
+    <system:String x:Key="BookmarksTab_LegendModNew">• Mod (new)</system:String>
     <system:String x:Key="BookmarksTab_Details">Bookmark Details</system:String>
     <system:String x:Key="BookmarksTab_SelectPrompt">Select a bookmark or group to view details</system:String>
     <system:String x:Key="BookmarksTab_Source">Source:</system:String>
@@ -617,6 +618,10 @@
     <system:String x:Key="BookmarksTab_EditorRecommendedHint">If checked, this bookmark is shown as recommended on the start screen.</system:String>
     <system:String x:Key="BookmarksTab_EditorWeight">Weight</system:String>
     <system:String x:Key="BookmarksTab_EditorWeightHint">Base weight for the default bookmark selection (higher wins). The existing scripted block is preserved if unchanged.</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkName">Bookmark name</system:String>
+    <system:String x:Key="BookmarksTab_EditorBookmarkDesc">Bookmark description</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharDisplayName">Character name</system:String>
+    <system:String x:Key="BookmarksTab_EditorCharDesc">Character description</system:String>
     <system:String x:Key="BookmarksTab_EditorGroupDefaultDate">Default start date</system:String>
     <system:String x:Key="BookmarksTab_EditorBookmark">Bookmark</system:String>
     <system:String x:Key="BookmarksTab_EditorBookmarkId">Bookmark id</system:String>
