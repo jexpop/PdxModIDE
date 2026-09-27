@@ -214,3 +214,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated application title to version 1.8.15 in all language files (en, es, ca) — `MainWindow_Title`.
 
+---
+
+## [1.8.16]
+
+### Changed
+- **Culture localization file naming (1.8.16)** — mod-new cultures now write to `mod_cultures_l_<lang>.yml` under `localization/<lang>/culture/` (key merge, no conflict with the vanilla file); cultures existing in the base game keep `cultures_l_<lang>.yml` under `localization/replace/` (same-name override). `LoadLocalization` reads both names and deletion cleans both patterns (migrating legacy entries). Same logic previously applied to heritages in 1.8.15.
+
+### Fixed
+- Updated application title to version 1.8.16 in all language files (en, es, ca) — `MainWindow_Title`.
+

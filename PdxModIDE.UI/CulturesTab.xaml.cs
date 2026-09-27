@@ -2380,7 +2380,11 @@ foreach (var key in _editorCultureOptions
                 {
                     string cultureDir = Path.Combine(folderPath, "culture");
                     Directory.CreateDirectory(cultureDir);
-                    string filePath = Path.Combine(cultureDir, $"cultures_l_{ck3Folder}.yml");
+                    // Inside replace/ keep the vanilla name (same-name override); outside use mod_ prefix (key merge, no conflict).
+                    string culturesFileName = existsInBase
+                        ? $"cultures_l_{ck3Folder}.yml"
+                        : $"mod_cultures_l_{ck3Folder}.yml";
+                    string filePath = Path.Combine(cultureDir, culturesFileName);
                     var entries = new List<(string Key, string Value)>();
                     if (nameChanged && !string.IsNullOrEmpty(locName))
                         entries.Add((cultureId, locName));
@@ -3063,8 +3067,9 @@ foreach (var key in _editorCultureOptions
                 baseLocPath = Path.Combine(baseLocPath, "replace");
 
             if (!Directory.Exists(baseLocPath)) return;
-            foreach (var file in Directory.GetFiles(baseLocPath, "cultures_l_*.yml", SearchOption.AllDirectories))
-                RemoveLocalizationKeys(file, keysToRemove);
+            foreach (var pattern in new[] { "mod_cultures_l_*.yml", "cultures_l_*.yml" })
+                foreach (var file in Directory.GetFiles(baseLocPath, pattern, SearchOption.AllDirectories))
+                    RemoveLocalizationKeys(file, keysToRemove);
         }
 
         private static void DeleteCultureHistoryLocalization(string modRoot, string historyKey, bool existsInBase)
@@ -3131,6 +3136,7 @@ foreach (var key in _editorCultureOptions
             var fileNames = new[]
             {
                 "cultures_l",
+                "mod_cultures_l",
                 "cultural_heritages_l",
                 "mod_cultural_heritages_l",
                 "cultural_traditions_l",
